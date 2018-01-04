@@ -7,7 +7,7 @@
 isFALSE(x)
 }
 \arguments{
-\item{An}{R object.}
+\item{x}{An R object.}
 }
 \description{
 A simple abbreviation of \code{identical(x, FALSE)}.

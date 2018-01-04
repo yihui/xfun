@@ -1,7 +1,7 @@
 #' Test if an object is identical to \code{FALSE}
 #'
 #' A simple abbreviation of \code{identical(x, FALSE)}.
-#' @param An R object.
+#' @param x An R object.
 #' @export
 #' @examples
 #' library(xfun)
