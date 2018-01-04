@@ -15,7 +15,7 @@ is no need to do the conversion.}
 }
 \description{
 Apply \code{enc2native()} to the character vector, and check if
-\code{enc2utf8()} can convert it back losslessly. If it does, return
+\code{enc2utf8()} can convert it back without a loss. If it does, return
 \code{enc2native(x)}, otherwise return the original vector with a warning.
 }
 \examples{
