@@ -10,7 +10,7 @@
 #' isFALSE(c(FALSE, FALSE))  # false
 isFALSE = function(x) identical(x, FALSE)
 
-#' Evaluate an expression in a specified directory
+#' Evaluate an expression under a specified working directory
 #'
 #' Change the working directory, evaluate the expression, and restore the
 #' working directory.
