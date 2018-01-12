@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{in_dir}
 \alias{in_dir}
-\title{Evaluate an expression in a specified directory}
+\title{Evaluate an expression under a specified working directory}
 \usage{
 in_dir(dir, expr)
 }
