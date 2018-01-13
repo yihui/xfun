@@ -31,8 +31,9 @@ strict_list = function(...) {
 #' @export
 `$.strict_list` = function(x, name) x[[name]]
 
+#' @param ... Ignored.
 #' @rdname strict_list
 #' @export
-print.strict_list = function(x) {
+print.strict_list = function(x, ...) {
   print(unclass(x))
 }

@@ -10,7 +10,7 @@ strict_list(...)
 
 \method{$}{strict_list}(x, name)
 
-\method{print}{strict_list}(x)
+\method{print}{strict_list}(x, ...)
 }
 \arguments{
 \item{...}{Objects (list elements), possibly named.}
@@ -18,6 +18,8 @@ strict_list(...)
 \item{x}{A strict list.}
 
 \item{name}{The name (a character string) of the list element.}
+
+\item{...}{Ignored.}
 }
 \description{
 A strict list is essentially a normal \code{\link{list}()} but it does not
