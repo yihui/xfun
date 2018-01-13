@@ -21,6 +21,7 @@
 #'   \code{\link{options}()} if you want to automatically install packages.
 #' @return \code{pkg_attach()} returns \code{NULL} invisibly. \code{pkg_load()}
 #'   returns a logical vector, indicating whether the packages can be loaded.
+#' @import utils
 #' @export
 #' @examples library(xfun)
 #' pkg_attach('stats', 'graphics')
