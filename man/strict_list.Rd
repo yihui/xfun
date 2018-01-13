@@ -13,13 +13,12 @@ strict_list(...)
 \method{print}{strict_list}(x, ...)
 }
 \arguments{
-\item{...}{Objects (list elements), possibly named.}
+\item{...}{Objects (list elements), possibly named. Ignored in the
+\code{print()} method.}
 
 \item{x}{A strict list.}
 
 \item{name}{The name (a character string) of the list element.}
-
-\item{...}{Ignored.}
 }
 \description{
 A strict list is essentially a normal \code{\link{list}()} but it does not

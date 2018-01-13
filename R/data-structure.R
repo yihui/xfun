@@ -8,7 +8,8 @@
 #' been bitten for many times. When I write \code{x$name}, I always mean
 #' precisely \code{name}. You should use a modern code editor to autocomplate
 #' the \code{name} if it is too long to type, instead of using a partial name.
-#' @param ... Objects (list elements), possibly named.
+#' @param ... Objects (list elements), possibly named. Ignored in the
+#'   \code{print()} method.
 #' @export
 #' @examples library(xfun)
 #' (z = strict_list(aaa = 'I am aaa', b = 1:5))
@@ -31,7 +32,6 @@ strict_list = function(...) {
 #' @export
 `$.strict_list` = function(x, name) x[[name]]
 
-#' @param ... Ignored.
 #' @rdname strict_list
 #' @export
 print.strict_list = function(x, ...) {
