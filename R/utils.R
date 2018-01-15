@@ -24,3 +24,17 @@ in_dir = function(dir, expr) {
   owd = setwd(dir); on.exit(setwd(owd))
   expr
 }
+
+#' Parse R code and do not keep the source
+#'
+#' An abbreviation of \code{parse(keep.source = FALSE)}.
+#' @param code A character vector of the R source code.
+#' @export
+#' @return R \code{\link{expression}}s.
+#' @examples library(xfun)
+#' parse_only('1+1'); parse_only(c('y~x', '1:5 # a comment'))
+#' parse_only(character(0))
+parse_only = function(code) {
+  if (length(code) == 0) return(expression())
+  parse(text = code, keep.source = FALSE)
+}
