@@ -1,0 +1,35 @@
+#' Manipulate filename extensions
+#'
+#' Functions to obtain (\code{file_ext()}), remove (\code{sans_ext()}), and
+#' change (\code{with_ext()}) extensions in filenames.
+#'
+#' \code{file_ext()} is a wrapper of \code{tools::\link{file_ext}()}.
+#' \code{sans_ext()} is a wrapper of \code{tools::\link{file_path_sans_ext}()}.
+#' @param x A character of file paths.
+#' @export
+#' @return A character vector of the same length as \code{x}.
+#' @examples library(xfun)
+#' p = c('abc.doc', 'def123.tex', 'path/to/foo.Rmd')
+#' file_ext(p); sans_ext(p); with_ext(p, '.txt')
+#' with_ext(p, c('.ppt', '.sty', '.Rnw')); with_ext(p, 'html')
+file_ext = function(x) tools::file_ext(x)
+
+#' @rdname file_ext
+#' @export
+sans_ext = function(x) tools::file_path_sans_ext(x)
+
+#' @param ext A vector of new extensions.
+#' @rdname file_ext
+#' @export
+with_ext = function(x, ext) {
+  n1 = length(x); n2 = length(ext); r = '([.][[:alnum:]]+)?$'
+  if (n1 * n2 == 0) return(x)
+  i = !grepl('^[.]', ext) & ext != ''
+  ext[i] = paste0('.', ext[i])
+
+  if (all(ext == '')) ext = ''
+  if (length(ext) == 1) return(sub(r, ext, x))
+
+  if (n1 > 1 && n1 != n2) stop("'ext' must be of the same length as 'x'")
+  mapply(sub, r, ext, x, USE.NAMES = FALSE)
+}
