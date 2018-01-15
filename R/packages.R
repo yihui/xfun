@@ -52,9 +52,16 @@ pkg_load = function(..., error = TRUE, install = FALSE) {
 }
 
 #' @param pkg A single package name.
+#' @param strict If \code{TRUE}, use \code{\link{requireNamespace}()} to test if
+#'   a package is loadable; otherwise only check if the package is in
+#'   \code{\link{.packages}(TRUE)} (this does not really load the package, so it
+#'   is less rigorous but on the other hand, it can keep the current R session
+#'   clean).
 #' @rdname pkg_attach
 #' @export
-loadable = function(pkg) requireNamespace(pkg, quietly = TRUE)
+loadable = function(pkg, strict = TRUE) {
+  if (strict) requireNamespace(pkg, quietly = TRUE) else pkg %in% .packages(TRUE)
+}
 
 #' @rdname pkg_attach
 #' @export
