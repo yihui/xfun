@@ -13,7 +13,7 @@ pkg_attach(..., install = FALSE)
 
 pkg_load(..., error = TRUE, install = FALSE)
 
-loadable(pkg)
+loadable(pkg, strict = TRUE)
 
 pkg_attach2(...)
 
@@ -30,6 +30,12 @@ set a CRAN mirror in the global option \code{repos} via
 \item{error}{Whether to signal an error when certain packages cannot be loaded.}
 
 \item{pkg}{A single package name.}
+
+\item{strict}{If \code{TRUE}, use \code{\link{requireNamespace}()} to test if
+a package is loadable; otherwise only check if the package is in
+\code{\link{.packages}(TRUE)} (this does not really load the package, so it
+is less rigorous but on the other hand, it can keep the current R session
+clean).}
 }
 \value{
 \code{pkg_attach()} returns \code{NULL} invisibly. \code{pkg_load()}
