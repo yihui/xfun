@@ -1,3 +1,16 @@
+#' Obtain an attribute of an object without partial matching
+#'
+#' An abbreviation of \code{base::\link[base]{attr}(exact = TRUE)}.
+#' @param ... Passed to \code{base::\link[base]{attr}()} (without the
+#'   \code{exact} argument).
+#' @export
+#' @examples
+#' z = structure(list(a = 1), foo = 2)
+#' base::attr(z, 'f')  # 2
+#' xfun::attr(z, 'f')  # NULL
+#' xfun::attr(z, 'foo')  # 2
+attr = function(...) base::attr(..., exact = TRUE)
+
 #' Evaluate an expression under a specified working directory
 #'
 #' Change the working directory, evaluate the expression, and restore the
