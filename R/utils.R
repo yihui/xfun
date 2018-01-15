@@ -38,3 +38,13 @@ parse_only = function(code) {
   if (length(code) == 0) return(expression())
   parse(text = code, keep.source = FALSE)
 }
+
+#' Try to evaluate an expression silently
+#'
+#' An abbreviation of \code{try(silent = TRUE)}.
+#' @param expr An R expression.
+#' @export
+#' @examples library(xfun)
+#' z = try_silent(stop('Wrong!'))
+#' inherits(z, 'try-error')
+try_silent = function(expr) try(expr, silent = TRUE)
