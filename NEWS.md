@@ -4,6 +4,8 @@
 
 - Added a `new_session` argument to `loadable()`.
 
+- Added new functions `gsub_file()`, `gsub_files()`, `gsub_dir()`, and `gsub_ext()` to replace strings in files.
+
 # CHANGES IN xfun VERSION 0.1
 
 ## NEW FEATURES

@@ -36,3 +36,47 @@ write_utf8 = function(text, con, ...) {
 invalid_utf8 = function(x) {
   which(is.na(iconv(x, 'UTF-8', 'UTF-8')))
 }
+
+#' Search and replace strings in files
+#'
+#' These functions provide the "file" version of \code{\link{gsub}()}, i.e.,
+#' they perform searching and replacement in files via \code{gsub()}.
+#' @param file Path of a single file.
+#' @param ... Arguments passed to \code{gsub()}. Note that the argument \code{x}
+#'   of \code{gsub()} is the content of the file.
+#' @param files A vector of file paths.
+#' @param dir Path to a directory (all files under this directory will be
+#'   replaced).
+#' @param ext A filename extension (without the period).
+#' @note These functions perform in-place replacement, i.e., the files will be
+#'   overwritten. Make sure you backup your files in advance, or use version
+#'   control!
+#' @export
+#' @examples library(xfun)
+#' f = tempfile()
+#' writeLines(c('hello', 'world'), f)
+#' gsub_file(f, 'world', 'woRld', fixed = TRUE)
+#' readLines(f)
+gsub_file = function(file, ...) {
+  x = gsub(x = read_utf8(file), ...)
+  write_utf8(x, file)
+}
+
+#' @rdname gsub_file
+#' @export
+gsub_files = function(files, ...) {
+  for (f in files) gsub_file(f, ...)
+}
+
+#' @rdname gsub_file
+#' @export
+gsub_dir = function(dir = '.', ...) {
+  gsub_files(list.files(dir, full.names = TRUE), ...)
+}
+
+#' @rdname gsub_file
+#' @export
+gsub_ext = function(ext, ..., dir = '.') {
+  files = list.files(dir, full.names = TRUE)
+  gsub_files(files[file_ext(files) == ext], ...)
+}
