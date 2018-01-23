@@ -13,7 +13,7 @@ pkg_attach(..., install = FALSE)
 
 pkg_load(..., error = TRUE, install = FALSE)
 
-loadable(pkg, strict = TRUE)
+loadable(pkg, strict = TRUE, new_session = FALSE)
 
 pkg_attach2(...)
 
@@ -36,6 +36,9 @@ a package is loadable; otherwise only check if the package is in
 \code{\link{.packages}(TRUE)} (this does not really load the package, so it
 is less rigorous but on the other hand, it can keep the current R session
 clean).}
+
+\item{new_session}{Whether to test if a package is loadable in a new R
+session. Note that \code{new_session = TRUE} implies \code{strict = TRUE}.}
 }
 \value{
 \code{pkg_attach()} returns \code{NULL} invisibly. \code{pkg_load()}
