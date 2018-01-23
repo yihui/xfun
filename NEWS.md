@@ -1,3 +1,9 @@
+# CHANGES IN xfun VERSION 0.2 (unreleased)
+
+## NEW FEATURES
+
+- Added a `new_session` argument to `loadable()`.
+
 # CHANGES IN xfun VERSION 0.1
 
 ## NEW FEATURES

@@ -57,10 +57,16 @@ pkg_load = function(..., error = TRUE, install = FALSE) {
 #'   \code{\link{.packages}(TRUE)} (this does not really load the package, so it
 #'   is less rigorous but on the other hand, it can keep the current R session
 #'   clean).
+#' @param new_session Whether to test if a package is loadable in a new R
+#'   session. Note that \code{new_session = TRUE} implies \code{strict = TRUE}.
 #' @rdname pkg_attach
 #' @export
-loadable = function(pkg, strict = TRUE) {
-  if (strict) requireNamespace(pkg, quietly = TRUE) else pkg %in% .packages(TRUE)
+loadable = function(pkg, strict = TRUE, new_session = FALSE) {
+  if (new_session) {
+    Rscript(c('-e', shQuote(sprintf('library("%s")', pkg))), stdout = FALSE, stderr = FALSE) == 0
+  } else {
+    if (strict) requireNamespace(pkg, quietly = TRUE) else pkg %in% .packages(TRUE)
+  }
 }
 
 #' @rdname pkg_attach
