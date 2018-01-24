@@ -211,7 +211,9 @@ rev_check = function(
   } else {
     res = check_deps(pkg, db)
     message('Installing dependencies of reverse dependencies')
-    for (i in res$install) if (!loadable(i, new_session = TRUE)) install.packages(i)
+    print(system.time(
+      plapply(res$install, function(p) if (!loadable(p)) install.packages(p))
+    ))
     res$check
   }
 
@@ -232,7 +234,7 @@ rev_check = function(
   message('Checking ', n, ' packages: ', paste(pkgs, collapse = ' '))
 
   err = sprintf('(%s)$', paste(c('WARNING', 'ERROR', if (note) 'NOTE'), collapse = '|'))
-  parallel::mclapply(pkgs, function(p) {
+  plapply(pkgs, function(p) {
     message('Checking ', p)
     t0 = Sys.time()
 
@@ -268,7 +270,7 @@ rev_check = function(
     out = readLines(file.path(d, '00check.log'))
     if (length(grep(err, out)) == 0) unlink(d, recursive = TRUE)
     timing()
-  }, mc.cores = parallel::detectCores())
+  })
   invisible()
 }
 
@@ -283,4 +285,9 @@ check_deps = function(x, db = available.packages()) {
   # and for those dependencies, I have to install the default dependencies
   x3 = dep(x2, db, recursive = TRUE)
   list(check = x1, install = unique(c(x1, x2, x3)))
+}
+
+# mclapply() with a different default for mc.cores
+plapply = function(X, FUN, ...) {
+  parallel::mclapply(X, FUN, ..., mc.cores = getOption('mc.cores', parallel::detectCores()))
 }
