@@ -6,6 +6,8 @@
 
 - Added new functions `gsub_file()`, `gsub_files()`, `gsub_dir()`, and `gsub_ext()` to replace strings in files.
 
+- Added new functions `Rscript` and `Rcmd` as wrappers of `system2('Rscript')` and `system2('R', 'CMD')`, respectively.
+
 # CHANGES IN xfun VERSION 0.1
 
 ## NEW FEATURES
