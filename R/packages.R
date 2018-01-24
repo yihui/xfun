@@ -205,6 +205,7 @@ rev_check = function(
     gsub('.Rcheck$', '', dirs)
   } else {
     res = check_deps(pkg, db)
+    message('Installing dependencies of reverse dependencies')
     for (i in res$install) if (!loadable(i, new_session = TRUE)) install.packages(i)
     res$check
   }
