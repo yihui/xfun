@@ -249,8 +249,8 @@ rev_check = function(
       n2 = length(setdiff(pkgs, names(info)))  # remaining packages
       t2 = Sys.time() + n2 * mean(info, na.rm = TRUE)
       message(
-        'Packages remaining: ', n2, '/', n, '; Expect to finish at: ', t2,
-        ' (', format(difftime(t2, t1)), ')'
+        'Packages remaining: ', n2, '/', n, '; Expect to finish at ', t2,
+        ' (', format(round(difftime(t2, t1))), ')'
       )
     }
 
