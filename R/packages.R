@@ -243,7 +243,7 @@ rev_check = function(
       t2 = Sys.time() + n2 * mean(info, na.rm = TRUE)
       message(
         'Packages remaining: ', n2, '/', n, '; Expect to finish at: ', t2,
-        '(', format(difftime(t2, t1)), ')'
+        ' (', format(difftime(t2, t1)), ')'
       )
     }
 
