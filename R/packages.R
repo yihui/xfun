@@ -99,7 +99,7 @@ install_dir = function(src, build = TRUE, build_opts = NULL, install_opts = NULL
     Rcmd(c('build', build_opts, shQuote(src)))
     sprintf('%s_%s.tar.gz', pv[1, 1], pv[1, 2])
   } else src
-  res = Rcmd(c('CMD', 'INSTALL', install_opts, pkg))
+  res = Rcmd(c('INSTALL', install_opts, pkg))
   if (res != 0) stop('Failed to install the package ', pkg)
   invisible(res)
 }
