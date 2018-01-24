@@ -8,6 +8,8 @@
 
 - Added new functions `Rscript` and `Rcmd` as wrappers of `system2('Rscript')` and `system2('R', 'CMD')`, respectively.
 
+- Added a function `install_dir()` to install a source package from a directory.
+
 # CHANGES IN xfun VERSION 0.1
 
 ## NEW FEATURES

@@ -76,3 +76,30 @@ pkg_attach2 = function(...) pkg_attach(..., install = TRUE)
 #' @rdname pkg_attach
 #' @export
 pkg_load2 = function(...) pkg_load(..., install = TRUE)
+
+
+#' Install a source package from a directory
+#'
+#' Run \command{R CMD build} to build a tarball from a source directory, and run
+#' \command{R CMD INSTALL} to install it.
+#' @param src The package source directory.
+#' @param build Whether to build a tarball from the source directory. If
+#'   \code{FALSE}, run \command{R CMD INSTALL} on the directory directly (note
+#'   that vignettes will not be automatically built).
+#' @param build_opts The options for \command{R CMD build}.
+#' @param install_opts The options for \command{R CMD INSTALL}
+#' @export
+#' @return Invisible status from \command{R CMD INSTALL}.
+install_dir = function(src, build = TRUE, build_opts = NULL, install_opts = NULL) {
+  desc = file.path(src, 'DESCRIPTION')
+  pv = read.dcf(desc, fields = c('Package', 'Version'))
+  # delete existing tarballs
+  unlink(sprintf('%s_*.tar.gz', pv[1, 1]))
+  pkg = if (build) {
+    Rcmd(c('build', build_opts, shQuote(src)))
+    sprintf('%s_%s.tar.gz', pv[1, 1], pv[1, 2])
+  } else src
+  res = Rcmd(c('CMD', 'INSTALL', install_opts, pkg))
+  if (res != 0) stop('Failed to install the package ', pkg)
+  invisible(res)
+}
