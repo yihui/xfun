@@ -259,7 +259,7 @@ rev_check = function(
     # remove other versions of the package tarball
     unlink(setdiff(list.files('.', sprintf('^%s_.+.tar.gz', p)), z))
     if (!file.exists(z)) try(download.file(
-      sprintf('https://cran.rstudio.com/src/contrib/%s', z), z, mode = 'wb'
+      paste(db[p, 'Repository'], z, sep = '/'), z, mode = 'wb'
     ))
     if (!file.exists(z)) {
       timing(TRUE)
