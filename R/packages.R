@@ -87,7 +87,7 @@ pkg_load2 = function(...) pkg_load(..., install = TRUE)
 #'   \code{FALSE}, run \command{R CMD INSTALL} on the directory directly (note
 #'   that vignettes will not be automatically built).
 #' @param build_opts The options for \command{R CMD build}.
-#' @param install_opts The options for \command{R CMD INSTALL}
+#' @param install_opts The options for \command{R CMD INSTALL}.
 #' @export
 #' @return Invisible status from \command{R CMD INSTALL}.
 install_dir = function(src, build = TRUE, build_opts = NULL, install_opts = NULL) {
