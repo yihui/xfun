@@ -191,10 +191,15 @@ rev_check = function(
   )
 
   # rJava breaks occasionally (after I update Java or R)
-  system.time(Rcmd('javareconf', stdout = FALSE))
+  message('Running R CMD javareconf...')
+  Rcmd('javareconf', stdout = FALSE)
 
-  if (update) update.packages(ask = FALSE, checkBuilt = TRUE)
+  if (update) {
+    message('Updating all R packages...')
+    update.packages(ask = FALSE, checkBuilt = TRUE)
+  }
 
+  message('Installing the source package ', src)
   install_dir(path.expand(src))
 
   db = available.packages(type = 'source')
