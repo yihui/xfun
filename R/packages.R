@@ -151,6 +151,10 @@ install_dir = function(src, build = TRUE, build_opts = NULL, install_opts = NULL
 #' dependencies will be installed to \file{~/R-tmp}, and \pkg{knitr} will be
 #' installed from \file{~/Dropbox/repo/kintr}.
 #' @param pkg The package name.
+#' @param which Which types of reverse dependencies to check. See
+#'   \code{tools::\link[tools]{package_dependencies}()} for possible values. The
+#'   special value \code{'hard'} means the hard dependencies, i.e.,
+#'   \code{c('Depends', 'Imports', 'LinkingTo')}.
 #' @param recheck Whether to only check the failed packages from last time. By
 #'   default, if there are any \file{*.Rcheck} directories, \code{recheck} will
 #'   be automatically set to \code{TRUE} if missing.
@@ -183,7 +187,7 @@ install_dir = function(src, build = TRUE, build_opts = NULL, install_opts = NULL
 #'   dependencies.
 #' @export
 rev_check = function(
-  pkg, recheck = FALSE, ignore = NULL, note = TRUE, update = TRUE,
+  pkg, which = 'all', recheck = FALSE, ignore = NULL, note = TRUE, update = TRUE,
   src = file.path(src_dir, pkg), src_dir = getOption('xfun.rev_check.src_dir')
 ) {
   if (length(src) != 1 || !dir.exists(src)) stop(
@@ -277,12 +281,13 @@ rev_check = function(
   invisible()
 }
 
-check_deps = function(x, db = available.packages()) {
+check_deps = function(x, db = available.packages(), which = 'all') {
+  if (identical(which, 'hard')) which = c('Depends', 'Imports', 'LinkingTo')
   dep = function(x, ...) {
     if (length(x)) unique(unlist(tools::package_dependencies(x, ...)))
   }
   # packages that reverse depend on me
-  x1 = dep(x, db, 'all', reverse = TRUE)
+  x1 = dep(x, db, which, reverse = TRUE)
   # to R CMD check x1, I have to install all their dependencies
   x2 = dep(x1, db, 'all')
   # and for those dependencies, I have to install the default dependencies

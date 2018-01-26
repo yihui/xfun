@@ -7,6 +7,7 @@ Authors@R: c(
   person()
   )
 Description: Miscellaneous functions commonly used in other packages maintained by 'Yihui Xie'.
+Imports: tools
 Suggests: testit, parallel
 License: MIT + file LICENSE
 URL: https://github.com/yihui/xfun
