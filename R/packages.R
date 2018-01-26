@@ -212,7 +212,10 @@ rev_check = function(
     res = check_deps(pkg, db)
     message('Installing dependencies of reverse dependencies')
     print(system.time(
-      plapply(res$install, function(p) if (!loadable(p)) install.packages(p))
+      plapply(res$install, function(p) if (!loadable(p)) {
+        install = getOption('xfun.install.packages', install.packages)
+        install(p)
+      })
     ))
     res$check
   }
