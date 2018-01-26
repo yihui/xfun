@@ -4,11 +4,17 @@
 \alias{rev_check}
 \title{Run \command{R CMD check} on the reverse dependencies of a package}
 \usage{
-rev_check(pkg, recheck = FALSE, ignore = NULL, note = TRUE, update = TRUE, 
-    src = file.path(src_dir, pkg), src_dir = getOption("xfun.rev_check.src_dir"))
+rev_check(pkg, which = "all", recheck = FALSE, ignore = NULL, 
+    note = TRUE, update = TRUE, src = file.path(src_dir, pkg), 
+    src_dir = getOption("xfun.rev_check.src_dir"))
 }
 \arguments{
 \item{pkg}{The package name.}
+
+\item{which}{Which types of reverse dependencies to check. See
+\code{tools::\link[tools]{package_dependencies}()} for possible values. The
+special value \code{'hard'} means the hard dependencies, i.e.,
+\code{c('Depends', 'Imports', 'LinkingTo')}.}
 
 \item{recheck}{Whether to only check the failed packages from last time. By
 default, if there are any \file{*.Rcheck} directories, \code{recheck} will
