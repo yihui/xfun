@@ -213,7 +213,7 @@ rev_check = function(
   pkgs = if (recheck) {
     gsub('.Rcheck$', '', dirs)
   } else {
-    res = check_deps(pkg, db)
+    res = check_deps(pkg, db, which)
     message('Installing dependencies of reverse dependencies')
     print(system.time(
       plapply(res$install, function(p) if (!loadable(p)) {
