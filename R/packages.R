@@ -215,12 +215,10 @@ rev_check = function(
   } else {
     res = check_deps(pkg, db, which)
     message('Installing dependencies of reverse dependencies')
-    print(system.time(
-      plapply(res$install, function(p) if (!loadable(p)) {
-        install = getOption('xfun.install.packages', install.packages)
-        install(p)
-      })
-    ))
+    res$install = setdiff(res$install, ignore_deps())
+    print(system.time({
+      pkg_install(unlist(plapply(res$install, function(p) if (!loadable(p)) p)))
+    }))
     res$check
   }
 
@@ -240,7 +238,6 @@ rev_check = function(
 
   message('Checking ', n, ' packages: ', paste(pkgs, collapse = ' '))
 
-  err = sprintf('(%s)$', paste(c('WARNING', 'ERROR', if (note) 'NOTE'), collapse = '|'))
   plapply(pkgs, function(p) {
     message('Checking ', p)
     t0 = Sys.time()
@@ -274,11 +271,30 @@ rev_check = function(
     }
 
     Rcmd(c('check', '--no-manual', shQuote(z)), stdout = FALSE)
-    out = readLines(file.path(d, '00check.log'))
-    if (length(grep(err, out)) == 0) unlink(d, recursive = TRUE)
+    if (!clean_Rcheck(d, note = note)) {
+      if (!dir.exists(d)) {dir.create(d); return(timing())}
+      in_dir(d, {
+        clean_log()
+        # so that I can easily preview it
+        file.exists('00install.out') && file.rename('00install.out', '00install.log')
+        cran_check_page(p)
+      })
+    }
     timing()
   })
+  if (note) fix_missing_suggests()
   invisible()
+}
+
+# remove the OK lines in the check log
+clean_log = function() {
+  if (!file.exists(l <- '00check.log')) return()
+  x = grep('^[*].+OK$', readLines(l), invert = TRUE, value = TRUE)
+  writeLines(x, l)
+}
+
+error_pattern = function(note = TRUE) {
+  sprintf('(%s)$', paste(c('WARNING', 'ERROR', if (note) 'NOTE'), collapse = '|'))
 }
 
 check_deps = function(x, db = available.packages(), which = 'all') {
@@ -298,4 +314,111 @@ check_deps = function(x, db = available.packages(), which = 'all') {
 # mclapply() with a different default for mc.cores
 plapply = function(X, FUN, ...) {
   parallel::mclapply(X, FUN, ..., mc.cores = getOption('mc.cores', parallel::detectCores()))
+}
+
+pkg_install = function(pkgs) {
+  if (length(pkgs) == 0) return()
+  install = getOption('xfun.install.packages', install.packages)
+  if (length(pkgs) > 1)
+    message('Installing ', length(pkgs), ' packages: ', paste(pkgs, collapse = ' '))
+  install(pkgs)
+}
+
+clean_Rcheck = function(dir, log = readLines(file.path(dir, '00check.log')), note = TRUE) {
+  if (length(grep(error_pattern(note), log)) == 0) unlink(dir, recursive = TRUE)
+  !dir.exists(dir)
+}
+
+ignore_deps = function() {
+  if (file.exists('00ignore_deps')) scan('00ignore_deps', 'character')
+}
+
+fix_missing_suggests = function(ignore = NULL) {
+  if (is.null(ignore)) ignore = ignore_deps()
+  dirs = list.files('.', '[.]Rcheck$')
+  r = '^Packages? suggested but not available for checking: '
+  pkgs = character()
+  for (d in dirs) {
+    if (!file.exists(l <- file.path(d, '00check.log'))) next
+    x = readLines(l)
+    if (length(i <- grep(r, x)) == 0) next
+    if (unnecessary_suggests(d, x, i)) next
+    ps = gsub('[^a-zA-Z0-9.]', ' ', gsub(r, '', x[i]))
+    ps = setdiff(unlist(strsplit(ps, '\\s+')), ignore)
+    for (p in ps[ps != '']) {
+      if (!loadable(p, new_session = TRUE)) pkg_install(p)
+      # failed to install
+      if (!loadable(p, new_session = TRUE)) pkgs = c(pkgs, p)
+    }
+  }
+  if (length(pkgs)) {
+    message('Failed to install packages', paste(pkgs, collapse = ' '))
+  }
+}
+
+# check if the missing Suggests are really necessary; if the check log is okay
+# without these Suggests (i.e. Suggests is the only problem), delete the check
+# dir to mark R CMD check as successful
+unnecessary_suggests = function(d, x, i) {
+  if (length(i) != 1) {
+    warning(
+      'Expecting only one NOTE about missing Suggests but got multiple:\n',
+      paste(x[i], collapse = '\n')
+    )
+    return(FALSE)
+  }
+  i2 = grep('^Status:', x)
+  if (length(i2) == 0) return(FALSE)  # R CMD check not complete
+  x2 = x[-c(i, i - 1, i2)]
+  clean_Rcheck(d, x2)
+  !dir.exists(d)
+}
+
+cran_check_page = function(pkg, con = '00check-cran-summary.log') {
+  u = sprintf('https://cran.rstudio.com/web/checks/check_results_%s.html', pkg)
+  x = readLines(u)
+  if (length(i <- grep('Check Details', x, ignore.case = TRUE)) == 0) return()
+  x = x[i[1]:length(x)]
+  x = gsub('<[^>]+>', '', x)
+  x = gsub('&nbsp;', ' ', x)
+  x = gsub('&gt;', '>', x)
+  x = gsub('\\s+', ' ', x)
+  x = paste(trimws(x), collapse = '\n')
+  x = gsub('\n\n+', '\n\n', x)
+  writeLines(x, con)
+}
+
+cran_check_pages = function() {
+  dirs = list.files('.', '[.]Rcheck$')
+  for (d in dirs) {
+    in_dir(d, cran_check_page(gsub('[.]Rcheck$', '', d)))
+  }
+}
+
+error_txt = '00cran-errors.txt'
+
+save_cran_summary = function() {
+  u = 'https://cran.rstudio.com/web/checks/check_summary_by_package.html'
+  h = readLines(u, n = 30)
+  # do not download the full page if the update time has not changed
+  if (length(i <- grep('Last updated on ', h)) == 1 && file.exists(error_txt)) {
+    if (identical(readLines(error_txt, n = 1), h[i])) return()
+  }
+  x = readLines(u)
+  x = gsub('<[^>]+>', '', x)
+  x = gsub('&[^;]+;', '', x)
+  x = gsub('\\s+', ' ', x)
+  x = grep('^[a-zA-Z0-9.]+ [0-9.-]+', trimws(x), value = TRUE)
+  writeLines(c(if (length(i) == 1) h[i], x), error_txt)
+}
+
+cran_check_summary = function() {
+  if (!file.exists(error_txt)) return()
+  x = readLines(error_txt)
+  if (length(x) > 0) x = x[-1] else return()
+  r = '^([a-zA-Z0-9.]+)(.+)'
+  p = gsub(r, '\\1', x)  # package names
+  s = gsub(r, '\\2', x)  # summary
+  f = function(type) p[grep(type, s)]
+  list(error = f('ERROR'), warning = f('WARNING'), note = f('NOTE'))
 }
