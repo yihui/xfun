@@ -408,7 +408,7 @@ cran_check_page = function(pkg, con = '00check-cran.log') {
 cran_check_pages = function() {
   dirs = list.files('.', '[.]Rcheck$')
   for (d in dirs) {
-    in_dir(d, cran_check_page(gsub('[.]Rcheck$', '', d)))
+    if (dir.exists(d)) in_dir(d, cran_check_page(gsub('[.]Rcheck$', '', d)))
   }
 }
 
