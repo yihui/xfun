@@ -440,7 +440,7 @@ cran_check_summary = function() {
   list(error = f('ERROR'), warning = f('WARNING'), note = f('NOTE'))
 }
 
-# kill a R CMD check process if it has been running for more then 20 minutes
+# kill a R CMD check process if it has been running for more then 60 minutes
 kill_long_processes = function(etime = 60 * 60) {
   while (TRUE) {
     x = system('ps -ax -o pid,etime,command | grep "Rcmd check --no-manual"', intern = TRUE)
@@ -454,7 +454,7 @@ kill_long_processes = function(etime = 60 * 60) {
       message('Killing processes: ', paste(pids, collapse = ' '))
       system2('kill', pids)
     }
-    Sys.sleep(60)
+    Sys.sleep(300)
   }
 }
 
