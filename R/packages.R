@@ -312,9 +312,12 @@ check_deps = function(x, db = available.packages(), which = 'all') {
   list(check = x1, install = unique(c(x1, x2, x3)))
 }
 
-# mclapply() with a different default for mc.cores
+# mclapply() with a different default for mc.cores and disable prescheduling
 plapply = function(X, FUN, ...) {
-  parallel::mclapply(X, FUN, ..., mc.cores = getOption('mc.cores', parallel::detectCores()))
+  parallel::mclapply(
+    X, FUN, ..., mc.cores = getOption('mc.cores', parallel::detectCores()),
+    mc.preschedule = FALSE
+  )
 }
 
 pkg_install = function(pkgs) {
