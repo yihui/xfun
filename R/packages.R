@@ -238,7 +238,13 @@ rev_check = function(
 
   message('Checking ', n, ' packages: ', paste(pkgs, collapse = ' '))
 
-  plapply(pkgs, function(p) {
+  res = plapply(pkgs, function(p) {
+    d = sprintf('%s.Rcheck', p)
+    if (!p %in% rownames(db)) {
+      message('Checking ', p, ' (aborted since it is no longer on CRAN')
+      unlink(d, recursive = TRUE)
+      return()
+    }
     message('Checking ', p)
     t0 = Sys.time()
 
@@ -259,7 +265,6 @@ rev_check = function(
     }
 
     z = sprintf('%s_%s.tar.gz', p, db[p, 'Version'])
-    d = sprintf('%s.Rcheck', p)
     # remove other versions of the package tarball
     unlink(setdiff(list.files('.', sprintf('^%s_.+.tar.gz', p)), z))
     if (!file.exists(z)) try(download.file(
@@ -281,9 +286,11 @@ rev_check = function(
       })
     }
     timing()
+    NULL
   })
-  invisible()
   if (note) fix_missing_deps()
+  res = Filter(function(x) !is.null(x), res)
+  if (length(res)) res
 }
 
 # remove the OK lines in the check log
