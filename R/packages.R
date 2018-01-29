@@ -297,17 +297,18 @@ error_pattern = function(note = TRUE) {
   sprintf('(%s)$', paste(c('WARNING', 'ERROR', if (note) 'NOTE'), collapse = '|'))
 }
 
+pkg_dep = function(x, ...) {
+  if (length(x)) unique(unlist(tools::package_dependencies(x, ...)))
+}
+
 check_deps = function(x, db = available.packages(), which = 'all') {
   if (identical(which, 'hard')) which = c('Depends', 'Imports', 'LinkingTo')
-  dep = function(x, ...) {
-    if (length(x)) unique(unlist(tools::package_dependencies(x, ...)))
-  }
   # packages that reverse depend on me
-  x1 = dep(x, db, which, reverse = TRUE)
+  x1 = pkg_dep(x, db, which, reverse = TRUE)
   # to R CMD check x1, I have to install all their dependencies
-  x2 = dep(x1, db, 'all')
+  x2 = pkg_dep(x1, db, 'all')
   # and for those dependencies, I have to install the default dependencies
-  x3 = dep(x2, db, recursive = TRUE)
+  x3 = pkg_dep(x2, db, recursive = TRUE)
   list(check = x1, install = unique(c(x1, x2, x3)))
 }
 
