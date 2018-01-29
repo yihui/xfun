@@ -390,7 +390,7 @@ unnecessary_suggests = function(d, x, i) {
   !dir.exists(d)
 }
 
-cran_check_page = function(pkg, con = '00check-cran-summary.log') {
+cran_check_page = function(pkg, con = '00check-cran.log') {
   u = sprintf('https://cran.rstudio.com/web/checks/check_results_%s.html', pkg)
   x = readLines(u)
   if (length(i <- grep('Check Details', x, ignore.case = TRUE)) == 0) return()
