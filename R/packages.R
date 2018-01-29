@@ -398,6 +398,7 @@ cran_check_page = function(pkg, con = '00check-cran.log') {
   x = gsub('<[^>]+>', '', x)
   x = gsub('&nbsp;', ' ', x)
   x = gsub('&gt;', '>', x)
+  x = gsub('&lt;', '<', x)
   x = gsub('\\s+', ' ', x)
   x = paste(trimws(x), collapse = '\n')
   x = gsub('\n\n+', '\n\n', x)
