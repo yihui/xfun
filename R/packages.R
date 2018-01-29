@@ -439,3 +439,32 @@ cran_check_summary = function() {
   f = function(type) p[grep(type, s)]
   list(error = f('ERROR'), warning = f('WARNING'), note = f('NOTE'))
 }
+
+# kill a R CMD check process if it has been running for more then 20 minutes
+kill_long_processes = function(etime = 60 * 60) {
+  while (TRUE) {
+    x = system('ps -ax -o pid,etime,command | grep "Rcmd check --no-manual"', intern = TRUE)
+    x = grep('_[0-9.-]+[.]tar[.]gz$', trimws(x), value = TRUE)
+    pids = unlist(lapply(strsplit(x, '\\s+'), function(z) {
+      pid = z[1]; time = as.numeric(unlist(strsplit(z[2], '-|:')))
+      time = sum(tail(c(rep(0, 4), time), 4) * c(24 * 3600, 3600, 60, 1))
+      if (time > etime) pid
+    }))
+    if (length(pids)) {
+      message('Killing processes: ', paste(pids, collapse = ' '))
+      system2('kill', pids)
+    }
+    Sys.sleep(60)
+  }
+}
+
+install_missing_latex = function() {
+  dirs = list.files('.', '[.]Rcheck$')
+  pkgs = NULL
+  for (d in dirs) {
+    if (dir.exists(d)) pkgs = c(pkgs, in_dir(
+      d, tinytex::parse_packages('00check.log', quiet = c(TRUE, FALSE, FALSE))
+    ))
+  }
+  tinytex::tlmgr_install(unique(pkgs))
+}
