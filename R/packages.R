@@ -282,8 +282,8 @@ rev_check = function(
     }
     timing()
   })
-  if (note) fix_missing_suggests()
   invisible()
+  if (note) fix_missing_deps()
 }
 
 # remove the OK lines in the check log
@@ -337,17 +337,21 @@ ignore_deps = function() {
   if (file.exists('00ignore_deps')) scan('00ignore_deps', 'character')
 }
 
-fix_missing_suggests = function(ignore = NULL) {
+fix_missing_deps = function(ignore = NULL) {
   if (is.null(ignore)) ignore = ignore_deps()
   dirs = list.files('.', '[.]Rcheck$')
-  r = '^Packages? suggested but not available for checking: '
+  r = '^Packages? (suggested|required|which this enhances) but not available for checking:'
   pkgs = character()
   for (d in dirs) {
     if (!file.exists(l <- file.path(d, '00check.log'))) next
     x = readLines(l)
     if (length(i <- grep(r, x)) == 0) next
     if (unnecessary_suggests(d, x, i)) next
-    ps = gsub('[^a-zA-Z0-9.]', ' ', gsub(r, '', x[i]))
+    ps = trimws(gsub(r, '', x[i])); k = i
+    if (ps == '') for (k in (i + 1):length(x)) {
+      if (grepl('^\\s', x[k])) ps = paste(ps, x[k]) else break
+    }
+    ps = gsub('[^a-zA-Z0-9.]', ' ', ps)
     ps = setdiff(unlist(strsplit(ps, '\\s+')), ignore)
     for (p in ps[ps != '']) {
       if (!loadable(p, new_session = TRUE)) pkg_install(p)
@@ -366,13 +370,14 @@ fix_missing_suggests = function(ignore = NULL) {
 unnecessary_suggests = function(d, x, i) {
   if (length(i) != 1) {
     warning(
-      'Expecting only one NOTE about missing Suggests but got multiple:\n',
+      'Expecting only one NOTE (ERROR) about missing dependencies but got multiple:\n',
       paste(x[i], collapse = '\n')
     )
     return(FALSE)
   }
   i2 = grep('^Status:', x)
-  if (length(i2) == 0) return(FALSE)  # R CMD check not complete
+  # R CMD check failed or not complete yet
+  if (length(grep('(WARNING|ERROR)$', x)) || length(i2) == 0) return(FALSE)
   x2 = x[-c(i, i - 1, i2)]
   clean_Rcheck(d, x2)
   !dir.exists(d)
