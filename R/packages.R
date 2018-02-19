@@ -297,7 +297,7 @@ rev_check = function(
 clean_log = function() {
   if (!file.exists(l <- '00check.log')) return()
   x = grep('^[*].+OK$', readLines(l), invert = TRUE, value = TRUE)
-  writeLines(x, l)
+  writeLines(tail(x, -2), l)  # remove the first 2 lines (log dir name and R version)
 }
 
 error_pattern = function(note = TRUE) {
