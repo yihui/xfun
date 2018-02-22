@@ -40,6 +40,18 @@ invalid_utf8 = function(x) {
   which(is.na(iconv(x, 'UTF-8', 'UTF-8')))
 }
 
+#' Read a text file and concatenate the lines by \code{'\n'}
+#'
+#' The source code of this function should be self-explanatory.
+#' @param file Path to a text file (should be encoded in UTF-8).
+#' @return A character string of text lines concatenated by \code{'\n'}.
+#' @export
+#' @examples
+#' xfun::file_string(system.file('DESCRIPTION', package = 'xfun'))
+file_string = function(file) {
+  paste(read_utf8(file), collapse = '\n')
+}
+
 #' Search and replace strings in files
 #'
 #' These functions provide the "file" version of \code{\link{gsub}()}, i.e.,
