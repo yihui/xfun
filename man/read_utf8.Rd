@@ -5,12 +5,15 @@
 \alias{write_utf8}
 \title{Read / write files encoded in UTF-8}
 \usage{
-read_utf8(con)
+read_utf8(con, error = FALSE)
 
 write_utf8(text, con, ...)
 }
 \arguments{
 \item{con}{A connection or a file path.}
+
+\item{error}{Whether to signal an error when non-UTF8 characters are detected
+(if \code{FALSE}, only a warning message is issued).}
 
 \item{text}{A character vector (will be converted to UTF-8 via
 \code{\link{enc2utf8}()}).}

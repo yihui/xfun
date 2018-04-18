@@ -10,6 +10,8 @@
 
 - Added a function `install_dir()` to install a source package from a directory.
 
+- Added an `error` argument to `read_utf8()` to signal an error if the file is not encoded in UTF-8.
+
 # CHANGES IN xfun VERSION 0.1
 
 ## NEW FEATURES
