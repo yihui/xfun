@@ -11,9 +11,9 @@ gsub_file(file, ...)
 
 gsub_files(files, ...)
 
-gsub_dir(dir = ".", ...)
+gsub_dir(..., dir = ".", recursive = TRUE, ext = NULL, mimetype = ".*")
 
-gsub_ext(ext, ..., dir = ".")
+gsub_ext(ext, ..., dir = ".", recursive = TRUE)
 }
 \arguments{
 \item{file}{Path of a single file.}
@@ -26,7 +26,13 @@ of \code{gsub()} is the content of the file.}
 \item{dir}{Path to a directory (all files under this directory will be
 replaced).}
 
-\item{ext}{A filename extension (without the period).}
+\item{recursive}{Whether to find files recursively under a directory.}
+
+\item{ext}{A vector of filename extensions (without the leading periods).}
+
+\item{mimetype}{A regular expression to filter files based on their MIME
+types, e.g., \code{'^text/'} for plain text files. This requires the
+\pkg{mime} package.}
 }
 \description{
 These functions provide the "file" version of \code{\link{gsub}()}, i.e.,

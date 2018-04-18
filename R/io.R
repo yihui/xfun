@@ -64,7 +64,11 @@ file_string = function(file) {
 #' @param files A vector of file paths.
 #' @param dir Path to a directory (all files under this directory will be
 #'   replaced).
-#' @param ext A filename extension (without the period).
+#' @param recursive Whether to find files recursively under a directory.
+#' @param ext A vector of filename extensions (without the leading periods).
+#' @param mimetype A regular expression to filter files based on their MIME
+#'   types, e.g., \code{'^text/'} for plain text files. This requires the
+#'   \pkg{mime} package.
 #' @note These functions perform in-place replacement, i.e., the files will be
 #'   overwritten. Make sure you backup your files in advance, or use version
 #'   control!
@@ -75,8 +79,8 @@ file_string = function(file) {
 #' gsub_file(f, 'world', 'woRld', fixed = TRUE)
 #' readLines(f)
 gsub_file = function(file, ...) {
-  x = gsub(x = read_utf8(file), ...)
-  write_utf8(x, file)
+  x2 = gsub(x = x1 <- read_utf8(file, error = TRUE), ...)
+  if (!identical(x1, x2)) write_utf8(x2, file)
 }
 
 #' @rdname gsub_file
@@ -87,13 +91,15 @@ gsub_files = function(files, ...) {
 
 #' @rdname gsub_file
 #' @export
-gsub_dir = function(dir = '.', ...) {
-  gsub_files(list.files(dir, full.names = TRUE), ...)
+gsub_dir = function(..., dir = '.', recursive = TRUE, ext = NULL, mimetype = '.*') {
+  files = list.files(dir, full.names = TRUE, recursive = recursive)
+  if (length(ext)) files = files[file_ext(files) %in% ext]
+  if (mimetype != '.*') files = files[grep(mimetype, mime::guess_type(files))]
+  gsub_files(files, ...)
 }
 
 #' @rdname gsub_file
 #' @export
-gsub_ext = function(ext, ..., dir = '.') {
-  files = list.files(dir, full.names = TRUE)
-  gsub_files(files[file_ext(files) == ext], ...)
+gsub_ext = function(ext, ..., dir = '.', recursive = TRUE) {
+  gsub_dir(..., dir = dir, recursive = recursive, ext = ext)
 }
