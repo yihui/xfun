@@ -89,8 +89,8 @@ gsub_files = function(files, ...) {
   for (f in files) gsub_file(f, ...)
 }
 
-#' @rw_error Whether to signal an error if a certain file cannot be read or
-#'   written. If \code{FALSE}, such files will be ignored.
+#' @param rw_error Whether to signal an error if a certain file cannot be read
+#'   or written. If \code{FALSE}, such files will be ignored.
 #' @rdname gsub_file
 #' @export
 gsub_dir = function(

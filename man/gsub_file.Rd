@@ -33,6 +33,9 @@ replaced).}
 \item{mimetype}{A regular expression to filter files based on their MIME
 types, e.g., \code{'^text/'} for plain text files. This requires the
 \pkg{mime} package.}
+
+\item{rw_error}{Whether to signal an error if a certain file cannot be read
+or written. If \code{FALSE}, such files will be ignored.}
 }
 \description{
 These functions provide the "file" version of \code{\link{gsub}()}, i.e.,
