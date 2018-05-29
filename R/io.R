@@ -89,12 +89,17 @@ gsub_files = function(files, ...) {
   for (f in files) gsub_file(f, ...)
 }
 
+#' @rw_error Whether to signal an error if a certain file cannot be read or
+#'   written. If \code{FALSE}, such files will be ignored.
 #' @rdname gsub_file
 #' @export
-gsub_dir = function(..., dir = '.', recursive = TRUE, ext = NULL, mimetype = '.*') {
+gsub_dir = function(
+  ..., dir = '.', recursive = TRUE, ext = NULL, mimetype = '.*', rw_error = TRUE
+) {
   files = list.files(dir, full.names = TRUE, recursive = recursive)
   if (length(ext)) files = files[file_ext(files) %in% ext]
   if (mimetype != '.*') files = files[grep(mimetype, mime::guess_type(files))]
+  if (!rw_error) files = files[file.access(files, 2) == 0 & file.access(files, 4) == 0]
   gsub_files(files, ...)
 }
 

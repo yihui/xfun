@@ -11,7 +11,7 @@ gsub_file(file, ...)
 
 gsub_files(files, ...)
 
-gsub_dir(..., dir = ".", recursive = TRUE, ext = NULL, mimetype = ".*")
+gsub_dir(..., dir = ".", recursive = TRUE, ext = NULL, mimetype = ".*", rw_error = TRUE)
 
 gsub_ext(ext, ..., dir = ".", recursive = TRUE)
 }
