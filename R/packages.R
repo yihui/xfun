@@ -222,7 +222,7 @@ rev_check = function(
     res$check
   }
 
-  f = tempfile('check-timing', fileext = '.rds')
+  f = tempfile('check-done', fileext = '.rds')
   l = tempfile('check-lock'); on.exit(unlink(c(f, l)), add = TRUE)
   n = length(pkgs)
   if (n == 0) {
@@ -236,6 +236,7 @@ rev_check = function(
     pkgs = setdiff(pkgs, ignore)
   }
 
+  t0 = Sys.time()
   message('Checking ', n, ' packages: ', paste(pkgs, collapse = ' '))
 
   res = plapply(pkgs, function(p) {
@@ -246,18 +247,15 @@ rev_check = function(
       return()
     }
     message('Checking ', p)
-    t0 = Sys.time()
 
-    timing = function(na = FALSE) {
+    timing = function() {
       # in case two packages finish at exactly the same time
       while (file.exists(l)) Sys.sleep(.1)
       file.create(l); on.exit(unlink(l), add = TRUE)
-      info = if (file.exists(f)) readRDS(f) else numeric()
-      t1 = Sys.time()
-      info[p] = if (na) NA_real_ else as.numeric(t1 - t0)
-      saveRDS(info, f)
-      n2 = length(setdiff(pkgs, names(info)))  # remaining packages
-      t2 = Sys.time() + n2 * mean(info, na.rm = TRUE)
+      done = c(if (file.exists(f)) readRDS(f), p)
+      saveRDS(done, f)
+      n2 = length(setdiff(pkgs, done))  # remaining packages
+      t1 = Sys.time(); t2 = Sys.time() + n2 * (t1 - t0) / (n - n2)
       message(
         'Packages remaining: ', n2, '/', n, '; Expect to finish at ', t2,
         ' (', format(round(difftime(t2, t1))), ')'
@@ -271,7 +269,7 @@ rev_check = function(
       paste(db[p, 'Repository'], z, sep = '/'), z, mode = 'wb'
     ))
     if (!file.exists(z)) {
-      timing(TRUE)
+      timing()
       return(dir.create(d, showWarnings = FALSE))
     }
 
