@@ -125,10 +125,9 @@ install_dir = function(src, build = TRUE, build_opts = NULL, install_opts = NULL
 #' it will not be downloaded again (to save time and bandwidth).
 #'
 #' After a package has been checked, the associated \file{*.Rcheck} directory
-#' will be deleted if the check was successful (no warnings or errors, and
-#' optionally, no notes), which means if you see a \file{*.Rcheck} directory, it
-#' means the check failed, and you need to take a look at the log files under
-#' that directory.
+#' will be deleted if the check was successful (no warnings or errors or notes),
+#' which means if you see a \file{*.Rcheck} directory, it means the check
+#' failed, and you need to take a look at the log files under that directory.
 #'
 #' The time to finish the check is recorded for each package. As the check goes
 #' on, the total remaing time will be roughly estimated via \code{n *
@@ -166,8 +165,6 @@ install_dir = function(src, build = TRUE, build_opts = NULL, install_opts = NULL
 #' @param ignore A vector of package names to be ignored in \command{R CMD
 #'   check}. If this argument is missing and a file \file{00ignore} exists, the
 #'   file will be read as a character vector and passed to this argument.
-#' @param note Whether to treat \verb{NOTE} in the check log as failure.
-#'   \verb{WARNING} and \verb{ERROR} are always treated as failure.
 #' @param update Whether to update all packages before the check.
 #' @param src The path of the source package directory.
 #' @param src_dir The parent directory of the source package directory. This can
@@ -192,7 +189,7 @@ install_dir = function(src, build = TRUE, build_opts = NULL, install_opts = NULL
 #'   dependencies.
 #' @export
 rev_check = function(
-  pkg, which = 'all', recheck = FALSE, ignore = NULL, note = TRUE, update = TRUE,
+  pkg, which = 'all', recheck = FALSE, ignore = NULL, update = TRUE,
   src = file.path(src_dir, pkg), src_dir = getOption('xfun.rev_check.src_dir')
 ) {
   if (length(src) != 1 || !dir.exists(src)) stop(
@@ -278,8 +275,12 @@ rev_check = function(
       return(dir.create(d, showWarnings = FALSE))
     }
 
-    Rcmd(c('check', '--no-manual', shQuote(z)), stdout = FALSE)
-    if (!clean_Rcheck(d, note = note)) {
+    check_it = function(...) {
+      Rcmd(c('check', '--no-manual', shQuote(z)), stdout = FALSE, ...)
+    }
+    check_it()
+
+    if (!clean_Rcheck(d)) {
       if (!dir.exists(d)) {dir.create(d); return(timing())}
       in_dir(d, {
         clean_log()
@@ -291,7 +292,6 @@ rev_check = function(
     timing()
     NULL
   })
-  if (note) fix_missing_deps()
   res = Filter(function(x) !is.null(x), res)
   if (length(res)) res
 }
@@ -303,9 +303,6 @@ clean_log = function() {
   writeLines(tail(x, -2), l)  # remove the first 2 lines (log dir name and R version)
 }
 
-error_pattern = function(note = TRUE) {
-  sprintf('(%s)$', paste(c('WARNING', 'ERROR', if (note) 'NOTE'), collapse = '|'))
-}
 
 pkg_dep = function(x, ...) {
   if (length(x)) unique(unlist(tools::package_dependencies(x, ...)))
@@ -338,59 +335,13 @@ pkg_install = function(pkgs) {
   install(pkgs)
 }
 
-clean_Rcheck = function(dir, log = readLines(file.path(dir, '00check.log')), note = TRUE) {
-  if (length(grep(error_pattern(note), log)) == 0) unlink(dir, recursive = TRUE)
+clean_Rcheck = function(dir, log = readLines(file.path(dir, '00check.log'))) {
+  if (length(grep('(WARNING|ERROR|NOTE)$', log)) == 0) unlink(dir, recursive = TRUE)
   !dir.exists(dir)
 }
 
 ignore_deps = function() {
   if (file.exists('00ignore_deps')) scan('00ignore_deps', 'character')
-}
-
-fix_missing_deps = function(ignore = NULL) {
-  if (is.null(ignore)) ignore = ignore_deps()
-  dirs = list.files('.', '[.]Rcheck$')
-  r = '^Packages? (suggested|required|which this enhances) but not available for checking:'
-  pkgs = character()
-  for (d in dirs) {
-    if (!file.exists(l <- file.path(d, '00check.log'))) next
-    x = readLines(l)
-    if (length(i <- grep(r, x)) == 0) next
-    if (unnecessary_suggests(d, x, i)) next
-    ps = trimws(gsub(r, '', x[i])); k = i
-    if (ps == '') for (k in (i + 1):length(x)) {
-      if (grepl('^\\s', x[k])) ps = paste(ps, x[k]) else break
-    }
-    ps = gsub('[^a-zA-Z0-9.]', ' ', ps)
-    ps = setdiff(unlist(strsplit(ps, '\\s+')), ignore)
-    for (p in ps[ps != '']) {
-      if (!loadable(p, new_session = TRUE)) pkg_install(p)
-      # failed to install
-      if (!loadable(p, new_session = TRUE)) pkgs = c(pkgs, p)
-    }
-  }
-  if (length(pkgs)) {
-    message('Failed to install packages', paste(pkgs, collapse = ' '))
-  }
-}
-
-# check if the missing Suggests are really necessary; if the check log is okay
-# without these Suggests (i.e. Suggests is the only problem), delete the check
-# dir to mark R CMD check as successful
-unnecessary_suggests = function(d, x, i) {
-  if (length(i) != 1) {
-    warning(
-      'Expecting only one NOTE (ERROR) about missing dependencies but got multiple:\n',
-      paste(x[i], collapse = '\n')
-    )
-    return(FALSE)
-  }
-  i2 = grep('^Status:', x)
-  # R CMD check failed or not complete yet
-  if (length(grep('(WARNING|ERROR)$', x)) || length(i2) == 0) return(FALSE)
-  x2 = x[-c(i, i - 1, i2)]
-  clean_Rcheck(d, x2)
-  !dir.exists(d)
 }
 
 cran_check_page = function(pkg, con = '00check-cran.log') {
