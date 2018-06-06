@@ -366,34 +366,6 @@ cran_check_pages = function() {
   }
 }
 
-error_txt = '00cran-errors.txt'
-
-save_cran_summary = function() {
-  u = 'https://cran.rstudio.com/web/checks/check_summary_by_package.html'
-  h = readLines(u, n = 30)
-  # do not download the full page if the update time has not changed
-  if (length(i <- grep('Last updated on ', h)) == 1 && file.exists(error_txt)) {
-    if (identical(readLines(error_txt, n = 1), h[i])) return()
-  }
-  x = readLines(u)
-  x = gsub('<[^>]+>', '', x)
-  x = gsub('&[^;]+;', '', x)
-  x = gsub('\\s+', ' ', x)
-  x = grep('^[a-zA-Z0-9.]+ [0-9.-]+', trimws(x), value = TRUE)
-  writeLines(c(if (length(i) == 1) h[i], x), error_txt)
-}
-
-cran_check_summary = function() {
-  if (!file.exists(error_txt)) return()
-  x = readLines(error_txt)
-  if (length(x) > 0) x = x[-1] else return()
-  r = '^([a-zA-Z0-9.]+)(.+)'
-  p = gsub(r, '\\1', x)  # package names
-  s = gsub(r, '\\2', x)  # summary
-  f = function(type) p[grep(type, s)]
-  list(error = f('ERROR'), warning = f('WARNING'), note = f('NOTE'))
-}
-
 # kill a R CMD check process if it has been running for more then 60 minutes
 kill_long_processes = function(etime = 60 * 60) {
   while (TRUE) {
