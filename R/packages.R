@@ -264,12 +264,7 @@ rev_check = function(
       )
     }
 
-    z = sprintf('%s_%s.tar.gz', p, db[p, 'Version'])
-    # remove other versions of the package tarball
-    unlink(setdiff(list.files('.', sprintf('^%s_.+.tar.gz', p)), z))
-    if (!file.exists(z)) try(download.file(
-      paste(db[p, 'Repository'], z, sep = '/'), z, mode = 'wb'
-    ))
+    z = download_tarball(p, db)
     if (!file.exists(z)) {
       timing()
       return(dir.create(d, showWarnings = FALSE))
@@ -327,12 +322,24 @@ plapply = function(X, FUN, ...) {
   )
 }
 
-pkg_install = function(pkgs) {
+# download the source package from CRAN
+download_tarball = function(p, db = available.packages(type = 'source'), retry = 3) {
+  z = sprintf('%s_%s.tar.gz', p, db[p, 'Version'])
+  # remove other versions of the package tarball
+  unlink(setdiff(list.files('.', sprintf('^%s_.+.tar.gz', p)), z))
+  for (i in seq_len(retry)) {
+    if (file.exists(z)) break
+    try(download.file(paste(db[p, 'Repository'], z, sep = '/'), z, mode = 'wb'))
+  }
+  z
+}
+
+pkg_install = function(pkgs, ...) {
   if (length(pkgs) == 0) return()
   install = getOption('xfun.install.packages', install.packages)
   if (length(pkgs) > 1)
     message('Installing ', length(pkgs), ' packages: ', paste(pkgs, collapse = ' '))
-  install(pkgs)
+  install(pkgs, ...)
 }
 
 clean_Rcheck = function(dir, log = readLines(file.path(dir, '00check.log'))) {
