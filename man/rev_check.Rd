@@ -4,9 +4,8 @@
 \alias{rev_check}
 \title{Run \command{R CMD check} on the reverse dependencies of a package}
 \usage{
-rev_check(pkg, which = "all", recheck = FALSE, ignore = NULL, 
-    note = TRUE, update = TRUE, src = file.path(src_dir, pkg), 
-    src_dir = getOption("xfun.rev_check.src_dir"))
+rev_check(pkg, which = "all", recheck = FALSE, ignore = NULL, update = TRUE, 
+    src = file.path(src_dir, pkg), src_dir = getOption("xfun.rev_check.src_dir"))
 }
 \arguments{
 \item{pkg}{The package name.}
@@ -23,9 +22,6 @@ be automatically set to \code{TRUE} if missing.}
 \item{ignore}{A vector of package names to be ignored in \command{R CMD
 check}. If this argument is missing and a file \file{00ignore} exists, the
 file will be read as a character vector and passed to this argument.}
-
-\item{note}{Whether to treat \verb{NOTE} in the check log as failure.
-\verb{WARNING} and \verb{ERROR} are always treated as failure.}
 
 \item{update}{Whether to update all packages before the check.}
 
@@ -51,10 +47,9 @@ If a source tarball of the expected version exists in the current directory,
 it will not be downloaded again (to save time and bandwidth).
 
 After a package has been checked, the associated \file{*.Rcheck} directory
-will be deleted if the check was successful (no warnings or errors, and
-optionally, no notes), which means if you see a \file{*.Rcheck} directory, it
-means the check failed, and you need to take a look at the log files under
-that directory.
+will be deleted if the check was successful (no warnings or errors or notes),
+which means if you see a \file{*.Rcheck} directory, it means the check
+failed, and you need to take a look at the log files under that directory.
 
 The time to finish the check is recorded for each package. As the check goes
 on, the total remaing time will be roughly estimated via \code{n *
