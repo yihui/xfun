@@ -223,6 +223,8 @@ rev_check = function(
     }))
     res$check
   }
+  dir.create('./library', showWarnings = FALSE)
+  pkg_install(pkg, lib = './library')  # the CRAN version of the package
 
   f = tempfile('check-done', fileext = '.rds')
   l = tempfile('check-lock'); on.exit(unlink(c(f, l)), add = TRUE)
@@ -270,19 +272,28 @@ rev_check = function(
       return(dir.create(d, showWarnings = FALSE))
     }
 
-    check_it = function(...) {
-      Rcmd(c('check', '--no-manual', shQuote(z)), stdout = FALSE, ...)
+    check_it = function(args = NULL, ...) {
+      system2(
+        file.path(R.home('bin'), 'R'),
+        c(args, 'CMD', 'check', '--no-manual', shQuote(z)), stdout = FALSE, ...
+      )
     }
     check_it()
 
     if (!clean_Rcheck(d)) {
       if (!dir.exists(d)) {dir.create(d); return(timing())}
-      in_dir(d, {
+      cleanup = function() in_dir(d, {
         clean_log()
-        # so that I can easily preview it
+        # so that I can easily preview it in the Finder on macOS
         file.exists('00install.out') && file.rename('00install.out', '00install.log')
-        cran_check_page(p)
       })
+      cleanup()
+      file.rename(d, d2 <- paste0(d, '2'))
+      check_it('--no-environ', env = tweak_r_libs('./library'))
+      if (!dir.exists(d)) file.rename(d2, d) else {
+        cleanup()
+        if (identical_logs(c(d, d2))) unlink(c(d, d2), recursive = TRUE)
+      }
     }
     timing()
     NULL
@@ -298,6 +309,29 @@ clean_log = function() {
   writeLines(tail(x, -2), l)  # remove the first 2 lines (log dir name and R version)
 }
 
+identical_logs = function(dirs) {
+  if (length(dirs) < 2) return(FALSE)
+  if (!all(file.exists(logs <- file.path(dirs, '00check.log')))) return(FALSE)
+  x = readLines(logs[1])
+  for (i in 2:length(dirs)) if (!identical(x, readLines(logs[i]))) return(FALSE)
+  TRUE
+}
+
+tweak_r_libs = function(new) {
+  x = read_first(c('.Renviron', '~/.Renviron'))
+  x = grep('^\\s*#', x, invert = TRUE, value = TRUE)
+  x = gsub('^\\s+|\\s+$', '', x)
+  x = x[x != '']
+  i = grep('^R_LIBS_USER=.+', x)
+  if (length(i)) {
+    x[i[1]] = sub('(="?)', paste0('\\1', new, .Platform$path.sep), x[i[1]])
+    x
+  } else c(paste0('R_LIBS_USER=', new), x)
+}
+
+read_first = function(files) {
+  for (f in files) if (file.exists(f)) return(readLines(f))
+}
 
 pkg_dep = function(x, ...) {
   if (length(x)) unique(unlist(tools::package_dependencies(x, ...)))
