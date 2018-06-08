@@ -282,6 +282,20 @@ rev_check = function(
 
     if (!clean_Rcheck(d)) {
       if (!dir.exists(d)) {dir.create(d); return(timing())}
+      # try to install missing LaTeX packages for vignettes if possible, then recheck
+      vigs = list.files(
+        file.path(d, 'vign_test', p, 'vignettes'), '[.](Rnw|Rmd)',
+        ignore.case = TRUE, full.names = TRUE
+      )
+      if (length(vigs) && any(file.exists(with_ext(vigs, 'log')))) {
+        if (!loadable('tinytex')) install.packages('tinytex')
+        if (tinytex:::is_tinytex()) for (vig in vigs) {
+          Rscript(shQuote(c('-e', 'if (grepl("[.]Rnw$", f <- commandArgs(T), ignore.case = T)) knitr::knit2pdf(f) else rmarkdown::render(f)', vig)))
+        }
+        check_it()
+        if (clean_Rcheck(d)) return(timing())
+      }
+      # clean up the check log, and recheck with the current CRAN version of pkg
       cleanup = function() in_dir(d, {
         clean_log()
         # so that I can easily preview it in the Finder on macOS
