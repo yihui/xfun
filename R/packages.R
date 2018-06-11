@@ -395,6 +395,33 @@ clean_Rcheck = function(dir, log = readLines(file.path(dir, '00check.log'))) {
   !dir.exists(dir)
 }
 
+# compare the check logs under *.Rcheck and *.Rcheck2
+compare_Rcheck = function(status_only = FALSE) {
+  if (length(dirs <- list.files('.', '.+[.]Rcheck2$')) == 0) return()
+  d2 = function(d) c(sub('2$', '', d), d)
+  logs = function(d) file.path(d2(d), '00check.log')
+  dirs = dirs[rowSums(matrix(file.exists(logs(dirs)), ncol = 2)) == 2]
+  res = NULL
+  for (d in dirs) {
+    f = logs(d)
+    if (status_only) {
+      status_line = function(file) {
+        x = tail(read_utf8(file), 1)
+        if (!grepl('^Status: ', x)) stop('The last line of ', file, ' is not the status.')
+        x
+      }
+      if (status_line(f[1]) == status_line(f[2])) { unlink(d2(d), recursive = TRUE); next}
+    }
+    res = c(
+      res, paste('##', sans_ext(d)), '',
+      '```diff', substr(head(
+        system2('diff', shQuote(f), stdout = TRUE), if (status_only) Inf else 100
+      ), 1, 160), '```', ''
+    )
+  }
+  writeLines(res, '00check_diffs.md')
+}
+
 ignore_deps = function() {
   if (file.exists('00ignore_deps')) scan('00ignore_deps', 'character')
 }
