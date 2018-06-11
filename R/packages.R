@@ -319,15 +319,15 @@ rev_check = function(
 # remove the OK lines in the check log
 clean_log = function() {
   if (!file.exists(l <- '00check.log')) return()
-  x = grep('^[*].+OK$', readLines(l), invert = TRUE, value = TRUE)
+  x = grep('^[*].+OK$', read_utf8(l), invert = TRUE, value = TRUE)
   writeLines(tail(x, -2), l)  # remove the first 2 lines (log dir name and R version)
 }
 
 identical_logs = function(dirs) {
   if (length(dirs) < 2) return(FALSE)
   if (!all(file.exists(logs <- file.path(dirs, '00check.log')))) return(FALSE)
-  x = readLines(logs[1])
-  for (i in 2:length(dirs)) if (!identical(x, readLines(logs[i]))) return(FALSE)
+  x = read_utf8(logs[1])
+  for (i in 2:length(dirs)) if (!identical(x, read_utf8(logs[i]))) return(FALSE)
   TRUE
 }
 
@@ -344,7 +344,7 @@ tweak_r_libs = function(new) {
 }
 
 read_first = function(files) {
-  for (f in files) if (file.exists(f)) return(readLines(f))
+  for (f in files) if (file.exists(f)) return(read_utf8(f))
 }
 
 pkg_dep = function(x, ...) {
@@ -390,7 +390,7 @@ pkg_install = function(pkgs, ...) {
   install(pkgs, ...)
 }
 
-clean_Rcheck = function(dir, log = readLines(file.path(dir, '00check.log'))) {
+clean_Rcheck = function(dir, log = read_utf8(file.path(dir, '00check.log'))) {
   if (length(grep('(WARNING|ERROR|NOTE)$', log)) == 0) unlink(dir, recursive = TRUE)
   !dir.exists(dir)
 }
@@ -428,7 +428,7 @@ ignore_deps = function() {
 
 cran_check_page = function(pkg, con = '00check-cran.log') {
   u = sprintf('https://cran.rstudio.com/web/checks/check_results_%s.html', pkg)
-  x = readLines(u)
+  x = read_utf8(u)
   if (length(i <- grep('Check Details', x, ignore.case = TRUE)) == 0) return()
   x = x[i[1]:length(x)]
   x = gsub('<[^>]+>', '', x)
