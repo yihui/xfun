@@ -8,7 +8,7 @@ Authors@R: c(
   )
 Description: Miscellaneous functions commonly used in other packages maintained by 'Yihui Xie'.
 Imports: tools
-Suggests: testit, parallel, rstudioapi, tinytex, mime
+Suggests: testit, parallel, rstudioapi, tinytex, mime, markdown
 License: MIT + file LICENSE
 URL: https://github.com/yihui/xfun
 BugReports: https://github.com/yihui/xfun/issues
