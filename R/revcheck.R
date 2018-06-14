@@ -99,6 +99,7 @@ rev_check = function(
 
   db = available.packages(type = 'source')
 
+  unlink('*.Rcheck2', recursive = TRUE)
   dirs = list.files('.', '.+[.]Rcheck$')
   if (missing(recheck)) recheck = length(dirs) > 0
   pkgs = if (recheck) {
