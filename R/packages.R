@@ -80,7 +80,9 @@ pkg_load2 = function(...) pkg_load(..., install = TRUE)
 
 broken_packages = function(reinstall = TRUE) {
   pkgs = unlist(plapply(.packages(TRUE), function(p) if (!loadable(p)) p))
-  if (reinstall) pkg_install(pkgs) else pkgs
+  if (reinstall) {
+    remove.packages(pkgs); pkg_install(pkgs)
+  } else pkgs
 }
 
 #' Install a source package from a directory
