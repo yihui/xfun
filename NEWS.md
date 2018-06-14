@@ -10,6 +10,10 @@
 
 - Added a function `install_dir()` to install a source package from a directory.
 
+- Added a new function `file_string()` to read a text file (encoded in UTF-8) and return its content a single character string (lines concatenated by `\n`). 
+
+- Added a new function `rev_check()` to run `R CMD check` on the reverse dependencies of a package, and a corresponding helper function `compare_Rcheck()` for showing the differences in logs with the CRAN version and the current version of the package, respectively.
+
 - Added an `error` argument to `read_utf8()` to signal an error if the file is not encoded in UTF-8.
 
 # CHANGES IN xfun VERSION 0.1

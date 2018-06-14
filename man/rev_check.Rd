@@ -2,10 +2,13 @@
 % Please edit documentation in R/revcheck.R
 \name{rev_check}
 \alias{rev_check}
+\alias{compare_Rcheck}
 \title{Run \command{R CMD check} on the reverse dependencies of a package}
 \usage{
 rev_check(pkg, which = "all", recheck = FALSE, ignore = NULL, update = TRUE, 
     src = file.path(src_dir, pkg), src_dir = getOption("xfun.rev_check.src_dir"))
+
+compare_Rcheck(status_only = FALSE, output = "00check_diffs.md")
 }
 \arguments{
 \item{pkg}{The package name.}
@@ -30,6 +33,16 @@ file will be read as a character vector and passed to this argument.}
 \item{src_dir}{The parent directory of the source package directory. This can
 be set in a global option if all your source packages are under a common
 parent directory.}
+
+\item{status_only}{If \code{TRUE}, only compare the final statuses of the
+checks (the last line of \file{00check.log}), and delete \file{*.Rcheck}
+and \file{*.Rcheck2} if the statuses are identical, otherwise write out the
+full diffs of the logs. If \code{FALSE}, compare the full logs under
+\file{*.Rcheck} and \file{*.Rcheck2}.}
+
+\item{output}{The output Markdown file to which the diffs in check logs will
+be written. If the \pkg{markdown} package is available, the Markdown file
+will be converted to HTML, so you can see the diffs more clearly.}
 }
 \description{
 Install the source package, figure out the reverse dependencies on CRAN,
@@ -62,7 +75,9 @@ If a check on a reverse dependency failed, its \file{*.Rcheck} directory will
 be renamed to \file{*.Rcheck2}, and another check will be run against the
 CRAN version of the package. If the logs of the two checks are the same, it
 means no new problems were introduced in the package, and you can probably
-ignore this particular reverse dependency.
+ignore this particular reverse dependency. The function
+\code{compare_Rcheck()} can be used to create a summary of all the
+differences in the check logs under \file{*.Rcheck} and \file{*.Rcheck2}.
 
 A recommended workflow is to use a special directory to run
 \code{rev_check()}, set the global \code{\link{options}}
