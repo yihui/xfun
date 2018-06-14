@@ -113,8 +113,9 @@ rev_check = function(
     }))
     res$check
   }
-  dir.create('./library', showWarnings = FALSE)
-  pkg_install(pkg, lib = './library')  # the CRAN version of the package
+  lib_cran = './library-cran'
+  dir.create(lib_cran, showWarnings = FALSE)
+  pkg_install(pkg, lib = lib_cran)  # the CRAN version of the package
 
   f = tempfile('check-done', fileext = '.rds')
   l = tempfile('check-lock'); on.exit(unlink(c(f, l)), add = TRUE)
@@ -193,7 +194,7 @@ rev_check = function(
       })
       cleanup()
       file.rename(d, d2 <- paste0(d, '2'))
-      check_it('--no-environ', env = tweak_r_libs('./library'))
+      check_it('--no-environ', env = tweak_r_libs(lib_cran))
       if (!dir.exists(d)) file.rename(d2, d) else {
         cleanup()
         if (identical_logs(c(d, d2))) unlink(c(d, d2), recursive = TRUE)
