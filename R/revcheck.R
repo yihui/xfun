@@ -29,7 +29,9 @@
 #' be renamed to \file{*.Rcheck2}, and another check will be run against the
 #' CRAN version of the package. If the logs of the two checks are the same, it
 #' means no new problems were introduced in the package, and you can probably
-#' ignore this particular reverse dependency.
+#' ignore this particular reverse dependency. The function
+#' \code{compare_Rcheck()} can be used to create a summary of all the
+#' differences in the check logs under \file{*.Rcheck} and \file{*.Rcheck2}.
 #'
 #' A recommended workflow is to use a special directory to run
 #' \code{rev_check()}, set the global \code{\link{options}}
@@ -302,13 +304,24 @@ clean_Rcheck = function(dir, log = read_utf8(file.path(dir, '00check.log'))) {
   !dir.exists(dir)
 }
 
-# compare the check logs under *.Rcheck and *.Rcheck2
-compare_Rcheck = function(status_only = FALSE) {
+#' @rdname rev_check
+#' @param status_only If \code{TRUE}, only compare the final statuses of the
+#'   checks (the last line of \file{00check.log}), and delete \file{*.Rcheck}
+#'   and \file{*.Rcheck2} if the statuses are identical, otherwise write out the
+#'   full diffs of the logs. If \code{FALSE}, compare the full logs under
+#'   \file{*.Rcheck} and \file{*.Rcheck2}.
+#' @param output The output Markdown file to which the diffs in check logs will
+#'   be written. If the \pkg{markdown} package is available, the Markdown file
+#'   will be converted to HTML, so you can see the diffs more clearly.
+#' @export
+compare_Rcheck = function(status_only = FALSE, output = '00check_diffs.md') {
   if (length(dirs <- list.files('.', '.+[.]Rcheck2$')) == 0) return()
   d2 = function(d) c(sub('2$', '', d), d)
   logs = function(d) file.path(d2(d), '00check.log')
   dirs = dirs[rowSums(matrix(file.exists(logs(dirs)), ncol = 2)) == 2]
   res = NULL
+  if (!status_only && Sys.which('diff') == '')
+    warning("The command 'diff' is not available; will not calculate exact diffs in logs.")
   for (d in dirs) {
     f = logs(d)
     if (status_only) {
@@ -317,16 +330,41 @@ compare_Rcheck = function(status_only = FALSE) {
         if (!grepl('^Status: ', x)) stop('The last line of ', file, ' is not the status.')
         x
       }
-      if (status_line(f[1]) == status_line(f[2])) { unlink(d2(d), recursive = TRUE); next}
+      if (status_line(f[1]) == status_line(f[2])) {
+        unlink(d2(d), recursive = TRUE); next
+      }
     }
     res = c(
-      res, paste('##', sans_ext(d)), '',
-      '```diff', substr(head(
-        system2('diff', shQuote(f), stdout = TRUE), if (status_only) Inf else 100
-      ), 1, 160), '```', ''
+      res, paste('##', p <- sans_ext(d)), '', 'CRAN version vs current version:\n',
+      '```diff', file_diff(f), '```', ''
+    )
+    if (length(res2 <- cran_check_page(p, NULL))) res = c(
+      res, 'CRAN check logs:\n\n```', unique(unlist(strsplit(res2, '\n'))), '```\n'
     )
   }
-  writeLines(res, '00check_diffs.md')
+  writeLines(res, output)
+  if (!loadable('markdown')) return(output)
+  markdown::markdownToHTML(
+    text = gsub('>', '+', gsub('^<', '-', res)),
+    output = html_file <- with_ext(output, 'html'),
+    header = c(
+      "<link href='https://cdn.bootcss.com/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />",
+      "<script src='https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js'></script>",
+      "<script>hljs.initHighlightingOnLoad();</script>"
+    ), encoding = 'UTF-8'
+  )
+  unlink(output)
+  html_file
+}
+
+# compute the diffs of two files; if diffs too large, dedup them
+file_diff = function(files, len = 200, use_diff = Sys.which('diff') != '') {
+  d = if (use_diff) {
+    suppressWarnings(system2('diff', shQuote(files), stdout = TRUE))
+  } else {
+    c(paste('<', read_utf8(files[1])), '---', paste('>', read_utf8(files[2])))
+  }
+  if (length(d) >= len) unique(d) else d
 }
 
 # specify a list of package names to be ignored when installing all dependencies
@@ -347,7 +385,7 @@ cran_check_page = function(pkg, con = '00check-cran.log') {
   x = gsub('\\s+', ' ', x)
   x = paste(trimws(x), collapse = '\n')
   x = gsub('\n\n+', '\n\n', x)
-  writeLines(x, con)
+  if (length(con) == 1) writeLines(x, con) else x
 }
 
 # download CRAN check summaries of all failed packages
