@@ -155,7 +155,7 @@ rev_check = function(
       )
     }
 
-    z = download_tarball(p, db)
+    z = download_tarball(p, db, dir = 'tarball')
     if (!file.exists(z)) {
       timing()
       return(dir.create(d, showWarnings = FALSE))
@@ -260,10 +260,11 @@ plapply = function(X, FUN, ...) {
 }
 
 # download the source package from CRAN
-download_tarball = function(p, db = available.packages(type = 'source'), retry = 3) {
-  z = sprintf('%s_%s.tar.gz', p, db[p, 'Version'])
+download_tarball = function(p, db = available.packages(type = 'source'), dir = '.', retry = 3) {
+  if (!dir.exists(dir)) dir.create(dir, recursive = TRUE)
+  z = file.path(dir, sprintf('%s_%s.tar.gz', p, db[p, 'Version']))
   # remove other versions of the package tarball
-  unlink(setdiff(list.files('.', sprintf('^%s_.+.tar.gz', p)), z))
+  unlink(setdiff(list.files(dir, sprintf('^%s_.+.tar.gz', p), full.names = TRUE), z))
   for (i in seq_len(retry)) {
     if (file.exists(z)) break
     try(download.file(paste(db[p, 'Repository'], z, sep = '/'), z, mode = 'wb'))
