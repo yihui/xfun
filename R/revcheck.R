@@ -5,13 +5,14 @@
 #' in parallel.
 #'
 #' Everything occurs under the current working directory, and you are
-#' recommended to call this function under a separate directory, especially when
-#' the number of reverse dependencies is large, because all source packages will
-#' be downloaded to this directory, and all \file{*.Rcheck} directories will be
-#' generated under this directory, too.
+#' recommended to call this function under a designated directory, especially
+#' when the number of reverse dependencies is large, because all source packages
+#' will be downloaded to this directory, and all \file{*.Rcheck} directories
+#' will be generated under this directory, too.
 #'
-#' If a source tarball of the expected version exists in the current directory,
-#' it will not be downloaded again (to save time and bandwidth).
+#' If a source tarball of the expected version has been downloaded before (under
+#' the \file{tarball} directory), it will not be downloaded again (to save time
+#' and bandwidth).
 #'
 #' After a package has been checked, the associated \file{*.Rcheck} directory
 #' will be deleted if the check was successful (no warnings or errors or notes),
@@ -23,6 +24,12 @@
 #' mean(times)}, where \code{n} is the number of packages remaining to be
 #' checked, and \code{times} is a vector of elapsed time of packages that have
 #' been checked.
+#'
+#' If a check on a reverse dependency failed, its \file{*.Rcheck} directory will
+#' be renamed to \file{*.Rcheck2}, and another check will be run against the
+#' CRAN version of the package. If the logs of the two checks are the same, it
+#' means no new problems were introduced in the package, and you can probably
+#' ignore this particular reverse dependency.
 #'
 #' A recommended workflow is to use a special directory to run
 #' \code{rev_check()}, set the global \code{\link{options}}
@@ -214,6 +221,7 @@ clean_log = function() {
   writeLines(tail(x, -2), l)  # remove the first 2 lines (log dir name and R version)
 }
 
+# are the check logs identical under a series of *.Rcheck directories?
 identical_logs = function(dirs) {
   if (length(dirs) < 2) return(FALSE)
   if (!all(file.exists(logs <- file.path(dirs, '00check.log')))) return(FALSE)
@@ -222,6 +230,7 @@ identical_logs = function(dirs) {
   TRUE
 }
 
+# add a new library path to R_LIBS_USER
 tweak_r_libs = function(new) {
   x = read_first(c('.Renviron', '~/.Renviron'))
   x = grep('^\\s*#', x, invert = TRUE, value = TRUE)
@@ -234,14 +243,17 @@ tweak_r_libs = function(new) {
   } else c(paste0('R_LIBS_USER=', new), x)
 }
 
+# read the first file that exists
 read_first = function(files) {
   for (f in files) if (file.exists(f)) return(read_utf8(f))
 }
 
+# a shorthand of tools::package_dependencies()
 pkg_dep = function(x, ...) {
   if (length(x)) unique(unlist(tools::package_dependencies(x, ...)))
 }
 
+# calculate the packages required to check a package
 check_deps = function(x, db = available.packages(), which = 'all') {
   if (identical(which, 'hard')) which = c('Depends', 'Imports', 'LinkingTo')
   # packages that reverse depend on me
@@ -274,6 +286,8 @@ download_tarball = function(p, db = available.packages(type = 'source'), dir = '
   z
 }
 
+# allow users to specify a custom install.packages() function via the global
+# option xfun.install.packages
 pkg_install = function(pkgs, ...) {
   if (length(pkgs) == 0) return()
   install = getOption('xfun.install.packages', install.packages)
@@ -282,6 +296,7 @@ pkg_install = function(pkgs, ...) {
   install(pkgs, ...)
 }
 
+# clean up *.Rcheck if there are no warnings, errors, or notes in the log
 clean_Rcheck = function(dir, log = read_utf8(file.path(dir, '00check.log'))) {
   if (length(grep('(WARNING|ERROR|NOTE)$', log)) == 0) unlink(dir, recursive = TRUE)
   !dir.exists(dir)
@@ -314,10 +329,12 @@ compare_Rcheck = function(status_only = FALSE) {
   writeLines(res, '00check_diffs.md')
 }
 
+# specify a list of package names to be ignored when installing all dependencies
 ignore_deps = function() {
   if (file.exists('00ignore_deps')) scan('00ignore_deps', 'character')
 }
 
+# download a check summary of a package from CRAN
 cran_check_page = function(pkg, con = '00check-cran.log') {
   u = sprintf('https://cran.rstudio.com/web/checks/check_results_%s.html', pkg)
   x = read_utf8(u)
@@ -333,6 +350,7 @@ cran_check_page = function(pkg, con = '00check-cran.log') {
   writeLines(x, con)
 }
 
+# download CRAN check summaries of all failed packages
 cran_check_pages = function() {
   dirs = list.files('.', '[.]Rcheck$')
   for (d in dirs) {
@@ -358,6 +376,7 @@ kill_long_processes = function(etime = 60 * 60) {
   }
 }
 
+# parse the check log for missing LaTeX packages and install them
 install_missing_latex = function() {
   dirs = list.files('.', '[.]Rcheck$')
   pkgs = NULL
