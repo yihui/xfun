@@ -40,9 +40,9 @@ print.strict_list = function(x, ...) {
 
 #' Print a character vector in its raw form
 #'
-#' The function \code{raw_string()} assigns the class \code{XFUN_RAW_STRING} to
+#' The function \code{raw_string()} assigns the class \code{xfun_raw_string} to
 #' the character vector, and the corresponding printing function
-#' \code{print.XFUN_RAW_STRING()} uses \code{cat(x, sep = '\n')} to write the
+#' \code{print.xfun_raw_string()} uses \code{cat(x, sep = '\n')} to write the
 #' character vector to the console, which will suppress the leading indices
 #' (such as \code{[1]}) and double quotes, and it may be easier to read the
 #' characters in the raw form (especially when there are escape sequences).
@@ -53,14 +53,14 @@ print.strict_list = function(x, ...) {
 #' raw_string(head(LETTERS))
 #' raw_string(c('a "b"', 'hello\tworld!'))
 raw_string = function(x) {
-  class(x) = 'XFUN_RAW_STRING'
+  class(x) = 'xfun_raw_string'
   x
 }
 
 #' @param ... Other arguments (currently ignored).
 #' @rdname raw_string
 #' @export
-print.XFUN_RAW_STRING = function(x, ...) {
+print.xfun_raw_string = function(x, ...) {
   if (length(x)) cat(x, sep = '\n')
   invisible(x)
 }

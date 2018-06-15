@@ -2,12 +2,12 @@
 % Please edit documentation in R/data-structure.R
 \name{raw_string}
 \alias{raw_string}
-\alias{print.XFUN_RAW_STRING}
+\alias{print.xfun_raw_string}
 \title{Print a character vector in its raw form}
 \usage{
 raw_string(x)
 
-\method{print}{XFUN_RAW_STRING}(x, ...)
+\method{print}{xfun_raw_string}(x, ...)
 }
 \arguments{
 \item{x}{For \code{raw_string()}, a character vector. For the print method,
@@ -16,9 +16,9 @@ the \code{raw_string()} object.}
 \item{...}{Other arguments (currently ignored).}
 }
 \description{
-The function \code{raw_string()} assigns the class \code{XFUN_RAW_STRING} to
+The function \code{raw_string()} assigns the class \code{xfun_raw_string} to
 the character vector, and the corresponding printing function
-\code{print.XFUN_RAW_STRING()} uses \code{cat(x, sep = '\n')} to write the
+\code{print.xfun_raw_string()} uses \code{cat(x, sep = '\n')} to write the
 character vector to the console, which will suppress the leading indices
 (such as \code{[1]}) and double quotes, and it may be easier to read the
 characters in the raw form (especially when there are escape sequences).
