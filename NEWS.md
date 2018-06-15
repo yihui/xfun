@@ -14,6 +14,8 @@
 
 - Added a new function `raw_string()` to print a character vector in its "raw" form using `cat(..., sep = '\n')` instead of `print()`, because the latter may introduce `[1]`, "extra" double quotes, and escape sequences, which are not very human-readable.
 
+- Added a new function `session_info()` as an alternative to `sessionInfo()`.
+
 - Added a new function `rev_check()` to run `R CMD check` on the reverse dependencies of a package, and a corresponding helper function `compare_Rcheck()` for showing the differences in logs with the CRAN version and the current version of the package, respectively.
 
 - Added an `error` argument to `read_utf8()` to signal an error if the file is not encoded in UTF-8.
