@@ -2,15 +2,15 @@
 % Please edit documentation in R/data-structure.R
 \name{strict_list}
 \alias{strict_list}
-\alias{$.strict_list}
-\alias{print.strict_list}
+\alias{$.xfun_strict_list}
+\alias{print.xfun_strict_list}
 \title{Strict lists}
 \usage{
 strict_list(...)
 
-\method{$}{strict_list}(x, name)
+\method{$}{xfun_strict_list}(x, name)
 
-\method{print}{strict_list}(x, ...)
+\method{print}{xfun_strict_list}(x, ...)
 }
 \arguments{
 \item{...}{Objects (list elements), possibly named. Ignored in the
@@ -19,6 +19,10 @@ strict_list(...)
 \item{x}{A strict list.}
 
 \item{name}{The name (a character string) of the list element.}
+}
+\value{
+\code{strict_list()} returns a list with the class
+  \code{xfun_strict_list}.
 }
 \description{
 A strict list is essentially a normal \code{\link{list}()} but it does not

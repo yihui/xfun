@@ -11,6 +11,8 @@
 #' @param ... Objects (list elements), possibly named. Ignored in the
 #'   \code{print()} method.
 #' @export
+#' @return \code{strict_list()} returns a list with the class
+#'   \code{xfun_strict_list}.
 #' @examples library(xfun)
 #' (z = strict_list(aaa = 'I am aaa', b = 1:5))
 #' z$a  # NULL!
@@ -21,7 +23,7 @@
 #' z2 = unclass(z)  # a normal list
 #' z2$a  # partial matching
 strict_list = function(...) {
-  structure(list(...), class = 'strict_list')
+  structure(list(...), class = 'xfun_strict_list')
 }
 
 # https://twitter.com/xieyihui/status/782462926862954496
@@ -30,11 +32,11 @@ strict_list = function(...) {
 #' @param name The name (a character string) of the list element.
 #' @rdname strict_list
 #' @export
-`$.strict_list` = function(x, name) x[[name]]
+`$.xfun_strict_list` = function(x, name) x[[name]]
 
 #' @rdname strict_list
 #' @export
-print.strict_list = function(x, ...) {
+print.xfun_strict_list = function(x, ...) {
   print(unclass(x))
 }
 
