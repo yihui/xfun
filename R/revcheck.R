@@ -32,6 +32,8 @@
 #' ignore this particular reverse dependency. The function
 #' \code{compare_Rcheck()} can be used to create a summary of all the
 #' differences in the check logs under \file{*.Rcheck} and \file{*.Rcheck2}.
+#' This will be done automatically if \code{options(xfun.rev_check.summary =
+#' TRUE)} has been set.
 #'
 #' A recommended workflow is to use a special directory to run
 #' \code{rev_check()}, set the global \code{\link{options}}
@@ -212,6 +214,9 @@ rev_check = function(
     timing()
     NULL
   })
+  if (getOption('xfun.rev_check.summary', FALSE)) {
+    html = compare_Rcheck(); if (isTRUE(grepl('[.]html$', html))) browseURL(html)
+  }
   res = Filter(function(x) !is.null(x), res)
   if (length(res)) res
 }

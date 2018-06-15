@@ -78,6 +78,8 @@ means no new problems were introduced in the package, and you can probably
 ignore this particular reverse dependency. The function
 \code{compare_Rcheck()} can be used to create a summary of all the
 differences in the check logs under \file{*.Rcheck} and \file{*.Rcheck2}.
+This will be done automatically if \code{options(xfun.rev_check.summary =
+TRUE)} has been set.
 
 A recommended workflow is to use a special directory to run
 \code{rev_check()}, set the global \code{\link{options}}
