@@ -1,0 +1,16 @@
+---
+title: "An Introduction to xfun"
+author: "Yihui Xie"
+date: "`r Sys.Date()`"
+slug: xfun
+show_toc: true
+githubEditURL: https://github.com/yihui/xfun/edit/master/vignettes/xfun.Rmd
+output:
+  knitr:::html_vignette:
+    toc: yes
+vignette: >
+  %\VignetteIndexEntry{An Introduction to xfun}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
