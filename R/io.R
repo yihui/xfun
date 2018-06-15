@@ -51,7 +51,7 @@ invalid_utf8 = function(x) {
 #' @examples
 #' xfun::file_string(system.file('DESCRIPTION', package = 'xfun'))
 file_string = function(file) {
-  paste(read_utf8(file), collapse = '\n')
+  raw_string(paste(read_utf8(file), collapse = '\n'))
 }
 
 #' Search and replace strings in files
