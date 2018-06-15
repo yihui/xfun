@@ -1,4 +1,4 @@
-# CHANGES IN xfun VERSION 0.2 (unreleased)
+# CHANGES IN xfun VERSION 0.2
 
 ## NEW FEATURES
 
@@ -17,6 +17,8 @@
 - Added a new function `session_info()` as an alternative to `sessionInfo()`.
 
 - Added a new function `rev_check()` to run `R CMD check` on the reverse dependencies of a package, and a corresponding helper function `compare_Rcheck()` for showing the differences in logs with the CRAN version and the current version of the package, respectively.
+
+- Added new functions for dealing with Markdown text: `prose_index()` returns the line indices of text that is prose (not code blocks), and `protect_math()` protects math expressions in Markdown in backticks.
 
 - Added an `error` argument to `read_utf8()` to signal an error if the file is not encoded in UTF-8.
 
