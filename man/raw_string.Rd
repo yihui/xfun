@@ -10,11 +10,10 @@ raw_string(x)
 \method{print}{XFUN_RAW_STRING}(x, ...)
 }
 \arguments{
-\item{x}{A character vector.}
+\item{x}{For \code{raw_string()}, a character vector. For the print method,
+the \code{raw_string()} object.}
 
 \item{...}{Other arguments (currently ignored).}
-
-\item{x}{The raw string object.}
 }
 \description{
 The function \code{raw_string()} assigns the class \code{XFUN_RAW_STRING} to

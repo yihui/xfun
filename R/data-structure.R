@@ -46,7 +46,8 @@ print.strict_list = function(x, ...) {
 #' character vector to the console, which will suppress the leading indices
 #' (such as \code{[1]}) and double quotes, and it may be easier to read the
 #' characters in the raw form (especially when there are escape sequences).
-#' @param x A character vector.
+#' @param x For \code{raw_string()}, a character vector. For the print method,
+#'   the \code{raw_string()} object.
 #' @export
 #' @examples library(xfun)
 #' raw_string(head(LETTERS))
@@ -56,7 +57,6 @@ raw_string = function(x) {
   x
 }
 
-#' @param x The raw string object.
 #' @param ... Other arguments (currently ignored).
 #' @rdname raw_string
 #' @export
