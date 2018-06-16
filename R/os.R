@@ -18,8 +18,8 @@ is_unix = function() .Platform$OS.type == 'unix'
 
 #' @rdname os
 #' @export
-is_macos = function() Sys.info()['sysname'] == 'Darwin'
+is_macos = function() unname(Sys.info()['sysname'] == 'Darwin')
 
 #' @rdname os
 #' @export
-is_linux = function() Sys.info()['sysname'] == 'Linux'
+is_linux = function() unname(Sys.info()['sysname'] == 'Linux')
