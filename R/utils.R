@@ -150,6 +150,7 @@ gsubi = function(...) gsub(..., ignore.case = TRUE)
 #'   (except \code{method}).
 #' @return The integer code \code{0} for success, or an error if none of the
 #'   methods work.
+#' @export
 download_file = function(url, output = basename(output), ...) {
   if (missing(output)) output = gsub('[?#].*$', '', output)  # remove query/hash
   download = function(method = 'auto') download.file(url, output, ..., method = method)
