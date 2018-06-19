@@ -106,7 +106,7 @@ session_info = function(packages = NULL, dependencies = TRUE) {
     res = gsubi('^\\s*other attached packages:\\s*$', 'Package version:', res)
     # print the locale info on a single line if possible
     if (length(i <- which(res == 'Locale:')) == 1 && res[i + 2] == '') {
-      res[i] = paste(res[i], gsub('^\\s+', '', res[i + 1]))
+      res[i] = paste(res[i], gsub('\\s*/\\s*', ' / ', gsub('^\\s+', '', res[i + 1])))
       res = res[-(i + 1)]
     }
     raw_string(c(res, extra))
