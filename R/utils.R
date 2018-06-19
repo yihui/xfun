@@ -102,6 +102,7 @@ session_info = function(packages = NULL, dependencies = TRUE) {
     i = grep('^(attached base packages|Matrix products):\\s*$', res, ignore.case = TRUE)
     if (length(i)) res = res[-c(i, i + 1)]
     res = gsubi('^\\s*locale:\\s*$', 'Locale:', res)
+    res = gsub('^\\s*\\[[0-9]+]\\s*', '  ', res)  # remove vector indices like [1]
     res = gsubi('^\\s*other attached packages:\\s*$', 'Package version:', res)
     raw_string(c(res, extra))
   }
