@@ -113,12 +113,12 @@ number_to_word = function(x, cap = FALSE, hyphen = TRUE){
   if(length(x) > 1) return(sapply(x, number_to_word, cap = cap, hyphen = hyphen))
 
   if(!is.numeric(x)) stop("the input is not a number")
-  if(x > 1e12) {
+  if(x > 1e15) {
     warning("the number is too large, skip the convertion")
     return(x)
   }
 
-  opts <- options(scipen = 12)
+  opts <- options(scipen = 15)
   on.exit(options(opts))
 
   x_char = as.character(x)
@@ -136,7 +136,7 @@ number_to_word = function(x, cap = FALSE, hyphen = TRUE){
   tens = c("twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")
   names(tens) = as.character(seq(20, 90, 10))
 
-  n_digists = nchar(x_char)
+  n_digits = nchar(x_char)
   x_chars = strsplit(x_char, split = "")[[1]]
 
   convert_1_digit = function(x_c) unname(zero_to_19[x_c]) # account for zero
@@ -181,44 +181,22 @@ number_to_word = function(x, cap = FALSE, hyphen = TRUE){
     if(n == 3) return(convert_3_digits(x_c))
   }
 
-  if(n_digists >= 10){ # billions
-    part1 = paste(convert_le3_digits(paste(x_chars[1: (n_d <- n_digists - 9)],
-                                           collapse = "")),
-          "billion", sep = " ")
-    p2 = convert_le3_digits(paste(x_chars[(1:3) + n_d], collapse = ""))
-    part2 = paste(p2, if(p2 != "") "million" else "", sep = " ")
-    p3 = convert_le3_digits(paste(x_chars[(4:6) + n_d], collapse = ""))
-    part3 = paste(p3, if(p3 != "") "thousand" else "", sep = " ")
-    part4 = convert_le3_digits(paste(x_chars[(7:9) + n_d], collapse = ""))
-    out = paste(part1, part2, part3, part4, collapse = "")
+  marks = c("", "thousand", "million", "billion")
+  if(n_digits >= 4){
+    x_marks = strsplit(format(x, big.mark = ","), split = ",")[[1]]
+    n_mark = length(x_marks)
+    out = sapply(x_marks, convert_le3_digits)
+    x_marks2 = rev(marks[1:n_mark])
+    x_marks2[which(out == "")] = ""
+    out = paste(paste(out, x_marks2, sep = " "), collapse = " ")
   } else {
-    if(n_digists >= 7){ # millions
-      part1 = paste(convert_le3_digits(paste(x_chars[1: (n_d <- n_digists - 6)],
-                                             collapse = "")),
-                    "million", sep = " ")
-      p2 = convert_le3_digits(paste(x_chars[(1:3) + n_d], collapse = ""))
-      part2 = paste(p2, if(p2 != "") "thousand" else "", sep = " ")
-      part3 = convert_le3_digits(paste(x_chars[(4:6) + n_d], collapse = ""))
-      out = paste(part1, part2, part3, collapse = "")
-    } else {
-      if(n_digists >= 4){ # thounsands
-        part1 = paste(convert_le3_digits(paste(x_chars[1: (n_d <- n_digists - 3)],
-                                               collapse = "")),
-                      "thousand", sep = " ")
-        part2 = convert_le3_digits(paste(x_chars[(1:3) + n_d], collapse = ""))
-        out = paste(part1, part2, collapse = "")
-      } else { # 0 - 999
-        out = if(x == 0) "zero" else convert_le3_digits(paste(x_chars,
-                                                              collapse = ""))
-      }
-    }
+    out = if(x == 0) "zero" else convert_le3_digits(paste(x_chars, collapse = ""))
   }
-
+  
   out = gsub("^ *| *$", "", out)
   out = gsub(" {2,}", " ", out)
-  if(n_digists < 3 & hyphen) out = gsub(" ", "-", out)
+  if(n_digits < 3 & hyphen) out = gsub(" ", "-", out)
   if(cap) substr(out, 1, 1) = toupper(substr(out, 1, 1))
   out
 }
-
 
