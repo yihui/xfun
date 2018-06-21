@@ -93,3 +93,132 @@ escape_math = function(x) {
   x[i] = paste0(x[i], '`')
   x
 }
+
+#' Convert numbers to English words
+#'
+#' Convert numbers to English words. This can be helpful when writing
+#' articles with rmarkdown if we want to print numbers as English words in the
+#' final output.
+#'
+#' @param x A numeric vector.
+#' @param cap Whether to capitalize the first letter of the word; this can be useful when the word is
+#' at the beginning of a sentence. Default is \code{FALSE}.
+#' @param hyphen Whether to insert hyphen (-) when the number is between 21 and 99 (except 30, 40, etc.).
+#' @return A character vector.
+#' @export
+#' @examples library(xfun)
+#' number_to_word(0, cap = TRUE)
+#' number_to_word(0:30, cap = TRUE)
+number_to_word = function(x, cap = FALSE, hyphen = TRUE){
+  if(length(x) > 1) return(sapply(x, number_to_word, cap = cap, hyphen = hyphen))
+
+  if(!is.numeric(x)) stop("the input is not a number")
+  if(x > 1e12) {
+    warning("the number is too large, skip the convertion")
+    return(x)
+  }
+
+  opts <- options(scipen = 12)
+  on.exit(options(opts))
+
+  x_char = as.character(x)
+  if(!is.integer(x)) {
+    if(grepl("[.]", x_char)){
+      warning("the number is not an integer, skip the convertion")
+      return(x)
+    }
+  }
+
+  zero_to_19 = c("zero", "one", "two", "three", "four", "five", "six", "seven",
+                 "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen",
+                 "fifteen", "sixteen", "seventeen", "eighteen", "nineteen")
+  names(zero_to_19) = as.character(0:19)
+  tens = c("twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")
+  names(tens) = as.character(seq(20, 90, 10))
+
+  n_digists = nchar(x_char)
+  x_chars = strsplit(x_char, split = "")[[1]]
+
+  convert_1_digit = function(x_c) unname(zero_to_19[x_c]) # account for zero
+
+  convert_2_digits = function(x_c){
+    x_cs = strsplit(x_c, split = "")[[1]]
+    if(x_cs[1] == 1){# 10 - 19
+      out = zero_to_19[x_c]
+    } else { # >= 20
+      if(x_cs[2] == 0) { # 20, 30, 40, ...
+        out = unname(tens[x_c])
+      } else { # 21, 22, etc.
+        out = paste(tens[as.integer(x_cs[1]) - 1],
+              convert_1_digit(x_cs[2]),
+              sep = " ")
+      }
+    }
+    unname(out)
+  }
+
+  convert_3_digits = function(x_c){
+    x_cs = strsplit(x_c, split = "")[[1]]
+    n_hundreds = paste(convert_1_digit(x_cs[1]), "hundred", sep = " ")
+    if(x_cs[2] == "0") {
+      if(x_cs[3] == "0") {
+        return(n_hundreds)
+      } else {
+        out = convert_1_digit(x_cs[3])
+      }
+    } else {
+      out = convert_2_digits(paste(x_cs[2:3], collapse = ""))
+    }
+    paste(n_hundreds, out, sep = " ")
+  }
+
+  convert_le3_digits = function(x_c){
+    x_c = gsub("^0*", "", x_c)
+    n = nchar(x_c)
+    if(n == 0) return("")
+    if(n == 1) return(convert_1_digit(x_c))
+    if(n == 2) return(convert_2_digits(x_c))
+    if(n == 3) return(convert_3_digits(x_c))
+  }
+
+  if(n_digists >= 10){ # billions
+    part1 = paste(convert_le3_digits(paste(x_chars[1: (n_d <- n_digists - 9)],
+                                           collapse = "")),
+          "billion", sep = " ")
+    p2 = convert_le3_digits(paste(x_chars[(1:3) + n_d], collapse = ""))
+    part2 = paste(p2, if(p2 != "") "million" else "", sep = " ")
+    p3 = convert_le3_digits(paste(x_chars[(4:6) + n_d], collapse = ""))
+    part3 = paste(p3, if(p3 != "") "thousand" else "", sep = " ")
+    part4 = convert_le3_digits(paste(x_chars[(7:9) + n_d], collapse = ""))
+    out = paste(part1, part2, part3, part4, collapse = "")
+  } else {
+    if(n_digists >= 7){ # millions
+      part1 = paste(convert_le3_digits(paste(x_chars[1: (n_d <- n_digists - 6)],
+                                             collapse = "")),
+                    "million", sep = " ")
+      p2 = convert_le3_digits(paste(x_chars[(1:3) + n_d], collapse = ""))
+      part2 = paste(p2, if(p2 != "") "thousand" else "", sep = " ")
+      part3 = convert_le3_digits(paste(x_chars[(4:6) + n_d], collapse = ""))
+      out = paste(part1, part2, part3, collapse = "")
+    } else {
+      if(n_digists >= 4){ # thounsands
+        part1 = paste(convert_le3_digits(paste(x_chars[1: (n_d <- n_digists - 3)],
+                                               collapse = "")),
+                      "thousand", sep = " ")
+        part2 = convert_le3_digits(paste(x_chars[(1:3) + n_d], collapse = ""))
+        out = paste(part1, part2, collapse = "")
+      } else { # 0 - 999
+        out = if(x == 0) "zero" else convert_le3_digits(paste(x_chars,
+                                                              collapse = ""))
+      }
+    }
+  }
+
+  out = gsub("^ *| *$", "", out)
+  out = gsub(" {2,}", " ", out)
+  if(n_digists < 3 & hyphen) out = gsub(" ", "-", out)
+  if(cap) substr(out, 1, 1) = toupper(substr(out, 1, 1))
+  out
+}
+
+
