@@ -111,92 +111,86 @@ escape_math = function(x) {
 #' number_to_word(0:30, cap = TRUE)
 number_to_word = function(x, cap = FALSE, hyphen = TRUE){
   if(length(x) > 1) return(sapply(x, number_to_word, cap = cap, hyphen = hyphen))
-
+  
   if(!is.numeric(x)) stop("the input is not a number")
-  if(x > 1e15) {
+  if(x > 1e13) {
     warning("the number is too large, skip the convertion")
     return(x)
   }
-
-  opts <- options(scipen = 15)
+  
+  opts <- options(scipen = 15) # avoid something like 1e7
   on.exit(options(opts))
-
-  x_char = as.character(x)
+  
   if(!is.integer(x)) {
-    if(grepl("[.]", x_char)){
+    if(grepl("[.]", as.character(x))){
       warning("the number is not an integer, skip the convertion")
       return(x)
     }
   }
-
+  
   zero_to_19 = c("zero", "one", "two", "three", "four", "five", "six", "seven",
                  "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen",
                  "fifteen", "sixteen", "seventeen", "eighteen", "nineteen")
   names(zero_to_19) = as.character(0:19)
   tens = c("twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")
   names(tens) = as.character(seq(20, 90, 10))
-
-  n_digits = nchar(x_char)
-  x_chars = strsplit(x_char, split = "")[[1]]
-
-  convert_1_digit = function(x_c) unname(zero_to_19[x_c]) # account for zero
-
-  convert_2_digits = function(x_c){
+  
+  convert_1_digit = function(x_c) unname(zero_to_19[x_c]) # 0 - 9
+  
+  convert_2_digits = function(x_c){ # 10 - 99
     x_cs = strsplit(x_c, split = "")[[1]]
-    if(x_cs[1] == 1){# 10 - 19
+    if(x_cs[1] == 1){ # 10 - 19
       out = zero_to_19[x_c]
     } else { # >= 20
       if(x_cs[2] == 0) { # 20, 30, 40, ...
-        out = unname(tens[x_c])
+        out = tens[x_c]
       } else { # 21, 22, etc.
         out = paste(tens[as.integer(x_cs[1]) - 1],
-              convert_1_digit(x_cs[2]),
-              sep = " ")
+                    convert_1_digit(x_cs[2]),
+                    sep = " ")
       }
     }
     unname(out)
   }
-
-  convert_3_digits = function(x_c){
+  
+  convert_3_digits = function(x_c){ # 100 - 999
     x_cs = strsplit(x_c, split = "")[[1]]
     n_hundreds = paste(convert_1_digit(x_cs[1]), "hundred", sep = " ")
     if(x_cs[2] == "0") {
-      if(x_cs[3] == "0") {
+      if(x_cs[3] == "0") { # x00
         return(n_hundreds)
-      } else {
+      } else { # x0x
         out = convert_1_digit(x_cs[3])
       }
-    } else {
+    } else { # xxx
       out = convert_2_digits(paste(x_cs[2:3], collapse = ""))
     }
     paste(n_hundreds, out, sep = " ")
   }
-
+  
   convert_le3_digits = function(x_c){
-    x_c = gsub("^0*", "", x_c)
+    x_c = gsub("^0*", "", x_c) # avoid something like 000, 001, 010; but also remove 0
     n = nchar(x_c)
     if(n == 0) return("")
     if(n == 1) return(convert_1_digit(x_c))
     if(n == 2) return(convert_2_digits(x_c))
     if(n == 3) return(convert_3_digits(x_c))
   }
-
+  
   marks = c("", "thousand", "million", "billion")
-  if(n_digits >= 4){
-    x_marks = strsplit(format(x, big.mark = ","), split = ",")[[1]]
-    n_mark = length(x_marks)
-    out = sapply(x_marks, convert_le3_digits)
-    x_marks2 = rev(marks[1:n_mark])
-    x_marks2[which(out == "")] = ""
-    out = paste(paste(out, x_marks2, sep = " "), collapse = " ")
+  if(x == 0){
+    out = "zero" # because convert_le3_digits removed all 0s
   } else {
-    out = if(x == 0) "zero" else convert_le3_digits(paste(x_chars, collapse = ""))
+    x_marks = strsplit(format(x, big.mark = ","), split = ",")[[1]] # e.g. 123,456,789
+    out = sapply(x_marks, convert_le3_digits) # group by 3 digits
+    x_marks2 = marks[length(x_marks) : 1] # units?
+    x_marks2[which(out == "")] = "" # e.g. 4,000,123, 000, remove millions
+    out = paste(paste(out, x_marks2, sep = " "), collapse = " ") # zip together
   }
   
-  out = gsub("^ *| *$", "", out)
-  out = gsub(" {2,}", " ", out)
-  if(n_digits < 3 & hyphen) out = gsub(" ", "-", out)
+  out = gsub("^ *| *$", "", out) # trim heading/trailing space
+  out = gsub(" {2,}", " ", out) # remove multiple spaces
+  if(x < 100 & hyphen) out = gsub(" ", "-", out)
   if(cap) substr(out, 1, 1) = toupper(substr(out, 1, 1))
   out
 }
-
