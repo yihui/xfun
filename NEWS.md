@@ -4,6 +4,8 @@
 
 - Added a new functions `download_file()` to try various methods to download a file.
 
+- Added a new function `is_ascii()` to test if a character vector only consists of ASCII characters.
+
 # CHANGES IN xfun VERSION 0.2
 
 ## NEW FEATURES

@@ -21,3 +21,16 @@ native_encode = function(x, windows_only = is_windows()) {
   warning('The character vector cannot be represented in the native encoding')
   x
 }
+
+#' Check if a character vector consists of entirely ASCII characters
+#'
+#' Converts the encoding of a character vector to \code{'ascii'}, and check if
+#' the result is \code{NA}.
+#' @param x A character vector.
+#' @return A logical vector indicating whether each element of the character
+#'   vector is ASCII.
+#' @export
+#' @examples library(xfun)
+#' is_ascii(letters)  # yes
+#' is_ascii(intToUtf8(8212))  # no
+is_ascii = function(x) !is.na(iconv(x, to = 'ascii'))
