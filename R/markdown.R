@@ -102,38 +102,26 @@ escape_math = function(x) {
 #'
 #' @param x A numeric vector.
 #' @param cap Whether to capitalize the first letter of the word; this can be useful when the word is
-#' at the beginning of a sentence. Default is \code{FALSE}.
+#'   at the beginning of a sentence. Default is \code{FALSE}.
 #' @param hyphen Whether to insert hyphen (-) when the number is between 21 and 99 (except 30, 40, etc.).
+#' @param and Whether to insert "and" between hundreds and tens, 
+#'   i.e., write 110 asn one hundred and ten if \code{TRUE} instead of one hundred ten
 #' @return A character vector.
 #' @export
 #' @examples library(xfun)
-#' number_to_word(0, cap = TRUE)
-#' number_to_word(0:30, cap = TRUE)
-number_to_word = function(x, cap = FALSE, hyphen = TRUE){
-  if(length(x) > 1) return(sapply(x, number_to_word, cap = cap, hyphen = hyphen))
-  
-  if(!is.numeric(x)) stop("the input is not a number")
-  if(x > 1e13) {
-    warning("the number is too large, skip the convertion")
-    return(x)
-  }
-  
-  opts <- options(scipen = 15) # avoid something like 1e7
-  on.exit(options(opts))
-  
-  if(!is.integer(x)) {
-    if(grepl("[.]", as.character(x))){
-      warning("the number is not an integer, skip the convertion")
-      return(x)
-    }
-  }
-  
+#' numbers_to_words(0, cap = TRUE)
+#' numbers_to_words(0:30, cap = TRUE, and = TRUE)
+numbers_to_words = function(x, cap = FALSE, hyphen = TRUE, and = FALSE){
   zero_to_19 = c("zero", "one", "two", "three", "four", "five", "six", "seven",
                  "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen",
                  "fifteen", "sixteen", "seventeen", "eighteen", "nineteen")
   names(zero_to_19) = as.character(0:19)
   tens = c("twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety")
   names(tens) = as.character(seq(20, 90, 10))
+  marks = c("", "thousand,", "million,", "billion,")
+  
+  opts <- options(scipen = 15) # avoid something like 1e7
+  on.exit(options(opts))
   
   convert_1_digit = function(x_c) unname(zero_to_19[x_c]) # 0 - 9
   
@@ -147,7 +135,7 @@ number_to_word = function(x, cap = FALSE, hyphen = TRUE){
       } else { # 21, 22, etc.
         out = paste(tens[as.integer(x_cs[1]) - 1],
                     convert_1_digit(x_cs[2]),
-                    sep = " ")
+                    sep = if(hyphen) "-" else " ")
       }
     }
     unname(out)
@@ -165,7 +153,7 @@ number_to_word = function(x, cap = FALSE, hyphen = TRUE){
     } else { # xxx
       out = convert_2_digits(paste(x_cs[2:3], collapse = ""))
     }
-    paste(n_hundreds, out, sep = " ")
+    paste(n_hundreds, out, sep = if(and) " and " else " ")
   }
   
   convert_le3_digits = function(x_c){
@@ -177,20 +165,42 @@ number_to_word = function(x, cap = FALSE, hyphen = TRUE){
     if(n == 3) return(convert_3_digits(x_c))
   }
   
-  marks = c("", "thousand", "million", "billion")
-  if(x == 0){
-    out = "zero" # because convert_le3_digits removed all 0s
-  } else {
-    x_marks = strsplit(format(x, big.mark = ","), split = ",")[[1]] # e.g. 123,456,789
-    out = sapply(x_marks, convert_le3_digits) # group by 3 digits
-    x_marks2 = marks[length(x_marks) : 1] # units?
-    x_marks2[which(out == "")] = "" # e.g. 4,000,123, 000, remove millions
-    out = paste(paste(out, x_marks2, sep = " "), collapse = " ") # zip together
+  convert_one_number = function(x){
+    if(!is.numeric(x)) stop("the input is not a number")
+    if(abs(x) > 1e13) {
+      warning("the number is too large/small, skip the convertion")
+      return(x)
+    }
+    
+    if(grepl("[.]", as.character(x))){
+      warning("the number is not an integer, skip the convertion")
+      return(x)
+    }
+    
+    if(x < 0) { # handle negative values
+      minus = "minus "
+      x = abs(x)
+    } else {
+      minus =  ""
+    }
+    
+    if(x == 0){
+      out = "zero" # because convert_le3_digits removed all 0s
+    } else {
+      x_marks = strsplit(format(x, big.mark = ","), split = ",")[[1]] # e.g. 123,456,789
+      out = sapply(x_marks, convert_le3_digits) # group by 3 digits
+      x_marks2 = marks[length(x_marks) : 1] # units?
+      x_marks2[which(out == "")] = "" # e.g. 4,000,123, 000, remove millions
+      out = paste(paste(out, x_marks2, sep = " "), collapse = " ") # zip together
+    }
+    out = paste0(minus, out)
+    out = gsub("^ *|,? *$", "", out) # trim heading/trailing space
+    out = gsub(" {2,}", " ", out) # remove multiple spaces
+    # if(x < 100 & hyphen) out = gsub(" ", "-", out)
+    if(cap) substr(out, 1, 1) = toupper(substr(out, 1, 1))    
+    out
   }
   
-  out = gsub("^ *| *$", "", out) # trim heading/trailing space
-  out = gsub(" {2,}", " ", out) # remove multiple spaces
-  if(x < 100 & hyphen) out = gsub(" ", "-", out)
-  if(cap) substr(out, 1, 1) = toupper(substr(out, 1, 1))
-  out
+  if(length(x) > 1) return(sapply(x, convert_one_number)) else return(convert_one_number(x))
 }
+          
