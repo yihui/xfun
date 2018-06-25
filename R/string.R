@@ -41,16 +41,10 @@ numbers_to_words = function(x, cap = FALSE, hyphen = TRUE, and = FALSE) {
   # 10 - 99
   convert_2 = function(x_c) {
     x_cs = strsplit(x_c, split = '')[[1]]
-    if (x_cs[1] == 1) {
-      zero_to_19[x_c]  # 10 - 19
-    } else {
-      if (x_cs[2] == 0) {
-        tens[x_c]  # 20, 30, 40, ...
-      } else {
-        # 21, 22, etc.
-        paste(tens[as.integer(x_cs[1]) - 1], convert_1(x_cs[2]), sep = if (hyphen) '-' else ' ')
-      }
-    }
+    if (x_cs[1] == 1) return(zero_to_19[x_c])  # 10 - 19
+    if (x_cs[2] == 0) return(tens[x_c])  # 20, 30, 40, ...
+    # 21, 22, etc.
+    paste(tens[as.integer(x_cs[1]) - 1], convert_1(x_cs[2]), sep = if (hyphen) '-' else ' ')
   }
 
   # 100 - 999
