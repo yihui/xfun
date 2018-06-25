@@ -20,6 +20,7 @@
 #' n2w(0:121, and = TRUE)
 #' n2w(1e6)
 #' n2w(1e11+12345678)
+#' n2w(-987654321)
 numbers_to_words = function(x, cap = FALSE, hyphen = TRUE, and = FALSE) {
 
   if (!is.numeric(x)) stop('The input is not numeric.')
