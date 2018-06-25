@@ -14,6 +14,7 @@
 #'   write 110 as \dQuote{one hundred and ten} if \code{TRUE} instead of
 #'   \dQuote{one hundred ten}.
 #' @return A character vector.
+#' @author Daijiang Li
 #' @export
 #' @examples library(xfun)
 #' n2w(0, cap = TRUE)
