@@ -25,7 +25,7 @@ numbers_to_words = function(x, cap = FALSE, hyphen = TRUE, and = FALSE) {
   if (!is.numeric(x)) stop('The input is not numeric.')
   if (any(abs(x) > 1e13)) stop('The absolute value must not be greater than 1e13.')
   opts = options(scipen = 15); on.exit(options(opts), add = TRUE)  # avoid scientific notation
-  if (length(grep('[^0-9]', as.character(x)))) stop('The numbers must be integer.')
+  if (any(x != floor(x))) stop('The numbers must be integer. ')
 
   zero_to_19 = c(
     'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
