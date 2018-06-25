@@ -187,7 +187,6 @@ numbers_to_words = function(x, cap = FALSE, hyphen = TRUE, and = FALSE) {
     out = paste0(minus, out)
     out = gsub('^ *|,? *$', '', out)  # trim heading/trailing space
     out = gsub(' {2,}', ' ', out)  # remove multiple spaces
-    # if (x < 100 & hyphen) out = gsub(' ', '-', out)
     if (cap) out = sub('^([a-z])', '\\U\\1', out, perl = TRUE)
     out
   }
