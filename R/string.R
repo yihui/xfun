@@ -4,7 +4,7 @@
 #' we want to print numbers as English words in the output. The function
 #' \code{n2w()} is an alias of \code{numbers_to_words()}.
 #' @param x A numeric vector. Values should be integers. The absolute values
-#'   should not be greater than \code{1e13}.
+#'   should be less than \code{1e15}.
 #' @param cap Whether to capitalize the first letter of the word. This can be
 #'   useful when the word is at the beginning of a sentence. Default is
 #'   \code{FALSE}.
@@ -22,10 +22,11 @@
 #' n2w(1e6)
 #' n2w(1e11+12345678)
 #' n2w(-987654321)
+#' n2w(1e15-1)
 numbers_to_words = function(x, cap = FALSE, hyphen = TRUE, and = FALSE) {
 
   if (!is.numeric(x)) stop('The input is not numeric.')
-  if (any(abs(x) > 1e13)) stop('The absolute value must not be greater than 1e13.')
+  if (any(abs(x) >= 1e15)) stop('The absolute value must be less than 1e15.')
   opts = options(scipen = 15); on.exit(options(opts), add = TRUE)  # avoid scientific notation
   if (any(x != floor(x))) stop('The numbers must be integer. ')
 
@@ -36,7 +37,7 @@ numbers_to_words = function(x, cap = FALSE, hyphen = TRUE, and = FALSE) {
   names(zero_to_19) = as.character(0:19)
   tens = c('twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety')
   names(tens) = as.character(seq(20, 90, 10))
-  marks = c('', 'thousand,', 'million,', 'billion,')
+  marks = c('', 'thousand,', 'million,', 'billion,', 'trillion,')
 
   convert_1 = function(x_c) zero_to_19[x_c]  # 0 - 9
 

@@ -11,7 +11,7 @@ n2w(x, cap = FALSE, hyphen = TRUE, and = FALSE)
 }
 \arguments{
 \item{x}{A numeric vector. Values should be integers. The absolute values
-should not be greater than \code{1e13}.}
+should be less than \code{1e15}.}
 
 \item{cap}{Whether to capitalize the first letter of the word. This can be
 useful when the word is at the beginning of a sentence. Default is
@@ -39,6 +39,7 @@ n2w(0:121, and = TRUE)
 n2w(1e+06)
 n2w(1e+11 + 12345678)
 n2w(-987654321)
+n2w(1e+15 - 1)
 }
 \author{
 Daijiang Li
