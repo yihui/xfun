@@ -4,7 +4,7 @@
 \alias{download_file}
 \title{Try various methods to download a file}
 \usage{
-download_file(url, output = basename(output), ...)
+download_file(url, output = basename(url), ...)
 }
 \arguments{
 \item{url}{The URL of the file.}
