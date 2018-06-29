@@ -111,3 +111,19 @@ install_dir = function(src, build = TRUE, build_opts = NULL, install_opts = NULL
   if (res != 0) stop('Failed to install the package ', pkg)
   invisible(res)
 }
+
+install_brew_deps = function(pkg = .packages(TRUE)) {
+  con = url('https://macos.rbind.org/bin/macosx/sysreqsdb.rds')
+  on.exit(close(con), add = TRUE)
+  inst = installed.packages()
+  pkg = intersect(pkg, pkg_needs_compilation(inst))
+  deps = readRDS(con)
+  deps = deps[c(pkg, xfun:::pkg_dep(pkg, inst, recursive = TRUE))]
+  deps = paste(na.omit(unique(deps)), collapse = ' ')
+  if (deps != '') system(paste('brew install', deps))
+}
+
+pkg_needs_compilation = function(db = installed.packages()) {
+  pkgs = unname(db[tolower(db[, 'NeedsCompilation']) == 'yes', 'Package'])
+  pkgs[!is.na(pkgs)]
+}
