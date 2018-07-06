@@ -7,6 +7,7 @@
 #' @param x An R object.
 #' @export
 #' @return A character string.
+#' @seealso The \pkg{jsonlite} package provides a full JSON serializer.
 #' @examples library(xfun)
 #' tojson(NULL); tojson(1:10); tojson(TRUE); tojson(FALSE)
 #' cat(tojson(list(a = 1, b = list(c = 1:3, d = 'abc'))))
