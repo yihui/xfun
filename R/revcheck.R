@@ -283,7 +283,7 @@ download_tarball = function(p, db = available.packages(type = 'source'), dir = '
   unlink(setdiff(list.files(dir, sprintf('^%s_.+.tar.gz', p), full.names = TRUE), z))
   for (i in seq_len(retry)) {
     if (file.exists(z)) break
-    try(download.file(paste(db[p, 'Repository'], z, sep = '/'), z, mode = 'wb'))
+    try(download.file(paste(db[p, 'Repository'], basename(z), sep = '/'), z, mode = 'wb'))
   }
   z
 }
