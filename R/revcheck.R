@@ -95,11 +95,6 @@ rev_check = function(
   if (length(src) != 1 || !dir.exists(src)) stop(
     'The package source dir (the "src" argument) must be an existing directory'
   )
-
-  # rJava breaks occasionally (after I update Java or R)
-  message('Running R CMD javareconf...')
-  Rcmd('javareconf', stdout = FALSE)
-
   if (update) {
     message('Updating all R packages...')
     update.packages(ask = FALSE, checkBuilt = TRUE)
