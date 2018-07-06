@@ -220,6 +220,8 @@ rev_check = function(
 clean_log = function() {
   if (!file.exists(l <- '00check.log')) return()
   x = grep('^[*].+OK$', read_utf8(l), invert = TRUE, value = TRUE)
+  # don't want diffs in random tempdir/tempfile paths when comparing check logs
+  x[grep(dirname(tempdir()), x, fixed = TRUE)] = 'RANDOM TEMPDIR/TEMPFILE PATH DELETED'
   writeLines(tail(x, -2), l)  # remove the first 2 lines (log dir name and R version)
 }
 
