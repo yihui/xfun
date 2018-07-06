@@ -21,8 +21,9 @@ A character string.
 }
 \description{
 A JSON serializer that only works on a limited types of R data (\code{NULL},
-lists, logical scalars, character/numeric vectors). The function
-\code{json_vector()} converts an atomic R vector to JSON.
+lists, logical scalars, character/numeric vectors). A character string of the
+class \code{JS_EVAL} is treated as raw JavaScript, so will not be quoted. The
+function \code{json_vector()} converts an atomic R vector to JSON.
 }
 \examples{
 library(xfun)
@@ -32,4 +33,6 @@ tojson(TRUE)
 tojson(FALSE)
 cat(tojson(list(a = 1, b = list(c = 1:3, d = "abc"))))
 cat(tojson(list(c("a", "b"), 1:5, TRUE)))
+# the class JS_EVAL is originally from htmlwidgets::JS()
+cat(tojson(list(a = 1:5, b = structure("function() {return true;}", class = "JS_EVAL"))))
 }

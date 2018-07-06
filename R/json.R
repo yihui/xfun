@@ -1,8 +1,9 @@
 #' A simple JSON serializer
 #'
 #' A JSON serializer that only works on a limited types of R data (\code{NULL},
-#' lists, logical scalars, character/numeric vectors). The function
-#' \code{json_vector()} converts an atomic R vector to JSON.
+#' lists, logical scalars, character/numeric vectors). A character string of the
+#' class \code{JS_EVAL} is treated as raw JavaScript, so will not be quoted. The
+#' function \code{json_vector()} converts an atomic R vector to JSON.
 #' @param x An R object.
 #' @export
 #' @return A character string.
@@ -10,6 +11,10 @@
 #' tojson(NULL); tojson(1:10); tojson(TRUE); tojson(FALSE)
 #' cat(tojson(list(a = 1, b = list(c = 1:3, d = 'abc'))))
 #' cat(tojson(list(c('a', 'b'), 1:5, TRUE)))
+#'
+#' # the class JS_EVAL is originally from htmlwidgets::JS()
+#' JS = function(x) structure(x, class = 'JS_EVAL')
+#' cat(tojson(list(a = 1:5, b = JS('function() {return true;}'))))
 tojson = function(x) {
   if (is.null(x)) return('null')
   if (is.logical(x)) {
@@ -17,6 +22,7 @@ tojson = function(x) {
       stop('Logical values of length > 1 and NA are not supported')
     return(tolower(as.character(x)))
   }
+  if (is.character(x) && inherits(x, 'JS_EVAL')) return(paste(x, collapse = '\n'))
   if (is.character(x) || is.numeric(x)) {
     return(json_vector(x, length(x) != 1 || inherits(x, 'AsIs'), is.character(x)))
   }
