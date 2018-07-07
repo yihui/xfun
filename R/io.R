@@ -59,8 +59,11 @@ file_string = function(file) {
 #' These functions provide the "file" version of \code{\link{gsub}()}, i.e.,
 #' they perform searching and replacement in files via \code{gsub()}.
 #' @param file Path of a single file.
-#' @param ... Arguments passed to \code{gsub()}. Note that the argument \code{x}
-#'   of \code{gsub()} is the content of the file.
+#' @param ... For \code{gsub_file()}, arguments passed to \code{gsub()}. For
+#'   other functions, arguments passed to \code{gsub_file()}. Note that the
+#'   argument \code{x} of \code{gsub()} is the content of the file.
+#' @param rw_error Whether to signal an error if the file cannot be read or
+#'   written. If \code{FALSE}, the file will be ignored (with a warning).
 #' @param files A vector of file paths.
 #' @param dir Path to a directory (all files under this directory will be
 #'   replaced).
@@ -78,7 +81,11 @@ file_string = function(file) {
 #' writeLines(c('hello', 'world'), f)
 #' gsub_file(f, 'world', 'woRld', fixed = TRUE)
 #' readLines(f)
-gsub_file = function(file, ...) {
+gsub_file = function(file, ..., rw_error = TRUE) {
+  if (!(file.access(file, 2) == 0 && file.access(file, 4) == 0)) {
+    (if (rw_error) stop else warning)('Unable to read or write to ', file)
+    if (!rw_error) return(invisible())
+  }
   x2 = gsub(x = x1 <- read_utf8(file, error = TRUE), ...)
   if (!identical(x1, x2)) write_utf8(x2, file)
 }
@@ -89,17 +96,12 @@ gsub_files = function(files, ...) {
   for (f in files) gsub_file(f, ...)
 }
 
-#' @param rw_error Whether to signal an error if a certain file cannot be read
-#'   or written. If \code{FALSE}, such files will be ignored.
 #' @rdname gsub_file
 #' @export
-gsub_dir = function(
-  ..., dir = '.', recursive = TRUE, ext = NULL, mimetype = '.*', rw_error = TRUE
-) {
+gsub_dir = function(..., dir = '.', recursive = TRUE, ext = NULL, mimetype = '.*') {
   files = list.files(dir, full.names = TRUE, recursive = recursive)
   if (length(ext)) files = files[file_ext(files) %in% ext]
   if (mimetype != '.*') files = files[grep(mimetype, mime::guess_type(files))]
-  if (!rw_error) files = files[file.access(files, 2) == 0 & file.access(files, 4) == 0]
   gsub_files(files, ...)
 }
 

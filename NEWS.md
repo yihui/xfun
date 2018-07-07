@@ -1,3 +1,11 @@
+# CHANGES IN xfun VERSION 0.4
+
+## NEW FEATURES
+
+## MINOR CHANGES
+
+- The argument `rw_error` was moved from `gsub_dir()` to `gsub_file()` (`gsub_dir(rw_error = ...)` will still work).
+
 # CHANGES IN xfun VERSION 0.3
 
 ## NEW FEATURES
