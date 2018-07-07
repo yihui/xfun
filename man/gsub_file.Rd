@@ -7,19 +7,23 @@
 \alias{gsub_ext}
 \title{Search and replace strings in files}
 \usage{
-gsub_file(file, ...)
+gsub_file(file, ..., rw_error = TRUE)
 
 gsub_files(files, ...)
 
-gsub_dir(..., dir = ".", recursive = TRUE, ext = NULL, mimetype = ".*", rw_error = TRUE)
+gsub_dir(..., dir = ".", recursive = TRUE, ext = NULL, mimetype = ".*")
 
 gsub_ext(ext, ..., dir = ".", recursive = TRUE)
 }
 \arguments{
 \item{file}{Path of a single file.}
 
-\item{...}{Arguments passed to \code{gsub()}. Note that the argument \code{x}
-of \code{gsub()} is the content of the file.}
+\item{...}{For \code{gsub_file()}, arguments passed to \code{gsub()}. For
+other functions, arguments passed to \code{gsub_file()}. Note that the
+argument \code{x} of \code{gsub()} is the content of the file.}
+
+\item{rw_error}{Whether to signal an error if the file cannot be read or
+written. If \code{FALSE}, the file will be ignored (with a warning).}
 
 \item{files}{A vector of file paths.}
 
@@ -33,9 +37,6 @@ replaced).}
 \item{mimetype}{A regular expression to filter files based on their MIME
 types, e.g., \code{'^text/'} for plain text files. This requires the
 \pkg{mime} package.}
-
-\item{rw_error}{Whether to signal an error if a certain file cannot be read
-or written. If \code{FALSE}, such files will be ignored.}
 }
 \description{
 These functions provide the "file" version of \code{\link{gsub}()}, i.e.,
