@@ -1,7 +1,7 @@
 Package: xfun
 Type: Package
 Title: Miscellaneous Functions by 'Yihui Xie'
-Version: 0.3.3
+Version: 0.3.4
 Authors@R: c(
   person("Yihui", "Xie", role = c("aut", "cre", "cph"), email = "xie@yihui.name", comment = c(ORCID = "0000-0003-0645-5666")),
   person("Daijiang", "Li", role = "ctb"),
@@ -17,6 +17,8 @@ Suggests:
     mime,
     markdown,
     knitr,
+    htmltools,
+    base64enc,
     rmarkdown
 License: MIT + file LICENSE
 URL: https://github.com/yihui/xfun
