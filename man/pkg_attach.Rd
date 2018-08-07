@@ -9,7 +9,7 @@
 \title{Attach or load packages, and automatically install missing packages if
 requested}
 \usage{
-pkg_attach(..., install = FALSE)
+pkg_attach(..., install = FALSE, message = getOption("xfun.pkg_attach.message", TRUE))
 
 pkg_load(..., error = TRUE, install = FALSE)
 
@@ -26,6 +26,9 @@ pkg_load2(...)
 available using \code{\link{install.packages}()}. You are recommended to
 set a CRAN mirror in the global option \code{repos} via
 \code{\link{options}()} if you want to automatically install packages.}
+
+\item{message}{Whether to show the package startup messages (if any startup
+messages are provided in a package).}
 
 \item{error}{Whether to signal an error when certain packages cannot be loaded.}
 

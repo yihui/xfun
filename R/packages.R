@@ -19,6 +19,8 @@
 #'   available using \code{\link{install.packages}()}. You are recommended to
 #'   set a CRAN mirror in the global option \code{repos} via
 #'   \code{\link{options}()} if you want to automatically install packages.
+#' @param message Whether to show the package startup messages (if any startup
+#'   messages are provided in a package).
 #' @return \code{pkg_attach()} returns \code{NULL} invisibly. \code{pkg_load()}
 #'   returns a logical vector, indicating whether the packages can be loaded.
 #' @import utils
@@ -28,7 +30,12 @@
 #' # pkg_attach2('servr')  # automatically install servr if it is not installed
 #'
 #' (pkg_load('stats', 'graphics'))
-pkg_attach = function(..., install = FALSE) {
+pkg_attach = function(
+  ..., install = FALSE, message = getOption('xfun.pkg_attach.message', TRUE)
+) {
+  if (!message) library = function(...) {
+    suppressPackageStartupMessages(base::library(...))
+  }
   for (i in c(...)) {
     if (install && !loadable(i)) install.packages(i)
     library(i, character.only = TRUE)
