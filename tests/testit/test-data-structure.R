@@ -15,3 +15,10 @@ assert("strict_list is really strict", {
   s_list$ddd = "abcd"
   (inherits(s_list, "xfun_strict_list"))
 })
+
+assert("raw_string prints as expected", {
+  rs <- raw_string(c('a "b"', 'hello\tworld!'))
+  (inherits(rs, "xfun_raw_string"))
+  output <- capture.output(rs)
+  (output %==% c("a \"b\"", "hello\tworld!"))
+})
