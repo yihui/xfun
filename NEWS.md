@@ -10,6 +10,8 @@
 
 - The argument `rw_error` was moved from `gsub_dir()` to `gsub_file()` (`gsub_dir(rw_error = ...)` will still work).
 
+- `is_ascii()` now returns `NA` for `NA_character_` (thanks, @shrektan, #8 #9).
+
 # CHANGES IN xfun VERSION 0.3
 
 ## NEW FEATURES
