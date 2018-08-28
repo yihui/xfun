@@ -34,7 +34,7 @@ native_encode = function(x, windows_only = is_windows()) {
 #' is_ascii(letters)  # yes
 #' is_ascii(intToUtf8(8212))  # no
 is_ascii = function(x) {
-  out <- !is.na(iconv(x, to = 'ascii'))
-  out[is.na(x)] <- NA
+  out = !is.na(iconv(x, to = 'ascii'))
+  out[is.na(x)] = NA
   out
 }
