@@ -39,7 +39,7 @@ write_utf8 = function(text, con, ...) {
 
 # which lines are invalid UTF-8
 invalid_utf8 = function(x) {
-  which(is.na(iconv(x, 'UTF-8', 'UTF-8')))
+  which(!is.na(x) & is.na(iconv(x, 'UTF-8', 'UTF-8')))
 }
 
 #' Read a text file and concatenate the lines by \code{'\n'}
