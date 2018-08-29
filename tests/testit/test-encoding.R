@@ -23,5 +23,5 @@ assert("is_ascii can really identify ascii strings", {
   (!is_ascii(latin_str))
   (!is_ascii(cn_str))
   (is_ascii(mixed_str) %==% c(TRUE, TRUE, TRUE, FALSE))
-  (is_ascii(c(NA_character_, "a")) %==% c(FALSE, TRUE))
+  (is_ascii(c(NA_character_, "a")) %==% c(NA, TRUE))
 })
