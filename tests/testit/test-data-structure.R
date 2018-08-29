@@ -1,7 +1,7 @@
 library(testit)
 
 assert("strict_list is really strict", {
-  s_list <- strict_list(aaa = 1:3, bbb = c("hey", "mom"))
+  s_list = strict_list(aaa = 1:3, bbb = c("hey", "mom"))
   # the class name better not be changed in the future
   (inherits(s_list, "xfun_strict_list"))
   # `$` returns the expected value if the name provided is complete
@@ -17,8 +17,8 @@ assert("strict_list is really strict", {
 })
 
 assert("raw_string prints as expected", {
-  rs <- raw_string(c('a "b"', 'hello\tworld!'))
+  rs = raw_string(c('a "b"', 'hello\tworld!'))
   (inherits(rs, "xfun_raw_string"))
-  output <- capture.output(rs)
+  output = capture.output(rs)
   (output %==% c("a \"b\"", "hello\tworld!"))
 })
