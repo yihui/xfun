@@ -153,3 +153,8 @@ embed_files = function(path, name = with_ext(basename(path[1]), '.zip'), ...) {
   zip(name, path)
   embed_file(name, ...)
 }
+
+zip = function(name, ...) {
+  if (utils::zip(name, ...) != 0) stop('Failed to create the zip archive ', name)
+  invisible(0)
+}
