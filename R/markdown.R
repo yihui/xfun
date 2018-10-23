@@ -123,6 +123,9 @@ escape_math = function(x) {
 #'   \pkg{htmltools}. If you have installed the \pkg{rmarkdown} package, these
 #'   packages should be available, otherwise you need to install them
 #'   separately.
+#'
+#'   Currently Internet Explorer does not support downloading embedded files
+#'   (\url{https://caniuse.com/#feat=download}).
 #' @return An HTML tag \samp{<a>} with the appropriate attributes.
 #' @export
 #' @examples
