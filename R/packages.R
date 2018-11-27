@@ -69,6 +69,7 @@ pkg_load = function(..., error = TRUE, install = FALSE) {
 #' @rdname pkg_attach
 #' @export
 loadable = function(pkg, strict = TRUE, new_session = FALSE) {
+  if (length(pkg) != 1L) stop("'pkg' must be a length one character")
   if (new_session) {
     Rscript(c('-e', shQuote(sprintf('library("%s")', pkg))), stdout = FALSE, stderr = FALSE) == 0
   } else {
