@@ -22,6 +22,7 @@ sans_ext = function(x) tools::file_path_sans_ext(x)
 #' @rdname file_ext
 #' @export
 with_ext = function(x, ext) {
+  if (anyNA(ext)) stop("NA is not allowed in 'ext'")
   n1 = length(x); n2 = length(ext); r = '([.][[:alnum:]]+)?$'
   if (n1 * n2 == 0) return(x)
   i = !grepl('^[.]', ext) & ext != ''
