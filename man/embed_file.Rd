@@ -51,6 +51,9 @@ Windows users may need to install Rtools to obtain the \command{zip}
   \pkg{htmltools}. If you have installed the \pkg{rmarkdown} package, these
   packages should be available, otherwise you need to install them
   separately.
+
+  Currently Internet Explorer does not support downloading embedded files
+  (\url{https://caniuse.com/#feat=download}).
 }
 \examples{
 logo = file.path(R.home("doc"), "html", "logo.jpg")

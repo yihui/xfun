@@ -123,6 +123,9 @@ escape_math = function(x) {
 #'   \pkg{htmltools}. If you have installed the \pkg{rmarkdown} package, these
 #'   packages should be available, otherwise you need to install them
 #'   separately.
+#'
+#'   Currently Internet Explorer does not support downloading embedded files
+#'   (\url{https://caniuse.com/#feat=download}).
 #' @return An HTML tag \samp{<a>} with the appropriate attributes.
 #' @export
 #' @examples
@@ -152,4 +155,9 @@ embed_files = function(path, name = with_ext(basename(path[1]), '.zip'), ...) {
   on.exit(file.remove(name), add = TRUE)
   zip(name, path)
   embed_file(name, ...)
+}
+
+zip = function(name, ...) {
+  if (utils::zip(name, ...) != 0) stop('Failed to create the zip archive ', name)
+  invisible(0)
 }
