@@ -11,7 +11,7 @@
 #' prose_index(c('a', '```', 'b', '```', 'c'))
 #' prose_index(c('a', '````', '```r', '1+1', '```', '````', 'c'))
 prose_index = function(x) {
-  idx = NULL; r = '^(\\s*```*).*'; s = ''
+  idx = NULL; r = '^(\\s*```+).*'; s = ''
   for (i in grep(r, x)) {
     if (s == '') {
       s = gsub(r, '\\1', x[i]); idx = c(idx, i); next
