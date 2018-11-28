@@ -5,7 +5,8 @@ Version: 0.4.4
 Authors@R: c(
   person("Yihui", "Xie", role = c("aut", "cre", "cph"), email = "xie@yihui.name", comment = c(ORCID = "0000-0003-0645-5666")),
   person("Daijiang", "Li", role = "ctb"),
-  person("Xianying", "Tan", role = "ctb")
+  person("Xianying", "Tan", role = "ctb"),
+  person()
   )
 Description: Miscellaneous functions commonly used in other packages maintained by 'Yihui Xie'.
 Imports: tools
