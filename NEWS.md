@@ -1,6 +1,8 @@
 # CHANGES IN xfun VERSION 0.5
 
+## BUG FIXES
 
+- Fixed the bug that `prose_index()` reconginizes double back-ticks as code fences (thanks, @shrektan, #14 #15).
 
 # CHANGES IN xfun VERSION 0.4
 
