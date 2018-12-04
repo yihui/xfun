@@ -427,3 +427,28 @@ install_missing_latex = function() {
   }
   tinytex::tlmgr_install(unique(pkgs))
 }
+
+# return packages that haven't been updated for X days, and can be updated on CRAN
+cran_updatable = function(days = 60, maintainer = 'Yihui Xie') {
+  info = tools::CRAN_package_db()
+  pkgs = info[grep(maintainer, info$Maintainer), 'Package']
+  info = setNames(vector('list', length(pkgs)), pkgs)
+  for (p in pkgs) {
+    message('Processing ', p)
+    x = readLines(u <- sprintf('https://cran.rstudio.com/web/packages/%s/', p))
+    i = which(x == '<td>Published:</td>')
+    if (length(i) == 0) stop('Cannot find the publishing date from ', u)
+    d = as.Date(gsub('</?td>', '', x[i[1] + 1]))
+    x = try(readLines(u <- sprintf('https://cran.r-project.org/src/contrib/Archive/%s/', p)))
+    if (inherits(x, 'try-error')) {
+      info[[p]] = d; next
+    }
+    r = '.+</td><td align="right">(\\d{4,}-\\d{2}-\\d{2}) .+'
+    d = c(d, as.Date(gsub(r, '\\1', grep(r, x, value = TRUE))))
+    info[[p]] = sort(d, decreasing = TRUE)
+  }
+  flag = unlist(lapply(info, function(d) {
+    sum(d > Sys.Date() - 180) < 6 && d[1] < Sys.Date() - days
+  }))
+  names(which(flag))
+}
