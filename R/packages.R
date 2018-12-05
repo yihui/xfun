@@ -135,3 +135,10 @@ pkg_needs_compilation = function(db = installed.packages()) {
   pkgs = unname(db[tolower(db[, 'NeedsCompilation']) == 'yes', 'Package'])
   pkgs[!is.na(pkgs)]
 }
+
+# an alias of remotes::install_github(), to make autocomplete faster via
+# xfun:::install_github, because most remotes::install_* functions are never
+# what I want; I only use install_github and it is slow to autocomplete it, e.g.
+# install_git always comes before install_github, but I guess I'll never use it
+# in my whole life
+install_github = function(...) remotes::install_github(...)
