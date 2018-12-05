@@ -136,9 +136,15 @@ pkg_needs_compilation = function(db = installed.packages()) {
   pkgs[!is.na(pkgs)]
 }
 
-# an alias of remotes::install_github(), to make autocomplete faster via
-# xfun:::install_github, because most remotes::install_* functions are never
-# what I want; I only use install_github and it is slow to autocomplete it, e.g.
-# install_git always comes before install_github, but I guess I'll never use it
-# in my whole life
+#' An alias of \code{remotes::install_github()}
+#'
+#' This alias is to make autocomplete faster via \code{xfun::install_github},
+#' because most \code{remotes::install_*} functions are never what I want. I
+#' only use \code{install_github} and it is inconvenient to autocomplete it,
+#' e.g. \code{install_git} always comes before \code{install_github}, but I
+#' never use it. In RStudio, I only need to type \code{xfun::ig} to get
+#' \code{xfun::install_github}.
+#' @param ... Arguments to be passed to
+#'   \code{remotes::\link[remotes]{install_github}()}.
+#' @export
 install_github = function(...) remotes::install_github(...)
