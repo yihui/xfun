@@ -44,7 +44,9 @@ with_ext = function(x, ext) {
 #' @examples library(xfun)
 #' normalize_path('~')
 normalize_path = function(path, winslash = '/', must_work = FALSE) {
-  normalizePath(path, winslash = winslash, mustWork = must_work)
+  res = normalizePath(path, winslash = winslash, mustWork = must_work)
+  if (is_windows()) res[is.na(path)] = NA
+  res
 }
 
 #' Test if two paths are the same after they are normalized
