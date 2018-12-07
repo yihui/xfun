@@ -1,5 +1,11 @@
 # CHANGES IN xfun VERSION 0.5
 
+## NEW FEATURES
+
+- Added functions `upload_ftp()` and `upload_win_builder()` to upload files to FTP servers.
+
+- Added a function `stringsAsStrings()` (see its help page for details).
+
 ## BUG FIXES
 
 - Fixed the bug that `prose_index()` recognizes double backticks as code fences (thanks, @shrektan, #14 #15).
