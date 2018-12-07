@@ -119,6 +119,10 @@ rev_check = function(
     }))
     res$check
   }
+  # only check a sample of the packages (useful if there are too many)
+  if ((n <- getOption('xfun.rev_check.sample', 0)) > 0 && n < length(pkgs)) {
+    pkgs = sample(pkgs, n)
+  }
   lib_cran = './library-cran'
   dir.create(lib_cran, showWarnings = FALSE)
   pkg_install(pkg, lib = lib_cran)  # the CRAN version of the package
