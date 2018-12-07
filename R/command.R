@@ -29,3 +29,37 @@ Rscript = function(args, ...) {
 Rcmd = function(args, ...) {
   system2(file.path(R.home('bin'), 'R'), c('CMD', args), ...)
 }
+
+#' Upload to an FTP server via \command{curl}
+#'
+#' Run the command \command{curl -T file server} to upload a file to an FTP
+#' server. These functions require the system package (\emph{not the R package})
+#' \command{curl} to be installed (which should be available on macOS by
+#' default). The function \code{upload_win_builder()} uses \code{upload_ftp()}
+#' to upload packages to the win-builder server.
+#'
+#' These functions were written mainly to save package developers the trouble of
+#' going to the win-builder web page and uploading packages there manually. You
+#' may also consider using \code{devtools::check_win_*}, which currently only
+#' allows you to upload a package to one folder on win-builder each time, and
+#' \code{xfun::upload_win_builder()} uploads to all three folders, which is more
+#' likely to be what you need.
+#' @param file Path to a local file.
+#' @param server The address of the FTP server.
+#' @param dir The remote directory to which the file should be uploaded.
+#' @param version The R version(s) on win-builder.
+#' @return Status code returned from \code{\link{system2}}.
+#' @export
+upload_ftp = function(file, server, dir = '') {
+  if (dir != '') dir = gsub('/*$', '/', dir)
+  system2('curl', shQuote(c('-T', file, paste0(server, dir))))
+}
+
+#' @rdname upload_ftp
+#' @export
+upload_win_builder = function(
+  file, version = c("R-devel", "R-release", "R-oldrelease"),
+  server = 'ftp://win-builder.r-project.org/'
+) {
+  unlist(lapply(version, upload_ftp, file = file, server = server))
+}
