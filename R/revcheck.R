@@ -190,9 +190,9 @@ rev_check = function(
       )
       if (length(vigs) && any(file.exists(with_ext(vigs, 'log')))) {
         if (!loadable('tinytex')) install.packages('tinytex')
-        if (tinytex:::is_tinytex()) for (vig in vigs) {
-          Rscript(shQuote(c('-e', 'if (grepl("[.]Rnw$", f <- commandArgs(T), ignore.case = T)) knitr::knit2pdf(f) else rmarkdown::render(f)', vig)))
-        }
+        if (tinytex:::is_tinytex()) for (vig in vigs) in_dir(dirname(vig), {
+          Rscript(shQuote(c('-e', 'if (grepl("[.]Rnw$", f <- commandArgs(T), ignore.case = T)) knitr::knit2pdf(f) else rmarkdown::render(f)', basename(vig))))
+        })
         check_it()
         if (clean_Rcheck(d)) return(timing())
       }
