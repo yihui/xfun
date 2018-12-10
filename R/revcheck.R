@@ -119,10 +119,6 @@ rev_check = function(
     }))
     res$check
   }
-  # only check a sample of the packages (useful if there are too many)
-  if ((n <- getOption('xfun.rev_check.sample', 0)) > 0 && n < length(pkgs)) {
-    pkgs = sample(pkgs, n)
-  }
   lib_cran = './library-cran'
   dir.create(lib_cran, showWarnings = FALSE)
   pkg_install(pkg, lib = lib_cran)  # the CRAN version of the package
@@ -266,6 +262,11 @@ check_deps = function(x, db = available.packages(), which = 'all') {
   if (identical(which, 'hard')) which = c('Depends', 'Imports', 'LinkingTo')
   # packages that reverse depend on me
   x1 = pkg_dep(x, db, which, reverse = TRUE)
+  # only check a sample of soft reverse dependencies (useful if there are too many)
+  if (identical(which, 'all') && (n <- getOption('xfun.rev_check.sample', 0)) > 0) {
+    x2 = pkg_dep(x, db, c('Suggests', 'Enhances'), reverse = TRUE)
+    if (n < length(x)) x1 = c(setdiff(x1, x2), sample(x, n))
+  }
   # to R CMD check x1, I have to install all their dependencies
   x2 = pkg_dep(x1, db, 'all')
   # and for those dependencies, I have to install the default dependencies
