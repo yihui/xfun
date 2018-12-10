@@ -439,7 +439,7 @@ install_missing_latex = function() {
 }
 
 # return packages that haven't been updated for X days, and can be updated on CRAN
-cran_updatable = function(days = 60, maintainer = 'Yihui Xie') {
+cran_updatable = function(days = 90, maintainer = 'Yihui Xie') {
   info = tools::CRAN_package_db()
   pkgs = info[grep(maintainer, info$Maintainer), 'Package']
   info = setNames(vector('list', length(pkgs)), pkgs)
