@@ -137,6 +137,10 @@ rev_check = function(
     pkgs = setdiff(pkgs, ignore)
   }
 
+  message('Downloading tarballs')
+  tars = unlist(lapply(pkgs, function(p) download_tarball(p, db, dir = 'tarball')))
+  tars = setNames(tars, pkgs)
+
   t0 = Sys.time()
   message('Checking ', n, ' packages: ', paste(pkgs, collapse = ' '))
 
@@ -163,8 +167,7 @@ rev_check = function(
       )
     }
 
-    z = download_tarball(p, db, dir = 'tarball')
-    if (!file.exists(z)) {
+    if (!file.exists(z <- tars[p])) {
       timing()
       return(dir.create(d, showWarnings = FALSE))
     }
