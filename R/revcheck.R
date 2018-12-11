@@ -265,7 +265,7 @@ check_deps = function(x, db = available.packages(), which = 'all') {
   # only check a sample of soft reverse dependencies (useful if there are too many)
   if (identical(which, 'all') && (n <- getOption('xfun.rev_check.sample', 100)) > 0) {
     x2 = pkg_dep(x, db, c('Suggests', 'Enhances'), reverse = TRUE)
-    if (n < length(x)) x1 = c(setdiff(x1, x2), sample(x, n))
+    if (n < length(x2)) x1 = c(setdiff(x1, x2), sample(x2, n))
   }
   # to R CMD check x1, I have to install all their dependencies
   x2 = pkg_dep(x1, db, 'all')
