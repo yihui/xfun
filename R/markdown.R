@@ -3,6 +3,7 @@
 #' Filter out the indices of lines between code block fences such as \verb{```}
 #' (could be three or four or more backticks).
 #' @param x A character vector of text in Markdown.
+#' @param warn Whether to emit a warning when code fences are not balanced.
 #' @note If the code fences are not balanced (e.g., a starting fence without an
 #'   ending fence), this function will treat all lines as prose.
 #' @return An integer vector of indices of lines that are prose in Markdown.
@@ -10,7 +11,7 @@
 #' @examples library(xfun)
 #' prose_index(c('a', '```', 'b', '```', 'c'))
 #' prose_index(c('a', '````', '```r', '1+1', '```', '````', 'c'))
-prose_index = function(x) {
+prose_index = function(x, warn = TRUE) {
   idx = NULL; r = '^(\\s*```+).*'; s = ''
   for (i in grep(r, x)) {
     if (s == '') {
@@ -23,7 +24,7 @@ prose_index = function(x) {
   }
   xi = seq_along(x); n = length(idx)
   if (n == 0) return(xi)
-  if (n %% 2 != 0) {
+  if (warn && n %% 2 != 0) {
     # treat all lines as prose
     warning('Code fences are not balanced'); return(xi)
   }

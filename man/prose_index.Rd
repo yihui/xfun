@@ -4,10 +4,12 @@
 \alias{prose_index}
 \title{Find the indices of lines in Markdown that are prose (not code blocks)}
 \usage{
-prose_index(x)
+prose_index(x, warn = TRUE)
 }
 \arguments{
 \item{x}{A character vector of text in Markdown.}
+
+\item{warn}{Whether to emit a warning when code fences are not balanced.}
 }
 \value{
 An integer vector of indices of lines that are prose in Markdown.
