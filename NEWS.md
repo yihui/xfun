@@ -1,6 +1,8 @@
 # CHANGES IN xfun VERSION 0.6
 
+## BUG FIXES
 
+- The `warn` argument in `prose_index()` failed to suppress warnings.
 
 # CHANGES IN xfun VERSION 0.5
 

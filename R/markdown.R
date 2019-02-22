@@ -24,9 +24,10 @@ prose_index = function(x, warn = TRUE) {
   }
   xi = seq_along(x); n = length(idx)
   if (n == 0) return(xi)
-  if (warn && n %% 2 != 0) {
+  if (n %% 2 != 0) {
+    if (warn) warning('Code fences are not balanced')
     # treat all lines as prose
-    warning('Code fences are not balanced'); return(xi)
+    return(xi)
   }
   idx2 = matrix(idx, nrow = 2)
   idx2 = unlist(mapply(seq, idx2[1, ], idx2[2, ], SIMPLIFY = FALSE))
