@@ -53,9 +53,10 @@ normalize_path = function(path, winslash = '/', must_work = FALSE) {
 #'
 #' Compare two paths after normalizing them with the same separator (\code{/}).
 #' @param p1,p2 Two vectors of paths.
+#' @param ... Arguments to be passed to \code{\link{normalize_path}()}.
 #' @export
 #' @examples library(xfun)
 #' same_path('~/foo', file.path(Sys.getenv('HOME'), 'foo'))
-same_path = function(p1, p2) {
-  normalize_path(p1) == normalize_path(p2)
+same_path = function(p1, p2, ...) {
+  normalize_path(p1, ...) == normalize_path(p2, ...)
 }

@@ -1,5 +1,9 @@
 # CHANGES IN xfun VERSION 0.6
 
+## NEW FEATURES
+
+- Added the `...` argument to `same_path()` to pass additional arguments to `normalize_path()`.
+
 ## BUG FIXES
 
 - The `warn` argument in `prose_index()` failed to suppress warnings.

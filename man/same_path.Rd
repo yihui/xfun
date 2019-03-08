@@ -4,10 +4,12 @@
 \alias{same_path}
 \title{Test if two paths are the same after they are normalized}
 \usage{
-same_path(p1, p2)
+same_path(p1, p2, ...)
 }
 \arguments{
 \item{p1, p2}{Two vectors of paths.}
+
+\item{...}{Arguments to be passed to \code{\link{normalize_path}()}.}
 }
 \description{
 Compare two paths after normalizing them with the same separator (\code{/}).
