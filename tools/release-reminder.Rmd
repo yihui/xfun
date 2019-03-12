@@ -2,7 +2,7 @@
 title: "Some of Your CRAN Packages Need More Love Now"
 output: html_fragment
 params:
-  days: 90
+  days: 30
   maintainer: "Yihui Xie"
 ---
 
