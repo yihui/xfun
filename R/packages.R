@@ -148,3 +148,21 @@ pkg_needs_compilation = function(db = installed.packages()) {
 #'   \code{remotes::\link[remotes]{install_github}()}.
 #' @export
 install_github = function(...) remotes::install_github(...)
+
+# Remove packages not installed from CRAN
+reinstall_from_cran = function(dry_run = TRUE, skip_github = TRUE) {
+  r = paste(c('Repository', if (skip_github) 'GithubRepo'), collapse = '|')
+  r = paste0('^(', r, '): ')
+  for (lib in .libPaths()) {
+    pkgs = .packages(TRUE, lib)
+    pkgs = setdiff(pkgs, c('xfun', 'rstudio', base_pkgs()))
+    for (p in pkgs) {
+      desc = read_utf8(system.file('DESCRIPTION', package = p, lib.loc = lib))
+      if (!any(grepl(r, desc))) {
+        if (dry_run) message(p, ': ', lib) else install.packages(p, lib = lib)
+      }
+    }
+  }
+}
+
+base_pkgs = function() rownames(installed.packages(priority = 'base'))
