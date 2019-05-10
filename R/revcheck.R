@@ -95,10 +95,6 @@ rev_check = function(
   if (length(src) != 1 || !dir.exists(src)) stop(
     'The package source dir (the "src" argument) must be an existing directory'
   )
-  if (update) {
-    message('Updating all R packages...')
-    update.packages(ask = FALSE, checkBuilt = TRUE)
-  }
 
   message('Installing the source package ', src)
   install_dir(path.expand(src))
@@ -112,6 +108,10 @@ rev_check = function(
     gsub('.Rcheck$', '', dirs)
   } else {
     res = check_deps(pkg, db, which)
+    if (update) {
+      message('Updating all R packages...')
+      update.packages(ask = FALSE, checkBuilt = TRUE)
+    }
     message('Installing dependencies of reverse dependencies')
     res$install = setdiff(res$install, ignore_deps())
     print(system.time({
