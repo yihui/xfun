@@ -73,7 +73,9 @@ loadable = function(pkg, strict = TRUE, new_session = FALSE) {
   if (new_session) {
     Rscript(c('-e', shQuote(sprintf('library("%s")', pkg))), stdout = FALSE, stderr = FALSE) == 0
   } else {
-    if (strict) requireNamespace(pkg, quietly = TRUE) else pkg %in% .packages(TRUE)
+    if (strict) {
+      suppressPackageStartupMessages(requireNamespace(pkg, quietly = TRUE))
+    } else pkg %in% .packages(TRUE)
   }
 }
 
