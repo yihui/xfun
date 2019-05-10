@@ -108,9 +108,11 @@ rev_check = function(
     gsub('.Rcheck$', '', dirs)
   } else {
     res = check_deps(pkg, db, which)
+    pkgs_up = NULL
     if (update) {
       message('Updating all R packages...')
-      update.packages(ask = FALSE, checkBuilt = TRUE)
+      pkgs_up = intersect(old.packages(checkBuilt = TRUE)[, 'Package'], res$install)
+      pkg_install(pkgs_up)
     }
     message('Installing dependencies of reverse dependencies')
     res$install = setdiff(res$install, ignore_deps())
