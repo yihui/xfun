@@ -116,6 +116,7 @@ rev_check = function(
     }
     message('Installing dependencies of reverse dependencies')
     res$install = setdiff(res$install, ignore_deps())
+    res$install = setdiff(res$install, pkgs_up)  # don't install pkgs that were just updated
     print(system.time({
       pkg_install(unlist(plapply(res$install, function(p) if (!loadable(p)) p)))
     }))
