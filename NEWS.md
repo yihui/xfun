@@ -1,6 +1,8 @@
 # CHANGES IN xfun VERSION 0.7
 
+## MINOR CHANGES
 
+- `loadable()` is quiet with R 3.6.0 (https://stat.ethz.ch/pipermail/r-devel/2019-May/077774.html).
 
 # CHANGES IN xfun VERSION 0.6
 
