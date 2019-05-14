@@ -1,3 +1,7 @@
+# CHANGES IN xfun VERSION 0.8
+
+
+
 # CHANGES IN xfun VERSION 0.7
 
 ## MINOR CHANGES
