@@ -27,6 +27,7 @@ read_utf8 = function(con, error = FALSE) {
 #' @rdname read_utf8
 #' @export
 write_utf8 = function(text, con, ...) {
+  if (is.null(text)) text = character(0)
   if (identical(con, '')) {
     cat(text, sep = '\n', file = con)
   } else {
