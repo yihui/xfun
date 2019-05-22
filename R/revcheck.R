@@ -178,7 +178,7 @@ rev_check = function(
     check_it = function(args = NULL, ...) {
       system2(
         file.path(R.home('bin'), 'R'),
-        c(args, 'CMD', 'check', '--no-manual', shQuote(z)), stdout = FALSE, ...
+        c(args, 'CMD', 'check', '--no-manual', shQuote(z)), stdout = FALSE, stderr = FALSE, ...
       )
     }
     check_it()
