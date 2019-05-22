@@ -123,6 +123,7 @@ rev_check = function(
     res$check
   }
   lib_cran = './library-cran'
+  on.exit(unlink(lib_cran, recursive = TRUE), add = TRUE)
   dir.create(lib_cran, showWarnings = FALSE)
   pkg_install(pkg, lib = lib_cran)  # the CRAN version of the package
 
