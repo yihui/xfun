@@ -350,7 +350,7 @@ compare_Rcheck = function(status_only = FALSE, output = '00check_diffs.md') {
     }
     res = c(
       res, paste('##', p <- sans_ext(d)), '',
-      sprintf('[CRAN version](https://cran.rstudio.com/package=%s) vs current version:\n', p),
+      sprintf('[CRAN version](https://cran.rstudio.com/package=%s) (-) vs current version (+):\n', p),
       '```diff', file_diff(f), '```', ''
     )
     if (length(res2 <- cran_check_page(p, NULL))) res = c(
