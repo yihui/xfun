@@ -155,7 +155,6 @@ rev_check = function(
       unlink(d, recursive = TRUE)
       return()
     }
-    message('Checking ', p)
 
     timing = function() {
       # in case two packages finish at exactly the same time
