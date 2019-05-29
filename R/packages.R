@@ -129,7 +129,7 @@ install_brew_deps = function(pkg = .packages(TRUE)) {
   pkg = intersect(pkg, pkg_needs_compilation(inst))
   deps = readRDS(con)
   deps = deps[c(pkg, pkg_dep(pkg, inst, recursive = TRUE))]
-  deps = paste(na.omit(unique(deps)), collapse = ' ')
+  deps = paste(na.omit(unique(unlist(deps))), collapse = ' ')
   if (deps != '') system(paste('brew install', deps))
 }
 
