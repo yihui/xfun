@@ -61,5 +61,6 @@ upload_win_builder = function(
   file, version = c("R-devel", "R-release", "R-oldrelease"),
   server = 'ftp://win-builder.r-project.org/'
 ) {
-  unlist(lapply(version, upload_ftp, file = file, server = server))
+  res = unlist(lapply(version, upload_ftp, file = file, server = server))
+  setNames(res, version)
 }
