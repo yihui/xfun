@@ -60,3 +60,43 @@ normalize_path = function(path, winslash = '/', must_work = FALSE) {
 same_path = function(p1, p2, ...) {
   normalize_path(p1, ...) == normalize_path(p2, ...)
 }
+
+#' Rename files with a sequential numeric prefix
+#'
+#' Rename a series of files and add an incremental numeric prefix to the
+#' filenames. For example, files \file{a.txt}, \file{b.txt}, and \file{c.txt}
+#' can be renamed to \file{1-a.txt}, \file{2-b.txt}, and \file{3-c.txt}.
+#' @param pattern A regular expression for \code{\link{list.files}()} to obtain
+#'   the files to be renamed. For example, to rename \code{.jpeg} files, use
+#'   \code{pattern = "[.]jpeg$"}.
+#' @param format The format for the numeric prefix. This is passed to
+#'   \code{\link{sprintf}()}. The default format is \code{"\%0Nd"} where \code{N
+#'   = floor(log10(n)) + 1} and \code{n} is the number of files, which means the
+#'   prefix may be padded with zeros. For example, if there are 150 files to be
+#'   renamed, the format will be \code{"\%03d"} and the prefixes will be
+#'   \code{001}, \code{002}, ..., \code{150}.
+#' @param replace Whether to remove existing numeric prefixes in filenames.
+#' @param start The starting number for the prefix (it can start from 0).
+#' @param dry_run Whether to not really rename files. To be safe, the default is
+#'   \code{TRUE}. If you have looked at the new filenames and are sure the new
+#'   names are what you want, you may rerun \code{rename_seq()} with
+#'   \code{dry_run = FALSE)} to actually rename files.
+#' @return A named character vector. The names are original filenames, and the
+#'   vector itself is the new filenames.
+#' @export
+#' @examples xfun::rename_seq()
+#' xfun::rename_seq('[.](jpeg|png)$', format = '%04d')
+rename_seq = function(
+  pattern = '^[0-9]+-.+[.]Rmd$', format = 'auto', replace = TRUE, start = 1,
+  dry_run = TRUE
+) {
+  n = length(files <- list.files('.', pattern))
+  if (n == 0) return(files)
+
+  files2 = if (replace) sub('^[0-9]+-*', '', files) else files
+  if (format == 'auto') format = paste0('%0', floor(log10(n)) + 1, 'd')
+  files2 = paste(sprintf(format, seq_len(n) + start - 1), files2, sep = '-')
+
+  if (!dry_run) file.rename(files, files2)
+  setNames(files2, files)
+}

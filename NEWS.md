@@ -1,6 +1,8 @@
 # CHANGES IN xfun VERSION 0.9
 
+## NEW FEATURES
 
+- Added a function `rename_seq()` to rename files to add an incremental numeric prefix to the filenames, e.g., rename `a.txt`, `b.txt`, `c.txt` to `1-a.txt`, `2-b.txt`, `3-c.txt`.
 
 # CHANGES IN xfun VERSION 0.8
 
