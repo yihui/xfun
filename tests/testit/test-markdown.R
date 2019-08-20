@@ -44,3 +44,26 @@ assert('prose_index() works', {
   (has_warning(prose_index(x)))
   (prose_index(x) %==% out)
 })
+
+
+assert('protect_math() puts inline math expressions in backticks', {
+  (protect_math('$x$') %==% '`\\(x\\)`')
+
+  (protect_math('$ x$') %==% '$ x$')
+
+  (protect_math('$x $') %==% '$x $')
+
+  (protect_math('hi $$\alpha$$') %==% 'hi `$$\alpha$$`')
+
+  (protect_math('hi $$\alpha $$') %==% 'hi $$\alpha $$')
+
+  (protect_math('hi $$ \alpha$$') %==% 'hi $$ \alpha$$')
+
+  (protect_math('hi $x$9') %==% 'hi $x$9')
+
+  (protect_math('hi $x$a') %==% 'hi `\\(x\\)`a')
+
+  (protect_math('  $x$ starts with 2 spaces') %==% ' $x$ starts with 2 spaces')
+
+
+})
