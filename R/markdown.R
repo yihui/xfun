@@ -85,9 +85,12 @@ escape_math = function(x) {
   # if a line start or end with $$, treat it as math under some conditions
   i = !grepl('^[$].+[$]$', x)
   if (any(i)) {
-    x[i] = gsub('^([$][$])([^ ]+)', '`\\1\\2', x[i], perl = TRUE)
-    x[i] = gsub('([^ ])([$][$])$', '\\1\\2`', x[i], perl = TRUE)
+    if (grepl('`$$', gsub('^([$][$])([^ ]+)', '`\\1\\2', x[i], perl = TRUE))) {
+       x[i] = gsub('^([$][$])([^ ]+)', '`\\1\\2', x[i], perl = TRUE)
+       x[i] = gsub('([^ ])([$][$])$', '\\1\\2`', x[i], perl = TRUE)
+     }
   }
+
   # equation environments
   i = grep('^\\\\begin\\{[^}]+\\}$', x)
   x[i] = paste0('`', x[i])
