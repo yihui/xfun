@@ -28,7 +28,7 @@ I have been bitten many times by partial matching in lists, e.g., when I want `x
 
 ```{r}
 library(xfun)
-z <- strict_list(aaa = "I am aaa", b = 1:5)
+(z <- strict_list(aaa = "I am aaa", b = 1:5))
 z$a  # NULL (strict matching)
 z$aaa  # I am aaa
 z$b

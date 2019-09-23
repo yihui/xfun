@@ -18,7 +18,7 @@
 #'   i.e. it will add another list level regardless if \code{...} already is
 #'   of type list.
 #' @examples library(xfun)
-#' z <- strict_list(aaa = 'I am aaa', b = 1:5)
+#' (z <- strict_list(aaa = 'I am aaa', b = 1:5))
 #' z$a  # NULL!
 #' z$aaa  # I am aaa
 #' z$b
