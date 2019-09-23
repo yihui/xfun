@@ -22,7 +22,7 @@
 #' z$a  # NULL!
 #' z$aaa  # I am aaa
 #' z$b
-#' z$c ='create a new element'
+#' z$c = 'create a new element'
 #'
 #' z2 = unclass(z)  # a normal list
 #' z2$a  # partial matching
