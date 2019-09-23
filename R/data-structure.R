@@ -18,16 +18,16 @@
 #'   i.e. it will add another list level regardless if \code{...} already is
 #'   of type list.
 #' @examples library(xfun)
-#' (z <- strict_list(aaa = 'I am aaa', b = 1:5))
+#' (z = strict_list(aaa = 'I am aaa', b = 1:5))
 #' z$a  # NULL!
 #' z$aaa  # I am aaa
 #' z$b
-#' z$c <-'create a new element'
+#' z$c ='create a new element'
 #'
-#' z2 <- unclass(z)  # a normal list
+#' z2 = unclass(z)  # a normal list
 #' z2$a  # partial matching
 #'
-#' z3 <- as_strict_list(z2) # a strict list again
+#' z3 = as_strict_list(z2) # a strict list again
 #' z3$a  # NULL again!
 strict_list = function(...) {
   structure(list(...), class = 'xfun_strict_list')
@@ -41,7 +41,7 @@ strict_list = function(...) {
 #'   For \code{print()}, a strict list.
 #' @rdname strict_list
 #' @export
-as_strict_list <- function (x) {
+as_strict_list = function (x) {
   structure(as.list(x), class = "xfun_strict_list")
 }
 
