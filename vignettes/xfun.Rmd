@@ -83,7 +83,7 @@ The function `gsub_dir()` is very flexible: you can limit the list of files by M
 
 ## Manipulate filename extensions
 
-Functions `file_ext()` and `sans_ext()` are based on functins in **tools**. The function `with_ext()` adds or replaces extensions of filenames, and it is vectorized.
+Functions `file_ext()` and `sans_ext()` are based on functions in **tools**. The function `with_ext()` adds or replaces extensions of filenames, and it is vectorized.
 
 ```{r}
 library(xfun)
