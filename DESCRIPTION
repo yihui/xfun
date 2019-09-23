@@ -1,11 +1,12 @@
 Package: xfun
 Type: Package
 Title: Miscellaneous Functions by 'Yihui Xie'
-Version: 0.9.3
+Version: 0.9.4
 Authors@R: c(
   person("Yihui", "Xie", role = c("aut", "cre", "cph"), email = "xie@yihui.name", comment = c(ORCID = "0000-0003-0645-5666")),
   person("Daijiang", "Li", role = "ctb"),
   person("Xianying", "Tan", role = "ctb"),
+  person("Salim", "Brüggemann", role = "ctb", email = "salim-b@pm.me"),
   person()
   )
 Description: Miscellaneous functions commonly used in other packages maintained by 'Yihui Xie'.
