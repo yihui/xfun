@@ -41,7 +41,7 @@ strict_list = function(...) {
 #'   For \code{print()}, a strict list.
 #' @rdname strict_list
 #' @export
-as_strict_list = function (x) {
+as_strict_list = function(x) {
   structure(as.list(x), class = "xfun_strict_list")
 }
 
