@@ -5,14 +5,18 @@
 #'
 #' To me, partial matching is often more annoying and surprising than
 #' convenient. It can lead to bugs that are very hard to discover, and I have
-#' been bitten for many times. When I write \code{x$name}, I always mean
-#' precisely \code{name}. You should use a modern code editor to autocomplate
-#' the \code{name} if it is too long to type, instead of using a partial name.
+#' been bitten by it many times. When I write \code{x$name}, I always mean
+#' precisely \code{name}. You should use a modern code editor to autocomplete
+#' the \code{name} if it is too long to type, instead of using partial names.
 #' @param ... Objects (list elements), possibly named. Ignored in the
 #'   \code{print()} method.
 #' @export
-#' @return \code{strict_list()} returns a list with the class
-#'   \code{xfun_strict_list}.
+#' @return Both \code{strict_list()} and \code{as_strict_list()} return a list
+#'   with the class \code{xfun_strict_list}. Whereas \code{as_strict_list()}
+#'   attempts to coerce its argument \code{x} to a list if necessary,
+#'   \code{strict_list()} just wraps its argument \code{...} in a list, i.e., it
+#'   will add another list level regardless if \code{...} already is of type
+#'   list.
 #' @examples library(xfun)
 #' (z = strict_list(aaa = 'I am aaa', b = 1:5))
 #' z$a  # NULL!
@@ -22,13 +26,25 @@
 #'
 #' z2 = unclass(z)  # a normal list
 #' z2$a  # partial matching
+#'
+#' z3 = as_strict_list(z2) # a strict list again
+#' z3$a  # NULL again!
 strict_list = function(...) {
-  structure(list(...), class = 'xfun_strict_list')
+  as_strict_list(list(...))
 }
 
 # https://twitter.com/xieyihui/status/782462926862954496
 
-#' @param x A strict list.
+#' @param x For \code{as_strict_list()}, the object to be coerced to a strict
+#'   list.
+#'
+#'   For \code{print()}, a strict list.
+#' @rdname strict_list
+#' @export
+as_strict_list = function(x) {
+  structure(as.list(x), class = 'xfun_strict_list')
+}
+
 #' @param name The name (a character string) of the list element.
 #' @rdname strict_list
 #' @export

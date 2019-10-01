@@ -16,6 +16,16 @@ assert('strict_list() is really strict', {
   (inherits(s_list, 'xfun_strict_list'))
 })
 
+assert('as_strict_list() converts a list to a strict list', {
+  normal_list = list(aaa = 1:3, bbb = c('hey', 'mom'))
+  s_list = as_strict_list(normal_list)
+  # does the strict list have the same length as the normal list?
+  (length(normal_list) %==% length(s_list))
+  # is the converted strict list equal to the same object created by `strict_list()`?
+  s_list = strict_list(aaa = 1:3, bbb = c('hey', 'mom'))
+  (as_strict_list(normal_list) %==% s_list)
+})
+
 assert('raw_string() prints as expected', {
   rs = raw_string(c('a "b"', 'hello\tworld!'))
   (inherits(rs, 'xfun_raw_string'))
