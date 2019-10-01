@@ -48,21 +48,21 @@ assert('prose_index() works', {
 
 assert('protect_math() puts inline math expressions in backticks', {
   (protect_math('$x$') %==% '`\\(x\\)`')
-
-  (protect_math('$ x$') %==% '$ x$')
-
-  (protect_math('$x $') %==% '$x $')
-
-  (protect_math('hi $$\alpha$$') %==% 'hi `$$\alpha$$`')
-
-  (protect_math('hi $$\alpha $$') %==% 'hi $$\alpha $$')
-
-  (protect_math('hi $$ \alpha$$') %==% 'hi $$ \alpha$$')
-
-  (protect_math('hi $$\alpha$$ and $$ \alpha$$') %==% 'hi `$$\alpha$$` and $$ \alpha$$')
-
-  (protect_math('hi $x$9') %==% 'hi $x$9')
-
   (protect_math('hi $x$ a') %==% 'hi `\\(x\\)` a')
+  (protect_math('$ a $') %==% '$ a $')
+  (protect_math(' $a$') %==% ' `\\(a\\)`')
+  (protect_math('$ x$') %==% '$ x$')
+  (protect_math('$x $') %==% '$x $')
+  (protect_math('b$a$') %==% 'b$a$')  # no space before $; unlikely to be math
+  (protect_math('`$a$`') %==% '`$a$`')
+  (protect_math('hi $x$9') %==% 'hi $x$9')
+  (protect_math('$500 $600') %==% '$500 $600')
 
+  (protect_math('$$a$$') %==% '`$$a$$`')
+  (protect_math('$$a$') %==% '$$a$')
+  (protect_math('hi $$\alpha$$') %==% 'hi `$$\alpha$$`')
+  (protect_math('hi $$\alpha $$') %==% 'hi $$\alpha $$')
+  (protect_math('hi $$ \alpha$$') %==% 'hi $$ \alpha$$')
+  (protect_math('hi $$\alpha$$ and $$ \alpha$$') %==% 'hi `$$\alpha$$` and $$ \alpha$$')
 })
+
