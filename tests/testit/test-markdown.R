@@ -63,9 +63,6 @@ assert('protect_math() puts inline math expressions in backticks', {
 
   (protect_math('hi $x$9') %==% 'hi $x$9')
 
-  (protect_math('hi $x$a') %==% 'hi `\\(x\\)`a')
-
-  (protect_math('  $x$ starts with 2 spaces') %==% ' $x$ starts with 2 spaces')
-
+  (protect_math('hi $x$ a') %==% 'hi `\\(x\\)` a')
 
 })
