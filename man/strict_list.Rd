@@ -27,12 +27,12 @@ as_strict_list(x)
 \item{name}{The name (a character string) of the list element.}
 }
 \value{
-\code{strict_list()} and \code{as_strict_list()} both return a list
+Both \code{strict_list()} and \code{as_strict_list()} return a list
   with the class \code{xfun_strict_list}. Whereas \code{as_strict_list()}
   attempts to coerce its argument \code{x} to a list if necessary,
-  \code{xfun_strict_list} just wraps its argument \code{...} in a list,
-  i.e. it will add another list level regardless if \code{...} already is
-  of type list.
+  \code{strict_list()} just wraps its argument \code{...} in a list, i.e., it
+  will add another list level regardless if \code{...} already is of type
+  list.
 }
 \description{
 A strict list is essentially a normal \code{\link{list}()} but it does not
@@ -47,15 +47,15 @@ the \code{name} if it is too long to type, instead of using partial names.
 }
 \examples{
 library(xfun)
-z <- strict_list(aaa = "I am aaa", b = 1:5)
+(z = strict_list(aaa = "I am aaa", b = 1:5))
 z$a  # NULL!
 z$aaa  # I am aaa
 z$b
-z$c <- "create a new element"
+z$c = "create a new element"
 
-z2 <- unclass(z)  # a normal list
+z2 = unclass(z)  # a normal list
 z2$a  # partial matching
 
-z3 <- as_strict_list(z2)  # a strict list again
+z3 = as_strict_list(z2)  # a strict list again
 z3$a  # NULL again!
 }
