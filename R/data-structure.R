@@ -11,12 +11,12 @@
 #' @param ... Objects (list elements), possibly named. Ignored in the
 #'   \code{print()} method.
 #' @export
-#' @return \code{strict_list()} and \code{as_strict_list()} both return a list
+#' @return Both \code{strict_list()} and \code{as_strict_list()} return a list
 #'   with the class \code{xfun_strict_list}. Whereas \code{as_strict_list()}
 #'   attempts to coerce its argument \code{x} to a list if necessary,
-#'   \code{xfun_strict_list} just wraps its argument \code{...} in a list,
-#'   i.e. it will add another list level regardless if \code{...} already is
-#'   of type list.
+#'   \code{strict_list()} just wraps its argument \code{...} in a list, i.e., it
+#'   will add another list level regardless if \code{...} already is of type
+#'   list.
 #' @examples library(xfun)
 #' (z = strict_list(aaa = 'I am aaa', b = 1:5))
 #' z$a  # NULL!
