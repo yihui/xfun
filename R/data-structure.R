@@ -30,7 +30,7 @@
 #' z3 = as_strict_list(z2) # a strict list again
 #' z3$a  # NULL again!
 strict_list = function(...) {
-  structure(list(...), class = 'xfun_strict_list')
+  as_strict_list(list(...))
 }
 
 # https://twitter.com/xieyihui/status/782462926862954496
@@ -42,7 +42,7 @@ strict_list = function(...) {
 #' @rdname strict_list
 #' @export
 as_strict_list = function(x) {
-  structure(as.list(x), class = "xfun_strict_list")
+  structure(as.list(x), class = 'xfun_strict_list')
 }
 
 #' @param name The name (a character string) of the list element.
