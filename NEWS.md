@@ -3,7 +3,9 @@
 
 # CHANGES IN xfun VERSION 0.10
 
-- Added the function `as_strict_list()` to convert an existing object to a strict list without wrapping it in another list if the object already is of type list (in contrast to how `strict_list()` behaves).
+## NEW FEATURES
+
+- Added the function `as_strict_list()` to convert an existing object to a strict list without wrapping it in another list if the object already is of type list (in contrast to how `strict_list()` behaves) (thanks, @salim-b, #20).
 
 # CHANGES IN xfun VERSION 0.9
 
