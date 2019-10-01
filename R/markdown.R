@@ -82,8 +82,12 @@ escape_math = function(x) {
     if (length(z) == 0) return(z)
     paste0('`', z, '`')
   })
-  # if a line start or end with $$, treat it as math under some conditions
-  i = !grepl('^[$].+[$]$', x)
+  # now, if there are still lines starting and ending with $$, they might be
+  # math expressions of display style spanning multiple lines, e.g.,
+  # $$\alpha +
+  # \beta$$
+  # we assume that $$ can only appear once on one line
+  i = vapply(gregexpr('[$][$]', x), length, integer(1)) == 1
   if (any(i)) {
     x[i] = gsub('^([$][$])([^ ]+)', '`\\1\\2', x[i], perl = TRUE)
     x[i] = gsub('([^ ])([$][$])$', '\\1\\2`', x[i], perl = TRUE)
