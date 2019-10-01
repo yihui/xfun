@@ -87,7 +87,7 @@ escape_math = function(x) {
   # $$\alpha +
   # \beta$$
   # we assume that $$ can only appear once on one line
-  i = vapply(gregexpr('[$][$]', x), length, integer(1)) == 1
+  i = vapply(gregexpr('[$]', x), length, integer(1)) == 2
   if (any(i)) {
     x[i] = gsub('^([$][$])([^ ]+)', '`\\1\\2', x[i], perl = TRUE)
     x[i] = gsub('([^ ])([$][$])$', '\\1\\2`', x[i], perl = TRUE)
