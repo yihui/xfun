@@ -131,7 +131,7 @@ rev_check = function(
   l = tempfile('check-lock'); on.exit(unlink(c(f, l)), add = TRUE)
   n = length(pkgs)
   if (n == 0) {
-    message('No reverse dependencies to be check for the package ', pkg); return()
+    message('No reverse dependencies to be checked for the package ', pkg); return()
   }
 
   if (missing(ignore) && file.exists('00ignore')) ignore = scan('00ignore', 'character')
