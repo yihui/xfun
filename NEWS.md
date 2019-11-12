@@ -1,3 +1,7 @@
+# CHANGES IN xfun VERSION 0.12
+
+
+
 # CHANGES IN xfun VERSION 0.11
 
 ## BUG FIXES
