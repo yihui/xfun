@@ -13,6 +13,9 @@
 #'   \code{useBytes}, which is \code{TRUE} in \code{write_utf8()}).
 #' @export
 read_utf8 = function(con, error = FALSE) {
+  # users may have set options(encoding = 'UTF-8'), which usually won't help but
+  # will bring more trouble than good, so we reset this option temporarily
+  opts = options(encoding = 'native.enc'); on.exit(options(opts), add = TRUE)
   x = readLines(con, encoding = 'UTF-8', warn = FALSE)
   i = invalid_utf8(x)
   n = length(i)

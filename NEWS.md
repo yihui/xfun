@@ -1,5 +1,8 @@
 # CHANGES IN xfun VERSION 0.11
 
+## BUG FIXES
+
+- `read_utf8()` will read the file with `options(encoding = 'native.enc')` and ignore user's setting such as `options(encoding = 'UTF-8')` (#21).
 
 # CHANGES IN xfun VERSION 0.10
 
