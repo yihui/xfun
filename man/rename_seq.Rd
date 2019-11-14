@@ -4,8 +4,13 @@
 \alias{rename_seq}
 \title{Rename files with a sequential numeric prefix}
 \usage{
-rename_seq(pattern = "^[0-9]+-.+[.]Rmd$", format = "auto", replace = TRUE, start = 1, 
-    dry_run = TRUE)
+rename_seq(
+  pattern = "^[0-9]+-.+[.]Rmd$",
+  format = "auto",
+  replace = TRUE,
+  start = 1,
+  dry_run = TRUE
+)
 }
 \arguments{
 \item{pattern}{A regular expression for \code{\link{list.files}()} to obtain

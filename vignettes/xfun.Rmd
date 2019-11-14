@@ -166,7 +166,7 @@ Running `R CMD check` on the reverse dependencies of **knitr** and **rmarkdown**
 
 ## Input a character vector into the RStudio source editor
 
-The function `rstudio_type()` inputs characters in the RStudio source editor as if they were typed by a human. I came up with the idea when preparing my talk for rstudio::conf 2018 ([see this post](https://yihui.name/en/2018/03/blogdown-video-rstudio-conf/) for more details).
+The function `rstudio_type()` inputs characters in the RStudio source editor as if they were typed by a human. I came up with the idea when preparing my talk for rstudio::conf 2018 ([see this post](https://yihui.org/en/2018/03/blogdown-video-rstudio-conf/) for more details).
 
 ## Print session information
 

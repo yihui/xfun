@@ -9,7 +9,11 @@
 \title{Attach or load packages, and automatically install missing packages if
 requested}
 \usage{
-pkg_attach(..., install = FALSE, message = getOption("xfun.pkg_attach.message", TRUE))
+pkg_attach(
+  ...,
+  install = FALSE,
+  message = getOption("xfun.pkg_attach.message", TRUE)
+)
 
 pkg_load(..., error = TRUE, install = FALSE)
 

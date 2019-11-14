@@ -5,8 +5,15 @@
 \alias{compare_Rcheck}
 \title{Run \command{R CMD check} on the reverse dependencies of a package}
 \usage{
-rev_check(pkg, which = "all", recheck = FALSE, ignore = NULL, update = TRUE, 
-    src = file.path(src_dir, pkg), src_dir = getOption("xfun.rev_check.src_dir"))
+rev_check(
+  pkg,
+  which = "all",
+  recheck = FALSE,
+  ignore = NULL,
+  update = TRUE,
+  src = file.path(src_dir, pkg),
+  src_dir = getOption("xfun.rev_check.src_dir")
+)
 
 compare_Rcheck(status_only = FALSE, output = "00check_diffs.md")
 }
