@@ -90,7 +90,9 @@ gsub_file = function(file, ..., rw_error = TRUE) {
     (if (rw_error) stop else warning)('Unable to read or write to ', file)
     if (!rw_error) return(invisible())
   }
-  x2 = gsub(x = x1 <- read_utf8(file, error = TRUE), ...)
+  x1 = tryCatch(read_utf8(file, error = TRUE), error = function(e) if (rw_error) stop(e))
+  if (is.null(x1)) return(invisible())
+  x2 = gsub(x = x1, ...)
   if (!identical(x1, x2)) write_utf8(x2, file)
 }
 
