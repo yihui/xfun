@@ -362,8 +362,8 @@ compare_Rcheck = function(status_only = FALSE, output = '00check_diffs.md') {
     text = gsub('>', '+', gsub('^<', '-', res)),
     output = html_file <- with_ext(output, 'html'),
     header = c(
-      "<link href='https://cdn.bootcss.com/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />",
-      "<script src='https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js'></script>",
+      "<link href='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/github.min.css' rel='stylesheet' type='text/css' />",
+      "<script src='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js'></script>",
       "<script>hljs.initHighlightingOnLoad();</script>"
     ), encoding = 'UTF-8'
   )
