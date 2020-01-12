@@ -18,3 +18,11 @@ assert('n2w converts numbers to words', {
   # the number should be less than 1e15
   (has_error(n2w(1e15)))
 })
+
+assert('split_lines() splits a character vector into lines', {
+  (split_lines('a') %==% 'a')
+  (split_lines('') %==% '')
+  (split_lines('a\n') %==% c('a', ''))
+  (split_lines(c('a', 'b\nc')) %==% c('a', 'b', 'c'))
+  (split_lines(c('', '\n')) %==% c('', '', ''))
+})

@@ -98,3 +98,23 @@ numbers_to_words = function(x, cap = FALSE, hyphen = TRUE, and = FALSE) {
 #' @export
 #' @rdname numbers_to_words
 n2w = numbers_to_words
+
+#' Split a character vector by line breaks
+#'
+#' Call \code{unlist(strsplit(x, '\n'))} on the character vector \code{x} and
+#' make sure it works in a few edge cases: \code{split_lines('')} returns
+#' \code{''} instead of \code{character(0)} (which is the returned value of
+#' \code{strsplit('', '\n')}); \code{split_lines('a\n')} returns \code{c('a',
+#' '')} instead of \code{c('a')} (which is the returned value of
+#' \code{strsplit('a\n', '\n')}.
+#' @param x A character vector.
+#' @return All elements of the character vector are split by \code{'\n'} into
+#'   lines.
+#' @export
+#' @examples xfun::split_lines(c('a', 'b\nc'))
+split_lines = function(x) {
+  if (length(grep('\n', x)) == 0L) return(x)
+  x = gsub('\n$', '\n\n', x)
+  x[x == ''] = '\n'
+  unlist(strsplit(x, '\n'))
+}
