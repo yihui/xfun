@@ -22,7 +22,11 @@ assert('n2w converts numbers to words', {
 assert('split_lines() splits a character vector into lines', {
   (split_lines('a') %==% 'a')
   (split_lines('') %==% '')
+  (split_lines(NULL) %==% NULL)
   (split_lines('a\n') %==% c('a', ''))
   (split_lines(c('a', 'b\nc')) %==% c('a', 'b', 'c'))
   (split_lines(c('', '\n')) %==% c('', '', ''))
+  (split_lines('a\nb') %==% c('a', 'b'))
+  (split_lines('a\nb\n\n') %==% c('a', 'b', '', ''))
+  (split_lines(c('a\nb', '', ' ', 'c')) %==% c('a', 'b', '', ' ', 'c'))
 })
