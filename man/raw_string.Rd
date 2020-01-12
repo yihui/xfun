@@ -26,5 +26,5 @@ characters in the raw form (especially when there are escape sequences).
 \examples{
 library(xfun)
 raw_string(head(LETTERS))
-raw_string(c("a \"b\"", "hello\\tworld!"))
+raw_string(c("a \"b\"", "hello\tworld!"))
 }
