@@ -59,9 +59,14 @@
 #'   \code{tools::\link[tools]{package_dependencies}()} for possible values. The
 #'   special value \code{'hard'} means the hard dependencies, i.e.,
 #'   \code{c('Depends', 'Imports', 'LinkingTo')}.
-#' @param recheck Whether to only check the failed packages from last time. By
-#'   default, if there are any \file{*.Rcheck} directories, \code{recheck} will
-#'   be automatically set to \code{TRUE} if missing.
+#' @param recheck A vector of package names to be (re)checked. If not provided
+#'   and there are any \file{*.Rcheck} directories left by certain packages
+#'   (this often means these packages failed the last time), \code{recheck} will
+#'   be these packages; if there are no \file{*.Rcheck} directories but a text
+#'   file \file{recheck} exists, \code{recheck} will be the character vector
+#'   read from this file. This provides a way for you to manually specify the
+#'   packages to be checked. If there are no packages to be rechecked, all
+#'   reverse dependencies will be checked.
 #' @param ignore A vector of package names to be ignored in \command{R CMD
 #'   check}. If this argument is missing and a file \file{00ignore} exists, the
 #'   file will be read as a character vector and passed to this argument.
@@ -89,7 +94,7 @@
 #'   dependencies.
 #' @export
 rev_check = function(
-  pkg, which = 'all', recheck = FALSE, ignore = NULL, update = TRUE,
+  pkg, which = 'all', recheck = NULL, ignore = NULL, update = TRUE,
   src = file.path(src_dir, pkg), src_dir = getOption('xfun.rev_check.src_dir')
 ) {
   if (length(src) != 1 || !dir.exists(src)) stop(
@@ -102,11 +107,12 @@ rev_check = function(
   db = available.packages(type = 'source')
 
   unlink('*.Rcheck2', recursive = TRUE)
-  dirs = list.files('.', '.+[.]Rcheck$')
-  if (missing(recheck)) recheck = length(dirs) > 0
-  pkgs = if (recheck) {
-    gsub('.Rcheck$', '', dirs)
-  } else {
+  if (missing(recheck)) {
+    dirs = list.files('.', '.+[.]Rcheck$')
+    pkgs = gsub('.Rcheck$', '', dirs)
+    recheck = if (length(pkgs) == 0 && file.exists('recheck')) scan('recheck') else pkgs
+  }
+  pkgs = if (length(recheck)) recheck else {
     res = check_deps(pkg, db, which)
     pkgs_up = NULL
     if (update) {

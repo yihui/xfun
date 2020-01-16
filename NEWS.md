@@ -1,7 +1,12 @@
 # CHANGES IN xfun VERSION 0.13
 
+## NEW FEATURES
+
+- The `recheck` argument of `rev_check()` can take a vector of package names, and only these packages will be checked. See `?xfun::rev_check` for more details.
 
 # CHANGES IN xfun VERSION 0.12
+
+## NEW FEATURES
 
 - Added a new function `split_lines()`.
 

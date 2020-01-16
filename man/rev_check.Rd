@@ -8,7 +8,7 @@
 rev_check(
   pkg,
   which = "all",
-  recheck = FALSE,
+  recheck = NULL,
   ignore = NULL,
   update = TRUE,
   src = file.path(src_dir, pkg),
@@ -25,9 +25,14 @@ compare_Rcheck(status_only = FALSE, output = "00check_diffs.md")
 special value \code{'hard'} means the hard dependencies, i.e.,
 \code{c('Depends', 'Imports', 'LinkingTo')}.}
 
-\item{recheck}{Whether to only check the failed packages from last time. By
-default, if there are any \file{*.Rcheck} directories, \code{recheck} will
-be automatically set to \code{TRUE} if missing.}
+\item{recheck}{A vector of package names to be (re)checked. If not provided
+and there are any \file{*.Rcheck} directories left by certain packages
+(this often means these packages failed the last time), \code{recheck} will
+be these packages; if there are no \file{*.Rcheck} directories but a text
+file \file{recheck} exists, \code{recheck} will be the character vector
+read from this file. This provides a way for you to manually specify the
+packages to be checked. If there are no packages to be rechecked, all
+reverse dependencies will be checked.}
 
 \item{ignore}{A vector of package names to be ignored in \command{R CMD
 check}. If this argument is missing and a file \file{00ignore} exists, the
