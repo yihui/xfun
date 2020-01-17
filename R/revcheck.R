@@ -110,7 +110,9 @@ rev_check = function(
   if (missing(recheck)) {
     dirs = list.files('.', '.+[.]Rcheck$')
     pkgs = gsub('.Rcheck$', '', dirs)
-    recheck = if (length(pkgs) == 0 && file.exists('recheck')) scan('recheck') else pkgs
+    recheck = if (length(pkgs) == 0 && file.exists('recheck')) {
+      scan('recheck', 'character')
+    } else pkgs
   }
   pkgs = if (length(recheck)) recheck else {
     res = check_deps(pkg, db, which)
