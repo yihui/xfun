@@ -418,14 +418,14 @@ cran_check_pages = function() {
   }
 }
 
-# kill a R CMD check process if it has been running for more then 60 minutes
+# kill a R CMD check process if it has been running for more then 30 minutes
 kill_long_processes = function(etime = 30) {
   while (TRUE) {
     if (length(pids <- list_long_processes(etime))) {
       message('Killing processes: ', paste(pids, collapse = ' '))
       system2('kill', pids)
     }
-    Sys.sleep(300)
+    Sys.sleep(30)
   }
 }
 
