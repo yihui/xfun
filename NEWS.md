@@ -2,6 +2,8 @@
 
 ## NEW FEATURES
 
+- Added a new function `Rscript_call()` to call a function (with arguments) in a new R session via the command `Rscript`.
+
 - The `recheck` argument of `rev_check()` can take a vector of package names, and only these packages will be checked. See `?xfun::rev_check` for more details.
 
 # CHANGES IN xfun VERSION 0.12

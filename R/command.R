@@ -30,6 +30,30 @@ Rcmd = function(args, ...) {
   system2(file.path(R.home('bin'), 'R'), c('CMD', args), ...)
 }
 
+#' Call a function in a new R session via \code{Rscript()}
+#'
+#' Save the argument values of a function in a temporary RDS file, open a new R
+#' session via \code{\link{Rscript}()}, read the argument values, call the
+#' function, and read the returned value back to the current R session.
+#' @param fun A function, or a character string that can be parsed and evaluated
+#'   to a function.
+#' @param args A list of argument values.
+#' @export
+#' @return The returned value of the function in the new R session.
+#' @examples factorial(10)
+#' # should return the same value
+#' xfun::Rscript_call('factorial', list(10))
+#'
+#' # the first argument can be either a character string or a function
+#' xfun::Rscript_call(factorial, list(10))
+Rscript_call = function(fun, args = list()) {
+  f = replicate(2, tempfile(fileext = '.rds'))
+  on.exit(unlink(f), add = TRUE)
+  saveRDS(list(fun, args), f[1])
+  Rscript(shQuote(c(system.file('scripts', 'call-fun.R', package = 'xfun'), f)))
+  readRDS(f[2])
+}
+
 #' Upload to an FTP server via \command{curl}
 #'
 #' Run the command \command{curl -T file server} to upload a file to an FTP
