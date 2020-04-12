@@ -59,5 +59,5 @@ Windows users may need to install Rtools to obtain the \command{zip}
 logo = file.path(R.home("doc"), "html", "logo.jpg")
 link = xfun::embed_file(logo, "R-logo.jpg", "Download R logo")
 link
-htmltools::browsable(link)
+if (interactive()) htmltools::browsable(link)
 }

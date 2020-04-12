@@ -138,7 +138,7 @@ escape_math = function(x) {
 #' logo = file.path(R.home("doc"), "html", "logo.jpg")
 #' link = xfun::embed_file(logo, 'R-logo.jpg', 'Download R logo')
 #' link
-#' htmltools::browsable(link)
+#' if (interactive()) htmltools::browsable(link)
 embed_file = function(path, name = basename(path), text = paste('Download', name), ...) {
   h = paste0("data:", mime::guess_type(path), ";base64,", base64enc::base64encode(path))
   htmltools::a(text, href = h, download = name, ...)
