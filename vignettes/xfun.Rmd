@@ -160,6 +160,22 @@ n2w(-987654321)
 n2w(1e+15 - 1)
 ```
 
+## Cache an R expression to an RDS file
+
+The function `cache_rds()` provides a simple caching mechanism: the first time an expression is passed to it, it saves the result to an RDS file; the next time it will read the RDS file and return the value instead of evaluating the expression again. If you want to invalidate the cache, you can use the argument `rerun = TRUE`.
+
+```{r, eval=FALSE}
+res = xfun::cache_rds({
+  # pretend the computing here is a time-consuming
+  Sys.sleep(2)
+  1:10
+})
+```
+
+When the function is used in a code chunk in a **knitr** document, the RDS cache file is saved to the path determined by the chunk label (the filename) and the chunk option `cache.path` (usually the cache directory), so you do not have to provide the `file` and `dir` arguments of `cache_rds()`.
+
+This caching mechanism is much simpler than **knitr**'s caching. Cache invalidation is often tricky (see [this post](https://yihui.org/en/2018/06/cache-invalidation/)), so this function may be helpful if you want more transparency and control over when to invalidate the cache (for `cache_rds()`, the cache is invalidated only when the cache file is deleted, which can be achieved via the argument `rerun = TRUE`).
+
 ## Check reverse dependencies of a package
 
 Running `R CMD check` on the reverse dependencies of **knitr** and **rmarkdown** is my least favorite thing in developing R packages, because the numbers of their reverse dependencies are huge. The function `rev_check()` reflects some of my past experience in this process. I think I have automated it as much as possible, and made it as easy as possible to discover possible new problems introduced by the current version of the package (compared to the CRAN version). Finally I can just sit back and let it run.
