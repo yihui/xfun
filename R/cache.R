@@ -29,15 +29,15 @@
 #' f = tempfile()  # the cache file
 #' compute = function(...) {
 #'   res = xfun::cache_rds({
-#'     Sys.sleep(2)
+#'     Sys.sleep(1)
 #'     1:10
 #'   }, file = f, dir = '', ...)
 #'   res
 #' }
-#' compute()  # takes two seconds
+#' compute()  # takes one second
 #' compute()  # returns 1:10 immediately
 #' compute()  # fast again
-#' compute(rerun = TRUE)  # two seconds to rerun
+#' compute(rerun = TRUE)  # one second to rerun
 #' compute()
 #' file.remove(f)
 cache_rds = function(expr = {}, rerun = FALSE, file = 'cache.rds', dir = 'cache/', ...) {
