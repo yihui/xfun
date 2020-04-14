@@ -1,3 +1,9 @@
+# CHANGES IN xfun VERSION 0.14
+
+## NEW FEATURES
+
+- The `cache_rds()` function can invalidate the cache automatically when the code passed to its `expr` argument has changed. Two new arguments, `hash` and `clean` were added to this function to make it more useful and powerful. See the help page `?xfun::cache_rds()` for more information.
+
 # CHANGES IN xfun VERSION 0.13
 
 ## NEW FEATURES

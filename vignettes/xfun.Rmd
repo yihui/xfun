@@ -172,9 +172,55 @@ res = xfun::cache_rds({
 })
 ```
 
-When the function is used in a code chunk in a **knitr** document, the RDS cache file is saved to the path determined by the chunk label (the filename) and the chunk option `cache.path` (usually the cache directory), so you do not have to provide the `file` and `dir` arguments of `cache_rds()`.
+When the function is used in a code chunk in a **knitr** document, the RDS cache file is saved to a path determined by the chunk label (the base filename) and the chunk option `cache.path` (the cache directory), so you do not have to provide the `file` and `dir` arguments of `cache_rds()`.
 
-This caching mechanism is much simpler than **knitr**'s caching. Cache invalidation is often tricky (see [this post](https://yihui.org/en/2018/06/cache-invalidation/)), so this function may be helpful if you want more transparency and control over when to invalidate the cache (for `cache_rds()`, the cache is invalidated only when the cache file is deleted, which can be achieved via the argument `rerun = TRUE`).
+This caching mechanism is much simpler than **knitr**'s caching. Cache invalidation is often tricky (see [this post](https://yihui.org/en/2018/06/cache-invalidation/)), so this function may be helpful if you want more transparency and control over when to invalidate the cache (for `cache_rds()`, the cache is invalidated when the cache file is deleted, which can be achieved via the argument `rerun = TRUE`).
+
+As documented on the help page of `cache_rds()`, there are two common cases in which you may want to invalidate the cache:
+
+1. The code in the expression has changed, e.g., if you changed the code from `cache_rds({x + 1})` to `cache_rds({x + 2})`, the cache will be automatically invalidated and the expression will be re-evaluated. However, please note that changes in white spaces or comments do not matter. Or generally speaking, as long as the change does not affect the parsed expression, the cache will not be invalidated, e.g., the two expressions below are essentially identical (hence if you have executed `cache_rds()` on the first expression, the second expression will be able to take advantage of the cache):
+
+    ```r
+    res = xfun::cache_rds({
+      Sys.sleep(3  );
+      x=1:10;  # semi-colons won't matter
+      x+1;
+    })
+    
+    res = xfun::cache_rds({
+      Sys.sleep(3)
+      x = 1:10  # a comment
+      x +
+        1  # feel free to make any changes in white spaces
+    })
+    ```
+
+1. The value of a global variable in the expression has changed, e.g., if `y` has changed, you are most likely to want to invalidate the cache and rerun the expression below:
+
+    ```r
+    res = xfun::cache_rds({
+      x = 1:10
+      x + y
+    })
+    ```
+
+    This is because `x` is a local variable in the expression, and `y` is an external global variable (not created locally like `x`). To invalidate the cache when `y` has changed, you may let `cache_rds()` know through the `hash` argument that `y` needs to be considered when deciding if the cache should be invalidated:
+
+    ```r
+    res = xfun::cache_rds({
+      x = 1:10
+      x + y
+    }, hash = list(y))
+    ```
+
+    If you do not want to provide this list of value(s) to the `hash` argument, you may try `hash = "auto"` instead, which asks `cache_rds()` to try to figure out all global variables automatically and use a list of their values as the value for the `hash` argument.
+
+    ```r
+    res = xfun::cache_rds({
+      x = 1:10
+      x + y
+    }, hash = "auto")
+    ```
 
 ## Check reverse dependencies of a package
 
