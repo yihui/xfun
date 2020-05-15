@@ -9,7 +9,7 @@ upload_ftp(file, server, dir = "")
 
 upload_win_builder(
   file,
-  version = c("R-devel", "R-release", "R-oldrelease", "R-devel_gcc8"),
+  version = c("R-devel", "R-release", "R-oldrelease"),
   server = "ftp://win-builder.r-project.org/"
 )
 }

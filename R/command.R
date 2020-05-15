@@ -82,7 +82,7 @@ upload_ftp = function(file, server, dir = '') {
 #' @rdname upload_ftp
 #' @export
 upload_win_builder = function(
-  file, version = c("R-devel", "R-release", "R-oldrelease", "R-devel_gcc8"),
+  file, version = c("R-devel", "R-release", "R-oldrelease"),
   server = 'ftp://win-builder.r-project.org/'
 ) {
   res = unlist(lapply(version, upload_ftp, file = file, server = server))
