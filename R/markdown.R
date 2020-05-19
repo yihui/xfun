@@ -131,7 +131,8 @@ escape_math = function(x) {
 #'   separately.
 #'
 #'   Currently Internet Explorer does not support downloading embedded files
-#'   (\url{https://caniuse.com/#feat=download}).
+#'   (\url{https://caniuse.com/#feat=download}). Chrome has a 2MB limit on the
+#'   file size.
 #' @return An HTML tag \samp{<a>} with the appropriate attributes.
 #' @export
 #' @examples

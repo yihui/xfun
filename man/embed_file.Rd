@@ -53,7 +53,8 @@ Windows users may need to install Rtools to obtain the \command{zip}
   separately.
 
   Currently Internet Explorer does not support downloading embedded files
-  (\url{https://caniuse.com/#feat=download}).
+  (\url{https://caniuse.com/#feat=download}). Chrome has a 2MB limit on the
+  file size.
 }
 \examples{
 logo = file.path(R.home("doc"), "html", "logo.jpg")
