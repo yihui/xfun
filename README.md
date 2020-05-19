@@ -1,6 +1,6 @@
 # xfun
 
-[![Build Status](https://travis-ci.org/yihui/xfun.svg)](https://travis-ci.org/yihui/xfun)
+[![Build Status](https://travis-ci.com/yihui/xfun.svg)](https://travis-ci.com/yihui/xfun)
 [![Coverage status](https://codecov.io/gh/yihui/xfun/branch/master/graph/badge.svg)](https://codecov.io/github/yihui/xfun?branch=master)
 [![Downloads from the RStudio CRAN mirror](https://cranlogs.r-pkg.org/badges/xfun)](https://cran.r-project.org/package=xfun)
 
