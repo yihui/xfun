@@ -199,7 +199,7 @@ rev_check = function(
         ignore.case = TRUE, full.names = TRUE
       )
       if (length(vigs) && any(file.exists(with_ext(vigs, 'log')))) {
-        if (!loadable('tinytex')) install.packages('tinytex')
+        pkg_load2('tinytex')
         if (tinytex:::is_tinytex()) for (vig in vigs) in_dir(dirname(vig), {
           Rscript(shQuote(c('-e', 'if (grepl("[.]Rnw$", f <- commandArgs(T), ignore.case = T)) knitr::knit2pdf(f) else rmarkdown::render(f)', basename(vig))))
         })
