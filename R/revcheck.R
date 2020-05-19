@@ -198,11 +198,21 @@ rev_check = function(
         file.path(d, 'vign_test', p, 'vignettes'), '[.](Rnw|Rmd)',
         ignore.case = TRUE, full.names = TRUE
       )
+      pkg_load2('tinytex')
       if (length(vigs) && any(file.exists(with_ext(vigs, 'log')))) {
-        pkg_load2('tinytex')
         if (tinytex:::is_tinytex()) for (vig in vigs) in_dir(dirname(vig), {
           Rscript(shQuote(c('-e', 'if (grepl("[.]Rnw$", f <- commandArgs(T), ignore.case = T)) knitr::knit2pdf(f) else rmarkdown::render(f)', basename(vig))))
         })
+        check_it()
+        if (clean_Rcheck(d)) return(timing())
+      }
+      # if there are still missing LaTeX packages, install them and recheck
+      l0 = tinytex::tl_pkgs()
+      lapply(
+        list.files(d, '[.]log$', full.names = TRUE, recursive = TRUE),
+        tinytex::parse_install, quiet = TRUE
+      )
+      if (!identical(l0, tinytex::tl_pkgs())) {
         check_it()
         if (clean_Rcheck(d)) return(timing())
       }
