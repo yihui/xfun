@@ -58,6 +58,11 @@ file_string = function(file) {
   raw_string(paste(read_utf8(file), collapse = '\n'))
 }
 
+# read all records of a binary file as a raw vector by default
+read_bin = function(file, what = 'raw', n = file.info(file)$size, ...) {
+  readBin(file, what, n, ...)
+}
+
 #' Search and replace strings in files
 #'
 #' These functions provide the "file" version of \code{\link{gsub}()}, i.e.,
