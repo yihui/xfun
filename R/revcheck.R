@@ -463,8 +463,8 @@ install_missing_latex = function() {
   tinytex::tlmgr_install(unique(pkgs))
 }
 
-# return packages that haven't been updated for X days, and can be updated on CRAN
-cran_updatable = function(days = 90, maintainer = 'Yihui Xie') {
+# retrieve the release dates of packages
+cran_pkg_dates = function(full = FALSE, maintainer = 'Yihui Xie') {
   info = tools::CRAN_package_db()
   pkgs = info[grep(maintainer, info$Maintainer), 'Package']
   info = setNames(vector('list', length(pkgs)), pkgs)
@@ -482,6 +482,12 @@ cran_updatable = function(days = 90, maintainer = 'Yihui Xie') {
     d = c(d, as.Date(gsub(r, '\\1', grep(r, x, value = TRUE))))
     info[[p]] = sort(d, decreasing = TRUE)
   }
+  if (full) info else sort(do.call(c, lapply(info, `[`, 1)), decreasing = TRUE)
+}
+
+# return packages that haven't been updated for X days, and can be updated on CRAN
+cran_updatable = function(days = 90, maintainer = 'Yihui Xie') {
+  info = cran_pkg_dates(TRUE, maintainer)
   flag = unlist(lapply(info, function(d) {
     sum(d > Sys.Date() - 180) < 6 && d[1] < Sys.Date() - days
   }))
