@@ -208,3 +208,86 @@ download_file = function(url, output = basename(url), ...) {
 
   res
 }
+
+#' Turn the output of \code{\link{str}()} into a tree diagram
+#'
+#' The super useful function \code{str()} uses \verb{..} to indicate the level
+#' of sub-elements of an object, which may be difficult to read. This function
+#' uses vertical pipes to connect all sub-elements on the same level, so it is
+#' clearer which elements belong to the same parent element in an object with a
+#' nested structure (such as a nested list).
+#' @param ... Arguments to be passed to \code{\link{str}()} (note that the
+#'   \code{comp.str} is hardcoded inside this function, and it is the only
+#'   argument that you cannot customize).
+#' @return A character string as a \code{\link{raw_string}()}.
+#' @export
+#' @examples fit = lsfit(1:9, 1:9)
+#' str(fit)
+#' xfun::tree(fit)
+#'
+#' fit = lm(dist ~ speed, data = cars)
+#' str(fit)
+#' xfun::tree(fit)
+#'
+#' # some trivial examples
+#' xfun::tree(1:10)
+#' xfun::tree(iris)
+tree = function(...) {
+  x = capture.output(str(..., comp.str = '$ '))
+  r = '^([^$-]+[$-] )(.*)$'
+  x1 = gsub(r, '\\1', x)
+  x2 = gsub(r, '\\2', x)
+  x1 = gsub('[.][.]', '  ', x1)
+  x1 = gsub('[$] $', '|-', x1)
+  x1 = connect_pipes(x1)
+  x3 = paste(x1, x2, sep = '')
+  i = !grepl(r, x)
+  x3[i] = x[i]
+  raw_string(x3)
+}
+
+# for a tree diagram, connect the pipes on the same level, e.g., change
+
+# |- ..
+#   |- ..
+#
+#   |- ..
+
+# to
+
+# |- ..
+#   |- ..
+#   |
+#   |- ..
+
+# this task is not complicated, but just boring nested for-loops
+connect_pipes = function(x) {
+  ns = nchar(x); n = max(ns); m = length(x)
+  if (n < 2 || m < 3) return(x)
+  A = matrix('', nrow = m, ncol = n)
+  x = strsplit(x, '')
+  for (i in seq_len(m)) {
+    A[i, seq_len(ns[i])] = x[[i]]
+  }
+  k = NULL
+  for (j in seq_len(n - 1)) {
+    for (i in seq_len(m - 2)) {
+      if (!all(A[i, j + 0:1] == c('|', '-'))) next
+      for (l in (i + 1):m) {
+        cells = A[l, j + 0:1]
+        if (all(cells == ' ')) {
+          if (l == m) {
+            k = NULL; break
+          } else k = c(k, l)
+        } else if (all(cells == c('|', '-'))) {
+          break
+        } else {
+          k = NULL; break
+        }
+      }
+      if (length(k) > 0) A[k, j] = '|'
+      k = NULL
+    }
+  }
+  apply(A, 1, paste, collapse = '')
+}

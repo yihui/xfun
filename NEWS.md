@@ -1,5 +1,8 @@
 # CHANGES IN xfun VERSION 0.15
 
+## NEW FEATURES
+
+- Added a new function `tree()`, which is based on `str()` in base R, but changes the output of `str()` into a tree diagram to make it easier to understand nested data structures.
 
 # CHANGES IN xfun VERSION 0.14
 
