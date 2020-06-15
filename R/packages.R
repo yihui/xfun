@@ -37,7 +37,7 @@ pkg_attach = function(
     suppressPackageStartupMessages(base::library(...))
   }
   for (i in c(...)) {
-    if (install && !loadable(i)) install.packages(i)
+    if (install && !loadable(i)) pkg_install(i)
     library(i, character.only = TRUE)
   }
 }
@@ -51,7 +51,7 @@ pkg_load = function(..., error = TRUE, install = FALSE) {
   for (i in seq_len(n)) {
     res[i] = loadable(p <- pkg[i])
     if (install && !res[i]) {
-      install.packages(p); res[i] = loadable(p)
+      pkg_install(p); res[i] = loadable(p)
     }
   }
   if (error && any(!res)) stop('Package(s) not loadable: ', paste(pkg[!res], collapse = ' '))

@@ -323,6 +323,12 @@ download_tarball = function(p, db = available.packages(type = 'source'), dir = '
 # option xfun.install.packages
 pkg_install = function(pkgs, ...) {
   if (length(pkgs) == 0) return()
+  # in case the CRAN repo is not set up
+  repos = getOption('repos')
+  if (length(repos) == 0 || identical(repos, c(CRAN = '@CRAN@'))) {
+    opts = options(repos = c(CRAN = 'https://cran.rstudio.com'))
+    on.exit(options(opts), add = TRUE)
+  }
   install = getOption('xfun.install.packages', install.packages)
   if (length(pkgs) > 1)
     message('Installing ', length(pkgs), ' packages: ', paste(pkgs, collapse = ' '))
