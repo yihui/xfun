@@ -11,6 +11,7 @@ rev_check(
   recheck = NULL,
   ignore = NULL,
   update = TRUE,
+  timeout = getOption("xfun.rev_check.timeout", 15 * 60),
   src = file.path(src_dir, pkg),
   src_dir = getOption("xfun.rev_check.src_dir")
 )
@@ -39,6 +40,8 @@ check}. If this argument is missing and a file \file{00ignore} exists, the
 file will be read as a character vector and passed to this argument.}
 
 \item{update}{Whether to update all packages before the check.}
+
+\item{timeout}{Timeout in seconds for \command{R CMD check}.}
 
 \item{src}{The path of the source package directory.}
 

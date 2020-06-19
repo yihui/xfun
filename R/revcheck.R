@@ -75,6 +75,7 @@
 #' @param src_dir The parent directory of the source package directory. This can
 #'   be set in a global option if all your source packages are under a common
 #'   parent directory.
+#' @param timeout Timeout in seconds for \command{R CMD check}.
 #' @seealso \code{devtools::revdep_check()} is more sophisticated, but currently
 #'   has a few major issues that affect me: (1) It always deletes the
 #'   \file{*.Rcheck} directories
@@ -95,6 +96,7 @@
 #' @export
 rev_check = function(
   pkg, which = 'all', recheck = NULL, ignore = NULL, update = TRUE,
+  timeout = getOption('xfun.rev_check.timeout', 15 * 60),
   src = file.path(src_dir, pkg), src_dir = getOption('xfun.rev_check.src_dir')
 ) {
   if (length(src) != 1 || !dir.exists(src)) stop(
@@ -186,7 +188,8 @@ rev_check = function(
     check_it = function(args = NULL, ...) {
       system2(
         file.path(R.home('bin'), 'R'),
-        c(args, 'CMD', 'check', '--no-manual', shQuote(z)), stdout = FALSE, stderr = FALSE, ...
+        c(args, 'CMD', 'check', '--no-manual', shQuote(z)),
+        stdout = FALSE, stderr = FALSE, timeout = timeout, ...
       )
     }
     check_it()
