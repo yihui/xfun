@@ -13,7 +13,7 @@
 #' prose_index(c('a', '````', '```r', '1+1', '```', '````', 'c'))
 prose_index = function(x, warn = TRUE) {
   idx = NULL; r = '^(\\s*```+).*'; s = ''
-  for (i in grep(r, x)) {
+  for (i in setdiff(grep(r, x), grep('-->\\s*$', x))) {
     if (s == '') {
       s = gsub(r, '\\1', x[i]); idx = c(idx, i); next
     }
