@@ -22,7 +22,6 @@ Suggests:
     markdown,
     knitr,
     htmltools,
-    base64enc,
     remotes,
     rmarkdown
 License: MIT + file LICENSE
