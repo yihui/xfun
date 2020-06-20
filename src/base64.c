@@ -49,7 +49,7 @@ void base64_encode_impl(
   }
 }
 
-SEXP base64_encode(SEXP input) {
+SEXP base64_enc(SEXP input) {
   int rv = 0;
   // get input
   R_xlen_t input_len;

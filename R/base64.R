@@ -11,5 +11,5 @@
 #' xfun::base64_encode(logo)
 base64_encode = function(x) {
   if (!is.raw(x)) x = read_bin(x)
-  .Call('base64_encode', x)
+  .Call('base64_enc', x)
 }

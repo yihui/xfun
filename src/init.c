@@ -4,10 +4,10 @@
 #include <R_ext/Rdynload.h>
 
 /* .Call calls */
-extern SEXP base64_encode(SEXP);
+extern SEXP base64_enc(SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-  {"base64_encode", (DL_FUNC) &base64_encode, 1},
+  {"base64_enc", (DL_FUNC) &base64_enc, 1},
   {NULL, NULL, 0}
 };
 
