@@ -125,10 +125,9 @@ escape_math = function(x) {
 #' @note Windows users may need to install Rtools to obtain the \command{zip}
 #'   command to use \code{embed_dir()} and \code{embed_files()}.
 #'
-#'   These functions require R packages \pkg{mime}, \pkg{base64enc}, and
-#'   \pkg{htmltools}. If you have installed the \pkg{rmarkdown} package, these
-#'   packages should be available, otherwise you need to install them
-#'   separately.
+#'   These functions require R packages \pkg{mime} and \pkg{htmltools}. If you
+#'   have installed the \pkg{rmarkdown} package, these packages should be
+#'   available, otherwise you need to install them separately.
 #'
 #'   Currently Internet Explorer does not support downloading embedded files
 #'   (\url{https://caniuse.com/#feat=download}). Chrome has a 2MB limit on the
@@ -141,7 +140,7 @@ escape_math = function(x) {
 #' link
 #' if (interactive()) htmltools::browsable(link)
 embed_file = function(path, name = basename(path), text = paste('Download', name), ...) {
-  h = paste0("data:", mime::guess_type(path), ";base64,", base64enc::base64encode(path))
+  h = paste0("data:", mime::guess_type(path), ";base64,", base64_encode(path))
   htmltools::a(text, href = h, download = name, ...)
 }
 
