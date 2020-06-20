@@ -6,6 +6,8 @@
 
 - Added a new function `base64_encode()` to encode data into the base64 encoding (thanks, @wush978, #27).
 
+- Added a new function `base64_uri()` to generate the Data URI (or Data URL) for a file.
+
 ## BUG FIXES
 
 - Fenced code blocks commented out in `<!-- -->` are not longer recognized as code blocks but prose (thanks, @jarauh, #25).
