@@ -6,6 +6,10 @@
 
 - Added a new function `base64_encode()` to encode data into the base64 encoding (thanks, @wush978, #27).
 
+## BUG FIXES
+
+- Fenced code blocks commented out in `<!-- -->` are not longer recognized as code blocks but prose (thanks, @jarauh, #25).
+
 # CHANGES IN xfun VERSION 0.14
 
 ## NEW FEATURES

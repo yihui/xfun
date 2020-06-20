@@ -38,6 +38,10 @@ assert('prose_index() works', {
   out = integer()
   (prose_index(x) %==% out)
 
+  # code fences commented out
+  x = c('```', 'b', '```', '<!--```', 'd', '```-->')
+  (prose_index(x) %==% 4:6)
+
   # if the code fences are not balanced
   x = c('a', '```', 'b', '``', 'c')
   out = seq_along(x)
