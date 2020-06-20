@@ -4,6 +4,8 @@
 
 - Added a new function `tree()`, which is based on `str()` in base R, but changes the output of `str()` into a tree diagram to make it easier to understand nested data structures.
 
+- Added a new function `base64_encode()` to encode data into the base64 encoding (thanks, @wush978, #27).
+
 # CHANGES IN xfun VERSION 0.14
 
 ## NEW FEATURES
