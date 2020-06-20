@@ -23,27 +23,27 @@ void base64_encode_impl(
   char* output,
   const R_xlen_t output_len
 ) {
-  R_xlen_t index = 0;
   R_xlen_t input_len_left = input_len;
-  R_xlen_t input_index = 0;
+  R_xlen_t i1 = 0;
+  R_xlen_t i2 = 0;
   while(input_len_left > 2) {
-    output[index++] = base64_table[ input[input_index] / 4];
-    output[index++] = base64_table[ 16 * (input[input_index] % 4) + input[ input_index + 1 ] / 16];
-    output[index++] = base64_table[ 4 * (input [ input_index + 1] % 16) + input[input_index + 2] / 64];
-    output[index++] = base64_table[input[input_index + 2] % 64];
-    input_index += 3;
+    output[i2++] = base64_table[input[i1] / 4];
+    output[i2++] = base64_table[16 * (input[i1] % 4) + input[ i1 + 1 ] / 16];
+    output[i2++] = base64_table[4 * (input [ i1 + 1] % 16) + input[i1 + 2] / 64];
+    output[i2++] = base64_table[input[i1 + 2] % 64];
+    i1 += 3;
     input_len_left -= 3;
   }
   if (input_len_left) {
-    output[index++] = base64_table[input[input_index] / 4];
+    output[i2++] = base64_table[input[i1] / 4];
     if (input_len_left > 1) {
-      output[index++] = base64_table[ 16 * (input[input_index] % 4) + input[ input_index + 1 ] / 16];
-      output[index++] = base64_table[ 4 * (input [ input_index + 1] % 16)];
-      output[index++] = padding;
+      output[i2++] = base64_table[16 * (input[i1] % 4) + input[ i1 + 1 ] / 16];
+      output[i2++] = base64_table[4 * (input [i1 + 1] % 16)];
+      output[i2++] = padding;
     } else {
-      output[index++] = base64_table[ 16 * (input[input_index] % 4)];
-      output[index++] = padding;
-      output[index++] = padding;
+      output[i2++] = base64_table[16 * (input[i1] % 4)];
+      output[i2++] = padding;
+      output[i2++] = padding;
 
     }
   }
