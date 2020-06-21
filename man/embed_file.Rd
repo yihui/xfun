@@ -56,8 +56,8 @@ Windows users may need to install Rtools to obtain the \command{zip}
   file size.
 }
 \examples{
-logo = file.path(R.home("doc"), "html", "logo.jpg")
-link = xfun::embed_file(logo, "R-logo.jpg", "Download R logo")
+logo = xfun:::R_logo()
+link = xfun::embed_file(logo, text = "Download R logo")
 link
 if (interactive()) htmltools::browsable(link)
 }
