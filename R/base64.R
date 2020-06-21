@@ -16,9 +16,10 @@ base64_encode = function(x) {
 
 # an R implementation of base64 encoding by Wush Wu moved from knitr (of
 # historic interest only): https://github.com/yihui/knitr/pull/324
-base64_encode_r = function(raw.string) {
+base64_encode_r = function(x) {
+  if (!is.raw(x)) x = read_bin(x)
   chars = c(LETTERS, letters, 0:9, '+', '/')
-  n = length(s <- as.integer(raw.string))
+  n = length(s <- as.integer(x))
   res = rep(NA, (n + 2) / 3 * 4)
   i = 0L  # index of res vector
   j = 1L  # index of base64_table
