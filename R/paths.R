@@ -100,3 +100,9 @@ rename_seq = function(
   if (!dry_run) file.rename(files, files2)
   setNames(files2, files)
 }
+
+# return path to R's svg logo if it exists, otherwise return the jpg logo
+R_logo = function() {
+  x = file.path(R.home('doc'), 'html', c('Rlogo.svg', 'logo.jpg'))
+  x[file.exists(x)][1]
+}

@@ -14,7 +14,7 @@ assert('base64_encode() encodes the string correctly', {
   (sapply(255:246, function(i) base64_encode(as.raw(255:i))) == ref)
 })
 
-f = file.path(R.home('doc'), 'html', 'logo.jpg')
 assert('base64_encode_r() returns the same result as base64_encode()', {
+  f = R_logo()
   base64_encode_r(f) %==% base64_encode(f)
 })

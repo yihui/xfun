@@ -18,7 +18,7 @@ can be used to embed data in HTML documents, e.g., in the \code{src}
 attribute of the \verb{<img />} tag.
 }
 \examples{
-logo = file.path(R.home("doc"), "html", "logo.jpg")
+logo = xfun:::R_logo()
 img = htmltools::img(src = xfun::base64_uri(logo), alt = "R logo")
 if (interactive()) htmltools::browsable(img)
 }

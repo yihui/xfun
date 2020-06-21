@@ -135,8 +135,8 @@ escape_math = function(x) {
 #' @return An HTML tag \samp{<a>} with the appropriate attributes.
 #' @export
 #' @examples
-#' logo = file.path(R.home("doc"), "html", "logo.jpg")
-#' link = xfun::embed_file(logo, 'R-logo.jpg', 'Download R logo')
+#' logo = xfun:::R_logo()
+#' link = xfun::embed_file(logo, text = 'Download R logo')
 #' link
 #' if (interactive()) htmltools::browsable(link)
 embed_file = function(path, name = basename(path), text = paste('Download', name), ...) {

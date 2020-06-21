@@ -7,7 +7,7 @@
 #' @useDynLib xfun, .registration = TRUE
 #' @export
 #' @examples xfun::base64_encode(as.raw(1:10))
-#' logo = file.path(R.home('doc'), 'html', 'logo.jpg')
+#' logo = xfun:::R_logo()
 #' xfun::base64_encode(logo)
 base64_encode = function(x) {
   if (!is.raw(x)) x = read_bin(x)
@@ -55,7 +55,7 @@ base64_encode_r = function(x) {
 #' @return A string of the form \verb{data:<media type>;base64,<data>}.
 #' @export
 #' @examples
-#' logo = file.path(R.home('doc'), 'html', 'logo.jpg')
+#' logo = xfun:::R_logo()
 #' img = htmltools::img(src = xfun::base64_uri(logo), alt = 'R logo')
 #' if (interactive()) htmltools::browsable(img)
 base64_uri = function(x) {

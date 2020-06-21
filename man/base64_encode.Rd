@@ -18,6 +18,6 @@ Encode a file or a raw vector into the base64 encoding.
 }
 \examples{
 xfun::base64_encode(as.raw(1:10))
-logo = file.path(R.home("doc"), "html", "logo.jpg")
+logo = xfun:::R_logo()
 xfun::base64_encode(logo)
 }
