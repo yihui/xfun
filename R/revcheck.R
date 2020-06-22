@@ -355,7 +355,11 @@ clean_Rcheck = function(dir, log = read_utf8(file.path(dir, '00check.log'))) {
 #'   will be converted to HTML, so you can see the diffs more clearly.
 #' @export
 compare_Rcheck = function(status_only = FALSE, output = '00check_diffs.md') {
-  if (length(dirs <- list.files('.', '.+[.]Rcheck2$')) == 0) return()
+  if (length(dirs <- list.files('.', '.+[.]Rcheck2$')) == 0) {
+    # clean up the `recheck` file
+    if (file.exists('recheck')) writeLines(character(), 'recheck')
+    return()
+  }
   d2 = function(d) c(sub('2$', '', d), d)
   logs = function(d) file.path(d2(d), '00check.log')
   dirs = dirs[rowSums(matrix(file.exists(logs(dirs)), ncol = 2)) == 2]
