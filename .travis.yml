@@ -1,8 +1,6 @@
 language: r
 sudo: false
 cache: packages
-r_packages:
-  - covr
 
 env:
   global:
@@ -11,9 +9,14 @@ env:
 repos:
   XRAN: https://xran.yihui.org
 
-before_install:
-  - "curl -L https://xran.yihui.org/.gitconfig -o ~/.gitconfig"
-
-after_success:
-  - Rscript -e 'covr::codecov()'
-  - "(curl -L https://xran.yihui.org/r-xran | bash)"
+jobs:
+  include:
+    - r: oldrel
+    - r: release
+      before_install:
+        - "curl -L https://xran.yihui.org/.gitconfig -o ~/.gitconfig"
+        - Rscript -e 'if (!require("covr")) install.packages("covr")'
+      after_success:
+        - Rscript -e 'covr::codecov()'
+        - "(curl -L https://xran.yihui.org/r-xran | bash)"
+    - r: devel
