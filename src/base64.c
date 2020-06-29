@@ -100,12 +100,12 @@ int base64_decode_impl(
       }
       case 1 : {
         output[j++] |= ch >> 4;
-        output[j] = (ch & 0x0f) << 4;
+        if (j < output_len) output[j] = (ch & 0x0f) << 4;
         break;
       }
       case 2 : {
         output[j++] |= ch >> 2;
-        output[j] = (ch & 0x03) << 6;
+        if (j < output_len) output[j] = (ch & 0x03) << 6;
         break;
       }
       case 3 : {
@@ -122,7 +122,7 @@ int base64_decode_impl(
         return 1;
       }
       case 2 : k++;
-      case 3 : output[k] = 0;
+      case 3 : if (k < output_len) output[k] = 0;
     }
   }
   if (j != output_len) return 1;
