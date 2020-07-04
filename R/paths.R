@@ -98,7 +98,15 @@ rename_seq = function(
   files2 = paste(sprintf(format, seq_len(n) + start - 1), files2, sep = '-')
 
   if (!dry_run) file.rename(files, files2)
-  setNames(files2, files)
+  structure(setNames(files2, files), class = 'xfun_rename_seq')
+}
+
+#' @export
+print.xfun_rename_seq = function(x, ...) {
+  x = unclass(x)
+  tab = data.frame(original = names(x), ' ' = '->', new = unname(x), check.names = FALSE)
+  if (loadable('knitr')) tab = knitr::kable(tab, 'simple')
+  print(tab)
 }
 
 # return path to R's svg logo if it exists, otherwise return the jpg logo
