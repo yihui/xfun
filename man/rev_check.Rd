@@ -81,7 +81,7 @@ which means if you see a \file{*.Rcheck} directory, it means the check
 failed, and you need to take a look at the log files under that directory.
 
 The time to finish the check is recorded for each package. As the check goes
-on, the total remaing time will be roughly estimated via \code{n *
+on, the total remaining time will be roughly estimated via \code{n *
 mean(times)}, where \code{n} is the number of packages remaining to be
 checked, and \code{times} is a vector of elapsed time of packages that have
 been checked.
