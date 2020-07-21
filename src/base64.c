@@ -71,8 +71,9 @@ int base64_decode_impl(
   const unsigned char* input,
   R_xlen_t input_len,
   unsigned char* output,
-  const R_xlen_t output_len
+  R_xlen_t* poutput_len
 ) {
+  R_xlen_t output_len = *poutput_len;
   for (R_xlen_t i = 0;i < output_len;i++) {
     output[i] = 0;
   }
@@ -125,7 +126,7 @@ int base64_decode_impl(
       case 3 : if (k < output_len) output[k] = 0;
     }
   }
-  if (j != output_len) return 1;
+  *poutput_len = j;
   return 0;
 }
 
@@ -194,26 +195,30 @@ SEXP base64_dec(SEXP input) {
     if (input_str_size % 4 != 0) {
       rv = 2;
     } else {
-      R_xlen_t output_len = input_str_size / 4 * 3;
-      if (input_str_size > 0 && input_p[input_str_size - 1] == upadding) {
-        output_len -= 1;
-        if (input_p[input_str_size - 2] == upadding) output_len -= 1;
-      }
-      result = PROTECT(NEW_RAW(output_len));
-      if (result) {
-        unsigned char* result_content = RAW_POINTER(result);
+      R_xlen_t output_len = input_str_size;
+      unsigned char* result_content = malloc(output_len);
+      if (result_content) {
         if (base64_decode_impl(
           input_p,
           input_str_size,
           result_content,
-          output_len
+          &output_len
         ) != 0) {
           rv = 2;
-          UNPROTECT(1);
-          result = R_NilValue;
         } else {
-          UNPROTECT(1);
+          result = PROTECT(NEW_RAW(output_len));
+          if (result) {
+            unsigned char* presult = RAW_POINTER(result);
+            for (R_xlen_t i = 0;i < output_len;i++) {
+              presult[i] = result_content[i];
+            }
+            UNPROTECT(1);
+          } else {
+            rv = 3;
+            result = R_NilValue;
+          }
         }
+        free(result_content);
       } else {
         rv = 3;
         result = R_NilValue;
