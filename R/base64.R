@@ -1,9 +1,16 @@
-#' Encode data into the base64 encoding.
+#' Encode/decode data into/from base64 encoding.
 #'
-#' Encode a file or a raw vector into the base64 encoding.
-#' @param x A raw vector. If not raw, it is assumed to be a file or a connection
-#'   to be read as raw via \code{readBin()}.
-#' @return A character string.
+#' The function \code{base64_encode()} encodes a file or a raw vector into the
+#' base64 encoding. The function \code{base64_decode()} decodes data from the
+#' base64 encoding.
+#' @param x For \code{base64_encode()}, a raw vector. If not raw, it is assumed
+#'   to be a file or a connection to be read via \code{readBin()}. For
+#'   \code{base64_decode()}, a string.
+#' @param from If provided (and \code{x} is not provided), a connection or file
+#'   to be read via \code{readChar()}, and the result will be passed to the
+#'   argument \code{x}.
+#' @return \code{base64_encode()} returns a character string.
+#'   \code{base64_decode()} returns a raw vector.
 #' @useDynLib xfun, .registration = TRUE
 #' @export
 #' @examples xfun::base64_encode(as.raw(1:10))
@@ -12,6 +19,18 @@
 base64_encode = function(x) {
   if (!is.raw(x)) x = read_bin(x)
   .Call('base64_enc', x)
+}
+
+#' @export
+#' @rdname base64_encode
+#' @examples xfun::base64_decode("AQIDBAUGBwgJCg==")
+base64_decode = function(x, from = NA) {
+  if (!is.na(from)) {
+    if (!missing(x)) stop("Please provide either 'x' or 'from', but not both.")
+    x = readChar(from, file.size(from), TRUE)
+  }
+  if (!is.character(x) || length(x) != 1) stop("'x' must be a single character string.")
+  .Call('base64_dec', x)
 }
 
 # an R implementation of base64 encoding by Wush Wu moved from knitr (of
