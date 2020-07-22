@@ -2,22 +2,34 @@
 % Please edit documentation in R/base64.R
 \name{base64_encode}
 \alias{base64_encode}
-\title{Encode data into the base64 encoding.}
+\alias{base64_decode}
+\title{Encode/decode data into/from base64 encoding.}
 \usage{
 base64_encode(x)
+
+base64_decode(x, from = NA)
 }
 \arguments{
-\item{x}{A raw vector. If not raw, it is assumed to be a file or a connection
-to be read as raw via \code{readBin()}.}
+\item{x}{For \code{base64_encode()}, a raw vector. If not raw, it is assumed
+to be a file or a connection to be read via \code{readBin()}. For
+\code{base64_decode()}, a string.}
+
+\item{from}{If provided (and \code{x} is not provided), a connection or file
+to be read via \code{readChar()}, and the result will be passed to the
+argument \code{x}.}
 }
 \value{
-A character string.
+\code{base64_encode()} returns a character string.
+  \code{base64_decode()} returns a raw vector.
 }
 \description{
-Encode a file or a raw vector into the base64 encoding.
+The function \code{base64_encode()} encodes a file or a raw vector into the
+base64 encoding. The function \code{base64_decode()} decodes data from the
+base64 encoding.
 }
 \examples{
 xfun::base64_encode(as.raw(1:10))
 logo = xfun:::R_logo()
 xfun::base64_encode(logo)
+xfun::base64_decode("AQIDBAUGBwgJCg==")
 }
