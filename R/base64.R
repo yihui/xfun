@@ -14,6 +14,21 @@ base64_encode = function(x) {
   .Call('base64_enc', x)
 }
 
+#' Decode data from the base64 encoding.
+#'
+#' Decode a file or a string from the base64 encoding.
+#' @param x A string. If \code{file.exist(x)} returns \code{TRUE}, it is assumed to be a file or a connection
+#'   to be read as string via \code{readChar()}.
+#' @return A raw vector.
+#' @export
+#' @examples xfun::base64_decode("AQIDBAUGBwgJCg==")
+base64_decode = function(x) {
+  stopifnot(is.character(x))
+  stopifnot(length(x) == 1)
+  if (file.exists(x)) x = readChar(x, file.size(x), TRUE)
+  .Call('base64_dec', x)
+}
+
 # an R implementation of base64 encoding by Wush Wu moved from knitr (of
 # historic interest only): https://github.com/yihui/knitr/pull/324
 base64_encode_r = function(x) {
