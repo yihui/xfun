@@ -15,12 +15,12 @@ assert('base64_encode() encodes the string correctly', {
 })
 
 assert('base64_decode() decodes the string correctly', {
-  sapply(c(1:10, 255:246), function(i) {
-    input <- as.raw(1:i)
-    output <- base64_encode(input)
-    input2 <- base64_decode(output)
-    isTRUE(all.equal(input, input2))
-  })
+  (sapply(c(1:10, 255:246), function(i) {
+    input = as.raw(1:i)
+    output = base64_encode(input)
+    input2 = base64_decode(output)
+    input %==% input2
+  }))
 })
 
 assert('base64_decode() will not make R crash if the input is not valid', {
