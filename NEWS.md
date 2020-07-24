@@ -1,3 +1,7 @@
+# CHANGES IN xfun VERSION 0.17
+
+
+
 # CHANGES IN xfun VERSION 0.16
 
 - Added a new function `base64_decode()` to decode data from the base64 encoding (thanks, @wush978, #31).
