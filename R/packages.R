@@ -91,6 +91,9 @@ pkg_attach2 = function(...) pkg_attach(..., install = TRUE)
 #' @export
 pkg_load2 = function(...) pkg_load(..., install = TRUE)
 
+pkg_update = function(...) {
+  update.packages(ask = FALSE, checkBuilt = TRUE, ...)
+}
 
 broken_packages = function(reinstall = TRUE) {
   pkgs = unlist(plapply(.packages(TRUE), function(p) if (!loadable(p)) p))
