@@ -1,6 +1,8 @@
 # CHANGES IN xfun VERSION 0.17
 
+## NEW FEATURES
 
+- Supports `xfun::pkg_attach(packages, install = "pak")`, i.e., use `pak::pkg_install()` to install a package when it is not installed (thanks, @GitHunter0, #32).
 
 # CHANGES IN xfun VERSION 0.16
 

@@ -27,9 +27,13 @@ pkg_load2(...)
 \item{...}{Package names (character vectors, and must always be quoted).}
 
 \item{install}{Whether to automatically install packages that are not
-available using \code{\link{install.packages}()}. You are recommended to
-set a CRAN mirror in the global option \code{repos} via
-\code{\link{options}()} if you want to automatically install packages.}
+available using \code{\link{install.packages}()}. Besides \code{TRUE} and
+\code{FALSE}, the value of this argument can also be a function to install
+packages (\code{install = TRUE} is equivalent to \code{install =
+install.packages}), or a character string \code{"pak"} (equivalent to
+\code{install = pak::pkg_install}, which requires the \pkg{pak} package).
+You are recommended to set a CRAN mirror in the global option \code{repos}
+via \code{\link{options}()} if you want to automatically install packages.}
 
 \item{message}{Whether to show the package startup messages (if any startup
 messages are provided in a package).}
