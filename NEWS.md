@@ -4,6 +4,8 @@
 
 - Supports `xfun::pkg_attach(packages, install = "pak")`, i.e., use `pak::pkg_install()` to install a package when it is not installed (thanks, @GitHunter0, #32).
 
+- Added a new function `xfun::split_source()` to split lines of R source code into minimal complete expressions.
+
 # CHANGES IN xfun VERSION 0.16
 
 - Added a new function `base64_decode()` to decode data from the base64 encoding (thanks, @wush978, #31).

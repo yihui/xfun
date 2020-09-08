@@ -119,6 +119,36 @@ split_lines = function(x) {
   unlist(strsplit(x, '\n'))
 }
 
+#' Split source lines into complete expressions
+#'
+#' Parse the lines of code one by one to find complete expressions in the code,
+#' and put them in a list.
+#' @param x A character vector of R source code.
+#' @return A list of character vectors, and each vector contains a complete R
+#'   expression.
+#' @export
+#' @examples xfun::split_source(c('if (TRUE) {', '1 + 1', '}', 'print(1:5)'))
+split_source = function(x) {
+  if ((n <- length(x)) < 1) return(list(x))
+  i = i1 = i2 = 1
+  res = list()
+  while (i2 <= n) {
+    piece = x[i1:i2]
+    if (try_parse(piece)) {
+      res[[i]] = piece; i = i + 1
+      i1 = i2 + 1 # start from the next line
+    }
+    i2 = i2 + 1
+  }
+  if (i1 <= n) parse(text = piece)  # must be an error there
+  res
+}
+
+# whether a code expression can be parsed
+try_parse = function(code, silent = TRUE) {
+  !inherits(try(parse_only(code), silent = silent), 'try-error')
+}
+
 #' Fix pairs of characters in a file
 #'
 #' For example, the curly braces may be wrong (the opening and closing braces
