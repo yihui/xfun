@@ -120,10 +120,10 @@ installed from \file{~/Dropbox/repo/kintr}.
 \code{devtools::revdep_check()} is more sophisticated, but currently
   has a few major issues that affect me: (1) It always deletes the
   \file{*.Rcheck} directories
-  (\url{https://github.com/hadley/devtools/issues/1395}), which makes it
+  (\url{https://github.com/r-lib/devtools/issues/1395}), which makes it
   difficult to know more information about the failures; (2) It does not
   fully install the source package before checking its reverse dependencies
-  (\url{https://github.com/hadley/devtools/pull/1397}); (3) I feel it is
+  (\url{https://github.com/r-lib/devtools/pull/1397}); (3) I feel it is
   fairly difficult to iterate the check (ignore the successful packages and
   only check the failed packages); by comparison, \code{xfun::rev_check()}
   only requires you to run a short command repeatedly (failed packages are
