@@ -26,6 +26,12 @@ assert('as_strict_list() converts a list to a strict list', {
   (as_strict_list(normal_list) %==% s_list)
 })
 
+assert('print() returns the same output for strict and normal list', {
+  normal_list = list(aaa = 1:2, bbb = c('hey', 'dad'))
+  s_list = as_strict_list(normal_list)
+  (capture.output(print(normal_list)) %==% capture.output(print(s_list)))
+})
+
 assert('raw_string() prints as expected', {
   rs = raw_string(c('a "b"', 'hello\tworld!'))
   (inherits(rs, 'xfun_raw_string'))
