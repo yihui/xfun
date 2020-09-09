@@ -1,5 +1,8 @@
 # CHANGES IN xfun VERSION 0.18
 
+## NEW FEATURES
+
+- Added a new function `valid_syntax()` to check if an R code fragment is syntactically valid. This function was moved from the **highr** package.
 
 # CHANGES IN xfun VERSION 0.17
 
@@ -7,7 +10,7 @@
 
 - Supports `xfun::pkg_attach(packages, install = "pak")`, i.e., use `pak::pkg_install()` to install a package when it is not installed (thanks, @GitHunter0, #32).
 
-- Added a new function `xfun::split_source()` to split lines of R source code into minimal complete expressions.
+- Added a new function `xfun::split_source()` to split lines of R source code into minimal complete expressions. This function was moved from the **highr** package.
 
 # CHANGES IN xfun VERSION 0.16
 

@@ -134,7 +134,7 @@ split_source = function(x) {
   res = list()
   while (i2 <= n) {
     piece = x[i1:i2]
-    if (try_parse(piece)) {
+    if (valid_syntax(piece)) {
       res[[i]] = piece; i = i + 1
       i1 = i2 + 1 # start from the next line
     }
@@ -144,8 +144,18 @@ split_source = function(x) {
   res
 }
 
-# whether a code expression can be parsed
-try_parse = function(code, silent = TRUE) {
+#' Check if the syntax of the code is valid
+#'
+#' Try to \code{\link{parse}()} the code and see if an error occurs.
+#' @param code A character vector of R source code.
+#' @param silent Whether to suppress the error message when the code is not
+#'   valid.
+#' @return \code{TRUE} if the code could be parsed, otherwise \code{FALSE}.
+#' @export
+#' @examples xfun::valid_syntax('1+1')
+#' xfun::valid_syntax('1+')
+#' xfun::valid_syntax(c('if(T){1+1}', 'else {2+2}'), silent = FALSE)
+valid_syntax = function(code, silent = TRUE) {
   !inherits(try(parse_only(code), silent = silent), 'try-error')
 }
 

@@ -41,3 +41,11 @@ assert('split_source() should signal an error for incomplete code', {
   (has_error(split_source('1+1+')))
   (has_error(split_source(c('1+1', '1+1+'))))
 })
+
+assert('valid_syntax() tells if a code fragment is syntactically valid', {
+  (valid_syntax('1+1'))
+  (!valid_syntax('1+1+'))
+  (valid_syntax('if(TRUE)1'))
+  (!valid_syntax(c('if(T){', 'F')))
+  (valid_syntax(c('if(T){', 'F}')))
+})
