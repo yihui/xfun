@@ -4,6 +4,8 @@
 
 - Added a new function `github_releases()` to obtain the tags from the Github releases of a repo.
 
+- Added a new function `bump_version()` to increase the last digit of version numbers by one.
+
 - Added a new function `valid_syntax()` to check if an R code fragment is syntactically valid. This function was moved from the **highr** package.
 
 # CHANGES IN xfun VERSION 0.17

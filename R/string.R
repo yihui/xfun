@@ -159,6 +159,27 @@ valid_syntax = function(code, silent = TRUE) {
   !inherits(try(parse_only(code), silent = silent), 'try-error')
 }
 
+#' Bump version numbers
+#'
+#' Increase the last digit of version numbers, e.g., from \code{0.1} to
+#' \code{0.2}, or \code{7.23.9} to \code{7.23.10}.
+#' @param x A vector of version numbers (of the class \code{"numeric_version"}),
+#'   or values that can be coerced to version numbers via
+#'   \code{as.numeric_version()}.
+#' @return A vector of new version numbers.
+#' @export
+#' @examples xfun::bump_version(c('0.1', '91.2.14'))
+bump_version = function(x) {
+  x = as.numeric_version(x)
+  for (i in seq_along(x)) {
+    v = x[i]
+    n = length(unclass(v)[[1]])
+    v[[1, n]] = v[[1, n]] + 1  # bump the last digit
+    x[i] = v
+  }
+  x
+}
+
 #' Fix pairs of characters in a file
 #'
 #' For example, the curly braces may be wrong (the opening and closing braces
