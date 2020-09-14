@@ -6,6 +6,8 @@
 
 - Added a new function `bump_version()` to increase the last digit of version numbers by one.
 
+- Moved a helper function `process_file()` from the **blogdown** package to this package, and documented it.
+
 - Added a new function `valid_syntax()` to check if an R code fragment is syntactically valid. This function was moved from the **highr** package.
 
 # CHANGES IN xfun VERSION 0.17

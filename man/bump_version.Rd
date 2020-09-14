@@ -19,5 +19,5 @@ Increase the last digit of version numbers, e.g., from \code{0.1} to
 \code{0.2}, or \code{7.23.9} to \code{7.23.10}.
 }
 \examples{
-xfun::bump_version(as.numeric_version(c("0.1", "91.2.14")))
+xfun::bump_version(c("0.1", "91.2.14"))
 }

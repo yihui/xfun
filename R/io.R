@@ -63,6 +63,27 @@ read_bin = function(file, what = 'raw', n = file.info(file)$size, ...) {
   readBin(file, what, n, ...)
 }
 
+#' Read a text file, process the text with a function, and write the text back
+#'
+#' Read a text file with the UTF-8 encoding, apply a function to the text, and
+#' write back to the original file.
+#' @param file Path to a text file.
+#' @param FUN A function to process the text.
+#' @param x The content of the file.
+#' @return If \code{file} is provided, invisible \code{NULL} (the file is
+#'   updated as a side effect), otherwise the processed content (as a character
+#'   vector).
+#' @export
+#' @examples f = tempfile()
+#' xfun::write_utf8('Hello World', f)
+#' xfun::process_file(f, function(x) gsub('World', 'woRld', x))
+#' xfun::read_utf8(f)  # see if it has been updated
+#' file.remove(f)
+process_file = function(file, FUN = identity, x = read_utf8(file)) {
+  x = FUN(x)
+  if (missing(file)) x else write_utf8(x, file)
+}
+
 #' Search and replace strings in files
 #'
 #' These functions provide the "file" version of \code{\link{gsub}()}, i.e.,
