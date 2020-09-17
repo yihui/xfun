@@ -143,6 +143,21 @@ gsub_ext = function(ext, ..., dir = '.', recursive = TRUE) {
   gsub_dir(..., dir = dir, recursive = recursive, ext = ext)
 }
 
+#' Perform replacement with \code{gsub()} on elements matched from \code{grep()}
+#'
+#' This function is a shorthand of \code{gsub(pattern, replacement,
+#' grep(pattern, x, value = TRUE))}.
+#' @param pattern,replacement,x,... Passed to \code{\link{grep}()} and
+#'   \code{gsub()}.
+#' @return A character vector.
+#' @export
+#' @examples # find elements that matches 'a[b]+c' and capitalize 'b' with perl regex
+#' xfun::grep_sub('a([b]+)c', 'a\\U\\1c', c('abc', 'abbbc', 'addc', '123'), perl = TRUE)
+grep_sub = function(pattern, replacement, x, ...) {
+  x = grep(pattern, x, value = TRUE, ...)
+  gsub(pattern, replacement, x, ...)
+}
+
 #' Get the tags of Github releases of a repository
 #'
 #' Read the HTML source of the release page and parse the tags of the releases.

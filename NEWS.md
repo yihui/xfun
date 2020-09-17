@@ -2,6 +2,8 @@
 
 ## NEW FEATURES
 
+- Added a new function `grep_sub()` to perform replacement with `gsub()` on elements matched from `grep()`.
+
 - Added a new function `github_releases()` to obtain the tags from the Github releases of a repo.
 
 - Added a new function `bump_version()` to increase the last digit of version numbers by one.
