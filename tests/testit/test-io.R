@@ -34,3 +34,7 @@ assert('read/write_utf8() works', {
   has_error(read_utf8(mixed_file2, error = TRUE))
 })
 
+assert('grep_sub() matches elements and do substitution on them', {
+  (grep_sub('a([b]+)c', 'a\\U\\1c', c('abc', 'abbbc', 'addc', '123'), perl = TRUE) %==%
+     c('aBc', 'aBBBc'))
+})
