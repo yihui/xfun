@@ -25,5 +25,5 @@ assert('url_filename() returns the file names in URLs', {
     'https://yihui.org/index.html',
     'https://yihui.org/index.html?foo=bar',
     'https://yihui.org/index.html#about'
-  ) %==% rep('index.html', 3)))
+  )) %==% rep('index.html', 3))
 })
