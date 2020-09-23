@@ -4,13 +4,13 @@
 \alias{download_file}
 \title{Try various methods to download a file}
 \usage{
-download_file(url, output = basename(url), ...)
+download_file(url, output = url_filename(url), ...)
 }
 \arguments{
 \item{url}{The URL of the file.}
 
-\item{output}{Path to the output file. If not provided, the base name of the
-URL will be used (query parameters and hash in the URL will be removed).}
+\item{output}{Path to the output file. By default, it is determined by
+\code{\link{url_filename}()}.}
 
 \item{...}{Other arguments to be passed to \code{\link{download.file}()}
 (except \code{method}).}

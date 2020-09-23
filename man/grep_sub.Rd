@@ -2,7 +2,7 @@
 % Please edit documentation in R/io.R
 \name{grep_sub}
 \alias{grep_sub}
-\title{Perform replacement with \code{gsub()} on elements matched with \code{grep()}}
+\title{Perform replacement with \code{gsub()} on elements matched from \code{grep()}}
 \usage{
 grep_sub(pattern, replacement, x, ...)
 }
