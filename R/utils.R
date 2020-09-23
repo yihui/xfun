@@ -175,15 +175,14 @@ gsubi = function(...) gsub(..., ignore.case = TRUE)
 #' default method does not work, e.g.,
 #' \url{https://stat.ethz.ch/pipermail/r-devel/2016-June/072852.html}.
 #' @param url The URL of the file.
-#' @param output Path to the output file. If not provided, the base name of the
-#'   URL will be used (query parameters and hash in the URL will be removed).
+#' @param output Path to the output file. By default, it is determined by
+#'   \code{\link{url_filename}()}.
 #' @param ... Other arguments to be passed to \code{\link{download.file}()}
 #'   (except \code{method}).
 #' @return The integer code \code{0} for success, or an error if none of the
 #'   methods work.
 #' @export
-download_file = function(url, output = basename(url), ...) {
-  if (missing(output)) output = gsub('[?#].*$', '', output)  # remove query/hash
+download_file = function(url, output = url_filename(url), ...) {
   download = function(method = 'auto') download.file(url, output, ..., method = method)
   for (method in c('libcurl', if (is_windows()) 'wininet', 'auto')) {
     if (!inherits(try_silent(res <- download(method = method)), 'try-error') && res == 0)

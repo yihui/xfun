@@ -18,3 +18,12 @@ assert('same_path works', {
   (same_path('~/foo', file.path(Sys.getenv('HOME'), 'foo')))
   (!same_path(tempdir(), 'foo'))
 })
+
+assert('url_filename() returns the file names in URLs', {
+  (url_filename('https://yihui.org/images/logo.png') %==% 'logo.png')
+  (url_filename(c(
+    'https://yihui.org/index.html',
+    'https://yihui.org/index.html?foo=bar',
+    'https://yihui.org/index.html#about'
+  ) %==% rep('index.html', 3)))
+})

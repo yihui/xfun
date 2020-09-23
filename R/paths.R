@@ -114,3 +114,19 @@ R_logo = function() {
   x = file.path(R.home('doc'), 'html', c('Rlogo.svg', 'logo.jpg'))
   x[file.exists(x)][1]
 }
+
+#' Extract filenames from a URLs
+#'
+#' Get the base names of URLs via \code{\link{basename}()}, and remove the
+#' possible query parameters or hash from the names.
+#' @param x A character vector of URLs.
+#' @return A character vector of filenames at the end of URLs.
+#' @export
+#' @examples
+#' xfun::url_filename('https://yihui.org/images/logo.png')
+#' xfun::url_filename('https://yihui.org/index.html')
+#' xfun::url_filename('https://yihui.org/index.html?foo=bar')
+#' xfun::url_filename('https://yihui.org/index.html#about')
+url_filename = function(x) {
+  gsub('[?#].*$', '', basename(x))  # remove query/hash from url
+}

@@ -12,6 +12,8 @@
 
 - Added a new function `valid_syntax()` to check if an R code fragment is syntactically valid. This function was moved from the **highr** package.
 
+- Added a helper function `url_filename()` to extract filenames from URLs. This function is used by `download_file()` to determine the default output filename.
+
 # CHANGES IN xfun VERSION 0.17
 
 ## NEW FEATURES
