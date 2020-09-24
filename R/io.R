@@ -175,7 +175,7 @@ grep_sub = function(pattern, replacement, x, ...) {
 #' @export
 download_file = function(url, output = url_filename(url), ...) {
   download = function(method = 'auto') download.file(url, output, ..., method = method)
-  for (method in c('libcurl', if (is_windows()) 'wininet', 'auto')) {
+  for (method in c(if (is_windows()) 'wininet', 'libcurl', 'auto')) {
     if (!inherits(try_silent(res <- download(method = method)), 'try-error') && res == 0)
       return(res)
   }

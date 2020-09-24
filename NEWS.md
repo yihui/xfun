@@ -16,6 +16,10 @@
 
 - Added a function `do_once()` to perform a task once in an R session.
 
+## MINOR CHANGES
+
+- Now `download_file()` tries the download method `winnet` first (previously it was `libcurl`) on Windows (thanks, @cderv, #33).
+
 # CHANGES IN xfun VERSION 0.17
 
 ## NEW FEATURES
