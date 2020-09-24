@@ -88,8 +88,8 @@ session_info = function(packages = NULL, dependencies = TRUE) {
 #'   prevent the task from being performed again the next time when
 #'   \code{do_once()} is called.
 #' @param hint A character vector to provide a hint to users on how not to
-#'   perform the task or see the message again in the current R session.
-#' @param ... Passed to \code{\link{strwrap}()} to wrap the \code{hint}.
+#'   perform the task or see the message again in the current R session. Set
+#'   \code{hint = ""} if you do not want to provide the hint.
 #' @return The value returned by the \code{task}, invisibly.
 #' @export
 #' @examples
@@ -102,11 +102,11 @@ session_info = function(packages = NULL, dependencies = TRUE) {
 do_once = function(task, option, hint = c(
   'You will not see this message again in this R session. If you never want to',
   sprintf('see this message, you may set options(%s = FALSE) in your .Rprofile.', option)
-), ...) {
+)) {
   if (isFALSE(getOption(option))) return(invisible())
-  hint = paste(hint, collapse = ' ')
   task
-  if (hint != '') message(paste(strwrap(hint, ...), collapse = '\n'))
+  hint = paste(hint, collapse = ' ')
+  if (hint == '') message(hint)
   options(setNames(list(FALSE), option))
   invisible(task)
 }
