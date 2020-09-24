@@ -75,3 +75,38 @@ session_info = function(packages = NULL, dependencies = TRUE) {
 
   tweak_info(res, extra)
 }
+
+#' Perform a task once in an R session
+#'
+#' Perform a task once in an R session, e.g., emit a message or warning. Then
+#' give users an optional hint on how not to perform this task at all.
+#' @param task Any R code expression to be evaluated once to perform a task,
+#'   e.g., \code{warning('Danger!')} or \code{message('Today is ', Sys.Date())}.
+#' @param option An R option name. This name should be as unique as possible in
+#'   \code{\link{options}()}. After the task has been successfully performed,
+#'   this option will be set to \code{FALSE} in the current R session, to
+#'   prevent the task from being performed again the next time when
+#'   \code{do_once()} is called.
+#' @param hint A character vector to provide a hint to users on how not to
+#'   perform the task or see the message again in the current R session.
+#' @param ... Passed to \code{\link{strwrap}()} to wrap the \code{hint}.
+#' @return The value returned by the \code{task}, invisibly.
+#' @export
+#' @examples
+#' do_once(message("Today's date is ", Sys.Date()), "xfun.date.reminder")
+#' # if you run it again, it will not emit the message again
+#' do_once(message("Today's date is ", Sys.Date()), "xfun.date.reminder")
+#'
+#' do_once({Sys.sleep(2); 1 + 1}, "xfun.task.1plus1")
+#' do_once({Sys.sleep(2); 1 + 1}, "xfun.task.1plus1")
+do_once = function(task, option, hint = c(
+  'You will not see this message again in this R session. If you never want to',
+  sprintf('see this message, you may set options(%s = FALSE) in your .Rprofile.', option)
+), ...) {
+  if (isFALSE(getOption(option))) return(invisible())
+  hint = paste(hint, collapse = ' ')
+  task
+  if (hint != '') message(paste(strwrap(hint, ...), collapse = '\n'))
+  options(setNames(list(FALSE), option))
+  invisible(task)
+}

@@ -14,6 +14,8 @@
 
 - Added a helper function `url_filename()` to extract filenames from URLs. This function is used by `download_file()` to determine the default output filename.
 
+- Added a function `do_once()` to perform a task once in an R session.
+
 # CHANGES IN xfun VERSION 0.17
 
 ## NEW FEATURES
