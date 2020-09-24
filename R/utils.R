@@ -167,47 +167,6 @@ session_info = function(packages = NULL, dependencies = TRUE) {
 
 gsubi = function(...) gsub(..., ignore.case = TRUE)
 
-#' Try various methods to download a file
-#'
-#' Try all possible methods in \code{\link{download.file}()} (e.g.,
-#' \code{libcurl}, \code{curl}, \code{wget}, and \code{wininet}) and see if any
-#' method can succeed. The reason to enumerate all methods is that sometimes the
-#' default method does not work, e.g.,
-#' \url{https://stat.ethz.ch/pipermail/r-devel/2016-June/072852.html}.
-#' @param url The URL of the file.
-#' @param output Path to the output file. By default, it is determined by
-#'   \code{\link{url_filename}()}.
-#' @param ... Other arguments to be passed to \code{\link{download.file}()}
-#'   (except \code{method}).
-#' @return The integer code \code{0} for success, or an error if none of the
-#'   methods work.
-#' @export
-download_file = function(url, output = url_filename(url), ...) {
-  download = function(method = 'auto') download.file(url, output, ..., method = method)
-  for (method in c('libcurl', if (is_windows()) 'wininet', 'auto')) {
-    if (!inherits(try_silent(res <- download(method = method)), 'try-error') && res == 0)
-      return(res)
-  }
-
-  # check for libcurl/curl/wget/lynx, call download.file with appropriate method
-  res = NA
-  if (Sys.which('curl') != '') {
-    # curl needs to add a -L option to follow redirects
-    opts = if (is.null(getOption('download.file.extra'))) options(download.file.extra = '-L')
-    res = download(method = 'curl'); options(opts)
-    if (res == 0) return(res)
-  }
-  if (Sys.which('wget') != '') {
-    if ((res <- download(method = 'wget')) == 0) return(res)
-  }
-  if (Sys.which('lynx') != '') {
-    if ((res <- download(method = 'lynx')) == 0) return(res)
-  }
-  if (is.na(res)) stop('No download method works (auto/wininet/wget/curl/lynx)')
-
-  res
-}
-
 #' Turn the output of \code{\link{str}()} into a tree diagram
 #'
 #' The super useful function \code{str()} uses \verb{..} to indicate the level
