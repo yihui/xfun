@@ -45,7 +45,6 @@ tojson = function(x) {
 #' @export
 json_vector = function(x, to_array = FALSE, quote = TRUE) {
   if (quote) {
-    x = gsub('[[:space:]]', " ", x)
     x = quote_string(x)
   }
   if (to_array) paste0('[', paste(x, collapse = ', '), ']') else x
