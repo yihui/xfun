@@ -46,6 +46,11 @@ tojson = function(x) {
 json_vector = function(x, to_array = FALSE, quote = TRUE) {
   if (quote) {
     x = quote_string(x)
+    x = gsub('\n', '\\\\n', x)
+    x = gsub('\b', '\\\\b', x)
+    x = gsub('\f', '\\\\f', x)
+    x = gsub('\r', '\\\\r', x)
+    x = gsub('\t', '\\\\t', x)
   }
   if (to_array) paste0('[', paste(x, collapse = ', '), ']') else x
 }
