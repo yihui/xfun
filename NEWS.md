@@ -2,17 +2,17 @@
 
 ## NEW FEATURES
 
-- Added a new function `grep_sub()` to perform replacement with `gsub()` on elements matched from `grep()`.
+- Added a function `grep_sub()` to perform replacement with `gsub()` on elements matched from `grep()`.
 
-- Added a new function `github_releases()` to obtain the tags from the Github releases of a repo.
+- Added a function `github_releases()` to obtain the tags from the Github releases of a repo.
 
-- Added a new function `bump_version()` to increase the last digit of version numbers by one.
+- Added a function `bump_version()` to increase the last digit of version numbers by one.
 
-- Moved a helper function `process_file()` from the **blogdown** package to this package, and documented it.
+- Moved a function `process_file()` from the **blogdown** package to this package, and documented it.
 
-- Added a new function `valid_syntax()` to check if an R code fragment is syntactically valid. This function was moved from the **highr** package.
+- Added a function `valid_syntax()` to check if an R code fragment is syntactically valid. This function was moved from the **highr** package.
 
-- Added a helper function `url_filename()` to extract filenames from URLs. This function is used by `download_file()` to determine the default output filename.
+- Added a function `url_filename()` to extract filenames from URLs. This function is used by `download_file()` to determine the default output filename.
 
 - Added a function `do_once()` to perform a task once in an R session.
 
