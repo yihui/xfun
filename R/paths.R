@@ -61,6 +61,57 @@ same_path = function(p1, p2, ...) {
   normalize_path(p1, ...) == normalize_path(p2, ...)
 }
 
+#' Return the (possible) root directory of a project
+#'
+#' Given a path of a file (or dir) in a potential project (e.g., an R package or
+#' an RStudio project), return the path to the project root directory.
+#'
+#' The search for the root directory is performed by a series of tests,
+#' currently including looking for a \file{DESCRIPTION} file that contains
+#' \code{Package: *} (which usually indicates an R package), and a
+#' \file{*.Rproj} file that contains \code{Version: *} (which usually indicates
+#' an RStudio project). If files with the expected patterns are not found in the
+#' initial directory, the search will be performed recursively in upper-level
+#' directories.
+#' @param path The initial path to start the search. If it is a file path, its
+#'   parent directory will be used.
+#' @param rules A matrix of character strings of two columns: the first column
+#'   contains regular expressions to look for filenames that match the patterns,
+#'   and the second column contains regular expressions to match the content of
+#'   the matched files. The regular expression can be an empty string, meaning
+#'   that it will match anything.
+#' @return Path to the root directory if found, otherwise \code{NULL}.
+#' @export
+#' @note This function was inspired by the \pkg{rprojroot} package, but is much
+#'   less sophisticated. It is a rather simple function designed to be used in
+#'   some of packages that I maintain, and may not meet the need of general
+#'   users until this note is removed in the future (which should be unlikely).
+#'   If you are sure that you are working on the types of projects mentioned in
+#'   the \sQuote{Details} section, this function may be helpful to you,
+#'   otherwise please consider using \pkg{rprojroot} instead.
+proj_root <- function(path = './', rules = root_rules) {
+  path = normalize_path(path)
+  dir = if (dir_exists(path)) path else dirname(path)
+  if (same_path(dir, file.path(dir, '..'))) return()
+  if (is.null(dim(rules))) dim(rules) = c(1, length(rules))
+  for (i in seq_along(nrow(rules))) {
+    file = rules[i, 1]; pattern = rules[i, 2]
+    for (f in list.files(dir, file, full.names = TRUE)) {
+      if (pattern == '' || length(grep(pattern, read_utf8(f)))) return(dir)
+    }
+  }
+  proj_root(dirname(dir), rules)
+}
+
+#' @rdname proj_root
+#' @export
+root_rules = matrix(c(
+  '^DESCRIPTION$', '^Package: ',
+  '.+[.]Rproj$',   '^Version: '
+), ncol = 2, byrow = TRUE, dimnames = list(NULL, c('file', 'pattern')))
+
+dir_exists = function(x) file_test('-d', x)
+
 #' Rename files with a sequential numeric prefix
 #'
 #' Rename a series of files and add an incremental numeric prefix to the

@@ -16,6 +16,8 @@
 
 - Added a function `do_once()` to perform a task once in an R session.
 
+- Added a function `proj_root()` to find the root directory of a project. Currently it only supports R package projects and RStudio projects by default.
+
 ## MINOR CHANGES
 
 - Now `download_file()` tries the download method `winnet` first (previously it was `libcurl`) on Windows (thanks, @cderv, #33).
