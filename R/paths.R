@@ -162,6 +162,34 @@ get_subpath = function(p, n1, n2) {
   sub('^/', '', p)
 }
 
+#' Get the relative path of a path in a project relative to the current working
+#' directory
+#'
+#' First compose an absolute path using the project root directory and the
+#' relative path components, i.e., \code{\link{file.path}(root, ...)}. Then
+#' convert it to a relative path with \code{\link{relative_path}()}, which is
+#' relative to the current working directory.
+#'
+#' This function was inspired by \code{here::here()}, and the major difference
+#' is that it returns a relative path by default, which is more portable.
+#' @param ... A character vector of path components \emph{relative to the root
+#'   directory of the project}.
+#' @param root The root directory of the project.
+#' @param error Whether to signal an error if the path cannot be converted to a
+#'   relative path.
+#' @return A relative path, or an error when the project root directory cannot
+#'   be determined or the conversion failed and \code{error = TRUE}.
+#' @export
+#' @examples
+#' \dontrun{
+#' xfun::from_root('data', 'mtcars.csv')
+#' }
+from_root = function(..., root = proj_root(), error = TRUE) {
+  if (is.null(root)) stop('Cannot determin the root directory of the current project.')
+  p = file.path(root, ..., fsep = '/')
+  relative_path(p, error = error)
+}
+
 dir_exists = function(x) file_test('-d', x)
 
 #' Rename files with a sequential numeric prefix

@@ -20,6 +20,8 @@
 
 - Added a function `relative_path()` to calculate the relative path of a path relative to a directory.
 
+- Added a function `from_root()`, which is similar to `here::here()` but returns a relative path instead of an absolute path.
+
 ## MINOR CHANGES
 
 - Now `download_file()` tries the download method `winnet` first (previously it was `libcurl`) on Windows (thanks, @cderv, #33).
