@@ -22,6 +22,8 @@
 
 - Added a function `from_root()`, which is similar to `here::here()` but returns a relative path instead of an absolute path.
 
+- Added a function `find_path()` that, given an incomplete input path, tries to find the actual path recursively under subdirectories of a root directory. For example, users may only provide a base filename, and `find_path()` will look for this file under subdirectories and return the actual path if it is found.
+
 ## MINOR CHANGES
 
 - Now `download_file()` tries the download method `winnet` first (previously it was `libcurl`) on Windows (thanks, @cderv, #33).

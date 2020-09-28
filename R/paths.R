@@ -190,6 +190,79 @@ from_root = function(..., root = proj_root(), error = TRUE) {
   relative_path(p, error = error)
 }
 
+#' Find a file or directory under a root directory
+#'
+#' Given a path, try to find it recursively under a root directory. The input
+#' path can be an incomplete path, e.g., it can be a base filename, and
+#' \code{find_path()} will try to find this file under subdirectories.
+#' @param ... A character vector of path components.
+#' @param root The root directory under which to search for the path. If
+#'   \code{NULL}, the current working directory is used.
+#' @param relative Whether to return a relative path.
+#' @param error Whether to signal an error if the path is not found, or multiple
+#'   paths are found.
+#' @param message Whether to emit a message when multiple paths are found and
+#'   \code{error = FALSE}.
+#' @param n_dirs The number of subdirectories to recursively search. The
+#'   recursive search may be time-consuming when there are a large number of
+#'   subdirectories under the root directory. If you really want to search for
+#'   all subdirectories, you may try \code{n_dirs = Inf}.
+#' @return The path found under the root directory, or an error when \code{error
+#'   = TRUE} and the path is not found (or multiple paths are found).
+#' @export
+#' @examples
+#' \dontrun{
+#' xfun::find_path('mtcars.csv')  # find any file that has the base name mtcars.csv
+#' }
+find_path = function(
+  ..., root = proj_root(), relative = TRUE, error = TRUE,
+  message = getOption('xfun.find_path.message', TRUE),
+  n_dirs = getOption('xfun.find_path.n_dirs', 10000)
+) {
+  if (file.exists(p <- file.path(...))) return(p)
+  if (is.null(root)) root = getwd()
+  nd = 0
+  # find a path 'f' recursively under a directory 'd'
+  find_it = function(f, d) {
+    if (nd > n_dirs) {
+      if (error) stop(
+        'Failed to find the path under ', n_dirs, ' subdirectories. If you want ',
+        'to search for the path in more subdirectories, increase the value of ',
+        "the 'n_dirs' argument of find_path()."
+      )
+      return(p)
+    }
+    ds = list.files(d, full.names = TRUE)
+    ds = ds[dir_exists(ds)]
+    if ((n1 <- length(ds)) == 0) return()
+    nd <<- nd + n1
+    fs = file.path(ds, f)
+    fs = fs[file.exists(fs)]
+    if ((n2 <- length(fs)) == 1) return(fs)
+    if (n2 > 1) {
+      msg = c(
+        'Found more than one path containg the input path "', f, '":\n\n',
+        paste('*', fs, collapse = '\n')
+      )
+      if (error) stop(msg)
+      if (message) base::message(msg, '\n\nReturned the first one.')
+      return(fs[1])
+    }
+    # look into subdirectories one by one
+    for (i in seq_len(n1)) {
+      fs = find_it(f, file.path(ds[i]))
+      if (length(fs)) return(fs)
+    }
+  }
+  f = find_it(p, root)
+  if (is.null(f)) {
+    if (error) stop('Could not find the path "', p, '" in any subdirectories.')
+    p
+  } else {
+    if (relative) relative_path(f, error = error) else f
+  }
+}
+
 dir_exists = function(x) file_test('-d', x)
 
 #' Rename files with a sequential numeric prefix
