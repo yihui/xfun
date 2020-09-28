@@ -194,7 +194,7 @@ from_root = function(..., root = proj_root(), error = TRUE) {
 #'
 #' Given a path, try to find it recursively under a root directory. The input
 #' path can be an incomplete path, e.g., it can be a base filename, and
-#' \code{find_path()} will try to find this file under subdirectories.
+#' \code{magic_path()} will try to find this file under subdirectories.
 #' @param ... A character vector of path components.
 #' @param root The root directory under which to search for the path. If
 #'   \code{NULL}, the current working directory is used.
@@ -212,12 +212,12 @@ from_root = function(..., root = proj_root(), error = TRUE) {
 #' @export
 #' @examples
 #' \dontrun{
-#' xfun::find_path('mtcars.csv')  # find any file that has the base name mtcars.csv
+#' xfun::magic_path('mtcars.csv')  # find any file that has the base name mtcars.csv
 #' }
-find_path = function(
+magic_path = function(
   ..., root = proj_root(), relative = TRUE, error = TRUE,
-  message = getOption('xfun.find_path.message', TRUE),
-  n_dirs = getOption('xfun.find_path.n_dirs', 10000)
+  message = getOption('xfun.magic_path.message', TRUE),
+  n_dirs = getOption('xfun.magic_path.n_dirs', 10000)
 ) {
   if (file.exists(p <- file.path(...))) return(p)
   if (is.null(root)) root = getwd()
@@ -228,7 +228,7 @@ find_path = function(
       if (error) stop(
         'Failed to find the path under ', n_dirs, ' subdirectories. If you want ',
         'to search for the path in more subdirectories, increase the value of ',
-        "the 'n_dirs' argument of find_path()."
+        "the 'n_dirs' argument of magic_path()."
       )
       return(p)
     }
