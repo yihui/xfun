@@ -7,10 +7,9 @@
 do_once(
   task,
   option,
- 
-    hint = c("You will not see this message again in this R session. If you never want to",
-    sprintf("see this message, you may set options(\%s = FALSE) in your .Rprofile.",
-    option))
+  hint = c("You will not see this message again in this R session. ",
+    "If you never want to see this message, ",
+    sprintf("you may set options(\%s = FALSE) in your .Rprofile.", option))
 )
 }
 \arguments{
