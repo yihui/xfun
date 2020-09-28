@@ -89,7 +89,7 @@ same_path = function(p1, p2, ...) {
 #'   If you are sure that you are working on the types of projects mentioned in
 #'   the \sQuote{Details} section, this function may be helpful to you,
 #'   otherwise please consider using \pkg{rprojroot} instead.
-proj_root <- function(path = './', rules = root_rules) {
+proj_root = function(path = './', rules = root_rules) {
   path = normalize_path(path)
   dir = if (dir_exists(path)) path else dirname(path)
   if (same_path(dir, file.path(dir, '..'))) return()
@@ -109,6 +109,58 @@ root_rules = matrix(c(
   '^DESCRIPTION$', '^Package: ',
   '.+[.]Rproj$',   '^Version: '
 ), ncol = 2, byrow = TRUE, dimnames = list(NULL, c('file', 'pattern')))
+
+#' Get the relative path of a path relative a directory
+#'
+#' Given a directory, return the relative path that is relative to this
+#' directory. For example, the path \file{foo/bar.txt} relative to the directory
+#' \file{foo/} is \file{bar.txt}, and the path \file{/a/b/c.txt} relative to
+#' \file{/d/e/} is \file{../../a/b/c.txt}.
+#' @param dir Path to a directory.
+#' @param path The path to be converted to a relative path.
+#' @param use.. Whether to use double-dots (\file{..}) in the relative path. A
+#'   double-dot indicates the parent directory (starting from the directory
+#'   provided by the \code{dir} argument).
+#' @param error Whether to signal an error if the path cannot be converted to a
+#'   relative path.
+#' @return A relative path if the conversion succeeded; otherwise the original
+#'   path when \code{error = FALSE}, and an error when \code{error = TRUE}.
+#' @export
+#' @examples
+#' xfun::relative_path('foo/bar.txt', 'foo/')
+#' xfun::relative_path('foo/bar/a.txt', 'foo/haha/')
+relative_path = function(path, dir = '.', use.. = TRUE, error = TRUE) {
+  p = normalize_path(path); n1 = nchar(p)
+  if ((n1 <- nchar(p)) == 0) return(path)  # not sure what you mean
+  d = normalize_path(dir); n2 = nchar(d)
+  if (is_subpath(p, d, n2)) return(get_subpath(p, n1, n2))
+  if (!use..) {
+    if (error) stop("When use.. = FALSE, the 'path' must be under the 'dir'")
+    return(path)
+  }
+  s = '../'; d1 = d
+  while (!is_subpath(p, d2 <- dirname(d1))) {
+    if (same_path(d1, d2)) {
+      if (error) stop(
+        "The 'path' cannot be converted to a relative path to 'dir'. ",
+        "Perhaps they are on different volumes of the disk."
+      )
+      return(path)
+    }
+    s = paste0('../', s)
+    d1 = d2  # go to one level up
+  }
+  paste0(s, get_subpath(p, n1, nchar(d2)))
+}
+
+# test if the path is a child of the dir
+is_subpath = function(path, dir, n = nchar(dir)) substr(path, 1, n) == dir
+
+# remove the first n2 characters and the possible / from the path
+get_subpath = function(p, n1, n2) {
+  p = substr(p, n2 + 1, n1)
+  sub('^/', '', p)
+}
 
 dir_exists = function(x) file_test('-d', x)
 

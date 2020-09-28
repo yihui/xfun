@@ -18,6 +18,8 @@
 
 - Added a function `proj_root()` to find the root directory of a project. Currently it only supports R package projects and RStudio projects by default.
 
+- Added a function `relative_path()` to calculate the relative path of a path relative to a directory.
+
 ## MINOR CHANGES
 
 - Now `download_file()` tries the download method `winnet` first (previously it was `libcurl`) on Windows (thanks, @cderv, #33).
