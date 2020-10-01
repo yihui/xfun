@@ -1,5 +1,8 @@
 # CHANGES IN xfun VERSION 0.19
 
+## NEW FEATURES
+
+- Added a function `del_empty_dir()` to delete a directory if it is empty.
 
 # CHANGES IN xfun VERSION 0.18
 

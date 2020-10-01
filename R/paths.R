@@ -334,3 +334,16 @@ R_logo = function() {
 url_filename = function(x) {
   gsub('[?#].*$', '', basename(x))  # remove query/hash from url
 }
+
+#' Delete an empty directory
+#'
+#' Use \code{list.file()} to check if there are any files or subdirectories
+#' under a directory. If not, delete this empty directory.
+#' @param dir Path to a directory. If \code{NULL} or the directory does not
+#'   exist, no action will be performed.
+#' @export
+del_empty_dir = function(dir) {
+  if (is.null(dir) || !dir_exists(dir)) return()
+  files = list.files(dir, all.files = TRUE)
+  if (length(files) == 0) unlink(dir, recursive = TRUE)
+}
