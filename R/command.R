@@ -89,6 +89,43 @@ Rscript_bg = function(fun, args = list(), timeout = 10) {
   list(pid = id, is_alive = function() file_exists(pid))
 }
 
+bg_process = function(command, args = character(), timeout = 30) {
+  if (is_windows()) {
+    # format of task list: hugo.exe    4592 Console      1     35,188 K
+    tasklist = function() system2('tasklist', stdout = TRUE)
+    pid1 = tasklist()
+    system2(command, args, wait = FALSE)
+    get_pid = function() {
+      pid2 = setdiff(tasklist(), pid1)
+      cmd = basename(command)
+      # the process's info should start with the command name
+      pid2 = pid2[substr(pid2, 1, nchar(cmd)) == cmd]
+      if (length(pid2) == 0) return()
+      m = regexec('\\s+([0-9]+)\\s+', pid2)
+      for (v in regmatches(pid2, m)) if (length(v) >= 2) return(v[2])
+    }
+  } else {
+    pid = tempfile(); on.exit(unlink(pid), add = TRUE)
+    code = paste(
+      c(shQuote(c(command, args)), '& echo $! > ', shQuote(pid)), collapse = ' '
+    )
+    system2('sh', c('-c', shQuote(code)))
+    get_pid = function() {
+      if (file_exists(pid)) readLines(pid)
+    }
+  }
+  t0 = Sys.time(); id = NULL
+  while (difftime(Sys.time(), t0, units = 'secs') < timeout) {
+    if (length(id <- get_pid()) == 1) break
+  }
+  if (length(id) == 1) return(id)
+  system2(command, args)  # see what the error is
+  stop(
+    'Failed to run the command in ', timeout, 'seconds (timeout): ',
+    paste(shQuote(c(command, args)), collapse = ' ')
+  )
+}
+
 #' Upload to an FTP server via \command{curl}
 #'
 #' Run the command \command{curl -T file server} to upload a file to an FTP
