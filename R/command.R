@@ -38,6 +38,7 @@ Rcmd = function(args, ...) {
 #' @param fun A function, or a character string that can be parsed and evaluated
 #'   to a function.
 #' @param args A list of argument values.
+#' @param ...,wait Arguments to be passed to \code{\link{system2}()}.
 #' @export
 #' @return The returned value of the function in the new R session.
 #' @examples factorial(10)
@@ -46,12 +47,59 @@ Rcmd = function(args, ...) {
 #'
 #' # the first argument can be either a character string or a function
 #' xfun::Rscript_call(factorial, list(10))
-Rscript_call = function(fun, args = list()) {
+Rscript_call = function(fun, args = list(), ..., wait = TRUE) {
   f = replicate(2, tempfile(fileext = '.rds'))
-  on.exit(unlink(f), add = TRUE)
+  on.exit(unlink(if (wait) f else f[2]), add = TRUE)
   saveRDS(list(fun, args), f[1])
-  Rscript(shQuote(c(system.file('scripts', 'call-fun.R', package = 'xfun'), f)))
-  readRDS(f[2])
+  Rscript(
+    shQuote(c(system.file('scripts', 'call-fun.R', package = 'xfun'), f)),
+    ..., wait = wait
+  )
+  if (wait) readRDS(f[2])
+}
+
+bg_process = function(command, args = character(), timeout = 10) {
+  pid = tempfile()  # to store the process ID of the new R session
+  saveRDS(NULL, pid)
+
+  Rscript_call(function() {
+    saveRDS(Sys.getpid(), pid)
+    # the command is expected to be running continuously in the background; if
+    # it fails, remove this pid file, so we know it has been terminated (for
+    # whatever reason)
+    on.exit(unlink(pid), add = TRUE)
+    system2(command, args)
+  }, wait = FALSE)
+
+  # check if the pid file still exists; if not, the command must have halted, so
+  # rerun it in the current session to see what the problem is
+  check_pid = function() {
+    if (file_exists(pid)) return()
+    system2(command, args)
+    stop('Failed to run the command: ', paste(c(command, args), collapse = ' '))
+  }
+  check_pid()
+
+  id = NULL  # read the above process ID into this R session
+  t0 = Sys.time()
+  while (difftime(Sys.time(), t0, units = 'secs') < timeout) {
+    Sys.sleep(.1)
+    check_pid()
+    if (length(id <- readRDS(pid)) == 1) break
+  }
+  if (length(id) == 0) stop(
+    'Failed to launch the background process in ', timeout, ' seconds (timeout).'
+  )
+
+  list(pid = id, is_alive = function() file_exists(pid))
+}
+
+proc_kill = function(pid) {
+  if (is_windows()) {
+    system2('taskkill', c('/f', '/pid', pid))
+  } else {
+    system2('kill', pid)
+  }
 }
 
 #' Upload to an FTP server via \command{curl}

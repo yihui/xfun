@@ -4,13 +4,15 @@
 \alias{Rscript_call}
 \title{Call a function in a new R session via \code{Rscript()}}
 \usage{
-Rscript_call(fun, args = list())
+Rscript_call(fun, args = list(), ..., wait = TRUE)
 }
 \arguments{
 \item{fun}{A function, or a character string that can be parsed and evaluated
 to a function.}
 
 \item{args}{A list of argument values.}
+
+\item{..., wait}{Arguments to be passed to \code{\link{system2}()}.}
 }
 \value{
 The returned value of the function in the new R session.
