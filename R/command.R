@@ -58,33 +58,28 @@ Rscript_call = function(fun, args = list(), ..., wait = TRUE) {
   if (wait) readRDS(f[2])
 }
 
-bg_process = function(command, args = character(), timeout = 10) {
+# call a function in a background process
+Rscript_bg = function(fun, args = list(), timeout = 10) {
   pid = tempfile()  # to store the process ID of the new R session
   saveRDS(NULL, pid)
 
   Rscript_call(function() {
     saveRDS(Sys.getpid(), pid)
-    # the command is expected to be running continuously in the background; if
-    # it fails, remove this pid file, so we know it has been terminated (for
-    # whatever reason)
+    # remove this pid file when the function finishes
     on.exit(unlink(pid), add = TRUE)
-    system2(command, args)
+    do.call(fun, args)
   }, wait = FALSE)
 
-  # check if the pid file still exists; if not, the command must have halted, so
-  # rerun it in the current session to see what the problem is
-  check_pid = function() {
-    if (file_exists(pid)) return()
-    system2(command, args)
-    stop('Failed to run the command: ', paste(c(command, args), collapse = ' '))
-  }
-  check_pid()
-
   id = NULL  # read the above process ID into this R session
+  res = list(pid = id, is_alive = function() FALSE)
+
+  # check if the pid file still exists; if not, the process has ended
+  if (!file_exists(pid)) return(res)
+
   t0 = Sys.time()
   while (difftime(Sys.time(), t0, units = 'secs') < timeout) {
     Sys.sleep(.1)
-    check_pid()
+    if (!file_exists(pid)) return(res)
     if (length(id <- readRDS(pid)) == 1) break
   }
   if (length(id) == 0) stop(
@@ -92,14 +87,6 @@ bg_process = function(command, args = character(), timeout = 10) {
   )
 
   list(pid = id, is_alive = function() file_exists(pid))
-}
-
-proc_kill = function(pid) {
-  if (is_windows()) {
-    system2('taskkill', c('/f', '/pid', pid))
-  } else {
-    system2('kill', pid)
-  }
 }
 
 #' Upload to an FTP server via \command{curl}
