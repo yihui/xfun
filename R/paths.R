@@ -265,6 +265,9 @@ magic_path = function(
 
 dir_exists = function(x) file_test('-d', x)
 
+# don't treat dirs as files
+file_exists = function(x) file_test('-f', x)
+
 #' Rename files with a sequential numeric prefix
 #'
 #' Rename a series of files and add an incremental numeric prefix to the
