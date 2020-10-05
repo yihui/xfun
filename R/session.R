@@ -107,7 +107,7 @@ do_once = function(task, option, hint = c(
   if (isFALSE(getOption(option))) return(invisible())
   task
   hint = paste(hint, collapse = ' ')
-  if (hint == '') message(hint)
+  if (hint != '') message(hint)
   options(setNames(list(FALSE), option))
   invisible(task)
 }
