@@ -49,5 +49,5 @@ assert('base64_decode() returns the same result when the same string is used as 
 
 assert('base64_uri() returns proper data type', {
   f = R_logo()
-  unlist(strsplit(base64_uri(f), split = ';'))[1] %==% 'data:image/svg+xml'
+ if (grepl('[.]svg$', f)) strsplit(base64_uri(f), split = ';')[[1]] %==% 'data:image/svg+xml'
 })
