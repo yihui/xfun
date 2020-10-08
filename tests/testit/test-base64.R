@@ -33,7 +33,7 @@ assert('base64_encode_r() returns the same result as base64_encode()', {
 })
 
 assert('base64_decode() does not accept a non-string input', {
-  has_error(base64_decode(x = 42))
+  (has_error(base64_decode(x = 42))
 })
 
 assert('base64_decode() does not accept both string and file input', {
