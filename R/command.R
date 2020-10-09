@@ -89,15 +89,40 @@ Rscript_bg = function(fun, args = list(), timeout = 10) {
   list(pid = id, is_alive = function() file_exists(pid))
 }
 
+# start a background process, and return its process ID
 bg_process = function(command, args = character(), timeout = 30) {
+  id = NULL
+
   if (is_windows()) {
     # format of task list: hugo.exe    4592 Console      1     35,188 K
     tasklist = function() system2('tasklist', stdout = TRUE)
     pid1 = tasklist()
     system2(command, args, wait = FALSE)
-    get_pid = function() {
-      pid2 = setdiff(tasklist(), pid1)
+
+    get_pid = function(time) {
+      # make sure the command points to an actual executable (e.g., resolve 'R'
+      # to 'R.exe')
+      if (!file.exists(command)) {
+        if (Sys.which(command) != '') command = Sys.which(command)
+      }
       cmd = basename(command)
+
+      # use PowerShell to figure out the PID if possible:
+      res = powershell(sprintf(
+        'Get-CimInstance Win32_Process -Filter "name = \'%s\'" | select CommandLine, ProcessId | ConvertTo-Csv', cmd
+      ))
+      if (length(res) > 1) {
+        res = read.csv(text = res, comment.char = '#', stringsAsFactors = FALSE)
+        if (length(r1 <- res[, 'CommandLine']) && length(r2 <- res[, 'ProcessId'])) {
+          cmd2 = paste(c(cmd, args), collapse = ' ')
+          r2 = r2[grep(cmd2, r1, fixed = TRUE)]
+          if (length(r2)) return(r2)
+        }
+      }
+
+      # don't try this method until 1/5 of timeout has passed
+      if (!is.null(res) && time < timeout/5) return()
+      pid2 = setdiff(tasklist(), pid1)
       # the process's info should start with the command name
       pid2 = pid2[substr(pid2, 1, nchar(cmd)) == cmd]
       if (length(pid2) == 0) return()
@@ -106,22 +131,27 @@ bg_process = function(command, args = character(), timeout = 30) {
     }
   } else {
     pid = tempfile(); on.exit(unlink(pid), add = TRUE)
-    code = paste(
-      c(shQuote(c(command, args)), '& echo $! > ', shQuote(pid)), collapse = ' '
-    )
+    code = paste(c(
+      shQuote(c(command, args)),
+      if (!getOption('xfun.bg_process.verbose', FALSE)) '> /dev/null',
+      '& echo $! >', shQuote(pid)
+    ), collapse = ' ')
     system2('sh', c('-c', shQuote(code)))
-    get_pid = function() {
-      if (file_exists(pid)) readLines(pid)
+    get_pid = function(time) {
+      if (file.exists(pid)) readLines(pid)
     }
   }
-  t0 = Sys.time(); id = NULL
-  while (difftime(Sys.time(), t0, units = 'secs') < timeout) {
-    if (length(id <- get_pid()) == 1) break
+
+  t0 = Sys.time()
+  while ((time <- difftime(Sys.time(), t0, units = 'secs')) < timeout) {
+    if (length(id <- get_pid(time)) == 1) break
   }
+
   if (length(id) == 1) return(id)
-  system2(command, args)  # see what the error is
+
+  system2(command, args, timeout = timeout)  # see what the error is
   stop(
-    'Failed to run the command in ', timeout, 'seconds (timeout): ',
+    'Failed to run the command in ', timeout, ' seconds (timeout): ',
     paste(shQuote(c(command, args)), collapse = ' ')
   )
 }
