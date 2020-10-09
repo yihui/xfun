@@ -89,6 +89,11 @@ Rscript_bg = function(fun, args = list(), timeout = 10) {
   list(pid = id, is_alive = function() file_exists(pid))
 }
 
+powershell = function(command) {
+  if (Sys.which('powershell') == '') return()
+  system2('powershell', c('-Command', shQuote(command)), stdout = TRUE)
+}
+
 # start a background process, and return its process ID
 bg_process = function(command, args = character(), timeout = 30) {
   id = NULL
