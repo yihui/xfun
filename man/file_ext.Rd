@@ -15,7 +15,8 @@ with_ext(x, ext)
 \arguments{
 \item{x}{A character of file paths.}
 
-\item{ext}{A vector of new extensions.}
+\item{ext}{A vector of new extensions. It must be either of length 1, or the
+same length as \code{x}.}
 }
 \value{
 A character vector of the same length as \code{x}.
@@ -38,6 +39,6 @@ p = c("abc.doc", "def123.tex", "path/to/foo.Rmd", "backup.ppt~", "pkg.tar.xz")
 file_ext(p)
 sans_ext(p)
 with_ext(p, ".txt")
-with_ext(p, c(".ppt", ".sty", ".Rnw"))
+with_ext(p, c(".ppt", ".sty", ".Rnw", "doc", "zip"))
 with_ext(p, "html")
 }

@@ -15,7 +15,7 @@
 #' @examples library(xfun)
 #' p = c('abc.doc', 'def123.tex', 'path/to/foo.Rmd', 'backup.ppt~', 'pkg.tar.xz')
 #' file_ext(p); sans_ext(p); with_ext(p, '.txt')
-#' with_ext(p, c('.ppt', '.sty', '.Rnw')); with_ext(p, 'html')
+#' with_ext(p, c('.ppt', '.sty', '.Rnw', 'doc', 'zip')); with_ext(p, 'html')
 file_ext = function(x) {
   ext = character(length(x))
   i = grep(reg_path, x)
@@ -29,7 +29,8 @@ sans_ext = function(x) {
   sub(reg_path, '\\1', x)
 }
 
-#' @param ext A vector of new extensions.
+#' @param ext A vector of new extensions. It must be either of length 1, or the
+#'   same length as \code{x}.
 #' @rdname file_ext
 #' @export
 with_ext = function(x, ext) {
