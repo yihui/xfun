@@ -3,37 +3,53 @@
 #' Functions to obtain (\code{file_ext()}), remove (\code{sans_ext()}), and
 #' change (\code{with_ext()}) extensions in filenames.
 #'
-#' \code{file_ext()} is a wrapper of \code{tools::\link{file_ext}()}.
-#' \code{sans_ext()} is a wrapper of \code{tools::\link{file_path_sans_ext}()}.
+#' \code{file_ext()} is similar to \code{tools::\link{file_ext}()}, and
+#' \code{sans_ext()} is similar to \code{tools::\link{file_path_sans_ext}()}.
+#' The main differences are that they treat \code{tar.(gz|bz2|xz)} and
+#' \code{nb.html} as extensions (but functions in the \pkg{tools} package
+#' doesn't allow double extensions by default), and allow characters \code{~}
+#' and \code{#} to be present at the end of a filename.
 #' @param x A character of file paths.
 #' @export
 #' @return A character vector of the same length as \code{x}.
 #' @examples library(xfun)
-#' p = c('abc.doc', 'def123.tex', 'path/to/foo.Rmd')
+#' p = c('abc.doc', 'def123.tex', 'path/to/foo.Rmd', 'backup.ppt~', 'pkg.tar.xz')
 #' file_ext(p); sans_ext(p); with_ext(p, '.txt')
 #' with_ext(p, c('.ppt', '.sty', '.Rnw')); with_ext(p, 'html')
-file_ext = function(x) tools::file_ext(x)
+file_ext = function(x) {
+  ext = character(length(x))
+  i = grep(reg_path, x)
+  ext[i] = sub(reg_path, '\\3', x[i])
+  ext
+}
 
 #' @rdname file_ext
 #' @export
-sans_ext = function(x) tools::file_path_sans_ext(x)
+sans_ext = function(x) {
+  sub(reg_path, '\\1', x)
+}
 
 #' @param ext A vector of new extensions.
 #' @rdname file_ext
 #' @export
 with_ext = function(x, ext) {
   if (anyNA(ext)) stop("NA is not allowed in 'ext'")
-  n1 = length(x); n2 = length(ext); r = '([.][[:alnum:]]+)?$'
+  n1 = length(x); n2 = length(ext)
   if (n1 * n2 == 0) return(x)
   i = !grepl('^[.]', ext) & ext != ''
   ext[i] = paste0('.', ext[i])
 
   if (all(ext == '')) ext = ''
+  r = sub('[$]$', '?$', reg_ext)  # make extensions in 'x' optional
   if (length(ext) == 1) return(sub(r, ext, x))
 
   if (n1 > 1 && n1 != n2) stop("'ext' must be of the same length as 'x'")
   mapply(sub, r, ext, x, USE.NAMES = FALSE)
 }
+
+# regex to extract base path and extension from a file path
+reg_ext  = '([.](([[:alnum:]]+|tar[.](gz|bz2|xz)|nb[.]html)[~#]?))$'
+reg_path = paste0('^(.*?)', reg_ext)
 
 #' Normalize paths
 #'

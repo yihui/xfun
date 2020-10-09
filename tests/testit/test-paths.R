@@ -1,6 +1,13 @@
 library(testit)
 
-assert('with_ext works for corner cases', {
+assert('file_ext() and sans_ext() work', {
+  p = c('abc.doc', 'def123.tex#', 'path/to/foo.Rmd', 'backup.ppt~', 'pkg.tar.xz')
+  (file_ext(p) %==% c('doc', 'tex#', 'Rmd', 'ppt~', 'tar.xz'))
+  (sans_ext(p) %==% c('abc', 'def123', 'path/to/foo', 'backup', 'pkg'))
+  (file_ext(c('foo.bar.gz', 'foo', 'file.nb.html')) %==% c('gz', '', 'nb.html'))
+})
+
+assert('with_ext() works for corner cases', {
   (with_ext(character(), 'abc') %==% character())
   (with_ext('abc', character()) %==% 'abc')
   (with_ext(NA_character_, 'abc') %==% NA_character_)
@@ -12,7 +19,7 @@ assert('with_ext works for corner cases', {
   (with_ext(c('a', 'b', 'c'), c('', '.d', 'e.e')) %==% c('a', 'b.d', 'c.e.e'))
 })
 
-assert('same_path works', {
+assert('same_path() works', {
   (is.na(same_path('~/foo', NA_character_)))
   (is.na(same_path(NA_character_, '~/foo')))
   (same_path('~/foo', file.path(Sys.getenv('HOME'), 'foo')))
