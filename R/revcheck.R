@@ -484,3 +484,34 @@ cran_updatable = function(days = 90, maintainer = 'Yihui Xie') {
   }))
   names(which(flag))
 }
+
+
+#' Some utility functions for checking packages
+#'
+#' Miscellaneous utility functions to obtain information about the package
+#' checking environment.
+#' @export
+#' @keywords internal
+is_R_CMD_check = function() {
+  !is.na(check_package_name())
+}
+
+#' @rdname is_R_CMD_check
+#' @export
+is_CRAN_incoming = function() {
+  isTRUE(as.logical(Sys.getenv('_R_CHECK_CRAN_INCOMING_REMOTE_')))
+}
+
+#' @rdname is_R_CMD_check
+#' @export
+check_package_name = function() {
+  Sys.getenv('_R_CHECK_PACKAGE_NAME_', NA)
+}
+
+# is R CMD check running on a package that has a version lower or equal to `version`?
+#' @rdname is_R_CMD_check
+#' @export
+check_old_package = function(name, version) {
+  if (is.na(pkg <- check_package_name()) || pkg != name) return(FALSE)
+  tryCatch(packageVersion(name) <= version, error = function(e) FALSE)
+}
