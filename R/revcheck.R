@@ -442,29 +442,6 @@ cran_check_pages = function() {
   }
 }
 
-# kill a R CMD check process if it has been running for more then 30 minutes
-kill_long_processes = function(etime = 30) {
-  while (TRUE) {
-    if (length(pids <- list_long_processes(etime))) {
-      message('Killing processes: ', paste(pids, collapse = ' '))
-      system2('kill', pids)
-    }
-    Sys.sleep(30)
-  }
-}
-
-list_long_processes = function(etime = 15) {
-  x = system('ps -ax -o pid,etime,command | grep "Rcmd check --no-manual"', intern = TRUE)
-  x = grep('_[0-9.-]+[.]tar[.]gz$', trimws(x), value = TRUE)
-  pids = unlist(lapply(strsplit(x, '\\s+'), function(z) {
-    pid = z[1]; time = as.numeric(unlist(strsplit(z[2], '-|:')))
-    time = sum(tail(c(rep(0, 4), time), 4) * c(24 * 3600, 3600, 60, 1))
-    name = gsub('.*/', '', tail(z, 1))
-    if (time > etime * 60) setNames(pid, name)
-  }))
-  pids
-}
-
 # parse the check log for missing LaTeX packages and install them
 install_missing_latex = function() {
   dirs = list.files('.', '[.]Rcheck$')
