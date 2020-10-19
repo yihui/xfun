@@ -55,7 +55,9 @@ Rscript_call = function(fun, args = list(), ..., wait = TRUE) {
     shQuote(c(system.file('scripts', 'call-fun.R', package = 'xfun'), f)),
     ..., wait = wait
   )
-  if (wait) readRDS(f[2])
+  if (wait) if (file.exists(f[2])) readRDS(f[2]) else stop(
+    'An error occurred when calling the function in a new R session.', call. = FALSE
+  )
 }
 
 # call a function in a background process
