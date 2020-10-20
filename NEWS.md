@@ -4,6 +4,8 @@
 
 - Added a function `del_empty_dir()` to delete a directory if it is empty.
 
+- Added an argument `fail` to `Rscript_call()` to allow users to customize the error message when an error occurred in calling the function in a new R session.
+
 ## MINOR CHANGES
 
 - `file_ext()`, `sans_ext()`, and `with_ext()` no longer use `tools::file_ext()` or `tools::file_path_sans_ext()`, but provide a slightly different implementation. They treat `tar.(gz|bz2|xz)` and `nb.html` as file extensions, and also allow extensions to contain a trailing `~` or `#`.

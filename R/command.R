@@ -39,6 +39,8 @@ Rcmd = function(args, ...) {
 #'   to a function.
 #' @param args A list of argument values.
 #' @param ...,wait Arguments to be passed to \code{\link{system2}()}.
+#' @param fail The desired error message when an error occurred in calling the
+#'   function.
 #' @export
 #' @return The returned value of the function in the new R session.
 #' @examples factorial(10)
@@ -47,7 +49,10 @@ Rcmd = function(args, ...) {
 #'
 #' # the first argument can be either a character string or a function
 #' xfun::Rscript_call(factorial, list(10))
-Rscript_call = function(fun, args = list(), ..., wait = TRUE) {
+Rscript_call = function(
+  fun, args = list(), ..., wait = TRUE,
+  fail = sprintf("Failed to run '%s' in a new R session.", deparse(substitute(fun))[1])
+) {
   f = replicate(2, tempfile(fileext = '.rds'))
   on.exit(unlink(if (wait) f else f[2]), add = TRUE)
   saveRDS(list(fun, args), f[1])
@@ -55,9 +60,7 @@ Rscript_call = function(fun, args = list(), ..., wait = TRUE) {
     shQuote(c(system.file('scripts', 'call-fun.R', package = 'xfun'), f)),
     ..., wait = wait
   )
-  if (wait) if (file.exists(f[2])) readRDS(f[2]) else stop(
-    'An error occurred when calling the function in a new R session.', call. = FALSE
-  )
+  if (wait) if (file.exists(f[2])) readRDS(f[2]) else stop(fail, call. = FALSE)
 }
 
 # call a function in a background process
