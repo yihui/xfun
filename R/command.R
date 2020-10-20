@@ -107,6 +107,8 @@ bg_process = function(command, args = character(), timeout = 30) {
     # format of task list: hugo.exe    4592 Console      1     35,188 K
     tasklist = function() system2('tasklist', stdout = TRUE)
     pid1 = tasklist()
+    # TODO: is there a way to use PowerShell to create a background process and
+    # obtain its PID just like $! on *nix?
     system2(command, args, wait = FALSE)
 
     get_pid = function(time) {
@@ -154,10 +156,10 @@ bg_process = function(command, args = character(), timeout = 30) {
 
   t0 = Sys.time()
   while ((time <- difftime(Sys.time(), t0, units = 'secs')) < timeout) {
-    if (length(id <- get_pid(time)) == 1) break
+    if (length(id <- get_pid(time)) > 0) break
   }
 
-  if (length(id) == 1) return(id)
+  if (length(id) > 0) return(id)
 
   system2(command, args, timeout = timeout)  # see what the error is
   stop(
