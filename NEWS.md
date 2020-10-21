@@ -2,6 +2,8 @@
 
 ## NEW FEATURES
 
+- Added functions `bg_process()` to run a command in a background process, and `proc_kill()` to kill a process.
+
 - Added a function `del_empty_dir()` to delete a directory if it is empty.
 
 - Added an argument `fail` to `Rscript_call()` to allow users to customize the error message when an error occurred in calling the function in a new R session.

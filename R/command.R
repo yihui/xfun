@@ -94,12 +94,46 @@ Rscript_bg = function(fun, args = list(), timeout = 10) {
   list(pid = id, is_alive = function() file_exists(pid))
 }
 
+#' Kill a process and (optionally) all its child processes
+#'
+#' Run the command \command{taskkill /f /pid} on Windows and \command{kill} on
+#' Unix, respectively, to kill a process.
+#' @param pid The process ID.
+#' @param recursive Whether to kill the child processes of the process.
+#' @param ... Arguments to be passed to \code{\link{system2}()} to run the
+#'   command to kill the process.
+#' @return The status code returned from \code{system2()}.
+#' @export
+proc_kill = function(pid, recursive = TRUE, ...) {
+  if (is_windows()) {
+    system2('taskkill', c(if (recursive) '/t', '/f', '/pid', pid), ...)
+  } else {
+    system2('kill', c(pid, if (recursive) child_pids(pid)), ...)
+  }
+}
+
+# obtain pids of all child processes (recursively)
+child_pids = function(id) {
+  x = system2('sh', shQuote(c(pkg_file('scripts', 'child_pids.sh'), id)), stdout = TRUE)
+  grep('^[0-9]+$', x, value = TRUE)
+}
+
 powershell = function(command) {
   if (Sys.which('powershell') == '') return()
   system2('powershell', c('-Command', shQuote(command)), stdout = TRUE)
 }
 
-# start a background process, and return its process ID
+#' Start a background process
+#'
+#' Use \code{\link{system2}(wait = FALSE)} to start a background process, and
+#' return its process ID.
+#' @param command,args The system command and its arguments, to be passed to
+#'   \code{\link{system2}()}.
+#' @param timeout The limit of the elapsed time (in seconds) to wait for the
+#'   process to start and find its process ID.
+#' @return The process ID as a character string.
+#' @export
+#' @seealso \code{\link{proc_kill}()} to kill a process.
 bg_process = function(command, args = character(), timeout = 30) {
   id = NULL
 

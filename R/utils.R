@@ -171,3 +171,5 @@ connect_pipes = function(x) {
   }
   apply(A, 1, paste, collapse = '')
 }
+
+pkg_file = function(...) system.file(..., mustWork = TRUE)
