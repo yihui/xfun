@@ -143,16 +143,25 @@ ps_quote = function(x) {
 
 #' Start a background process
 #'
-#' Use \code{\link{system2}(wait = FALSE)} to start a background process, and
-#' return its process ID.
-#' @param command,args The system command and its arguments, to be passed to
-#'   \code{\link{system2}()}.
-#' @param timeout The limit of the elapsed time (in seconds) to wait for the
-#'   process to start and find its process ID.
+#' Start a background process using the PowerShell cmdlet \command{Start-Process
+#' -PassThru} on Windows or the ampersand \command{&} on Unix, and return the
+#' process ID.
+#' @param command,args The system command and its arguments. They do not need to
+#'   be quoted, since they will be quoted via \code{\link{shQuote}()}
+#'   internally.
 #' @return The process ID as a character string.
+#' @note On Windows, if PowerShell is not available, try to use
+#'   \code{\link{system2}(wait = FALSE)} to start the background process
+#'   instead. The process ID will be identified from the output of the command
+#'   \command{tasklist}. This method of looking for the process ID may not be
+#'   reliable. If the search is not successful in 30 seconds, it will throw an
+#'   error (timeout). If a longer time is needed, you may set
+#'   \code{options(xfun.bg_process.timeout)} to a larger value, but it should be
+#'   very rare that a process cannot be started in 30 seconds. When you reach
+#'   the timeout, it is more likely that the command actually failed.
 #' @export
 #' @seealso \code{\link{proc_kill}()} to kill a process.
-bg_process = function(command, args = character(), timeout = 30) {
+bg_process = function(command, args = character()) {
   throw_error = function(...) stop(
     'Failed to run the command', ..., ' in the background: ',
     paste(shQuote(c(command, args)), collapse = ' '), call. = FALSE
@@ -178,7 +187,7 @@ bg_process = function(command, args = character(), timeout = 30) {
     # format of task list: hugo.exe    4592 Console      1     35,188 K
     tasklist = function() system2('tasklist', stdout = TRUE)
     pid1 = tasklist()
-    system2(command, args, wait = FALSE)
+    system2(command, shQuote(args), wait = FALSE)
 
     get_pid = function() {
       # make sure the command points to an actual executable (e.g., resolve 'R'
@@ -196,7 +205,7 @@ bg_process = function(command, args = character(), timeout = 30) {
       for (v in regmatches(pid2, m)) if (length(v) >= 2) return(v[2])
     }
 
-    t0 = Sys.time(); id = NULL
+    t0 = Sys.time(); id = NULL; timeout = getOption('xfun.bg_process.timeout', 30)
     while (difftime(Sys.time(), t0, units = 'secs') < timeout) {
       if (length(id <- get_pid()) > 0) break
     }
