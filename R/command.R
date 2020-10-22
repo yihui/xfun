@@ -128,7 +128,7 @@ powershell = function(command) {
 ps_process = function(command, args = character()) {
   powershell(c(
     'echo (Start-Process', '-FilePath', shQuote(command), '-ArgumentList',
-    ps_quote(args), '-PassThrough', '-WindowStyle', 'Hidden).ID'
+    ps_quote(args), '-PassThru', '-WindowStyle', 'Hidden).ID'
   ))
 }
 
