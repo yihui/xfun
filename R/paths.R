@@ -280,9 +280,21 @@ magic_path = function(
   }
 }
 
+#' Test the existence of files and directories
+#'
+#' These are wrapper functions of \code{utils::\link{file_test}()} to test the
+#' existence of directories and files. Note that \code{file_exists()} only tests
+#' files but not directories, which is the main difference between
+#' \code{\link{file.exists}()} in base R. If you use are using the R version
+#' 3.2.0 or above, \code{dir_exists()} is the same as \code{\link{dir.exists}()}
+#' in base R.
+#' @param x A vector of paths.
+#' @export
+#' @return A logical vector.
 dir_exists = function(x) file_test('-d', x)
 
-# don't treat dirs as files
+#' @rdname dir_exists
+#' @export
 file_exists = function(x) file_test('-f', x)
 
 #' Rename files with a sequential numeric prefix
