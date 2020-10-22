@@ -153,22 +153,28 @@ ps_quote = function(x) {
 #' @export
 #' @seealso \code{\link{proc_kill}()} to kill a process.
 bg_process = function(command, args = character(), timeout = 30) {
-  id = NULL
   throw_error = function(...) stop(
-    'Failed to run the command', ..., ': ',
+    'Failed to run the command', ..., ' in the background: ',
     paste(shQuote(c(command, args)), collapse = ' '), call. = FALSE
   )
+
+  # check the possible pid returned from system2()
+  check_pid = function(res) {
+    if (is.null(res)) return(res)
+    if (!is.null(attr(res, 'status'))) throw_error()
+    if (length(res) == 1 && grepl('^[0-9]+$', res)) return(res)
+    throw_error()
+  }
 
   if (is_windows()) {
     # first try 'Start-Process -PassThrough' to start a background process; if
     # PowerShell is unavailable, fall back to system2(wait = FALSE), and the
     # method to find out the pid is not 100% reliable
-    if (!is.null(pid <- ps_process(command, args))) {
-      if (!is.null(attr(pid, 'status'))) throw_error()
-      if (length(pid) == 1 && grepl('^[0-9]+$', pid)) return(pid)
-      throw_error()
-    }
+    if (length(pid <- check_pid(ps_process(command, args))) == 1) return(pid)
 
+    message(
+      'It seems you do not have PowerShell installed. The process ID may be inaccurate.'
+    )
     # format of task list: hugo.exe    4592 Console      1     35,188 K
     tasklist = function() system2('tasklist', stdout = TRUE)
     pid1 = tasklist()
@@ -189,6 +195,16 @@ bg_process = function(command, args = character(), timeout = 30) {
       m = regexec('\\s+([0-9]+)\\s+', pid2)
       for (v in regmatches(pid2, m)) if (length(v) >= 2) return(v[2])
     }
+
+    t0 = Sys.time(); id = NULL
+    while (difftime(Sys.time(), t0, units = 'secs') < timeout) {
+      if (length(id <- get_pid()) > 0) break
+    }
+
+    if (length(id) > 0) return(id)
+
+    system2(command, args, timeout = timeout)  # see what the error is
+    throw_error(' in ', timeout, ' second(s)')
   } else {
     pid = tempfile(); on.exit(unlink(pid), add = TRUE)
     code = paste(c(
@@ -197,20 +213,8 @@ bg_process = function(command, args = character(), timeout = 30) {
       '& echo $! >', shQuote(pid)
     ), collapse = ' ')
     system2('sh', c('-c', shQuote(code)))
-    get_pid = function() {
-      if (file.exists(pid)) readLines(pid)
-    }
+    return(check_pid(readLines(pid)))
   }
-
-  t0 = Sys.time()
-  while (difftime(Sys.time(), t0, units = 'secs') < timeout) {
-    if (length(id <- get_pid()) > 0) break
-  }
-
-  if (length(id) > 0) return(id)
-
-  system2(command, args, timeout = timeout)  # see what the error is
-  throw_error(' in ', timeout, ' second(s)')
 }
 
 #' Upload to an FTP server via \command{curl}
