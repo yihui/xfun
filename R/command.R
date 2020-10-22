@@ -120,7 +120,25 @@ child_pids = function(id) {
 
 powershell = function(command) {
   if (Sys.which('powershell') == '') return()
+  command = paste(command, collapse = ' ')
   system2('powershell', c('-Command', shQuote(command)), stdout = TRUE)
+}
+
+# start a background process via the PowerShell cmdlet and return its pid
+ps_process = function(command, args = character()) {
+  powershell(c(
+    'echo (Start-Process', '-FilePath', shQuote(command), '-ArgumentList',
+    ps_quote(args), '-PassThrough', '-WindowStyle', 'Hidden).ID'
+  ))
+}
+
+# quote PowerShell arguments properly
+ps_quote = function(x) {
+  x = gsub('"', '""', x)  # '""' mean a literal '"'
+  # if an argument contains a space, surround it with escaped double quotes `"`"
+  i = grep('\\s', x)
+  x[i] = sprintf('`"%s`"', x[i])
+  sprintf('"%s"', paste(x, collapse = ' '))
 }
 
 #' Start a background process
@@ -136,13 +154,24 @@ powershell = function(command) {
 #' @seealso \code{\link{proc_kill}()} to kill a process.
 bg_process = function(command, args = character(), timeout = 30) {
   id = NULL
+  throw_error = function(...) stop(
+    'Failed to run the command', ..., ': ',
+    paste(shQuote(c(command, args)), collapse = ' '), call. = FALSE
+  )
 
   if (is_windows()) {
+    # first try 'Start-Process -PassThrough' to start a background process; if
+    # PowerShell is unavailable, fall back to system2(wait = FALSE), and the
+    # method to find out the pid is not 100% reliable
+    if (!is.null(pid <- ps_process(command, args))) {
+      if (!is.null(attr(pid, 'status'))) throw_error()
+      if (length(pid) == 1 && grepl('^[0-9]+$', pid)) return(pid)
+      throw_error()
+    }
+
     # format of task list: hugo.exe    4592 Console      1     35,188 K
     tasklist = function() system2('tasklist', stdout = TRUE)
     pid1 = tasklist()
-    # TODO: is there a way to use PowerShell to create a background process and
-    # obtain its PID just like $! on *nix?
     system2(command, args, wait = FALSE)
 
     get_pid = function(time) {
@@ -196,10 +225,7 @@ bg_process = function(command, args = character(), timeout = 30) {
   if (length(id) > 0) return(id)
 
   system2(command, args, timeout = timeout)  # see what the error is
-  stop(
-    'Failed to run the command in ', timeout, ' seconds (timeout): ',
-    paste(shQuote(c(command, args)), collapse = ' ')
-  )
+  throw_error(' in ', timeout, ' second(s)')
 }
 
 #' Upload to an FTP server via \command{curl}
