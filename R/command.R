@@ -174,7 +174,7 @@ bg_process = function(command, args = character(), timeout = 30) {
     pid1 = tasklist()
     system2(command, args, wait = FALSE)
 
-    get_pid = function(time) {
+    get_pid = function() {
       # make sure the command points to an actual executable (e.g., resolve 'R'
       # to 'R.exe')
       if (!file.exists(command)) {
@@ -197,14 +197,14 @@ bg_process = function(command, args = character(), timeout = 30) {
       '& echo $! >', shQuote(pid)
     ), collapse = ' ')
     system2('sh', c('-c', shQuote(code)))
-    get_pid = function(time) {
+    get_pid = function() {
       if (file.exists(pid)) readLines(pid)
     }
   }
 
   t0 = Sys.time()
-  while ((time <- difftime(Sys.time(), t0, units = 'secs')) < timeout) {
-    if (length(id <- get_pid(time)) > 0) break
+  while (difftime(Sys.time(), t0, units = 'secs') < timeout) {
+    if (length(id <- get_pid()) > 0) break
   }
 
   if (length(id) > 0) return(id)
