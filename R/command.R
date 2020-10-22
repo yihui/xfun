@@ -182,21 +182,6 @@ bg_process = function(command, args = character(), timeout = 30) {
       }
       cmd = basename(command)
 
-      # use PowerShell to figure out the PID if possible:
-      res = powershell(sprintf(
-        'Get-CimInstance Win32_Process -Filter "name = \'%s\'" | select CommandLine, ProcessId | ConvertTo-Csv', cmd
-      ))
-      if (length(res) > 1) {
-        res = read.csv(text = res, comment.char = '#', stringsAsFactors = FALSE)
-        if (length(r1 <- res[, 'CommandLine']) && length(r2 <- res[, 'ProcessId'])) {
-          cmd2 = paste(c(cmd, args), collapse = ' ')
-          r2 = r2[grep(cmd2, r1, fixed = TRUE)]
-          if (length(r2)) return(r2)
-        }
-      }
-
-      # don't try this method until 1/5 of timeout has passed
-      if (!is.null(res) && time < timeout/5) return()
       pid2 = setdiff(tasklist(), pid1)
       # the process's info should start with the command name
       pid2 = pid2[substr(pid2, 1, nchar(cmd)) == cmd]
