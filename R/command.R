@@ -147,6 +147,10 @@ ps_quote = function(x) {
 #' Start a background process using the PowerShell cmdlet \command{Start-Process
 #' -PassThru} on Windows or the ampersand \command{&} on Unix, and return the
 #' process ID.
+#'
+#' If you need to see the output from \verb{stdout} and \verb{stderr}, you may
+#' set \code{options(xfun.bg_process.verbose = TRUE)} before starting the
+#' process. By default, these outputs are hidden.
 #' @param command,args The system command and its arguments. They do not need to
 #'   be quoted, since they will be quoted via \code{\link{shQuote}()}
 #'   internally.
