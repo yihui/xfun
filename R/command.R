@@ -128,7 +128,8 @@ powershell = function(command) {
 ps_process = function(command, args = character()) {
   powershell(c(
     'echo (Start-Process', '-FilePath', shQuote(command), '-ArgumentList',
-    ps_quote(args), '-PassThru', '-WindowStyle', 'Hidden).ID'
+    ps_quote(args), '-PassThru', '-WindowStyle',
+    sprintf('%s).ID', if (bg_process_verbose()) 'Normal' else 'Hidden')
   ))
 }
 
@@ -218,13 +219,15 @@ bg_process = function(command, args = character()) {
     pid = tempfile(); on.exit(unlink(pid), add = TRUE)
     code = paste(c(
       shQuote(c(command, args)),
-      if (!getOption('xfun.bg_process.verbose', FALSE)) '> /dev/null',
+      if (!bg_process_verbose()) '> /dev/null',
       '& echo $! >', shQuote(pid)
     ), collapse = ' ')
     system2('sh', c('-c', shQuote(code)))
     return(check_pid(readLines(pid)))
   }
 }
+
+bg_process_verbose = function() getOption('xfun.bg_process.verbose', FALSE)
 
 #' Upload to an FTP server via \command{curl}
 #'
