@@ -150,10 +150,13 @@ relative_path = function(path, dir = '.', use.. = TRUE, error = TRUE) {
   # on Windows, if a relative path doesn't exist, normalizePath() will use
   # getwd() as its parent dir; however, normalizePath() just returns the
   # relative path on *nix, and we have to assume it's relative to getwd()
-  if (!file.exists(path) && is_unix() && is_rel_path(path)) path = file.path(getwd(), path)
-  p = normalize_path(path); n1 = nchar(p)
+  abs_path = function(p) {
+    if (!file.exists(p) && is_unix() && is_rel_path(p)) p = file.path(getwd(), p)
+    normalize_path(p)
+  }
+  p = abs_path(path); n1 = nchar(p)
   if ((n1 <- nchar(p)) == 0) return(path)  # not sure what you mean
-  d = normalize_path(dir); n2 = nchar(d)
+  d = abs_path(dir); n2 = nchar(d)
   if (is_subpath(p, d, n2)) return(get_subpath(p, n1, n2))
   if (!use..) {
     if (error) stop("When use.. = FALSE, the 'path' must be under the 'dir'")
