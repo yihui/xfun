@@ -158,7 +158,7 @@ relative_path = function(path, dir = '.', use.. = TRUE, error = TRUE) {
   p = abs_path(path); n1 = nchar(p)
   if ((n1 <- nchar(p)) == 0) return(path)  # not sure what you mean
   d = abs_path(dir); n2 = nchar(d)
-  if (is_subpath(p, d, n2)) {
+  if (is_sub_path(p, d, n2)) {
     p2 = get_subpath(p, n1, n2)
     if (p2 == '') p2 = '.'  # if the subpath is empty, it means the current dir
     return(p2)
@@ -168,7 +168,7 @@ relative_path = function(path, dir = '.', use.. = TRUE, error = TRUE) {
     return(path)
   }
   s = '../'; d1 = d
-  while (!is_subpath(p, d2 <- dirname(d1))) {
+  while (!is_sub_path(p, d2 <- dirname(d1))) {
     if (same_path(d1, d2)) {
       if (error) stop(
         "The 'path' cannot be converted to a relative path to 'dir'. ",
@@ -182,8 +182,22 @@ relative_path = function(path, dir = '.', use.. = TRUE, error = TRUE) {
   paste0(s, get_subpath(p, n1, nchar(d2)))
 }
 
-# test if the path is a child of the dir
-is_subpath = function(path, dir, n = nchar(dir)) substr(path, 1, n) == dir
+#' Test if a path is a subpath of a dir
+#'
+#' Check if the path starts with the dir path.
+#' @param x A vector of paths.
+#' @param dir A vector of directory paths.
+#' @param n The length of \code{dir} paths.
+#' @return A logical vector.
+#' @note You may want to normalize the values of the \code{x} and \code{dir}
+#'   arguments first (with \code{xfun::\link{normalize_path}()}), to make sure
+#'   the path separators are consistent.
+#' @export
+#' @examples
+#' xfun::is_sub_path('a/b/c.txt', 'a/b')  # TRUE
+#' xfun::is_sub_path('a/b/c.txt', 'd/b')  # FALSE
+#' xfun::is_sub_path('a/b/c.txt', 'a\\b')  # FALSE (even on Windows)
+is_sub_path = function(x, dir, n = nchar(dir)) substr(x, 1, n) == dir
 
 # remove the first n2 characters and the possible / from the path
 get_subpath = function(p, n1, n2) {

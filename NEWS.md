@@ -8,6 +8,8 @@
 
 - Added functions `is_abs_path()` and `is_rel_path()` to check if paths are absolute or relative.
 
+- Added a function `is_sub_path()` to test if a path is under a directory.
+
 - Documented and exported the previously internal functions `dir_exists()` and `file_exists()` (thanks, @cderv, #36).
 
 - Added a function `dir_create()` to create a directory recursively by default when it does not exist.
