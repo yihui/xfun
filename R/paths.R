@@ -185,7 +185,7 @@ relative_path = function(x, dir = '.', use.. = TRUE, error = TRUE) {
 #' Test if a path is a subpath of a dir
 #'
 #' Check if the path starts with the dir path.
-#' @param x A vector of paths.
+#' @inheritParams is_abs_path
 #' @param dir A vector of directory paths.
 #' @param n The length of \code{dir} paths.
 #' @return A logical vector.
@@ -224,6 +224,20 @@ is_abs_path = function(x) {
 #' @rdname is_abs_path
 #' @export
 is_rel_path = function(x) !is_abs_path(x)
+
+#' Test if a path is a web path
+#'
+#' Check if a path starts with \file{http://} or \file{https://} or
+#' \file{ftp://} or \file{ftps://}.
+#' @inheritParams is_abs_path
+#' @return A logical vector.
+#' @export
+#' @examples
+#' xfun::is_web_path('https://www.r-project.org')  # TRUE
+#' xfun::is_web_path('www.r-project.org')  # FALSE
+is_web_path = function(x) {
+  grepl('^(f|ht)tps?://', x)
+}
 
 #' Get the relative path of a path in a project relative to the current working
 #' directory

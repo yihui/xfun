@@ -10,6 +10,8 @@
 
 - Added a function `is_sub_path()` to test if a path is under a directory.
 
+- Added a function `is_web_path()` to test if a path is a web path that starts with `http://` or `https://` or `ftp://` or `ftps://`.
+
 - Documented and exported the previously internal functions `dir_exists()` and `file_exists()` (thanks, @cderv, #36).
 
 - Added a function `dir_create()` to create a directory recursively by default when it does not exist.
