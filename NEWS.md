@@ -6,6 +6,8 @@
 
 - Added a function `del_empty_dir()` to delete a directory if it is empty.
 
+- Added functions `is_abs_path()` and `is_rel_path()` to check if paths are absolute or relative.
+
 - Documented and exported the previously internal functions `dir_exists()` and `file_exists()` (thanks, @cderv, #36).
 
 - Added an argument `fail` to `Rscript_call()` to allow users to customize the error message when an error occurred in calling the function in a new R session.

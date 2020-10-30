@@ -179,6 +179,26 @@ get_subpath = function(p, n1, n2) {
   sub('^/', '', p)
 }
 
+#' Test if paths are relative or absolute
+#'
+#' On Unix, check if the paths start with \file{/} or \file{~} (if they do, they
+#' are absolute paths). On Windows, check if a path remains the same (via
+#' \code{xfun::\link{same_path}()}) if it is prepended with \file{./} (if it
+#' does, it is a relative path).
+#' @param x A vector of paths.
+#' @return A logical vector.
+#' @export
+#' @examples
+#' xfun::is_abs_path(c('C:/foo', 'foo.txt', '/Users/john/', tempdir()))
+#' xfun::is_rel_path(c('C:/foo', 'foo.txt', '/Users/john/', tempdir()))
+is_abs_path = function(x) {
+  if (is_unix()) grepl('^[/~]', x) else !same_path(x, file.path('.', x))
+}
+
+#' @rdname is_abs_path
+#' @export
+is_rel_path = function(x) !is_abs_path(x)
+
 #' Get the relative path of a path in a project relative to the current working
 #' directory
 #'
