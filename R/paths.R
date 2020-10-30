@@ -146,6 +146,7 @@ root_rules = matrix(c(
 #' @examples
 #' xfun::relative_path('foo/bar.txt', 'foo/')
 #' xfun::relative_path('foo/bar/a.txt', 'foo/haha/')
+#' xfun::relative_path(getwd())
 relative_path = function(path, dir = '.', use.. = TRUE, error = TRUE) {
   # on Windows, if a relative path doesn't exist, normalizePath() will use
   # getwd() as its parent dir; however, normalizePath() just returns the
@@ -157,7 +158,11 @@ relative_path = function(path, dir = '.', use.. = TRUE, error = TRUE) {
   p = abs_path(path); n1 = nchar(p)
   if ((n1 <- nchar(p)) == 0) return(path)  # not sure what you mean
   d = abs_path(dir); n2 = nchar(d)
-  if (is_subpath(p, d, n2)) return(get_subpath(p, n1, n2))
+  if (is_subpath(p, d, n2)) {
+    p2 = get_subpath(p, n1, n2)
+    if (p2 == '') p2 = '.'  # if the subpath is empty, it means the current dir
+    return(p2)
+  }
   if (!use..) {
     if (error) stop("When use.. = FALSE, the 'path' must be under the 'dir'")
     return(path)

@@ -31,4 +31,5 @@ directory. For example, the path \file{foo/bar.txt} relative to the directory
 \examples{
 xfun::relative_path("foo/bar.txt", "foo/")
 xfun::relative_path("foo/bar/a.txt", "foo/haha/")
+xfun::relative_path(getwd())
 }
