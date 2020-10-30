@@ -55,14 +55,14 @@ reg_path = paste0('^(.*?)', reg_ext)
 #' Normalize paths
 #'
 #' A wrapper function of \code{normalizePath()} with different defaults.
-#' @param path,winslash,must_work Arguments passed to
+#' @param x,winslash,must_work Arguments passed to
 #'   \code{\link{normalizePath}()}.
 #' @export
 #' @examples library(xfun)
 #' normalize_path('~')
-normalize_path = function(path, winslash = '/', must_work = FALSE) {
-  res = normalizePath(path, winslash = winslash, mustWork = must_work)
-  if (is_windows()) res[is.na(path)] = NA
+normalize_path = function(x, winslash = '/', must_work = FALSE) {
+  res = normalizePath(x, winslash = winslash, mustWork = must_work)
+  if (is_windows()) res[is.na(x)] = NA
   res
 }
 
@@ -134,7 +134,7 @@ root_rules = matrix(c(
 #' \file{foo/} is \file{bar.txt}, and the path \file{/a/b/c.txt} relative to
 #' \file{/d/e/} is \file{../../a/b/c.txt}.
 #' @param dir Path to a directory.
-#' @param path The path to be converted to a relative path.
+#' @param x The path to be converted to a relative path.
 #' @param use.. Whether to use double-dots (\file{..}) in the relative path. A
 #'   double-dot indicates the parent directory (starting from the directory
 #'   provided by the \code{dir} argument).
@@ -147,7 +147,7 @@ root_rules = matrix(c(
 #' xfun::relative_path('foo/bar.txt', 'foo/')
 #' xfun::relative_path('foo/bar/a.txt', 'foo/haha/')
 #' xfun::relative_path(getwd())
-relative_path = function(path, dir = '.', use.. = TRUE, error = TRUE) {
+relative_path = function(x, dir = '.', use.. = TRUE, error = TRUE) {
   # on Windows, if a relative path doesn't exist, normalizePath() will use
   # getwd() as its parent dir; however, normalizePath() just returns the
   # relative path on *nix, and we have to assume it's relative to getwd()
@@ -155,8 +155,8 @@ relative_path = function(path, dir = '.', use.. = TRUE, error = TRUE) {
     if (!file.exists(p) && is_unix() && is_rel_path(p)) p = file.path(getwd(), p)
     normalize_path(p)
   }
-  p = abs_path(path); n1 = nchar(p)
-  if ((n1 <- nchar(p)) == 0) return(path)  # not sure what you mean
+  p = abs_path(x); n1 = nchar(p)
+  if ((n1 <- nchar(p)) == 0) return(x)  # not sure what you mean
   d = abs_path(dir); n2 = nchar(d)
   if (is_sub_path(p, d, n2)) {
     p2 = get_subpath(p, n1, n2)
@@ -164,17 +164,17 @@ relative_path = function(path, dir = '.', use.. = TRUE, error = TRUE) {
     return(p2)
   }
   if (!use..) {
-    if (error) stop("When use.. = FALSE, the 'path' must be under the 'dir'")
-    return(path)
+    if (error) stop("When use.. = FALSE, the path 'x' must be under the 'dir'")
+    return(x)
   }
   s = '../'; d1 = d
   while (!is_sub_path(p, d2 <- dirname(d1))) {
     if (same_path(d1, d2)) {
       if (error) stop(
-        "The 'path' cannot be converted to a relative path to 'dir'. ",
+        "The path 'x' cannot be converted to a relative path to 'dir'. ",
         "Perhaps they are on different volumes of the disk."
       )
-      return(path)
+      return(x)
     }
     s = paste0('../', s)
     d1 = d2  # go to one level up

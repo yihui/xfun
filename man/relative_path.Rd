@@ -4,10 +4,10 @@
 \alias{relative_path}
 \title{Get the relative path of a path relative a directory}
 \usage{
-relative_path(path, dir = ".", use.. = TRUE, error = TRUE)
+relative_path(x, dir = ".", use.. = TRUE, error = TRUE)
 }
 \arguments{
-\item{path}{The path to be converted to a relative path.}
+\item{x}{The path to be converted to a relative path.}
 
 \item{dir}{Path to a directory.}
 
