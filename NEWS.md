@@ -10,6 +10,8 @@
 
 - Documented and exported the previously internal functions `dir_exists()` and `file_exists()` (thanks, @cderv, #36).
 
+- Added a function `dir_create()` to create a directory recursively by default when it does not exist.
+
 - Added an argument `fail` to `Rscript_call()` to allow users to customize the error message when an error occurred in calling the function in a new R session.
 
 ## MINOR CHANGES

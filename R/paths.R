@@ -321,6 +321,19 @@ dir_exists = function(x) file_test('-d', x)
 #' @export
 file_exists = function(x) file_test('-f', x)
 
+#' Create a directory recursively by default
+#'
+#' First check if a directory exists. If it does, return \code{TRUE}, otherwise
+#' create it with \code{\link{dir.create}(recursive = TRUE)} by default.
+#' @param x A path name.
+#' @param recursive Whether to create all directory components in the path.
+#' @param ... Other arguments to be passed to \code{\link{dir.create}()}.
+#' @return A logical value indicating if the directory either exists or is
+#'   successfully created.
+dir_create = function(x, recursive = TRUE, ...) {
+  dir_exists(x) || dir.create(x, recursive = recursive)
+}
+
 #' Rename files with a sequential numeric prefix
 #'
 #' Rename a series of files and add an incremental numeric prefix to the
