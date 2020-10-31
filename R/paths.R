@@ -366,6 +366,7 @@ file_exists = function(x) file_test('-f', x)
 #' @param ... Other arguments to be passed to \code{\link{dir.create}()}.
 #' @return A logical value indicating if the directory either exists or is
 #'   successfully created.
+#' @export
 dir_create = function(x, recursive = TRUE, ...) {
   dir_exists(x) || dir.create(x, recursive = recursive)
 }

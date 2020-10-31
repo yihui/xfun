@@ -1,5 +1,8 @@
 # CHANGES IN xfun VERSION 0.20
 
+## MINOR CHANGES
+
+- Exported the function `dir_create()`.
 
 # CHANGES IN xfun VERSION 0.19
 
