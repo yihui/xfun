@@ -57,7 +57,7 @@ Rscript_call = function(
   on.exit(unlink(if (wait) f else f[2]), add = TRUE)
   saveRDS(list(fun, args), f[1])
   Rscript(
-    shQuote(c(system.file('scripts', 'call-fun.R', package = 'xfun'), f)),
+    shQuote(c(pkg_file('scripts', 'call-fun.R'), f)),
     ..., wait = wait
   )
   if (wait) if (file.exists(f[2])) readRDS(f[2]) else stop(fail, call. = FALSE)
