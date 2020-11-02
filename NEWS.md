@@ -1,5 +1,9 @@
 # CHANGES IN xfun VERSION 0.20
 
+## BUG FIXES
+
+- `xfun::proc_kill()` failed to work on *nix.
+
 ## MINOR CHANGES
 
 - Exported the function `dir_create()`.
