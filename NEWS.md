@@ -4,6 +4,8 @@
 
 - `xfun::proc_kill()` failed to work on *nix.
 
+- `xfun::del_empty_dir()` failed to delete empty dirs.
+
 ## MINOR CHANGES
 
 - Exported the function `dir_create()`.

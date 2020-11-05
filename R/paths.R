@@ -450,6 +450,6 @@ url_filename = function(x) {
 #' @export
 del_empty_dir = function(dir) {
   if (is.null(dir) || !dir_exists(dir)) return()
-  files = list.files(dir, all.files = TRUE)
+  files = list.files(dir, all.files = TRUE, no.. = TRUE)
   if (length(files) == 0) unlink(dir, recursive = TRUE)
 }
