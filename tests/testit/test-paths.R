@@ -41,3 +41,19 @@ assert('is_abs_path() recognizes absolute paths on Windows and *nix', {
     c('D:\\abc', '\\\\netdrive\\somewhere')
   } else '/abc/def'))
 })
+
+assert('del_empty_dir() correctly deletes empty dirs', {
+  # do nothing is NULL
+  (del_empty_dir(NULL) %==% NULL)
+  # remove if empty
+  dir.create(temp_dir <- tempfile())
+  del_empty_dir(temp_dir)
+  (!dir_exists(temp_dir))
+  # do not remove if not empty
+  dir.create(temp_dir <- tempfile())
+  writeLines('test', tempfile(tmpdir = temp_dir))
+  (del_empty_dir(temp_dir) %==% NULL)
+  (dir_exists(temp_dir))
+  unlink(temp_dir, recursive = TRUE)
+})
+
