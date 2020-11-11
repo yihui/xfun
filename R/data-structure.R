@@ -72,7 +72,7 @@ print.xfun_strict_list = function(x, ...) {
 #' raw_string(c('a "b"', 'hello\tworld!'))
 raw_string = function(x) {
   if (is.null(x)) x = as.character(x)
-  class(x) = 'xfun_raw_string'
+  class(x) = c('xfun_raw_string', class(x))
   x
 }
 
