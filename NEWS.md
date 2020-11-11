@@ -6,6 +6,8 @@
 
 - `xfun::del_empty_dir()` failed to delete empty dirs.
 
+- `xfun::file_string()` preserves emptiness (thanks, @MichaelChirico, #38).
+
 ## MINOR CHANGES
 
 - Exported the function `dir_create()`.
