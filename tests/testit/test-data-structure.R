@@ -32,3 +32,8 @@ assert('raw_string() prints as expected', {
   output = capture.output(rs)
   (output %==% c('a "b"', 'hello\tworld!'))
 })
+
+assert('raw_string() inherits from character', {
+  rs = raw_string(c('a "b"', 'hello\tworld!'))
+  (inherits(rs, 'character'))
+})
