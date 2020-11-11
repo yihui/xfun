@@ -8,6 +8,8 @@
 
 - `xfun::file_string()` preserves emptiness (thanks, @MichaelChirico, #38).
 
+- `xfun::raw_string()` preserves the class(es) of the input now (thanks, @MichaelChirico, #40).
+
 ## MINOR CHANGES
 
 - Exported the function `dir_create()`.
