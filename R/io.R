@@ -55,10 +55,10 @@ invalid_utf8 = function(x) {
 #' @examples
 #' xfun::file_string(system.file('DESCRIPTION', package = 'xfun'))
 file_string = function(file) {
-  l <- read_utf8(file)
+  x = read_utf8(file)
   # paste converts 0-length character() into 1-length ""
-  if (length(l)) l <- paste(l, collapse = '\n')
-  raw_string(l)
+  if (length(x)) x = paste(x, collapse = '\n')
+  raw_string(x)
 }
 
 # read all records of a binary file as a raw vector by default

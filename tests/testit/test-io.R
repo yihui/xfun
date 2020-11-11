@@ -37,7 +37,7 @@ assert('read/write_utf8() works', {
 assert('empty files produce character() via file_string()', {
   tmp = tempfile()
   writeLines(character(), tmp)
-  file_string(tmp) %==% raw_string(character())
+  (file_string(tmp) %==% raw_string(character()))
 })
 
 assert('grep_sub() matches elements and do substitution on them', {
