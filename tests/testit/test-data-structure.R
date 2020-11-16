@@ -26,11 +26,35 @@ assert('as_strict_list() converts a list to a strict list', {
   (as_strict_list(normal_list) %==% s_list)
 })
 
+assert('print() returns the same output for strict and normal list', {
+  normal_list = list(aaa = 1:2, bbb = c('hey', 'dad'))
+  s_list = as_strict_list(normal_list)
+  (capture.output(print(normal_list)) %==% capture.output(print(s_list)))
+})
+
 assert('raw_string() prints as expected', {
   rs = raw_string(c('a "b"', 'hello\tworld!'))
   (inherits(rs, 'xfun_raw_string'))
   output = capture.output(rs)
   (output %==% c('a "b"', 'hello\tworld!'))
+})
+
+assert('raw_string() returns 0-length xfun_raw_string when input is NULL', {
+  rs1 = raw_string(NULL)
+  inherits(rs1, 'xfun_raw_string')
+  (length(rs1) == 0)
+  (capture.output(rs1) %==% character(0))
+
+  rs2 = raw_string(c(NULL,NULL,NULL))
+  inherits(rs2, 'xfun_raw_string')
+  (length(rs2) == 0)
+  (capture.output(rs2) %==% character(0))
+
+  # string 'NULL' is treated appropriately
+  rs3 = raw_string('NULL')
+  inherits(rs3, 'xfun_raw_string')
+  (length(rs3) == 1)
+  (capture.output(rs3) %==% 'NULL')
 })
 
 assert('raw_string() inherits from character', {
