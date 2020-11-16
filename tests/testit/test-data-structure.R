@@ -56,3 +56,8 @@ assert('raw_string() returns 0-length xfun_raw_string when input is NULL', {
   (length(rs3) == 1)
   (capture.output(rs3) %==% 'NULL')
 })
+
+assert('raw_string() inherits from character', {
+  rs = raw_string(c('a "b"', 'hello\tworld!'))
+  (inherits(rs, 'character'))
+})

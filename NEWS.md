@@ -1,8 +1,80 @@
+# CHANGES IN xfun VERSION 0.20
+
+## BUG FIXES
+
+- `xfun::proc_kill()` failed to work on *nix.
+
+- `xfun::del_empty_dir()` failed to delete empty dirs.
+
+- `xfun::file_string()` preserves emptiness (thanks, @MichaelChirico, #38).
+
+- `xfun::raw_string()` preserves the class(es) of the input now (thanks, @MichaelChirico, #40).
+
+## MINOR CHANGES
+
+- Exported the function `dir_create()`.
+
+# CHANGES IN xfun VERSION 0.19
+
+## NEW FEATURES
+
+- Added functions `bg_process()` to run a command in a background process, and `proc_kill()` to kill a process.
+
+- Added a function `del_empty_dir()` to delete a directory if it is empty.
+
+- Added functions `is_abs_path()` and `is_rel_path()` to check if paths are absolute or relative.
+
+- Added a function `is_sub_path()` to test if a path is under a directory.
+
+- Added a function `is_web_path()` to test if a path is a web path that starts with `http://` or `https://` or `ftp://` or `ftps://`.
+
+- Documented and exported the previously internal functions `dir_exists()` and `file_exists()` (thanks, @cderv, #36).
+
+- Added a function `dir_create()` to create a directory recursively by default when it does not exist.
+
+- Added an argument `fail` to `Rscript_call()` to allow users to customize the error message when an error occurred in calling the function in a new R session.
+
+## MINOR CHANGES
+
+- `file_ext()`, `sans_ext()`, and `with_ext()` no longer use `tools::file_ext()` or `tools::file_path_sans_ext()`, but provide a slightly different implementation. They treat `tar.(gz|bz2|xz)` and `nb.html` as file extensions, and also allow extensions to contain a trailing `~` or `#`.
+
+# CHANGES IN xfun VERSION 0.18
+
+## NEW FEATURES
+
+- Added a function `grep_sub()` to perform replacement with `gsub()` on elements matched from `grep()`.
+
+- Added a function `github_releases()` to obtain the tags from the Github releases of a repo.
+
+- Added a function `bump_version()` to increase the last digit of version numbers by one.
+
+- Moved a function `process_file()` from the **blogdown** package to this package, and documented it.
+
+- Added a function `valid_syntax()` to check if an R code fragment is syntactically valid. This function was moved from the **highr** package.
+
+- Added a function `url_filename()` to extract filenames from URLs. This function is used by `download_file()` to determine the default output filename.
+
+- Added a function `do_once()` to perform a task once in an R session.
+
+- Added a function `proj_root()` to find the root directory of a project. Currently it only supports R package projects and RStudio projects by default.
+
+- Added a function `relative_path()` to calculate the relative path of a path relative to a directory.
+
+- Added a function `from_root()`, which is similar to `here::here()` but returns a relative path instead of an absolute path.
+
+- Added a function `magic_path()` that, given an incomplete input path, tries to find the actual path recursively under subdirectories of a root directory. For example, users may only provide a base filename, and `magic_path()` will look for this file under subdirectories and return the actual path if it is found.
+
+## MINOR CHANGES
+
+- Now `download_file()` tries the download method `winnet` first (previously it was `libcurl`) on Windows (thanks, @cderv, #33).
+
 # CHANGES IN xfun VERSION 0.17
 
 ## NEW FEATURES
 
 - Supports `xfun::pkg_attach(packages, install = "pak")`, i.e., use `pak::pkg_install()` to install a package when it is not installed (thanks, @GitHunter0, #32).
+
+- Added a new function `xfun::split_source()` to split lines of R source code into minimal complete expressions. This function was moved from the **highr** package.
 
 # CHANGES IN xfun VERSION 0.16
 

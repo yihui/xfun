@@ -30,3 +30,22 @@ assert('split_lines() splits a character vector into lines', {
   (split_lines('a\nb\n\n') %==% c('a', 'b', '', ''))
   (split_lines(c('a\nb', '', ' ', 'c')) %==% c('a', 'b', '', ' ', 'c'))
 })
+
+assert('split_source() puts lines of the same expression into a list element', {
+  (split_source('1+1') %==% list('1+1'))
+  (split_source(c('1+1+', '1')) %==% list(c('1+1+', '1')))
+  (split_source(c('1+1+', '1', 'TRUE')) %==% list(c('1+1+', '1'), 'TRUE'))
+})
+
+assert('split_source() should signal an error for incomplete code', {
+  (has_error(split_source('1+1+')))
+  (has_error(split_source(c('1+1', '1+1+'))))
+})
+
+assert('valid_syntax() tells if a code fragment is syntactically valid', {
+  (valid_syntax('1+1'))
+  (!valid_syntax('1+1+'))
+  (valid_syntax('if(TRUE)1'))
+  (!valid_syntax(c('if(T){', 'F')))
+  (valid_syntax(c('if(T){', 'F}')))
+})

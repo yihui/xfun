@@ -4,10 +4,10 @@
 \alias{normalize_path}
 \title{Normalize paths}
 \usage{
-normalize_path(path, winslash = "/", must_work = FALSE)
+normalize_path(x, winslash = "/", must_work = FALSE)
 }
 \arguments{
-\item{path, winslash, must_work}{Arguments passed to
+\item{x, winslash, must_work}{Arguments passed to
 \code{\link{normalizePath}()}.}
 }
 \description{

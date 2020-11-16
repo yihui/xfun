@@ -32,7 +32,7 @@ tojson = function(x) {
     return(if (is.null(names(x))) {
       json_vector(unlist(lapply(x, tojson)), TRUE, quote = FALSE)
     } else {
-      nms = paste0('"', names(x), '"')
+      nms = quote_string(names(x))
       paste0('{\n', paste(nms, unlist(lapply(x, tojson)), sep = ': ', collapse = ',\n'), '\n}')
     })
   }
@@ -45,9 +45,19 @@ tojson = function(x) {
 #' @export
 json_vector = function(x, to_array = FALSE, quote = TRUE) {
   if (quote) {
-    x = gsub('(["\\])', "\\\\\\1", x)
-    x = gsub('[[:space:]]', " ", x)
-    if (length(x)) x = paste0('"', x, '"')
+    x = quote_string(x)
+    x = gsub('\n', '\\\\n', x)
+    x = gsub('\b', '\\\\b', x)
+    x = gsub('\f', '\\\\f', x)
+    x = gsub('\r', '\\\\r', x)
+    x = gsub('\t', '\\\\t', x)
   }
   if (to_array) paste0('[', paste(x, collapse = ', '), ']') else x
+}
+
+# escape \ and " in strings, and quote them
+quote_string = function(x) {
+  x = gsub('(["\\])', "\\\\\\1", x)
+  if (length(x)) x = paste0('"', x, '"')
+  x
 }

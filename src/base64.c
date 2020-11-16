@@ -206,16 +206,11 @@ SEXP base64_dec(SEXP input) {
           rv = 2;
         } else {
           result = PROTECT(NEW_RAW(output_len));
-          if (result) {
-            unsigned char* presult = RAW_POINTER(result);
-            for (R_xlen_t i = 0;i < output_len;i++) {
-              presult[i] = result_content[i];
-            }
-            UNPROTECT(1);
-          } else {
-            rv = 3;
-            result = R_NilValue;
+          unsigned char* presult = RAW_POINTER(result);
+          for (R_xlen_t i = 0;i < output_len;i++) {
+            presult[i] = result_content[i];
           }
+          UNPROTECT(1);
         }
         free(result_content);
       } else {

@@ -79,10 +79,10 @@
 #' @seealso \code{devtools::revdep_check()} is more sophisticated, but currently
 #'   has a few major issues that affect me: (1) It always deletes the
 #'   \file{*.Rcheck} directories
-#'   (\url{https://github.com/hadley/devtools/issues/1395}), which makes it
+#'   (\url{https://github.com/r-lib/devtools/issues/1395}), which makes it
 #'   difficult to know more information about the failures; (2) It does not
 #'   fully install the source package before checking its reverse dependencies
-#'   (\url{https://github.com/hadley/devtools/pull/1397}); (3) I feel it is
+#'   (\url{https://github.com/r-lib/devtools/pull/1397}); (3) I feel it is
 #'   fairly difficult to iterate the check (ignore the successful packages and
 #'   only check the failed packages); by comparison, \code{xfun::rev_check()}
 #'   only requires you to run a short command repeatedly (failed packages are
@@ -442,29 +442,6 @@ cran_check_pages = function() {
   }
 }
 
-# kill a R CMD check process if it has been running for more then 30 minutes
-kill_long_processes = function(etime = 30) {
-  while (TRUE) {
-    if (length(pids <- list_long_processes(etime))) {
-      message('Killing processes: ', paste(pids, collapse = ' '))
-      system2('kill', pids)
-    }
-    Sys.sleep(30)
-  }
-}
-
-list_long_processes = function(etime = 15) {
-  x = system('ps -ax -o pid,etime,command | grep "Rcmd check --no-manual"', intern = TRUE)
-  x = grep('_[0-9.-]+[.]tar[.]gz$', trimws(x), value = TRUE)
-  pids = unlist(lapply(strsplit(x, '\\s+'), function(z) {
-    pid = z[1]; time = as.numeric(unlist(strsplit(z[2], '-|:')))
-    time = sum(tail(c(rep(0, 4), time), 4) * c(24 * 3600, 3600, 60, 1))
-    name = gsub('.*/', '', tail(z, 1))
-    if (time > etime * 60) setNames(pid, name)
-  }))
-  pids
-}
-
 # parse the check log for missing LaTeX packages and install them
 install_missing_latex = function() {
   dirs = list.files('.', '[.]Rcheck$')
@@ -506,4 +483,35 @@ cran_updatable = function(days = 90, maintainer = 'Yihui Xie') {
     sum(d > Sys.Date() - 180) < 6 && d[1] < Sys.Date() - days
   }))
   names(which(flag))
+}
+
+
+#' Some utility functions for checking packages
+#'
+#' Miscellaneous utility functions to obtain information about the package
+#' checking environment.
+#' @export
+#' @keywords internal
+is_R_CMD_check = function() {
+  !is.na(check_package_name())
+}
+
+#' @rdname is_R_CMD_check
+#' @export
+is_CRAN_incoming = function() {
+  isTRUE(as.logical(Sys.getenv('_R_CHECK_CRAN_INCOMING_REMOTE_')))
+}
+
+#' @rdname is_R_CMD_check
+#' @export
+check_package_name = function() {
+  Sys.getenv('_R_CHECK_PACKAGE_NAME_', NA)
+}
+
+# is R CMD check running on a package that has a version lower or equal to `version`?
+#' @rdname is_R_CMD_check
+#' @export
+check_old_package = function(name, version) {
+  if (is.na(pkg <- check_package_name()) || pkg != name) return(FALSE)
+  tryCatch(packageVersion(name) <= version, error = function(e) FALSE)
 }

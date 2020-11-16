@@ -119,6 +119,67 @@ split_lines = function(x) {
   unlist(strsplit(x, '\n'))
 }
 
+#' Split source lines into complete expressions
+#'
+#' Parse the lines of code one by one to find complete expressions in the code,
+#' and put them in a list.
+#' @param x A character vector of R source code.
+#' @return A list of character vectors, and each vector contains a complete R
+#'   expression.
+#' @export
+#' @examples xfun::split_source(c('if (TRUE) {', '1 + 1', '}', 'print(1:5)'))
+split_source = function(x) {
+  if ((n <- length(x)) < 1) return(list(x))
+  i = i1 = i2 = 1
+  res = list()
+  while (i2 <= n) {
+    piece = x[i1:i2]
+    if (valid_syntax(piece)) {
+      res[[i]] = piece; i = i + 1
+      i1 = i2 + 1 # start from the next line
+    }
+    i2 = i2 + 1
+  }
+  if (i1 <= n) parse(text = piece)  # must be an error there
+  res
+}
+
+#' Check if the syntax of the code is valid
+#'
+#' Try to \code{\link{parse}()} the code and see if an error occurs.
+#' @param code A character vector of R source code.
+#' @param silent Whether to suppress the error message when the code is not
+#'   valid.
+#' @return \code{TRUE} if the code could be parsed, otherwise \code{FALSE}.
+#' @export
+#' @examples xfun::valid_syntax('1+1')
+#' xfun::valid_syntax('1+')
+#' xfun::valid_syntax(c('if(T){1+1}', 'else {2+2}'), silent = FALSE)
+valid_syntax = function(code, silent = TRUE) {
+  !inherits(try(parse_only(code), silent = silent), 'try-error')
+}
+
+#' Bump version numbers
+#'
+#' Increase the last digit of version numbers, e.g., from \code{0.1} to
+#' \code{0.2}, or \code{7.23.9} to \code{7.23.10}.
+#' @param x A vector of version numbers (of the class \code{"numeric_version"}),
+#'   or values that can be coerced to version numbers via
+#'   \code{as.numeric_version()}.
+#' @return A vector of new version numbers.
+#' @export
+#' @examples xfun::bump_version(c('0.1', '91.2.14'))
+bump_version = function(x) {
+  x = as.numeric_version(x)
+  for (i in seq_along(x)) {
+    v = x[i]
+    n = length(unclass(v)[[1]])
+    v[[1, n]] = v[[1, n]] + 1  # bump the last digit
+    x[i] = v
+  }
+  x
+}
+
 #' Fix pairs of characters in a file
 #'
 #' For example, the curly braces may be wrong (the opening and closing braces

@@ -15,7 +15,8 @@ with_ext(x, ext)
 \arguments{
 \item{x}{A character of file paths.}
 
-\item{ext}{A vector of new extensions.}
+\item{ext}{A vector of new extensions. It must be either of length 1, or the
+same length as \code{x}.}
 }
 \value{
 A character vector of the same length as \code{x}.
@@ -25,15 +26,19 @@ Functions to obtain (\code{file_ext()}), remove (\code{sans_ext()}), and
 change (\code{with_ext()}) extensions in filenames.
 }
 \details{
-\code{file_ext()} is a wrapper of \code{tools::\link{file_ext}()}.
-\code{sans_ext()} is a wrapper of \code{tools::\link{file_path_sans_ext}()}.
+\code{file_ext()} is similar to \code{tools::\link{file_ext}()}, and
+\code{sans_ext()} is similar to \code{tools::\link{file_path_sans_ext}()}.
+The main differences are that they treat \code{tar.(gz|bz2|xz)} and
+\code{nb.html} as extensions (but functions in the \pkg{tools} package
+doesn't allow double extensions by default), and allow characters \code{~}
+and \code{#} to be present at the end of a filename.
 }
 \examples{
 library(xfun)
-p = c("abc.doc", "def123.tex", "path/to/foo.Rmd")
+p = c("abc.doc", "def123.tex", "path/to/foo.Rmd", "backup.ppt~", "pkg.tar.xz")
 file_ext(p)
 sans_ext(p)
 with_ext(p, ".txt")
-with_ext(p, c(".ppt", ".sty", ".Rnw"))
+with_ext(p, c(".ppt", ".sty", ".Rnw", "doc", "zip"))
 with_ext(p, "html")
 }
