@@ -41,20 +41,15 @@ assert('raw_string() prints as expected', {
 
 assert('raw_string() returns 0-length xfun_raw_string when input is NULL', {
   rs1 = raw_string(NULL)
-  inherits(rs1, 'xfun_raw_string')
+  (inherits(rs1, 'xfun_raw_string'))
   (length(rs1) == 0)
   (capture.output(rs1) %==% character(0))
 
-  rs2 = raw_string(c(NULL,NULL,NULL))
-  inherits(rs2, 'xfun_raw_string')
-  (length(rs2) == 0)
-  (capture.output(rs2) %==% character(0))
-
   # string 'NULL' is treated appropriately
-  rs3 = raw_string('NULL')
-  inherits(rs3, 'xfun_raw_string')
-  (length(rs3) == 1)
-  (capture.output(rs3) %==% 'NULL')
+  rs2 = raw_string('NULL')
+  (inherits(rs2, 'xfun_raw_string'))
+  (length(rs2) == 1)
+  (capture.output(rs2) %==% 'NULL')
 })
 
 assert('raw_string() inherits from character', {
