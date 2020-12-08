@@ -470,8 +470,8 @@ del_empty_dir = function(dir) {
 #' @examples
 #' mark_dirs(list.files(find.package("xfun"), full.names = TRUE))
 #' @export
-mark_dirs = function(files) {
-  i = dir_exists(files) & !grepl("/$", files)
-  files[i] = paste0(files[i], "/")
-  files
+mark_dirs = function(x) {
+  i = dir_exists(x) & !grepl("/$", x)
+  x[i] = paste0(x[i], "/")
+  x
 }
