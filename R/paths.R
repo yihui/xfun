@@ -453,3 +453,22 @@ del_empty_dir = function(dir) {
   files = list.files(dir, all.files = TRUE, no.. = TRUE)
   if (length(files) == 0) unlink(dir, recursive = TRUE)
 }
+
+#' Mark some paths as directories
+#'
+#' Add a trailing backlash to a file path if this is a directory. This is useful
+#' in messages to the console for example to quickly identify directories from
+#' files.
+#'
+#' If \code{files} is a vector of relative paths, directory test is done with
+#' path relative to the current working dir. Use \code{xfun::\link{in_dir}()} or
+#' use absolute path.
+#'
+#' @param files Character vector of paths to files and directories.
+#' @examples
+#' mark_dirs(list.files(find.package("xfun")))
+mark_dirs = function(files) {
+  i = dir_exists(files) & !grepl("/$", files)
+  files[i] = paste0(files[i], "/")
+  files
+}
