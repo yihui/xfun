@@ -57,3 +57,13 @@ assert('del_empty_dir() correctly deletes empty dirs', {
   unlink(temp_dir, recursive = TRUE)
 })
 
+assert('mark_dirs add trailing / when necessary', {
+  local({
+    dir.create(tmp_dir <- tempfile())
+    tmp_dir_slash = paste0(tmp_dir, "/")
+    file.create(tmp_file <- tempfile(tmpdir = tmp_dir))
+    (mark_dirs(c(tmp_dir, tmp_file)) %==% c(tmp_dir_slash, tmp_file))
+    (mark_dirs(c(tmp_dir_slash, tmp_file)) %==% c(tmp_dir_slash, tmp_file))
+    unlink(tmp_dir, recursive = TRUE)
+  })
+})

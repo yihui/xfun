@@ -1,5 +1,9 @@
 # CHANGES IN xfun VERSION 0.20
 
+## NEW FEATURES
+
+- Added a function `mark_dirs()` to mark directories with a trailing slash in a vector of paths to differentiate them from normal filenames (#44).
+
 ## BUG FIXES
 
 - `xfun::proc_kill()` failed to work on *nix.
