@@ -4,7 +4,7 @@
 \alias{mark_dirs}
 \title{Mark some paths as directories}
 \usage{
-mark_dirs(files, dir)
+mark_dirs(files)
 }
 \arguments{
 \item{files}{Character vector of paths to files and directories.}
@@ -23,7 +23,5 @@ path relative to the current working dir. Use \code{xfun::\link{in_dir}()} or
 use absolute path.
 }
 \examples{
-xfun_dir = find.package("xfun")
-mark_dirs(list.files(xfun_dir), xfun_dir)
-mark_dirs(list.files(xfun_dir, full.names = TRUE))
+mark_dirs(list.files(find.package("xfun"), full.names = TRUE))
 }
