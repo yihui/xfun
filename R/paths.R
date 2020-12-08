@@ -468,14 +468,9 @@ del_empty_dir = function(dir) {
 #' @param dir directory from which \code{files} is relative to. Default to
 #'   current working directory.
 #' @examples
-#' xfun_dir = find.package("xfun")
-#' mark_dirs(list.files(xfun_dir), xfun_dir)
-#' mark_dirs(list.files(xfun_dir, full.names = TRUE))
+#' mark_dirs(list.files(find.package("xfun"), full.names = TRUE))
 #' @export
-mark_dirs = function(files, dir) {
-  if (!missing(dir)) {
-    owd = setwd(dir); on.exit(setwd(owd))
-  }
+mark_dirs = function(files) {
   i = dir_exists(files) & !grepl("/$", files)
   files[i] = paste0(files[i], "/")
   files
