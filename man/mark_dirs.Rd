@@ -4,13 +4,10 @@
 \alias{mark_dirs}
 \title{Mark some paths as directories}
 \usage{
-mark_dirs(files)
+mark_dirs(x)
 }
 \arguments{
-\item{files}{Character vector of paths to files and directories.}
-
-\item{dir}{directory from which \code{files} is relative to. Default to
-current working directory.}
+\item{x}{Character vector of paths to files and directories.}
 }
 \description{
 Add a trailing backlash to a file path if this is a directory. This is useful
@@ -18,9 +15,9 @@ in messages to the console for example to quickly identify directories from
 files.
 }
 \details{
-If \code{files} is a vector of relative paths, directory test is done with
+If \code{x} is a vector of relative paths, directory test is done with
 path relative to the current working dir. Use \code{xfun::\link{in_dir}()} or
-use absolute path.
+use absolute paths.
 }
 \examples{
 mark_dirs(list.files(find.package("xfun"), full.names = TRUE))

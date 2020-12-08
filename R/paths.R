@@ -460,13 +460,11 @@ del_empty_dir = function(dir) {
 #' in messages to the console for example to quickly identify directories from
 #' files.
 #'
-#' If \code{files} is a vector of relative paths, directory test is done with
+#' If \code{x} is a vector of relative paths, directory test is done with
 #' path relative to the current working dir. Use \code{xfun::\link{in_dir}()} or
-#' use absolute path.
+#' use absolute paths.
 #'
-#' @param files Character vector of paths to files and directories.
-#' @param dir directory from which \code{files} is relative to. Default to
-#'   current working directory.
+#' @param x Character vector of paths to files and directories.
 #' @examples
 #' mark_dirs(list.files(find.package("xfun"), full.names = TRUE))
 #' @export
