@@ -471,6 +471,7 @@ del_empty_dir = function(dir) {
 #' xfun_dir = find.package("xfun")
 #' mark_dirs(list.files(xfun_dir), xfun_dir)
 #' mark_dirs(list.files(xfun_dir, full.names = TRUE))
+#' @export
 mark_dirs = function(files, dir) {
   if (!missing(dir)) {
     owd = setwd(dir); on.exit(setwd(owd))
