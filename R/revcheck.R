@@ -515,3 +515,10 @@ check_old_package = function(name, version) {
   if (is.na(pkg <- check_package_name()) || pkg != name) return(FALSE)
   tryCatch(packageVersion(name) <= version, error = function(e) FALSE)
 }
+
+# return package maintainers (with email addresses)
+pkg_maintainers = function(pkgs) {
+  info = tools::CRAN_package_db()
+  info = info[match(pkgs, info$Package), c('Package', 'Maintainer')]
+  setNames(info$Maintainer, info$Package)
+}
