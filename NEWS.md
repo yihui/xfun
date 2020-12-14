@@ -2,6 +2,8 @@
 
 ## NEW FEATURES
 
+- Added a function `msg_cat()` to generate a message with `cat()`. See the help page `?xfun::msg_cat` for more information.
+
 - Added a function `mark_dirs()` to mark directories with a trailing slash in a vector of paths to differentiate them from normal filenames (#44).
 
 ## BUG FIXES
