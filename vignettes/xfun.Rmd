@@ -24,7 +24,7 @@ This page shows examples of a subset of functions in this package. For a full li
 
 ## No more partial matching for lists!
 
-I have been bitten many times by partial matching in lists, e.g., when I want `x$a` but the element `a` does not exist in the list `x`, it returns the value `x$abc` if `abc` exists in `x`. This is [very annoying to me](https://twitter.com/xieyihui/status/782462926862954496), which is why I created strict lists. A strict list is a list for which the partial matching of the `$` operator is disabled. The functions `xfun::strict_list()` and `xfun::as_strict_list()` are the equivalents to `base::list()` and `base::as.list()` respectively which always return as strict list, e.g.,
+I have been bitten many times by partial matching in lists, e.g., when I want `x$a` but the element `a` does not exist in the list `x`, it returns the value `x$abc` if `abc` exists in `x`. A strict list is a list for which the partial matching of the `$` operator is disabled. The functions `xfun::strict_list()` and `xfun::as_strict_list()` are the equivalents to `base::list()` and `base::as.list()` respectively which always return as strict list, e.g.,
 
 ```{r}
 library(xfun)
