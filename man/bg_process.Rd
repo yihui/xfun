@@ -4,12 +4,21 @@
 \alias{bg_process}
 \title{Start a background process}
 \usage{
-bg_process(command, args = character())
+bg_process(
+  command,
+  args = character(),
+  verbose = getOption("xfun.bg_process.verbose", FALSE)
+)
 }
 \arguments{
 \item{command, args}{The system command and its arguments. They do not need to
 be quoted, since they will be quoted via \code{\link{shQuote}()}
 internally.}
+
+\item{verbose}{If \code{FALSE}, suppress the output from \verb{stdout} (and
+also \verb{stderr} on Windows). The default value of this argument can be
+set via a global option, e.g., \code{options(xfun.bg_process.verbose =
+TRUE)}.}
 }
 \value{
 The process ID as a character string.
@@ -18,11 +27,6 @@ The process ID as a character string.
 Start a background process using the PowerShell cmdlet \command{Start-Process
 -PassThru} on Windows or the ampersand \command{&} on Unix, and return the
 process ID.
-}
-\details{
-If you need to see the output from \verb{stdout} and \verb{stderr}, you may
-set \code{options(xfun.bg_process.verbose = TRUE)} before starting the
-process. By default, these outputs are hidden.
 }
 \note{
 On Windows, if PowerShell is not available, try to use

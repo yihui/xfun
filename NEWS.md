@@ -1,5 +1,8 @@
 # CHANGES IN xfun VERSION 0.21
 
+## NEW FEATURES
+
+- Added an argument `verbose` to `bg_process()`.
 
 # CHANGES IN xfun VERSION 0.20
 
