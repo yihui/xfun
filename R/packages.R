@@ -130,7 +130,7 @@ install_dir = function(src, build = TRUE, build_opts = NULL, install_opts = NULL
 }
 
 install_brew_deps = function(pkg = .packages(TRUE)) {
-  con = url('https://macos.rbind.org/bin/macosx/sysreqsdb.rds')
+  con = url('https://macos.rbind.io/bin/macosx/sysreqsdb.rds')
   on.exit(close(con), add = TRUE)
   inst = installed.packages()
   pkg = intersect(pkg, pkg_needs_compilation(inst))
