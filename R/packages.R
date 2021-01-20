@@ -28,6 +28,11 @@
 #'   messages are provided in a package).
 #' @return \code{pkg_attach()} returns \code{NULL} invisibly. \code{pkg_load()}
 #'   returns a logical vector, indicating whether the packages can be loaded.
+#' @seealso \code{pkg_attach2()} is similar to \code{pacman::p_load()}, but does
+#'   not allow non-standard evaluation (NSE) of the \code{...} argument, i.e.,
+#'   you must pass a real character vector of package names to it, and all names
+#'   must be quoted. Allowing NSE adds too much complexity with too little gain
+#'   (the only gain is that it saves your effort in typing two quotes).
 #' @import utils
 #' @export
 #' @examples library(xfun)

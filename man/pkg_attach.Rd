@@ -85,3 +85,10 @@ pkg_attach("stats", "graphics")
 
 (pkg_load("stats", "graphics"))
 }
+\seealso{
+\code{pkg_attach2()} is similar to \code{pacman::p_load()}, but does
+  not allow non-standard evaluation (NSE) of the \code{...} argument, i.e.,
+  you must pass a real character vector of package names to it, and all names
+  must be quoted. Allowing NSE adds too much complexity with too little gain
+  (the only gain is that it saves your effort in typing two quotes).
+}
