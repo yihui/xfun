@@ -2,6 +2,8 @@
 
 ## NEW FEATURES
 
+- Added a new function `pkg_available()` to test if a package with a minimal version is available (thanks, @cderv, #45).
+
 - Added an argument `verbose` to `bg_process()`.
 
 # CHANGES IN xfun VERSION 0.20

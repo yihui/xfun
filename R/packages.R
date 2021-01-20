@@ -8,7 +8,8 @@
 #' The functions \code{pkg_attach2()} and \code{pkg_load2()} are wrappers of
 #' \code{pkg_attach(install = TRUE)} and \code{pkg_load(install = TRUE)},
 #' respectively. \code{loadable()} is an abbreviation of
-#' \code{requireNamespace(quietly = TRUE)}.
+#' \code{requireNamespace(quietly = TRUE)}. \code{pkg_available()} tests if a
+#' package with a minimal version is available.
 #'
 #' These are convenience functions that aim to solve these common problems: (1)
 #' We often need to attach or load multiple packages, and it is tedious to type
@@ -81,6 +82,14 @@ loadable = function(pkg, strict = TRUE, new_session = FALSE) {
       suppressPackageStartupMessages(requireNamespace(pkg, quietly = TRUE))
     } else pkg %in% .packages(TRUE)
   }
+}
+
+#' @param version A minimal version number. If \code{NULL}, only test if a
+#'   package is available and do not check its version.
+#' @rdname pkg_attach
+#' @export
+pkg_available = function(pkg, version = NULL) {
+  (res <- loadable(pkg)) && (is.null(version) || packageVersion(pkg) >= version)
 }
 
 #' @rdname pkg_attach
