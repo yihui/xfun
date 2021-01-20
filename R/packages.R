@@ -94,7 +94,7 @@ loadable = function(pkg, strict = TRUE, new_session = FALSE) {
 #' @rdname pkg_attach
 #' @export
 pkg_available = function(pkg, version = NULL) {
-  (res <- loadable(pkg)) && (is.null(version) || packageVersion(pkg) >= version)
+  loadable(pkg) && (is.null(version) || packageVersion(pkg) >= version)
 }
 
 #' @rdname pkg_attach
