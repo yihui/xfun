@@ -61,7 +61,14 @@ file_string = function(file) {
   raw_string(x)
 }
 
-# read all records of a binary file as a raw vector by default
+#' Read all records of a binary file as a raw vector by default
+#'
+#' This is a wrapper function of \code{\link{readBin}()} with default arguments
+#' \code{what = "raw"} and \code{n = \link{file.size}(file)}, which means it
+#' will read the full content of a binary file as a raw vector by default.
+#' @param file,what,n,... Arguments to be passed to \code{readBin()}.
+#' @return A vector returned from \code{readBin()}.
+#' @export
 read_bin = function(file, what = 'raw', n = file.info(file)$size, ...) {
   readBin(file, what, n, ...)
 }

@@ -8,6 +8,8 @@
 
 - Added a new function `exit_call()` to call a function when a parent function exits.
 
+- Exported the internal function `read_bin()`.
+
 - Added an argument `verbose` to `bg_process()`.
 
 # CHANGES IN xfun VERSION 0.20
