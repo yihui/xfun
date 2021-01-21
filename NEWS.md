@@ -6,6 +6,8 @@
 
 - Added a new function `set_envvar()` to set environment variables and return their old values, so they could be restored later.
 
+- Added a new function `exit_call()` to call a function when a parent function exits.
+
 - Added an argument `verbose` to `bg_process()`.
 
 # CHANGES IN xfun VERSION 0.20
