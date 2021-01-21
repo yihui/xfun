@@ -69,6 +69,11 @@ file_string = function(file) {
 #' @param file,what,n,... Arguments to be passed to \code{readBin()}.
 #' @return A vector returned from \code{readBin()}.
 #' @export
+#' @examples
+#' f = tempfile()
+#' cat('abc', file = f)
+#' xfun::read_bin(f)
+#' unlink(f)
 read_bin = function(file, what = 'raw', n = file.info(file)$size, ...) {
   readBin(file, what, n, ...)
 }
