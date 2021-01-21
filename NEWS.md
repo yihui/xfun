@@ -4,6 +4,8 @@
 
 - Added a new function `pkg_available()` to test if a package with a minimal version is available (thanks, @cderv, #45).
 
+- Added a new function `set_envvar()` to set environment variables and return their old values, so they could be restored later.
+
 - Added an argument `verbose` to `bg_process()`.
 
 # CHANGES IN xfun VERSION 0.20

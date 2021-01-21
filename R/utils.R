@@ -11,6 +11,34 @@
 #' xfun::attr(z, 'foo')  # 2
 attr = function(...) base::attr(..., exact = TRUE)
 
+#' Set environment variables
+#'
+#' Set environment variables from a named character vector, and return the old
+#' values of the variables, so they could be restored later.
+#'
+#' The motivation of this function is that \code{\link{Sys.setenv}()} does not
+#' return the old values of the environment variables, so it is not
+#' straightforward to restore the variables later.
+#' @param vars A named character vector of the form \code{c(VARIABLE = VALUE)}.
+#'   If any value is \code{NA}, this function will try to unset the variable.
+#' @return Old values of the variables (if not set, \code{NA}).
+#' @export
+#' @examples
+#' vars = xfun::set_envvar(c(FOO = '1234'))
+#' Sys.getenv('FOO')
+#' xfun::set_envvar(vars)
+#' Sys.getenv('FOO')
+set_envvar = function(vars) {
+  if (is.null(nms <- names(vars)) || any(nms == '')) stop(
+    "The 'vars' argument must take a named character vector."
+  )
+  vals = Sys.getenv(nms, NA, names = TRUE)
+  i = is.na(vars)
+  suppressWarnings(Sys.unsetenv(nms[i]))
+  if (length(vars <- vars[!i])) do.call(Sys.setenv, as.list(vars))
+  invisible(vals)
+}
+
 #' Set the global option \code{\link{options}(stringsAsFactors = FALSE)} inside
 #' a parent function and restore the option after the parent function exits
 #'
