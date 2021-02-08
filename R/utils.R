@@ -11,6 +11,66 @@
 #' xfun::attr(z, 'foo')  # 2
 attr = function(...) base::attr(..., exact = TRUE)
 
+#' Set environment variables
+#'
+#' Set environment variables from a named character vector, and return the old
+#' values of the variables, so they could be restored later.
+#'
+#' The motivation of this function is that \code{\link{Sys.setenv}()} does not
+#' return the old values of the environment variables, so it is not
+#' straightforward to restore the variables later.
+#' @param vars A named character vector of the form \code{c(VARIABLE = VALUE)}.
+#'   If any value is \code{NA}, this function will try to unset the variable.
+#' @return Old values of the variables (if not set, \code{NA}).
+#' @export
+#' @examples
+#' vars = xfun::set_envvar(c(FOO = '1234'))
+#' Sys.getenv('FOO')
+#' xfun::set_envvar(vars)
+#' Sys.getenv('FOO')
+set_envvar = function(vars) {
+  if (is.null(nms <- names(vars)) || any(nms == '')) stop(
+    "The 'vars' argument must take a named character vector."
+  )
+  vals = Sys.getenv(nms, NA, names = TRUE)
+  i = is.na(vars)
+  suppressWarnings(Sys.unsetenv(nms[i]))
+  if (length(vars <- vars[!i])) do.call(Sys.setenv, as.list(vars))
+  invisible(vals)
+}
+
+#' Call \code{on.exit()} in a parent function
+#'
+#' The function \code{\link{on.exit}()} is often used to perform tasks when the
+#' currennt function exits. This \code{exit_call()} function allows calling a
+#' function when a parent function exits (thinking of it as inserting an
+#' \code{on.exit()} call into the parent function).
+#' @param fun A function to be called when the parent function exits.
+#' @param n The parent frame number. For \code{n = 1}, \code{exit_call(fun)} is
+#'   the same as \code{on.exit(fun())}; \code{n = 2} means adding
+#'   \code{on.exit(fun())} in the parent function; \code{n = 3} means the
+#'   grandparent, etc.
+#' @param ... Other arguments to be passed to \code{on.exit()}.
+#' @references This function was inspired by Kevin Ushey:
+#'   \url{https://yihui.org/en/2017/12/on-exit-parent/}
+#' @export
+#' @examples
+#' f = function(x) {
+#'   print(x)
+#'   xfun::exit_call(function() print('The parent function is exiting!'))
+#' }
+#' g = function(y) {
+#'   f(y)
+#'   print('f() has been called!')
+#' }
+#' g('An argument of g()!')
+exit_call = function(fun, n = 2, ...) {
+  do.call(
+    on.exit, list(substitute(fun(), list(fun = fun)), add = TRUE, ...),
+    envir = parent.frame(n)
+  )
+}
+
 #' Set the global option \code{\link{options}(stringsAsFactors = FALSE)} inside
 #' a parent function and restore the option after the parent function exits
 #'

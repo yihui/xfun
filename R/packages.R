@@ -8,7 +8,8 @@
 #' The functions \code{pkg_attach2()} and \code{pkg_load2()} are wrappers of
 #' \code{pkg_attach(install = TRUE)} and \code{pkg_load(install = TRUE)},
 #' respectively. \code{loadable()} is an abbreviation of
-#' \code{requireNamespace(quietly = TRUE)}.
+#' \code{requireNamespace(quietly = TRUE)}. \code{pkg_available()} tests if a
+#' package with a minimal version is available.
 #'
 #' These are convenience functions that aim to solve these common problems: (1)
 #' We often need to attach or load multiple packages, and it is tedious to type
@@ -27,6 +28,11 @@
 #'   messages are provided in a package).
 #' @return \code{pkg_attach()} returns \code{NULL} invisibly. \code{pkg_load()}
 #'   returns a logical vector, indicating whether the packages can be loaded.
+#' @seealso \code{pkg_attach2()} is similar to \code{pacman::p_load()}, but does
+#'   not allow non-standard evaluation (NSE) of the \code{...} argument, i.e.,
+#'   you must pass a real character vector of package names to it, and all names
+#'   must be quoted. Allowing NSE adds too much complexity with too little gain
+#'   (the only gain is that it saves your effort in typing two quotes).
 #' @import utils
 #' @export
 #' @examples library(xfun)
@@ -83,6 +89,14 @@ loadable = function(pkg, strict = TRUE, new_session = FALSE) {
   }
 }
 
+#' @param version A minimal version number. If \code{NULL}, only test if a
+#'   package is available and do not check its version.
+#' @rdname pkg_attach
+#' @export
+pkg_available = function(pkg, version = NULL) {
+  loadable(pkg) && (is.null(version) || packageVersion(pkg) >= version)
+}
+
 #' @rdname pkg_attach
 #' @export
 pkg_attach2 = function(...) pkg_attach(..., install = TRUE)
@@ -130,7 +144,7 @@ install_dir = function(src, build = TRUE, build_opts = NULL, install_opts = NULL
 }
 
 install_brew_deps = function(pkg = .packages(TRUE)) {
-  con = url('https://macos.rbind.org/bin/macosx/sysreqsdb.rds')
+  con = url('https://macos.rbind.io/bin/macosx/sysreqsdb.rds')
   on.exit(close(con), add = TRUE)
   inst = installed.packages()
   pkg = intersect(pkg, pkg_needs_compilation(inst))
@@ -175,3 +189,12 @@ reinstall_from_cran = function(dry_run = TRUE, skip_github = TRUE) {
 }
 
 base_pkgs = function() rownames(installed.packages(priority = 'base'))
+
+# update one package (from source by default)
+pkg_update_one = function(pkg, type = 'source') {
+  opts = options(repos = c(CRAN = 'https://cran.r-project.org'))
+  on.exit(options(opts), add = TRUE)
+  if (is.null(pkgs <- old.packages(type = type)) || !pkg %in% rownames(pkgs)) return()
+  install.packages(pkg, pkgs[pkg, 'LibPath'], type = type, INSTALL_opts = '--no-staged-install')
+  NULL
+}

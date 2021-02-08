@@ -129,11 +129,11 @@ powershell = function(command) {
 }
 
 # start a background process via the PowerShell cmdlet and return its pid
-ps_process = function(command, args = character()) {
+ps_process = function(command, args = character(), verbose = FALSE) {
   powershell(c(
     'echo (Start-Process', '-FilePath', shQuote(command), '-ArgumentList',
     ps_quote(args), '-PassThru', '-WindowStyle',
-    sprintf('%s).ID', if (bg_process_verbose()) 'Normal' else 'Hidden')
+    sprintf('%s).ID', if (verbose) 'Normal' else 'Hidden')
   ))
 }
 
@@ -151,13 +151,13 @@ ps_quote = function(x) {
 #' Start a background process using the PowerShell cmdlet \command{Start-Process
 #' -PassThru} on Windows or the ampersand \command{&} on Unix, and return the
 #' process ID.
-#'
-#' If you need to see the output from \verb{stdout} and \verb{stderr}, you may
-#' set \code{options(xfun.bg_process.verbose = TRUE)} before starting the
-#' process. By default, these outputs are hidden.
 #' @param command,args The system command and its arguments. They do not need to
 #'   be quoted, since they will be quoted via \code{\link{shQuote}()}
 #'   internally.
+#' @param verbose If \code{FALSE}, suppress the output from \verb{stdout} (and
+#'   also \verb{stderr} on Windows). The default value of this argument can be
+#'   set via a global option, e.g., \code{options(xfun.bg_process.verbose =
+#'   TRUE)}.
 #' @return The process ID as a character string.
 #' @note On Windows, if PowerShell is not available, try to use
 #'   \code{\link{system2}(wait = FALSE)} to start the background process
@@ -170,7 +170,9 @@ ps_quote = function(x) {
 #'   the timeout, it is more likely that the command actually failed.
 #' @export
 #' @seealso \code{\link{proc_kill}()} to kill a process.
-bg_process = function(command, args = character()) {
+bg_process = function(
+  command, args = character(), verbose = getOption('xfun.bg_process.verbose', FALSE)
+) {
   throw_error = function(...) stop(
     'Failed to run the command', ..., ' in the background: ',
     paste(shQuote(c(command, args)), collapse = ' '), call. = FALSE
@@ -188,7 +190,7 @@ bg_process = function(command, args = character()) {
     # first try 'Start-Process -PassThrough' to start a background process; if
     # PowerShell is unavailable, fall back to system2(wait = FALSE), and the
     # method to find out the pid is not 100% reliable
-    if (length(pid <- check_pid(ps_process(command, args))) == 1) return(pid)
+    if (length(pid <- check_pid(ps_process(command, args, verbose))) == 1) return(pid)
 
     message(
       'It seems you do not have PowerShell installed. The process ID may be inaccurate.'
@@ -226,16 +228,12 @@ bg_process = function(command, args = character()) {
   } else {
     pid = tempfile(); on.exit(unlink(pid), add = TRUE)
     code = paste(c(
-      shQuote(c(command, args)),
-      if (!bg_process_verbose()) '> /dev/null',
-      '& echo $! >', shQuote(pid)
+      shQuote(c(command, args)), if (!verbose) '> /dev/null', '& echo $! >', shQuote(pid)
     ), collapse = ' ')
     system2('sh', c('-c', shQuote(code)))
     return(check_pid(readLines(pid)))
   }
 }
-
-bg_process_verbose = function() getOption('xfun.bg_process.verbose', FALSE)
 
 #' Upload to an FTP server via \command{curl}
 #'

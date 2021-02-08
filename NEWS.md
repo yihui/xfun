@@ -1,8 +1,26 @@
+# CHANGES IN xfun VERSION 0.21
+
+## NEW FEATURES
+
+- Added a new function `pkg_available()` to test if a package with a minimal version is available (thanks, @cderv, #45).
+
+- Added a new function `set_envvar()` to set environment variables and return their old values, so they could be restored later.
+
+- Added a new function `exit_call()` to call a function when a parent function exits.
+
+- Exported the internal function `read_bin()`.
+
+- Added an argument `verbose` to `bg_process()`.
+
+- `Rscript_call()` gains a `rscript_options` argument to pass command line options flag to `Rscript` (thanks, @cderv, #48).
+
 # CHANGES IN xfun VERSION 0.20
 
 ## NEW FEATURES
 
-- `Rscript_call()` gains a `rscript_options` argument to pass command line options flag to `Rscript` (thanks, @cderv, #48).
+- Added a function `msg_cat()` to generate a message with `cat()`. See the help page `?xfun::msg_cat` for more information.
+
+- Added a function `mark_dirs()` to mark directories with a trailing slash in a vector of paths to differentiate them from normal filenames (#44).
 
 ## BUG FIXES
 

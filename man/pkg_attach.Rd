@@ -4,6 +4,7 @@
 \alias{pkg_attach}
 \alias{pkg_load}
 \alias{loadable}
+\alias{pkg_available}
 \alias{pkg_attach2}
 \alias{pkg_load2}
 \title{Attach or load packages, and automatically install missing packages if
@@ -18,6 +19,8 @@ pkg_attach(
 pkg_load(..., error = TRUE, install = FALSE)
 
 loadable(pkg, strict = TRUE, new_session = FALSE)
+
+pkg_available(pkg, version = NULL)
 
 pkg_attach2(...)
 
@@ -50,6 +53,9 @@ clean).}
 
 \item{new_session}{Whether to test if a package is loadable in a new R
 session. Note that \code{new_session = TRUE} implies \code{strict = TRUE}.}
+
+\item{version}{A minimal version number. If \code{NULL}, only test if a
+package is available and do not check its version.}
 }
 \value{
 \code{pkg_attach()} returns \code{NULL} invisibly. \code{pkg_load()}
@@ -63,7 +69,8 @@ call. \code{pkg_load()} is a vectorized version of
 The functions \code{pkg_attach2()} and \code{pkg_load2()} are wrappers of
 \code{pkg_attach(install = TRUE)} and \code{pkg_load(install = TRUE)},
 respectively. \code{loadable()} is an abbreviation of
-\code{requireNamespace(quietly = TRUE)}.
+\code{requireNamespace(quietly = TRUE)}. \code{pkg_available()} tests if a
+package with a minimal version is available.
 }
 \details{
 These are convenience functions that aim to solve these common problems: (1)
@@ -77,4 +84,11 @@ pkg_attach("stats", "graphics")
 # pkg_attach2('servr') # automatically install servr if it is not installed
 
 (pkg_load("stats", "graphics"))
+}
+\seealso{
+\code{pkg_attach2()} is similar to \code{pacman::p_load()}, but does
+  not allow non-standard evaluation (NSE) of the \code{...} argument, i.e.,
+  you must pass a real character vector of package names to it, and all names
+  must be quoted. Allowing NSE adds too much complexity with too little gain
+  (the only gain is that it saves your effort in typing two quotes).
 }
