@@ -38,7 +38,10 @@ Rcmd = function(args, ...) {
 #' @param fun A function, or a character string that can be parsed and evaluated
 #'   to a function.
 #' @param args A list of argument values.
-#' @param ...,wait Arguments to be passed to \code{\link{system2}()}.
+#' @param rscript_options A character vector of options to passed to
+#'   \code{utils::\link[utils]{Rscript}}.
+#' @param ...,wait Arguments to be passed to \code{\link{system2}()}. For
+#'   \code{args}, use \code{rscript_args}.
 #' @param fail The desired error message when an error occurred in calling the
 #'   function.
 #' @export
@@ -49,17 +52,18 @@ Rcmd = function(args, ...) {
 #'
 #' # the first argument can be either a character string or a function
 #' xfun::Rscript_call(factorial, list(10))
+#'
+#' # Run Rscript starting a vanilla R session
+#' xfun::Rscript_call(factorial, list(10), rscript_options = c("--vanilla"))
 Rscript_call = function(
-  fun, args = list(), ..., wait = TRUE,
+  fun, args = list(), rscript_options = character(), ..., wait = TRUE,
   fail = sprintf("Failed to run '%s' in a new R session.", deparse(substitute(fun))[1])
 ) {
   f = replicate(2, tempfile(fileext = '.rds'))
   on.exit(unlink(if (wait) f else f[2]), add = TRUE)
   saveRDS(list(fun, args), f[1])
-  Rscript(
-    shQuote(c(pkg_file('scripts', 'call-fun.R'), f)),
-    ..., wait = wait
-  )
+  args <- c(rscript_options, shQuote(c(pkg_file('scripts', 'call-fun.R'), f)))
+  Rscript(args,..., wait = wait)
   if (wait) if (file.exists(f[2])) readRDS(f[2]) else stop(fail, call. = FALSE)
 }
 
