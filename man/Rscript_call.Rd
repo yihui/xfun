@@ -7,7 +7,7 @@
 Rscript_call(
   fun,
   args = list(),
-  options = character(),
+  options = NULL,
   ...,
   wait = TRUE,
   fail = sprintf("Failed to run '\%s' in a new R session.",
@@ -21,10 +21,9 @@ to a function.}
 \item{args}{A list of argument values.}
 
 \item{options}{A character vector of options to passed to
-\code{utils::\link[utils]{Rscript}}.}
+\code{\link{Rscript}}, e.g., \code{"--vanilla"}.}
 
-\item{..., wait}{Arguments to be passed to \code{\link{system2}()}. For
-\code{args}, use \code{rscript_args}.}
+\item{..., wait}{Arguments to be passed to \code{\link{system2}()}.}
 
 \item{fail}{The desired error message when an error occurred in calling the
 function.}
