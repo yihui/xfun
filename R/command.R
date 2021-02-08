@@ -38,10 +38,9 @@ Rcmd = function(args, ...) {
 #' @param fun A function, or a character string that can be parsed and evaluated
 #'   to a function.
 #' @param args A list of argument values.
-#' @param rscript_options A character vector of options to passed to
-#'   \code{utils::\link[utils]{Rscript}}.
-#' @param ...,wait Arguments to be passed to \code{\link{system2}()}. For
-#'   \code{args}, use \code{rscript_args}.
+#' @param options A character vector of options to passed to
+#'   \code{\link{Rscript}}, e.g., \code{"--vanilla"}.
+#' @param ...,wait Arguments to be passed to \code{\link{system2}()}.
 #' @param fail The desired error message when an error occurred in calling the
 #'   function.
 #' @export
@@ -54,21 +53,23 @@ Rcmd = function(args, ...) {
 #' xfun::Rscript_call(factorial, list(10))
 #'
 #' # Run Rscript starting a vanilla R session
-#' xfun::Rscript_call(factorial, list(10), rscript_options = c("--vanilla"))
+#' xfun::Rscript_call(factorial, list(10), options = c("--vanilla"))
 Rscript_call = function(
-  fun, args = list(), rscript_options = character(), ..., wait = TRUE,
+  fun, args = list(), options = NULL, ..., wait = TRUE,
   fail = sprintf("Failed to run '%s' in a new R session.", deparse(substitute(fun))[1])
 ) {
   f = replicate(2, tempfile(fileext = '.rds'))
   on.exit(unlink(if (wait) f else f[2]), add = TRUE)
   saveRDS(list(fun, args), f[1])
-  args <- c(rscript_options, shQuote(c(pkg_file('scripts', 'call-fun.R'), f)))
-  Rscript(args,..., wait = wait)
+  Rscript(
+    c(options, shQuote(c(pkg_file('scripts', 'call-fun.R'), f)))
+    ,..., wait = wait
+  )
   if (wait) if (file.exists(f[2])) readRDS(f[2]) else stop(fail, call. = FALSE)
 }
 
 # call a function in a background process
-Rscript_bg = function(fun, args = list(), rscript_options = character(), timeout = 10) {
+Rscript_bg = function(fun, args = list(), timeout = 10) {
   pid = tempfile()  # to store the process ID of the new R session
   saveRDS(NULL, pid)
 
@@ -77,7 +78,7 @@ Rscript_bg = function(fun, args = list(), rscript_options = character(), timeout
     # remove this pid file when the function finishes
     on.exit(unlink(pid), add = TRUE)
     do.call(fun, args)
-  }, rscript_options = rscript_options, wait = FALSE)
+  }, wait = FALSE)
 
   id = NULL  # read the above process ID into this R session
   res = list(pid = id, is_alive = function() FALSE)

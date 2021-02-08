@@ -7,7 +7,7 @@
 Rscript_call(
   fun,
   args = list(),
-  rscript_options = character(),
+  options = character(),
   ...,
   wait = TRUE,
   fail = sprintf("Failed to run '\%s' in a new R session.",
@@ -20,7 +20,7 @@ to a function.}
 
 \item{args}{A list of argument values.}
 
-\item{rscript_options}{A character vector of options to passed to
+\item{options}{A character vector of options to passed to
 \code{utils::\link[utils]{Rscript}}.}
 
 \item{..., wait}{Arguments to be passed to \code{\link{system2}()}. For
@@ -46,5 +46,5 @@ xfun::Rscript_call("factorial", list(10))
 xfun::Rscript_call(factorial, list(10))
 
 # Run Rscript starting a vanilla R session
-xfun::Rscript_call(factorial, list(10), rscript_options = c("--vanilla"))
+xfun::Rscript_call(factorial, list(10), options = c("--vanilla"))
 }
