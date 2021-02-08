@@ -17,3 +17,9 @@ This is a wrapper function of \code{\link{readBin}()} with default arguments
 \code{what = "raw"} and \code{n = \link{file.size}(file)}, which means it
 will read the full content of a binary file as a raw vector by default.
 }
+\examples{
+f = tempfile()
+cat("abc", file = f)
+xfun::read_bin(f)
+unlink(f)
+}
