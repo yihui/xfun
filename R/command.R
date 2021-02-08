@@ -21,6 +21,10 @@ optipng = function(dir = '.') {
 #' Rscript(c('-e', '1+1'))
 #' Rcmd(c('build', '--help'))
 Rscript = function(args, ...) {
+  # unset R_TESTS for the new R session: https://stackoverflow.com/a/27994299
+  if (is_R_CMD_check()) {
+    v = set_envvar(c(R_TESTS = NA)); on.exit(set_envvar(v), add = TRUE)
+  }
   system2(file.path(R.home('bin'), 'Rscript'), args, ...)
 }
 
