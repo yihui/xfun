@@ -68,7 +68,7 @@ Rscript_call = function(
 }
 
 # call a function in a background process
-Rscript_bg = function(fun, args = list(), timeout = 10) {
+Rscript_bg = function(fun, args = list(), rscript_options = character(), timeout = 10) {
   pid = tempfile()  # to store the process ID of the new R session
   saveRDS(NULL, pid)
 
@@ -77,7 +77,7 @@ Rscript_bg = function(fun, args = list(), timeout = 10) {
     # remove this pid file when the function finishes
     on.exit(unlink(pid), add = TRUE)
     do.call(fun, args)
-  }, wait = FALSE)
+  }, rscript_options = rscript_options, wait = FALSE)
 
   id = NULL  # read the above process ID into this R session
   res = list(pid = id, is_alive = function() FALSE)
