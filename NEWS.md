@@ -1,5 +1,9 @@
 # CHANGES IN xfun VERSION 0.20
 
+## NEW FEATURES
+
+- `Rscript_call()` gains a `rscript_options` argument to pass command line options flag to `Rscript` (thanks, @cderv, #48).
+
 ## BUG FIXES
 
 - `xfun::proc_kill()` failed to work on *nix.
