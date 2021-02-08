@@ -12,6 +12,8 @@
 
 - Added an argument `verbose` to `bg_process()`.
 
+- `Rscript_call()` gains an `options` argument to pass command-line options to `Rscript` (thanks, @cderv, #48).
+
 # CHANGES IN xfun VERSION 0.20
 
 ## NEW FEATURES

@@ -21,6 +21,10 @@ optipng = function(dir = '.') {
 #' Rscript(c('-e', '1+1'))
 #' Rcmd(c('build', '--help'))
 Rscript = function(args, ...) {
+  # unset R_TESTS for the new R session: https://stackoverflow.com/a/27994299
+  if (is_R_CMD_check()) {
+    v = set_envvar(c(R_TESTS = NA)); on.exit(set_envvar(v), add = TRUE)
+  }
   system2(file.path(R.home('bin'), 'Rscript'), args, ...)
 }
 
@@ -38,6 +42,8 @@ Rcmd = function(args, ...) {
 #' @param fun A function, or a character string that can be parsed and evaluated
 #'   to a function.
 #' @param args A list of argument values.
+#' @param options A character vector of options to passed to
+#'   \code{\link{Rscript}}, e.g., \code{"--vanilla"}.
 #' @param ...,wait Arguments to be passed to \code{\link{system2}()}.
 #' @param fail The desired error message when an error occurred in calling the
 #'   function.
@@ -49,16 +55,19 @@ Rcmd = function(args, ...) {
 #'
 #' # the first argument can be either a character string or a function
 #' xfun::Rscript_call(factorial, list(10))
+#'
+#' # Run Rscript starting a vanilla R session
+#' xfun::Rscript_call(factorial, list(10), options = c("--vanilla"))
 Rscript_call = function(
-  fun, args = list(), ..., wait = TRUE,
+  fun, args = list(), options = NULL, ..., wait = TRUE,
   fail = sprintf("Failed to run '%s' in a new R session.", deparse(substitute(fun))[1])
 ) {
   f = replicate(2, tempfile(fileext = '.rds'))
   on.exit(unlink(if (wait) f else f[2]), add = TRUE)
   saveRDS(list(fun, args), f[1])
   Rscript(
-    shQuote(c(pkg_file('scripts', 'call-fun.R'), f)),
-    ..., wait = wait
+    c(options, shQuote(c(pkg_file('scripts', 'call-fun.R'), f)))
+    ,..., wait = wait
   )
   if (wait) if (file.exists(f[2])) readRDS(f[2]) else stop(fail, call. = FALSE)
 }
