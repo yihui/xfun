@@ -85,11 +85,11 @@ exit_call = function(fun, n = 2, ...) {
 #' }
 #' str(f())  # the first column should be character
 stringsAsStrings = function() {
+  # TODO: remove this function in the future since stringsAsFactors starts to
+  # default to FALSE since R 4.0.0
+  if (isFALSE(getOption('stringsAsFactors'))) return(invisible())
   opts = options(stringsAsFactors = FALSE)
-  do.call(
-    on.exit, list(substitute(options(x), list(x = opts)), add = TRUE),
-    envir = parent.frame()
-  )
+  exit_call(function() options(opts))
 }
 
 #' @rdname stringsAsStrings
