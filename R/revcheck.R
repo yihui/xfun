@@ -203,7 +203,7 @@ rev_check = function(
       )
       pkg_load2('tinytex')
       if (length(vigs) && any(file.exists(with_ext(vigs, 'log')))) {
-        if (tinytex:::is_tinytex()) for (vig in vigs) in_dir(dirname(vig), {
+        if (is_tinytex()) for (vig in vigs) in_dir(dirname(vig), {
           Rscript(shQuote(c('-e', 'if (grepl("[.]Rnw$", f <- commandArgs(T), ignore.case = T)) knitr::knit2pdf(f) else rmarkdown::render(f)', basename(vig))))
         })
         check_it()
@@ -242,6 +242,9 @@ rev_check = function(
   res = Filter(function(x) !is.null(x), res)
   if (length(res)) res
 }
+
+# TODO: use the exported tinytex::is_tinytex()
+is_tinytex = function() getFromNamespace('is_tinytex', 'tinytex')
 
 # remove the OK lines in the check log
 clean_log = function() {
