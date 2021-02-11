@@ -18,7 +18,7 @@ grandparent, etc.}
 }
 \description{
 The function \code{\link{on.exit}()} is often used to perform tasks when the
-currennt function exits. This \code{exit_call()} function allows calling a
+current function exits. This \code{exit_call()} function allows calling a
 function when a parent function exits (thinking of it as inserting an
 \code{on.exit()} call into the parent function).
 }
