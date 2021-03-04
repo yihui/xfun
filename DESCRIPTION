@@ -18,7 +18,7 @@ Suggests:
     parallel,
     codetools,
     rstudioapi,
-    tinytex,
+    tinytex (>= 0.30),
     mime,
     markdown,
     knitr,
