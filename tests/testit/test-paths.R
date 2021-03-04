@@ -67,3 +67,8 @@ assert('mark_dirs add trailing / when necessary', {
     unlink(tmp_dir, recursive = TRUE)
   })
 })
+
+assert("relative_path() works", {
+  (relative_path(c('foo/bar.txt', 'foo/baz.txt'), 'foo/') %==% c("bar.txt", "baz.txt"))
+  (relative_path('foo/bar.txt', 'foo') %==% "bar.txt")
+})

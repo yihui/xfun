@@ -1,5 +1,8 @@
 # CHANGES IN xfun VERSION 0.22
 
+## NEW FEATURES
+
+- `relative_path()` is vectorized now.
 
 # CHANGES IN xfun VERSION 0.21
 

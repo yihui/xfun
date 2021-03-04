@@ -2,12 +2,12 @@
 % Please edit documentation in R/paths.R
 \name{relative_path}
 \alias{relative_path}
-\title{Get the relative path of a path relative a directory}
+\title{Get the relative path of a path relative to a directory}
 \usage{
 relative_path(x, dir = ".", use.. = TRUE, error = TRUE)
 }
 \arguments{
-\item{x}{The path to be converted to a relative path.}
+\item{x}{A vector of paths to be converted to relative paths.}
 
 \item{dir}{Path to a directory.}
 
@@ -15,12 +15,13 @@ relative_path(x, dir = ".", use.. = TRUE, error = TRUE)
 double-dot indicates the parent directory (starting from the directory
 provided by the \code{dir} argument).}
 
-\item{error}{Whether to signal an error if the path cannot be converted to a
+\item{error}{Whether to signal an error if a path cannot be converted to a
 relative path.}
 }
 \value{
-A relative path if the conversion succeeded; otherwise the original
-  path when \code{error = FALSE}, and an error when \code{error = TRUE}.
+A vector of relative paths if the conversion succeeded; otherwise the
+  original paths when \code{error = FALSE}, and an error when \code{error =
+  TRUE}.
 }
 \description{
 Given a directory, return the relative path that is relative to this

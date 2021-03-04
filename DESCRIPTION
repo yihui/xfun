@@ -8,6 +8,7 @@ Authors@R: c(
   person("Daijiang", "Li", role = "ctb"),
   person("Xianying", "Tan", role = "ctb"),
   person("Salim", "Brüggemann", role = "ctb", email = "salim-b@pm.me", comment = c(ORCID = "0000-0002-5329-5987")),
+  person("Christophe", "Dervieux", role = "ctb"),
   person()
   )
 Description: Miscellaneous functions commonly used in other packages maintained by 'Yihui Xie'.
