@@ -263,7 +263,7 @@ identical_logs = function(dirs) {
 
 # add a new library path to R_LIBS_USER
 tweak_r_libs = function(new) {
-  x = read_first(c('.Renviron', '~/.Renviron'))
+  x = read_all(c('~/.Renviron', '.Renviron'))
   x = grep('^\\s*#', x, invert = TRUE, value = TRUE)
   x = gsub('^\\s+|\\s+$', '', x)
   x = x[x != '']
@@ -278,9 +278,9 @@ tweak_r_libs = function(new) {
   }
 }
 
-# read the first file that exists
-read_first = function(files) {
-  for (f in files) if (file.exists(f)) return(read_utf8(f))
+# read all files that exist
+read_all = function(files) {
+  unlist(lapply(files, function(f) if (file.exists(f)) read_utf8(f)))
 }
 
 # a shorthand of tools::package_dependencies()
