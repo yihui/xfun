@@ -269,9 +269,13 @@ tweak_r_libs = function(new) {
   x = x[x != '']
   i = grep('^R_LIBS_USER=.+', x)
   if (length(i)) {
-    x[i[1]] = sub('(="?)', paste0('\\1', new, .Platform$path.sep), x[i[1]])
+    x[i[1]] = sub('(="?)', paste('\\1', new, sep = .Platform$path.sep), x[i[1]])
     x
-  } else c(paste0('R_LIBS_USER=', new), x)
+  } else {
+    v = Sys.getenv('R_LIBS_USER')
+    v = if (v == '') new else paste(new, v, sep = .Platform$path.sep)
+    c(paste0('R_LIBS_USER=', v), x)
+  }
 }
 
 # read the first file that exists
