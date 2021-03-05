@@ -269,14 +269,17 @@ tweak_r_libs = function(new) {
   x = x[x != '']
   i = grep('^R_LIBS_USER=.+', x)
   if (length(i)) {
-    x[i[1]] = sub('(="?)', paste('\\1', new, sep = .Platform$path.sep), x[i[1]])
+    x[i[1]] = sub('(="?)', path_sep('\\1', new), x[i[1]])
     x
   } else {
     v = Sys.getenv('R_LIBS_USER')
-    v = if (v == '') new else paste(new, v, sep = .Platform$path.sep)
+    v = if (v == '') new else path_sep(new, v)
     c(paste0('R_LIBS_USER=', v), x)
   }
 }
+
+# separate paths by the path separator on a specific platform
+path_sep = function(...) paste(..., sep = .Platform$path.sep)
 
 # read all files that exist
 read_all = function(files) {
