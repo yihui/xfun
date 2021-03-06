@@ -108,6 +108,11 @@ rev_check = function(
 
   db = available.packages(type = 'source')
 
+  # install packages that are not loadable (testing in parallel)
+  p_install = function(pkgs) {
+    pkg_install(unlist(plapply(pkgs, function(p) if (!loadable(p)) p)))
+  }
+
   unlink('*.Rcheck2', recursive = TRUE)
   if (missing(recheck)) {
     dirs = list.files('.', '.+[.]Rcheck$')
@@ -116,7 +121,10 @@ rev_check = function(
       scan('recheck', 'character')
     } else pkgs
   }
-  pkgs = if (length(recheck)) recheck else {
+  pkgs = if (length(recheck)) {
+    p_install(pkg_dep(recheck, db, which = 'all'))
+    recheck
+  } else {
     res = check_deps(pkg, db, which)
     pkgs_up = NULL
     if (update) {
@@ -127,9 +135,7 @@ rev_check = function(
     message('Installing dependencies of reverse dependencies')
     res$install = setdiff(res$install, ignore_deps())
     res$install = setdiff(res$install, pkgs_up)  # don't install pkgs that were just updated
-    print(system.time({
-      pkg_install(unlist(plapply(res$install, function(p) if (!loadable(p)) p)))
-    }))
+    print(system.time(p_install(res$install)))
     res$check
   }
   lib_cran = './library-cran'
