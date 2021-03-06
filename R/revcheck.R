@@ -149,6 +149,9 @@ rev_check = function(
     message('Ignoring packages: ', paste(ignore, collapse = ' '))
     unlink(sprintf('%s.Rcheck', ignore), recursive = TRUE)
     pkgs = setdiff(pkgs, ignore)
+    if ((n <- length(pkgs)) == 0) {
+      message('No packages left to be checked'); return()
+    }
   }
 
   message('Downloading tarballs')
