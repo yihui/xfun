@@ -113,7 +113,8 @@ broken_packages = function(reinstall = TRUE) {
   pkgs = unlist(plapply(.packages(TRUE), function(p) if (!loadable(p)) p))
   if (reinstall) {
     remove.packages(pkgs); pkg_install(pkgs)
-  } else pkgs
+  }
+  pkgs
 }
 
 # remove (binary) packages that were built with a previous major version of R
