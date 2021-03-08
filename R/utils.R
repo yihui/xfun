@@ -147,6 +147,29 @@ parse_only = function(code) {
 #' inherits(z, 'try-error')
 try_silent = function(expr) try(expr, silent = TRUE)
 
+#' Retry calling a function for a number of times
+#'
+#' If the function returns an error, retry it for the specified number of
+#' times, with a pause between attempts.
+#'
+#' One application of this function is to download a web resource. Since the
+#' download might fail sometimes, you may want to retry it for a few more times.
+#' @param fun A function.
+#' @param ... Arguments to be passed to the function.
+#' @param .times The number of times.
+#' @param .pause The number of seconds to wait before the next attempt.
+#' @export
+#' @examples # read the Github releases info of the repo yihui/xfun
+#' if (interactive()) xfun::retry(xfun::github_releases, 'yihui/xfun')
+retry = function(fun, ..., .times = 3, .pause = 5) {
+  for (i in seq_len(.times)) {
+    if (!inherits(res <- tryCatch(fun(...), error = identity), 'error'))
+      return(res)
+    Sys.sleep(.pause)
+  }
+  stop(res$message, call. = FALSE)
+}
+
 gsubi = function(...) gsub(..., ignore.case = TRUE)
 
 #' Turn the output of \code{\link{str}()} into a tree diagram

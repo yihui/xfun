@@ -4,6 +4,8 @@
 
 - `relative_path()` is vectorized now.
 
+- Added a new function `retry()` to retry calling a function for a number of times in case of errors.
+
 # CHANGES IN xfun VERSION 0.21
 
 ## NEW FEATURES
