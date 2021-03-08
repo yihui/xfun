@@ -169,6 +169,21 @@ install_dir = function(src, build = TRUE, build_opts = NULL, install_opts = NULL
   invisible(res)
 }
 
+# query the Homebrew dependencies of an R package
+brew_dep = function(pkg) {
+  u = sprintf('https://sysreqs.r-hub.io/pkg/%s/osx-x86_64-clang', pkg)
+  x = retry(readLines, u, warn = FALSE)
+  x = gsub('^\\s*\\[|\\]\\s*$', '', x)
+  x = unlist(strsplit(gsub('"', '', x), ','))
+  x = setdiff(x, 'null')
+  if (length(x))
+    message('Package ', pkg, ' requires Homebrew packages: ', paste(x, collapse = ' '))
+  x
+}
+brew_deps = function(pkgs) {
+  unlist(lapply(pkgs, brew_dep))
+}
+
 install_brew_deps = function(pkg = .packages(TRUE)) {
   con = url('https://macos.rbind.io/bin/macosx/sysreqsdb.rds')
   on.exit(close(con), add = TRUE)
