@@ -116,6 +116,31 @@ broken_packages = function(reinstall = TRUE) {
   } else pkgs
 }
 
+# remove (binary) packages that were built with a previous major version of R
+check_built = function(dir = '.', dry_run = TRUE) {
+  ext = if (xfun::is_macos()) 'tgz' else if (xfun::is_windows()) 'zip' else 'tar.gz'
+  r =  paste0('_[-.0-9]+[.]', ext, '$')
+  pkgs = list.files(dir, r, full.names = TRUE)
+  meta = file.path(dir, 'PACKAGES')
+  info = if (file.exists(meta)) read.dcf(meta)
+  extract = if (grepl('gz$', ext)) untar else unzip
+  for (f in pkgs) {
+    d = file.path(gsub(r, '', basename(f)), 'DESCRIPTION')
+    extract(f, d)
+    if (is.na(b <- read.dcf(d, 'Built')[1, 1])) next
+    unlink(dirname(d), recursive = TRUE)
+    v = as.numeric_version(gsub('^\\s*R ([^;]+);.*', '\\1', b))
+    if (unclass(v)[[1]][1] < getRversion()$major) {
+      message('The package ', f, ' was built with R ', v)
+      if (!dry_run) {
+        file.remove(f)
+        if (!is.null(info)) info = info[info[, 'Package'] != dirname(d), , drop = FALSE]
+      }
+    }
+  }
+  if (!is.null(info) && !dry_run) write.dcf(info, meta)
+}
+
 #' Install a source package from a directory
 #'
 #' Run \command{R CMD build} to build a tarball from a source directory, and run
