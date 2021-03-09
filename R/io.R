@@ -82,9 +82,14 @@ read_bin = function(file, what = 'raw', n = file.info(file)$size, ...) {
 #'
 #' Read a text file with the UTF-8 encoding, apply a function to the text, and
 #' write back to the original file.
+#'
+#' \code{sort_file()} is an application of \code{process_file()}, with the
+#' processing function being \code{\link{sort}()}, i.e., it sorts the text lines
+#' in a file and write back the sorted text.
 #' @param file Path to a text file.
 #' @param FUN A function to process the text.
 #' @param x The content of the file.
+#' @param ... Arguments to be passed to \code{process_file()}.
 #' @return If \code{file} is provided, invisible \code{NULL} (the file is
 #'   updated as a side effect), otherwise the processed content (as a character
 #'   vector).
@@ -97,6 +102,12 @@ read_bin = function(file, what = 'raw', n = file.info(file)$size, ...) {
 process_file = function(file, FUN = identity, x = read_utf8(file)) {
   x = FUN(x)
   if (missing(file)) x else write_utf8(x, file)
+}
+
+#' @rdname process_file
+#' @export
+sort_file = function(..., FUN = sort) {
+  process_file(FUN = FUN, ...)
 }
 
 #' Search and replace strings in files

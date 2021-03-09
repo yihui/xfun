@@ -2,9 +2,12 @@
 % Please edit documentation in R/io.R
 \name{process_file}
 \alias{process_file}
+\alias{sort_file}
 \title{Read a text file, process the text with a function, and write the text back}
 \usage{
 process_file(file, FUN = identity, x = read_utf8(file))
+
+sort_file(..., FUN = sort)
 }
 \arguments{
 \item{file}{Path to a text file.}
@@ -12,6 +15,8 @@ process_file(file, FUN = identity, x = read_utf8(file))
 \item{FUN}{A function to process the text.}
 
 \item{x}{The content of the file.}
+
+\item{...}{Arguments to be passed to \code{process_file()}.}
 }
 \value{
 If \code{file} is provided, invisible \code{NULL} (the file is
@@ -21,6 +26,11 @@ If \code{file} is provided, invisible \code{NULL} (the file is
 \description{
 Read a text file with the UTF-8 encoding, apply a function to the text, and
 write back to the original file.
+}
+\details{
+\code{sort_file()} is an application of \code{process_file()}, with the
+processing function being \code{\link{sort}()}, i.e., it sorts the text lines
+in a file and write back the sorted text.
 }
 \examples{
 f = tempfile()
