@@ -5,14 +5,14 @@
 \alias{sort_file}
 \title{Read a text file, process the text with a function, and write the text back}
 \usage{
-process_file(file, FUN = identity, x = read_utf8(file))
+process_file(file, fun = identity, x = read_utf8(file))
 
-sort_file(..., FUN = sort)
+sort_file(..., fun = sort)
 }
 \arguments{
 \item{file}{Path to a text file.}
 
-\item{FUN}{A function to process the text.}
+\item{fun}{A function to process the text.}
 
 \item{x}{The content of the file.}
 

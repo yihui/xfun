@@ -87,7 +87,7 @@ read_bin = function(file, what = 'raw', n = file.info(file)$size, ...) {
 #' processing function being \code{\link{sort}()}, i.e., it sorts the text lines
 #' in a file and write back the sorted text.
 #' @param file Path to a text file.
-#' @param FUN A function to process the text.
+#' @param fun A function to process the text.
 #' @param x The content of the file.
 #' @param ... Arguments to be passed to \code{process_file()}.
 #' @return If \code{file} is provided, invisible \code{NULL} (the file is
@@ -99,15 +99,15 @@ read_bin = function(file, what = 'raw', n = file.info(file)$size, ...) {
 #' xfun::process_file(f, function(x) gsub('World', 'woRld', x))
 #' xfun::read_utf8(f)  # see if it has been updated
 #' file.remove(f)
-process_file = function(file, FUN = identity, x = read_utf8(file)) {
-  x = FUN(x)
+process_file = function(file, fun = identity, x = read_utf8(file)) {
+  x = fun(x)
   if (missing(file)) x else write_utf8(x, file)
 }
 
 #' @rdname process_file
 #' @export
-sort_file = function(..., FUN = sort) {
-  process_file(FUN = FUN, ...)
+sort_file = function(..., fun = sort) {
+  process_file(fun = fun, ...)
 }
 
 #' Search and replace strings in files

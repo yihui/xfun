@@ -8,6 +8,10 @@
 
 - Added a new function `sort_file()`, which is a shorthand for `process_file(fun = sort)` to sort the lines in a text file.
 
+## MAJOR CHANGES
+
+- The argument `FUN` was renamed to `fun` in `process_file()`.
+
 ## MINOR CHANGES
 
 - The `timeout` option in `options()` is set to 3600 seconds when it takes the default value of 60 seconds, which may not be enough for downloading large files (thanks, @matthewgson, yihui/tinytex#286).
