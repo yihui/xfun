@@ -133,13 +133,10 @@ check_built = function(dir = '.', dry_run = TRUE) {
     v = as.numeric_version(gsub('^\\s*R ([^;]+);.*', '\\1', b))
     if (unclass(v)[[1]][1] < getRversion()$major) {
       message('The package ', f, ' was built with R ', v)
-      if (!dry_run) {
-        file.remove(f)
-        if (!is.null(info)) info = info[info[, 'Package'] != dirname(d), , drop = FALSE]
-      }
+      if (!dry_run) file.remove(f)
     }
   }
-  if (!is.null(info) && !dry_run) write.dcf(info, meta)
+  if (!is.null(info) && !dry_run) tools::write_PACKAGES(dir)
 }
 
 #' Install a source package from a directory
