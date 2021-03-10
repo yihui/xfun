@@ -178,7 +178,11 @@ brew_dep = function(pkg) {
   x
 }
 brew_deps = function(pkgs) {
-  unlist(lapply(pkgs, brew_dep))
+  if (length(pkgs) == 0) return()
+  deps = pkg_brew_deps()
+  unlist(lapply(pkgs, function(p) {
+    if (is.null(deps[[p]])) brew_dep(p) else deps[[p]]
+  }))
 }
 
 pkg_brew_deps = function() {
