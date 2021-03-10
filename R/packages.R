@@ -181,12 +181,16 @@ brew_deps = function(pkgs) {
   unlist(lapply(pkgs, brew_dep))
 }
 
-install_brew_deps = function(pkg = .packages(TRUE)) {
+pkg_brew_deps = function() {
   con = url('https://macos.rbind.io/bin/macosx/sysreqsdb.rds')
   on.exit(close(con), add = TRUE)
+  readRDS(con)
+}
+
+install_brew_deps = function(pkg = .packages(TRUE)) {
   inst = installed.packages()
   pkg = intersect(pkg, pkg_needs_compilation(inst))
-  deps = readRDS(con)
+  deps = pkg_brew_deps()
   deps = deps[c(pkg, pkg_dep(pkg, inst, recursive = TRUE))]
   deps = paste(na.omit(unique(unlist(deps))), collapse = ' ')
   if (deps != '') system(paste('brew install', deps))
