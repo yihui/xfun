@@ -17,7 +17,7 @@
 
 ## MINOR CHANGES
 
-- The `timeout` option in `options()` is set to 3600 seconds when it takes the default value of 60 seconds, which may not be enough for downloading large files (thanks, @matthewgson, yihui/tinytex#286).
+- Inside `download_file()`, the `timeout` option in `options()` is set to 3600 seconds when it takes the default value of 60 seconds, which may not be enough for downloading large files (thanks, @matthewgson, yihui/tinytex#286).
 
 # CHANGES IN xfun VERSION 0.21
 
