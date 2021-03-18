@@ -1,5 +1,8 @@
 # CHANGES IN xfun VERSION 0.23
 
+## NEW FEATURES
+
+- Added a `news2md()` function to convert package news to the Markdown format. This is mainly for converting the plain-text `NEWS` file and the `NEWS.Rd` file to `NEWS.md`.
 
 # CHANGES IN xfun VERSION 0.22
 

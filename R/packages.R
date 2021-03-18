@@ -234,6 +234,40 @@ reinstall_from_cran = function(dry_run = TRUE, skip_github = TRUE) {
   }
 }
 
+#' Convert package news to the Markdown format
+#'
+#' Read the package news with \code{\link{news}()}, convert the result to
+#' Markdown, and write to an output file (e.g., \file{NEWS.md}). Each package
+#' version appears in a first-level header, each category (e.g., \samp{NEW
+#' FEATURES} or \samp{BUG FIXES}) is in a second-level header, and the news
+#' items are written into bullet lists.
+#' @param package,... Arguments to be passed to \code{\link{news}()}.
+#' @param output The output file path.
+#' @return If \code{output = NA}, returns the Markdown content as a character
+#'   vector, otherwise the content is written to the output file.
+#' @export
+#' @examples
+#' # news for the current version of R
+#' xfun::news2md('R', Version == getRversion(), output = NA)
+news2md = function(package, ..., output = 'NEWS.md') {
+  db = news(package = package, ...)
+  k = db[, 'Category']
+  db[is.na(k), 'Category'] = ''  # replace NA category with ''
+  res = unlist(lapply(unique(db[, 'Version']), function(v) {
+    d1 = db[db[, 'Version'] == v, ]
+    res = unlist(lapply(unique(d1[, 'Category']), function(k) {
+      txt = d1[d1[, 'Category'] == k, 'Text']
+      if (k == '' && length(txt) == 0) return()
+      txt = gsub('\n *', ' ', txt)
+      c(if (k != '') paste('##', k), paste('-', txt))
+    }))
+    if (is.na(dt <- d1[1, 'Date'])) dt = '' else dt = paste0(' (', dt, ')')
+    c(sprintf('# CHANGES IN %s VERSION %s%s', package, v, dt), res)
+  }))
+  res = c(rbind(res, ''))  # add a blank line after each line
+  if (is.na(output)) raw_string(res) else write_utf8(res, output)
+}
+
 base_pkgs = function() rownames(installed.packages(priority = 'base'))
 
 # update one package (from source by default)
