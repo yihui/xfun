@@ -258,9 +258,10 @@ news2md = function(package, ..., output = 'NEWS.md', category = TRUE) {
     d1 = db[db[, 'Version'] == v, ]
     res = unlist(lapply(unique(d1[, 'Category']), function(k) {
       txt = d1[d1[, 'Category'] == k, 'Text']
+      txt = txt[txt != '']
       if (k == '' && length(txt) == 0) return()
       txt = gsub('\n *', ' ', txt)
-      c(if (category && k != '') paste('##', k), paste('-', txt))
+      c(if (category && k != '') paste('##', k), if (length(txt)) paste('-', txt))
     }))
     if (is.na(dt <- d1[1, 'Date'])) dt = '' else dt = paste0(' (', dt, ')')
     c(sprintf('# CHANGES IN %s VERSION %s%s', package, v, dt), res)
