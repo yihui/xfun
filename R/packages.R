@@ -243,13 +243,14 @@ reinstall_from_cran = function(dry_run = TRUE, skip_github = TRUE) {
 #' items are written into bullet lists.
 #' @param package,... Arguments to be passed to \code{\link{news}()}.
 #' @param output The output file path.
+#' @param category Whether to keep the category names.
 #' @return If \code{output = NA}, returns the Markdown content as a character
 #'   vector, otherwise the content is written to the output file.
 #' @export
 #' @examples
 #' # news for the current version of R
 #' xfun::news2md('R', Version == getRversion(), output = NA)
-news2md = function(package, ..., output = 'NEWS.md') {
+news2md = function(package, ..., output = 'NEWS.md', category = TRUE) {
   db = news(package = package, ...)
   k = db[, 'Category']
   db[is.na(k), 'Category'] = ''  # replace NA category with ''
@@ -259,7 +260,7 @@ news2md = function(package, ..., output = 'NEWS.md') {
       txt = d1[d1[, 'Category'] == k, 'Text']
       if (k == '' && length(txt) == 0) return()
       txt = gsub('\n *', ' ', txt)
-      c(if (k != '') paste('##', k), paste('-', txt))
+      c(if (category && k != '') paste('##', k), paste('-', txt))
     }))
     if (is.na(dt <- d1[1, 'Date'])) dt = '' else dt = paste0(' (', dt, ')')
     c(sprintf('# CHANGES IN %s VERSION %s%s', package, v, dt), res)

@@ -4,12 +4,14 @@
 \alias{news2md}
 \title{Convert package news to the Markdown format}
 \usage{
-news2md(package, ..., output = "NEWS.md")
+news2md(package, ..., output = "NEWS.md", category = TRUE)
 }
 \arguments{
 \item{package, ...}{Arguments to be passed to \code{\link{news}()}.}
 
 \item{output}{The output file path.}
+
+\item{category}{Whether to keep the category names.}
 }
 \value{
 If \code{output = NA}, returns the Markdown content as a character
