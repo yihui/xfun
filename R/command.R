@@ -242,35 +242,73 @@ bg_process = function(
 
 #' Upload to an FTP server via \command{curl}
 #'
-#' Run the command \command{curl -T file server} to upload a file to an FTP
-#' server. These functions require the system package (\emph{not the R package})
-#' \command{curl} to be installed (which should be available on macOS by
-#' default). The function \code{upload_win_builder()} uses \code{upload_ftp()}
-#' to upload packages to the win-builder server.
+#' The function \code{upload_ftp()} runs the command \command{curl -T file
+#' server} to upload a file to an FTP server if the system command
+#' \command{curl} is available, otherwise it uses the R package \pkg{curl}. The
+#' function \code{upload_win_builder()} uses \code{upload_ftp()} to upload
+#' packages to the win-builder server.
 #'
 #' These functions were written mainly to save package developers the trouble of
-#' going to the win-builder web page and uploading packages there manually. You
-#' may also consider using \code{devtools::check_win_*}, which currently only
-#' allows you to upload a package to one folder on win-builder each time, and
-#' \code{xfun::upload_win_builder()} uploads to all three folders, which is more
-#' likely to be what you need.
+#' going to the win-builder web page and uploading packages there manually.
 #' @param file Path to a local file.
-#' @param server The address of the FTP server.
+#' @param server The address of the FTP server. For \code{upload_win_builder()},
+#'   \code{server = 'https'} means uploading to
+#'   \code{'https://win-builder.r-project.org/upload.aspx'}.
 #' @param dir The remote directory to which the file should be uploaded.
 #' @param version The R version(s) on win-builder.
-#' @return Status code returned from \code{\link{system2}}.
+#' @return Status code returned from \code{\link{system2}()} or
+#'   \code{curl::curl_fetch_memory()}.
 #' @export
 upload_ftp = function(file, server, dir = '') {
   if (dir != '') dir = gsub('/*$', '/', dir)
-  system2('curl', shQuote(c('-T', file, paste0(server, dir))))
+  server = paste0(server, dir)
+  if (Sys.which('curl') == '') {
+    curl::curl_upload(file, server)$status_code
+  } else {
+    system2('curl', shQuote(c('-T', file, server)))
+  }
 }
 
 #' @rdname upload_ftp
 #' @export
 upload_win_builder = function(
-  file, version = c("R-devel", "R-release", "R-oldrelease"), server
+  file, version = c("R-devel", "R-release", "R-oldrelease"), server = c('ftp', 'https')
 ) {
-  if (missing(server)) server = 'ftp://win-builder.r-project.org/'
-  res = unlist(lapply(version, upload_ftp, file = file, server = server))
-  setNames(res, version)
+  server = server[1]
+  server = switch(
+    server,
+    'ftp'   = paste0(server, '://win-builder.r-project.org/'),
+    'https' = paste0(server, '://win-builder.r-project.org/upload.aspx'),
+    server
+  )
+  res = if (grepl('^ftp://', server)) {
+    lapply(version, upload_ftp, file = file, server = server)
+  } else {
+    vers = c('R-devel' = 2, 'R-release' = 1, 'R-oldrelease' = 3)
+    params = list(
+      FileUpload = file,
+      Button = 'Upload File',
+      # perhaps we should read these tokens dynamically from
+      # https://win-builder.r-project.org/upload.aspx
+      `__VIEWSTATE` = '/wEPDwULLTE0OTY5NTg0MTUPZBYCAgIPFgIeB2VuY3R5cGUFE211bHRpcGFydC9mb3JtLWRhdGFkZFHMrNH6JjHTyJ00T0dAADGf4oa0',
+      `__VIEWSTATEGENERATOR` = '69164837',
+      `__EVENTVALIDATION` = '/wEWBQKksYbrBgKM54rGBgK7q7GGCAKF2fXbAwLWlM+bAqR2dARbCNfKVu0vDawqWYgB5kKI'
+    )
+    lapply(version, function(i) {
+      names(params)[1:2] = paste0(names(params)[1:2], vers[i])
+      if (Sys.which('curl') == '') {
+        h = curl::new_handle()
+        params[1] = curl::form_file(params[1])
+        curl::handle_setform(h, .list = params)
+        curl::curl_fetch_memory(server, h)$status_code
+      } else {
+        params[1] = paste0('@', params[1])
+        system2('curl', shQuote(c(
+          rbind('-F', paste(names(params), params, sep = '=')),
+          server
+        )), stdout = FALSE)
+      }
+    })
+  }
+  setNames(unlist(res), version)
 }

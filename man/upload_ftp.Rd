@@ -10,33 +10,32 @@ upload_ftp(file, server, dir = "")
 upload_win_builder(
   file,
   version = c("R-devel", "R-release", "R-oldrelease"),
-  server
+  server = c("ftp", "https")
 )
 }
 \arguments{
 \item{file}{Path to a local file.}
 
-\item{server}{The address of the FTP server.}
+\item{server}{The address of the FTP server. For \code{upload_win_builder()},
+\code{server = 'https'} means uploading to
+\code{'https://win-builder.r-project.org/upload.aspx'}.}
 
 \item{dir}{The remote directory to which the file should be uploaded.}
 
 \item{version}{The R version(s) on win-builder.}
 }
 \value{
-Status code returned from \code{\link{system2}}.
+Status code returned from \code{\link{system2}()} or
+  \code{curl::curl_fetch_memory()}.
 }
 \description{
-Run the command \command{curl -T file server} to upload a file to an FTP
-server. These functions require the system package (\emph{not the R package})
-\command{curl} to be installed (which should be available on macOS by
-default). The function \code{upload_win_builder()} uses \code{upload_ftp()}
-to upload packages to the win-builder server.
+The function \code{upload_ftp()} runs the command \command{curl -T file
+server} to upload a file to an FTP server if the system command
+\command{curl} is available, otherwise it uses the R package \pkg{curl}. The
+function \code{upload_win_builder()} uses \code{upload_ftp()} to upload
+packages to the win-builder server.
 }
 \details{
 These functions were written mainly to save package developers the trouble of
-going to the win-builder web page and uploading packages there manually. You
-may also consider using \code{devtools::check_win_*}, which currently only
-allows you to upload a package to one folder on win-builder each time, and
-\code{xfun::upload_win_builder()} uploads to all three folders, which is more
-likely to be what you need.
+going to the win-builder web page and uploading packages there manually.
 }
