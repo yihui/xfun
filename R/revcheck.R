@@ -350,7 +350,12 @@ pkg_install = function(pkgs, install = TRUE, ...) {
   }
   if (length(pkgs) > 1)
     message('Installing ', length(pkgs), ' packages: ', paste(pkgs, collapse = ' '))
-  if (isTRUE(install)) install = getOption('xfun.install.packages', install.packages)
+  if (isTRUE(install)) install = getOption(
+    'xfun.install.packages',
+    if (is.na(Sys.getenv('RENV_PROJECT', NA)) || !loadable('renv')) install.packages else {
+      function(pkgs, lib, ...) renv::install(pkgs, library = lib, ...)
+    }
+  )
   if (identical(install, 'pak')) install = pak::pkg_install
   install(pkgs, ...)
 }

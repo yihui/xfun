@@ -4,6 +4,8 @@
 
 - Added a `news2md()` function to convert package news to the Markdown format. This is mainly for converting the plain-text `NEWS` file and the `NEWS.Rd` file to `NEWS.md`.
 
+- When using `pkg_load2()` in an **renv** project, it will use `renv::install()` to install missing packages by default to take advantage of **renv**'s caching feature (thanks, @chunyunma @cderv, #52).
+
 # CHANGES IN xfun VERSION 0.22
 
 ## NEW FEATURES
