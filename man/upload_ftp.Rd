@@ -8,7 +8,7 @@
 upload_ftp(file, server, dir = "")
 
 upload_win_builder(
-  file,
+  file = pkg_build(),
   version = c("R-devel", "R-release", "R-oldrelease"),
   server = c("ftp", "https")
 )

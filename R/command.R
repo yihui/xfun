@@ -272,7 +272,8 @@ upload_ftp = function(file, server, dir = '') {
 #' @rdname upload_ftp
 #' @export
 upload_win_builder = function(
-  file, version = c("R-devel", "R-release", "R-oldrelease"), server = c('ftp', 'https')
+  file = pkg_build(), version = c("R-devel", "R-release", "R-oldrelease"),
+  server = c('ftp', 'https')
 ) {
   server = server[1]
   server = switch(

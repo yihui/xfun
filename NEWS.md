@@ -16,6 +16,8 @@
 
 - The argument `src` was renamed to `pkg` in `install_dir()`.
 
+- The argument `file` of `upload_win_builder()` defaults to `pkg_build()` now, i.e., by default, it will build a source package and upload it, so you do not need to build the package separately.
+
 # CHANGES IN xfun VERSION 0.22
 
 ## NEW FEATURES
