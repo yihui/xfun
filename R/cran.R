@@ -66,3 +66,63 @@ pkg_maintainers = function(pkgs) {
   info = info[match(pkgs, info$Package), c('Package', 'Maintainer')]
   setNames(info$Maintainer, info$Package)
 }
+
+#' Submit a source package to CRAN
+#'
+#' Build a source package and submit it to CRAN with the \pkg{curl} package.
+#' @param file The path to the source package tarball. By default, the current
+#'   working directory is treated as the package root directory, and
+#'   automatically built into a tarball, which is deleted after submission. This
+#'   means you should run \code{xfun::submit_cran()} in the root directory of a
+#'   package project, unless you want to pass a path explicitly to the
+#'   \code{file} argument.
+#' @param comment Submission comments for CRAN. By default, if a file
+#'   \file{cran-comments.md} exists, its content will be read and used as the
+#'   comment.
+#' @seealso \code{devtools::submit_cran()} does the same job, with a few more
+#'   dependencies in addition to \pkg{curl} (such as \pkg{cli});
+#'   \code{xfun::submit_cran()} only depends on \pkg{curl}.
+#' @export
+submit_cran = function(file = pkg_build(), comment = '') {
+  # if the tarball is automatically created, delete it after submission
+  if (missing(file)) on.exit(file.remove(file), add = TRUE)
+
+  # read the maintainer's name/email
+  dir_create(d <- tempfile())
+  on.exit(unlink(d, recursive = TRUE), add = TRUE)
+  desc = file.path(gsub('_.*', '', basename(file)), 'DESCRIPTION')
+  untar(file, desc, exdir = d)
+  info = read.dcf(file.path(d, desc), fields = 'Maintainer')[1, 1]
+  info = unlist(strsplit(info, '( <|>)'))
+
+  # read submission comments from cran-comments.md if exists
+  if (missing(comment) && file_exists(f <- 'cran-comments.md')) {
+    comment = file_string(f)
+  }
+  params = list(
+    uploaded_file = curl::form_file(file), name = info[1], email = info[2],
+    comment = comment, upload = 'Upload package'
+  )
+  server = 'https://xmpalantir.wu.ac.at/cransubmit/index2.php'
+
+  # submit the form
+  h = curl::new_handle()
+  curl::handle_setform(h, .list = params)
+  res = curl::curl_fetch_memory(server, h)
+
+  # find the pkg_id from the response page
+  id = grep_sub(
+    '(.*<input name="pkg_id" type="hidden" value=")([^"]+)(".*)', '\\2',
+    rawToChar(res$content)
+  )
+  if (length(id) != 1) stop('Failed to submit ', file, ' to CRAN')
+
+  # skip the review and submit directly
+  h = curl::new_handle()
+  curl::handle_setform(h, .list = list(pkg_id = id, submit = 'Submit package'))
+  res = curl::curl_fetch_memory(server, h)
+  if (grepl('>Step 3<', rawToChar(res$content))) message(
+    'The package has been submitted. Please confirm the submission in email: ',
+    params$email
+  ) else message('The submission may be unsuccessful.')
+}
