@@ -2,6 +2,8 @@
 
 ## NEW FEATURES
 
+- Added a `tinify()` function to compress PNG/JPEG images via [the Tinify API](https://tinypng.com/developers).
+
 - Added a `news2md()` function to convert package news to the Markdown format. This is mainly for converting the plain-text `NEWS` file and the `NEWS.Rd` file to `NEWS.md`.
 
 - Added a `format_bytes()` function to format numbers of bytes using a specified unit, e.g., `1024` can be formatted as `1 Kb`.
