@@ -30,7 +30,7 @@ add_border = function(input, pixels = 1, color = 'black', output) {
 #'   otherwise \code{output} is the same as \code{input}, which means the
 #'   original image files will be overwritten.
 #' @param quiet Whether to suppress detailed information about the compression,
-#'   which is of the form \samp{input.png (10 Kb) ==> output.png (5 Kb, 50%);
+#'   which is of the form \samp{input.png (10 Kb) ==> output.png (5 Kb, 50\%);
 #'   compression count: 42}. The percentage after \code{output.png} stands for
 #'   the compression ratio, and the compression count shows the number of
 #'   compressions used for the current month.
