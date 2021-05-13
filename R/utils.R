@@ -1,3 +1,7 @@
+stop2 = function(...) stop(..., call. = FALSE)
+
+warning2 = function(...) warning(..., call. = FALSE)
+
 #' Obtain an attribute of an object without partial matching
 #'
 #' An abbreviation of \code{base::\link[base]{attr}(exact = TRUE)}.
