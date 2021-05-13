@@ -4,6 +4,8 @@
 
 - Added a `news2md()` function to convert package news to the Markdown format. This is mainly for converting the plain-text `NEWS` file and the `NEWS.Rd` file to `NEWS.md`.
 
+- Added a `format_bytes()` function to format numbers of bytes using a specified unit, e.g., `1024` can be formatted as `1 Kb`.
+
 - When using `pkg_load2()` in an **renv** project, it will use `renv::install()` to install missing packages by default to take advantage of **renv**'s caching feature (thanks, @chunyunma @cderv, #52).
 
 - `upload_win_builder()` no longer requires the system command `curl` to be available; if `curl` is not available, the R package **curl** will be used instead, which means this R package must be installed. In addition to uploading to the `ftp` server of win-builder, it's also possible to upload to <https://win-builder.r-project.org/upload.aspx>: call `upload_win_builder(..., server = 'https')`. This change was made so that it would be possible to continue to upload to win-builder in case it should stop supporting `ftp` (CRAN has discouraged package authors from using `ftp://`).

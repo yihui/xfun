@@ -260,3 +260,19 @@ connect_pipes = function(x) {
 }
 
 pkg_file = function(...) system.file(..., package = 'xfun', mustWork = TRUE)
+
+#' Format numbers of bytes using a specified unit
+#'
+#' Call the S3 method \code{format.object_size()} to format numbers of bytes.
+#' @param x A numeric vector (each element represents a number of bytes).
+#' @param units,... Passed to \code{\link[=format.object_size]{format}()}.
+#' @return A character vector.
+#' @export
+#' @examples
+#' xfun::format_bytes(c(1, 1024, 2000, 1e6, 2e8))
+#' xfun::format_bytes(c(1, 1024, 2000, 1e6, 2e8), units = 'KB')
+format_bytes = function(x, units = 'auto', ...) {
+  vapply(x, function(b) {
+    format(structure(b, class = 'object_size'), units = units, ...)
+  }, character(1))
+}
