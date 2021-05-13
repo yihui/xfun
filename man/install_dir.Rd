@@ -4,10 +4,10 @@
 \alias{install_dir}
 \title{Install a source package from a directory}
 \usage{
-install_dir(src, build = TRUE, build_opts = NULL, install_opts = NULL)
+install_dir(pkg, build = TRUE, build_opts = NULL, install_opts = NULL)
 }
 \arguments{
-\item{src}{The package source directory.}
+\item{pkg}{The package source directory.}
 
 \item{build}{Whether to build a tarball from the source directory. If
 \code{FALSE}, run \command{R CMD INSTALL} on the directory directly (note

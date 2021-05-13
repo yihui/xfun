@@ -165,7 +165,7 @@ check_built = function(dir = '.', dry_run = TRUE) {
 #'
 #' Run \command{R CMD build} to build a tarball from a source directory, and run
 #' \command{R CMD INSTALL} to install it.
-#' @param src The package source directory.
+#' @param pkg The package source directory.
 #' @param build Whether to build a tarball from the source directory. If
 #'   \code{FALSE}, run \command{R CMD INSTALL} on the directory directly (note
 #'   that vignettes will not be automatically built).
@@ -173,19 +173,25 @@ check_built = function(dir = '.', dry_run = TRUE) {
 #' @param install_opts The options for \command{R CMD INSTALL}.
 #' @export
 #' @return Invisible status from \command{R CMD INSTALL}.
-install_dir = function(src, build = TRUE, build_opts = NULL, install_opts = NULL) {
-  desc = file.path(src, 'DESCRIPTION')
+install_dir = function(pkg, build = TRUE, build_opts = NULL, install_opts = NULL) {
+  if (build) {
+    pkg = pkg_build(pkg, build_opts)
+    on.exit(unlink(pkg), add = TRUE)
+  }
+  res = Rcmd(c('INSTALL', install_opts, pkg))
+  if (res != 0) stop('Failed to install the package ', pkg)
+  invisible(res)
+}
+
+pkg_build = function(dir = '.', opts = NULL) {
+  desc = file.path(dir, 'DESCRIPTION')
   pv = read.dcf(desc, fields = c('Package', 'Version'))
   # delete existing tarballs
   unlink(sprintf('%s_*.tar.gz', pv[1, 1]))
-  pkg = if (build) {
-    Rcmd(c('build', build_opts, shQuote(src)))
-    sprintf('%s_%s.tar.gz', pv[1, 1], pv[1, 2])
-  } else src
-  res = Rcmd(c('INSTALL', install_opts, pkg))
-  if (build) unlink(pkg)
-  if (res != 0) stop('Failed to install the package ', pkg)
-  invisible(res)
+  Rcmd(c('build', opts, shQuote(dir)))
+  pkg = sprintf('%s_%s.tar.gz', pv[1, 1], pv[1, 2])
+  if (!file_exists(pkg)) stop('Failed to build the package ', pkg)
+  pkg
 }
 
 # query the Homebrew dependencies of an R package

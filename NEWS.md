@@ -12,6 +12,10 @@
 
 - `upload_win_builder()` no longer requires the system command `curl` to be available; if `curl` is not available, the R package **curl** will be used instead, which means this R package must be installed. In addition to uploading to the `ftp` server of win-builder, it's also possible to upload to <https://win-builder.r-project.org/upload.aspx>: call `upload_win_builder(..., server = 'https')`. This change was made so that it would be possible to continue to upload to win-builder in case it should stop supporting `ftp` (CRAN has discouraged package authors from using `ftp://`).
 
+## MINOR CHANGES
+
+- The argument `src` was renamed to `pkg` in `install_dir()`.
+
 # CHANGES IN xfun VERSION 0.22
 
 ## NEW FEATURES
