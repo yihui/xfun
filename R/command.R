@@ -275,6 +275,7 @@ upload_win_builder = function(
   file = pkg_build(), version = c("R-devel", "R-release", "R-oldrelease"),
   server = c('ftp', 'https')
 ) {
+  if (missing(file)) on.exit(file.remove(file), add = TRUE)
   server = server[1]
   server = switch(
     server,
@@ -299,7 +300,7 @@ upload_win_builder = function(
       names(params)[1:2] = paste0(names(params)[1:2], vers[i])
       if (Sys.which('curl') == '') {
         h = curl::new_handle()
-        params[1] = curl::form_file(params[1])
+        params[[1]] = curl::form_file(params[[1]])
         curl::handle_setform(h, .list = params)
         curl::curl_fetch_memory(server, h)$status_code
       } else {
