@@ -131,12 +131,28 @@ pkg_install = function(pkgs, install = TRUE, ...) {
   install(pkgs, ...)
 }
 
+#' Find out broken packages and reinstall them
+#'
+#' If a package is broken (i.e., not \code{\link{loadable}()}), reinstall it.
+#'
+#' Installed R packages could be broken for several reasons. One common reason
+#' is that you have upgraded R to a newer \code{x.y} version, e.g., from
+#' \code{4.0.5} to \code{4.1.0}, in which case you need to reinstall previously
+#' installed packages.
+#' @param reinstall Whether to reinstall the broken packages, or only list their
+#'   names.
+#' @return A character vector of names of broken package.
+#' @export
 broken_packages = function(reinstall = TRUE) {
-  pkgs = unlist(plapply(.packages(TRUE), function(p) if (!loadable(p)) p))
-  if (reinstall) {
-    remove.packages(pkgs); pkg_install(pkgs)
-  }
-  pkgs
+  libs = .libPaths()
+  pkgs = unlist(lapply(libs, function(lib) {
+    p = unlist(plapply(.packages(TRUE, lib), function(p) if (!loadable(p)) p))
+    if (length(p) && reinstall) {
+      remove.packages(p, lib); pkg_install(pkgs, lib)
+    }
+    p
+  }))
+  if(reinstall) invisible(pkgs) else pkgs
 }
 
 # remove (binary) packages that were built with a previous major version of R
