@@ -146,7 +146,9 @@ pkg_install = function(pkgs, install = TRUE, ...) {
 broken_packages = function(reinstall = TRUE) {
   libs = .libPaths()
   pkgs = unlist(lapply(libs, function(lib) {
-    p = unlist(plapply(.packages(TRUE, lib), function(p) if (!loadable(p)) p))
+    p = unlist(lapply(.packages(TRUE, lib), function(p) {
+      if (!loadable(p, new_session = TRUE)) p
+    }))
     if (length(p) && reinstall) {
       remove.packages(p, lib); pkg_install(pkgs, lib)
     }
