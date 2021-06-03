@@ -27,7 +27,7 @@ RStudio source editor, as if they were typed by a human.
 \examples{
 library(xfun)
 if (loadable("rstudioapi") && rstudioapi::isAvailable()) {
-    rstudio_type("Hello, RStudio! xfun::rstudio_type() looks pretty cool!", 
+    rstudio_type("Hello, RStudio! xfun::rstudio_type() looks pretty cool!",
         pause = function() runif(1, 0, 0.5), mistake = 0.1)
 }
 }
