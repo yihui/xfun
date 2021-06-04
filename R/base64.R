@@ -18,7 +18,7 @@
 #' xfun::base64_encode(logo)
 base64_encode = function(x) {
   if (!is.raw(x)) x = read_bin(x)
-  .Call('base64_enc', x)
+  .Call('base64_enc', x, PACKAGE = 'xfun')
 }
 
 #' @export
@@ -30,7 +30,7 @@ base64_decode = function(x, from = NA) {
     x = readChar(from, file.size(from), TRUE)
   }
   if (!is.character(x) || length(x) != 1) stop("'x' must be a single character string.")
-  .Call('base64_dec', x)
+  .Call('base64_dec', x, PACKAGE = 'xfun')
 }
 
 # an R implementation of base64 encoding by Wush Wu moved from knitr (of
