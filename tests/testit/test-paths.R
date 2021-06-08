@@ -72,3 +72,22 @@ assert("relative_path() works", {
   (relative_path(c('foo/bar.txt', 'foo/baz.txt'), 'foo/') %==% c("bar.txt", "baz.txt"))
   (relative_path('foo/bar.txt', 'foo') %==% "bar.txt")
 })
+
+assert("proj_root() works", {
+  # detect .Rproj root
+  dir.create(tmp_dir <- tempfile())
+  tmp_dir_slash <- paste0(tmp_dir, "/")
+  file.create(f1 <- file.path(tmp_dir, "test.Rproj"))
+  writeLines(c("Version: 1.2.3", "test: 321"), f1)
+
+  (same_path(proj_root(tmp_dir), tmp_dir) %==% TRUE)
+  unlink(f1)
+
+  # detect package root
+  file.create(f2 <- file.path(tmp_dir, "DESCRIPTION"))
+  writeLines(c("Package: abc", "test: 321"), f2)
+  dir.create(tmp_dir_child <- tempfile(tmpdir = tmp_dir))
+
+  (same_path(proj_root(tmp_dir_child), tmp_dir) %==% TRUE)
+  unlink(tmp_dir, recursive = TRUE)
+})

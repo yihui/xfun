@@ -111,7 +111,7 @@ proj_root = function(path = './', rules = root_rules) {
   dir = if (dir_exists(path)) path else dirname(path)
   if (same_path(dir, file.path(dir, '..'))) return()
   if (is.null(dim(rules))) dim(rules) = c(1, length(rules))
-  for (i in seq_along(nrow(rules))) {
+  for (i in seq_len(nrow(rules))) {
     file = rules[i, 1]; pattern = rules[i, 2]
     for (f in list.files(dir, file, full.names = TRUE)) {
       if (pattern == '' || length(grep(pattern, read_utf8(f)))) return(dir)
