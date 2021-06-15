@@ -1,3 +1,6 @@
+# CHANGES IN xfun VERSION 0.25
+
+
 # CHANGES IN xfun VERSION 0.24
 
 - Exported the internal function `broken_packages()` to reinstall broken R packages.
