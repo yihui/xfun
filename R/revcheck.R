@@ -398,7 +398,7 @@ compare_Rcheck = function(status_only = FALSE, output = '00check_diffs.md') {
       "<script>hljs.initHighlightingOnLoad();</script>"
     ), encoding = 'UTF-8'
   )
-  unlink(output)
+  if (!getOption('xfun.rev_check.keep_md', FALSE)) unlink(output)
   html_file
 }
 
