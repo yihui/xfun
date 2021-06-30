@@ -150,7 +150,7 @@ broken_packages = function(reinstall = TRUE) {
       if (!loadable(p, new_session = TRUE)) p
     }))
     if (length(p) && reinstall) {
-      remove.packages(p, lib); pkg_install(pkgs, lib)
+      remove.packages(p, lib); pkg_install(p, lib = lib)
     }
     p
   }))
