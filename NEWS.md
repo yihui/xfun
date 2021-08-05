@@ -2,6 +2,8 @@
 
 - Fixed a bug in `broken_packages()` (thanks, @PythonCoderUnicorn, rstudio/rmarkdown#1990).
 
+- Added a `files` argument to `optipng()` so that users can specify the list of PNG files instead of running `optipng` on a whole directory.
+
 # CHANGES IN xfun VERSION 0.24
 
 - Exported the internal function `broken_packages()` to reinstall broken R packages.

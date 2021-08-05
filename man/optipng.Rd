@@ -4,14 +4,22 @@
 \alias{optipng}
 \title{Run OptiPNG on all PNG files under a directory}
 \usage{
-optipng(dir = ".")
+optipng(
+  dir = ".",
+  files = list.files(dir, "[.]png$", recursive = TRUE, full.names = TRUE),
+  ...
+)
 }
 \arguments{
 \item{dir}{Path to a directory.}
+
+\item{files}{Alternatively, you can choose the specific files to optimize.}
+
+\item{...}{Arguments to be passed to \code{system2()}.}
 }
 \description{
-Calls the command \command{optipng} to optimize all PNG files under a
-directory.
+Call the command \command{optipng} via \code{system2()} to optimize all PNG
+files under a directory.
 }
 \references{
 OptiPNG: \url{http://optipng.sourceforge.net}.
