@@ -279,6 +279,7 @@ upload_win_builder = function(
   server = c('ftp', 'https')
 ) {
   if (missing(file)) on.exit(file.remove(file), add = TRUE)
+  if (system2('git', 'status', stderr = FALSE) == 0) system2('git', 'pull')
   server = server[1]
   server = switch(
     server,
