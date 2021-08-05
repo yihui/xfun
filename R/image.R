@@ -93,6 +93,8 @@ tinify = function(
       )
       return()
     }
+    if (grepl('[.]png$', i, ignore.case = TRUE))
+      optipng(files = i, stdout = if (quiet) FALSE else '')
     res = curl::curl_upload(i, 'https://api.tinify.com/shrink', httpheader = auth, verbose = FALSE)
     cnt = curl::parse_headers_list(res$headers)[['compression-count']]
     res = jsonlite::fromJSON(rawToChar(res$content))
