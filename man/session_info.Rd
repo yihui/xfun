@@ -38,6 +38,6 @@ returns the version of Pandoc, which can be very useful information for
 diagnostics.
 }
 \examples{
-xfun::session_info()
-if (loadable("MASS")) xfun::session_info("MASS")
+if (interactive()) xfun::session_info()
+if (interactive() && loadable("MASS")) xfun::session_info("MASS")
 }
