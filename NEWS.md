@@ -1,3 +1,6 @@
+# CHANGES IN xfun VERSION 0.26
+
+
 # CHANGES IN xfun VERSION 0.25
 
 - Fixed a bug in `broken_packages()` (thanks, @PythonCoderUnicorn, rstudio/rmarkdown#1990).
