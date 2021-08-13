@@ -4,9 +4,9 @@
 #' \code{enc2utf8()} can convert it back without a loss. If it does, return
 #' \code{enc2native(x)}, otherwise return the original vector with a warning.
 #' @param x A character vector.
-#' @param windows_only Whether to make the attempt on Windows only. On Unix,
-#'   characters are typically encoded in the native encoding (UTF-8), so there
-#'   is no need to do the conversion.
+#' @note On platforms that supports UTF-8 as the native encoding
+#'   (\code{\link{l10n_info}()[['UTF-8']]} returns \code{TRUE}), the conversion
+#'   will be skipped.
 #' @export
 #' @examples
 #' library(xfun)
@@ -15,8 +15,8 @@
 #'
 #' s2 = native_encode(s)
 #' Encoding(s2)
-native_encode = function(x, windows_only = is_windows()) {
-  if (!windows_only) return(x)
+native_encode = function(x) {
+  if (isTRUE(l10n_info()[['UTF-8']])) return(x)
   if (identical(enc2utf8(x2 <- enc2native(x)), x)) return(x2)
   warning('The character vector cannot be represented in the native encoding')
   x
