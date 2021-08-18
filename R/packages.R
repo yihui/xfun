@@ -157,7 +157,7 @@ broken_packages = function(reinstall = TRUE) {
   if(reinstall) invisible(pkgs) else pkgs
 }
 
-# remove (binary) packages that were built with a previous major version of R
+# remove (binary) packages that were built with a previous major-minor version of R
 check_built = function(dir = '.', dry_run = TRUE) {
   ext = if (xfun::is_macos()) 'tgz' else if (xfun::is_windows()) 'zip' else 'tar.gz'
   r =  paste0('_[-.0-9]+[.]', ext, '$')
@@ -171,12 +171,21 @@ check_built = function(dir = '.', dry_run = TRUE) {
     if (is.na(b <- read.dcf(d, 'Built')[1, 1])) next
     unlink(dirname(d), recursive = TRUE)
     v = as.numeric_version(gsub('^\\s*R ([^;]+);.*', '\\1', b))
-    if (unclass(v)[[1]][1] < getRversion()$major) {
+    if (major_minor_smaller(v, getRversion())) {
       message('The package ', f, ' was built with R ', v)
       if (!dry_run) file.remove(f)
     }
   }
   if (!is.null(info) && !dry_run) tools::write_PACKAGES(dir)
+}
+
+# is one version smaller than the other in major.minor? e.g., 4.1.0 is smaller
+# than 4.2.0, but not smaller than 4.1.1
+major_minor_smaller = function(v1, v2) {
+  v1 = unclass(v1)[[1]]
+  v2 = unclass(v2)[[1]]
+  if (length(v1) < 3 || length(v2) < 3) return(TRUE)  # should return NA
+  v1[1] < v2[1] || v1[2] < v2[2]
 }
 
 #' Install a source package from a directory
