@@ -10,7 +10,8 @@ upload_ftp(file, server, dir = "")
 upload_win_builder(
   file = pkg_build(),
   version = c("R-devel", "R-release", "R-oldrelease"),
-  server = c("ftp", "https")
+  server = c("ftp", "https"),
+  solaris = pkg_available("rhub")
 )
 }
 \arguments{
@@ -23,6 +24,9 @@ upload_win_builder(
 \item{dir}{The remote directory to which the file should be uploaded.}
 
 \item{version}{The R version(s) on win-builder.}
+
+\item{solaris}{Whether to also upload the package to the Rhub server to check
+it on Solaris.}
 }
 \value{
 Status code returned from \code{\link{system2}()} or

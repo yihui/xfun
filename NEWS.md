@@ -2,6 +2,8 @@
 
 - The `windows_only` argument of `native_encode()` has been removed. Now `native_encode()` only tries the conversion to native encoding on platforms where `l10n_info()[['UTF-8']]` does not return `TRUE`.
 
+- Added a `solaris` argument to `upload_win_builder()`.
+
 # CHANGES IN xfun VERSION 0.25
 
 - Fixed a bug in `broken_packages()` (thanks, @PythonCoderUnicorn, rstudio/rmarkdown#1990).

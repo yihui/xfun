@@ -272,11 +272,13 @@ upload_ftp = function(file, server, dir = '') {
   }
 }
 
+#' @param solaris Whether to also upload the package to the Rhub server to check
+#'   it on Solaris.
 #' @rdname upload_ftp
 #' @export
 upload_win_builder = function(
   file = pkg_build(), version = c("R-devel", "R-release", "R-oldrelease"),
-  server = c('ftp', 'https')
+  server = c('ftp', 'https'), solaris = pkg_available('rhub')
 ) {
   if (missing(file)) on.exit(file.remove(file), add = TRUE)
   if (system2('git', 'status', stderr = FALSE) == 0) system2('git', 'pull')
@@ -316,5 +318,11 @@ upload_win_builder = function(
       }
     })
   }
+
+  if (solaris) rhub::check_on_solaris(
+    file, check_args = '--no-manual', show_status = FALSE,
+    env_vars = c(`_R_CHECK_FORCE_SUGGESTS_` = 'false')
+  )
+
   setNames(unlist(res), version)
 }
