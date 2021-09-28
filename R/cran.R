@@ -37,7 +37,7 @@ cran_updatable = function(days = 90, maintainer = 'Yihui Xie') {
 #' @export
 #' @keywords internal
 is_R_CMD_check = function() {
-  !is.na(check_package_name())
+  !is.na(check_package_name()) || tolower(Sys.getenv('_R_CHECK_LICENSE_')) == 'true'
 }
 
 #' @rdname is_R_CMD_check
