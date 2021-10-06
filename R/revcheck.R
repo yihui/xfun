@@ -75,7 +75,13 @@
 #' @param src_dir The parent directory of the source package directory. This can
 #'   be set in a global option if all your source packages are under a common
 #'   parent directory.
-#' @param timeout Timeout in seconds for \command{R CMD check}.
+#' @param timeout Timeout in seconds for \command{R CMD check} to check each
+#'   package. The (approximate) total time can be limited by the global option
+#'   \code{xfun.rev_check.timeout_total}.
+#' @return A named numeric vector with the names being package names of reverse
+#'   dependencies; \code{0} indicates check success, \code{1} indicates failure,
+#'   and \code{2} indicates that a package was not checked due to global
+#'   timeout.
 #' @seealso \code{devtools::revdep_check()} is more sophisticated, but currently
 #'   has a few major issues that affect me: (1) It always deletes the
 #'   \file{*.Rcheck} directories
@@ -165,6 +171,7 @@ rev_check = function(
   tars = setNames(tars, pkgs)
 
   t0 = Sys.time()
+  tt = getOption('xfun.rev_check.timeout_total', Inf)
   message('Checking ', n, ' packages: ', paste(pkgs, collapse = ' '))
 
   res = plapply(pkgs, function(p) {
@@ -194,6 +201,11 @@ rev_check = function(
     if (!file.exists(z <- tars[p])) {
       dir.create(d, showWarnings = FALSE)
       return(timing())
+    }
+
+    # timeout; package not checked
+    if (difftime(Sys.time(), t0, units = 'secs') > tt) {
+      return(setNames(2L, p))
     }
 
     check_it = function(args = NULL, ...) {
