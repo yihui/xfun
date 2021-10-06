@@ -161,7 +161,7 @@ rev_check = function(
   }
 
   message('Downloading tarballs')
-  tars = unlist(lapply(pkgs, function(p) download_tarball(p, db, dir = 'tarball')))
+  tars = download_tarball(pkgs, db, dir = 'tarball')
   tars = setNames(tars, pkgs)
 
   t0 = Sys.time()
@@ -329,12 +329,14 @@ plapply = function(X, FUN, ...) {
 download_tarball = function(p, db = available.packages(type = 'source'), dir = '.', retry = 3) {
   if (!dir.exists(dir)) dir.create(dir, recursive = TRUE)
   z = file.path(dir, sprintf('%s_%s.tar.gz', p, db[p, 'Version']))
-  # remove other versions of the package tarball
-  unlink(setdiff(list.files(dir, sprintf('^%s_.+.tar.gz', p), full.names = TRUE), z))
-  for (i in seq_len(retry)) {
-    if (file.exists(z)) break
-    try(download.file(paste(db[p, 'Repository'], basename(z), sep = '/'), z, mode = 'wb'))
-  }
+  mapply(function(p, z) {
+    # remove other versions of the package tarball
+    unlink(setdiff(list.files(dir, sprintf('^%s_.+.tar.gz', p), full.names = TRUE), z))
+    for (i in seq_len(retry)) {
+      if (file.exists(z)) break
+      try(download.file(paste(db[p, 'Repository'], basename(z), sep = '/'), z, mode = 'wb'))
+    }
+  }, p, z, SIMPLIFY = FALSE)
   z
 }
 
