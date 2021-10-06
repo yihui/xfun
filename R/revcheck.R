@@ -187,11 +187,13 @@ rev_check = function(
         'Packages remaining: ', n2, '/', n, '; Expect to finish at ', t2,
         ' (', format(round(difftime(t2, t1))), ')'
       )
+      # 0 (FALSE): success; 1: failure
+      setNames(as.integer(dir_exists(d)), p)
     }
 
     if (!file.exists(z <- tars[p])) {
-      timing()
-      return(dir.create(d, showWarnings = FALSE))
+      dir.create(d, showWarnings = FALSE)
+      return(timing())
     }
 
     check_it = function(args = NULL, ...) {
@@ -243,13 +245,11 @@ rev_check = function(
       }
     }
     timing()
-    NULL
   })
   if (getOption('xfun.rev_check.summary', FALSE)) {
     html = compare_Rcheck(); if (isTRUE(grepl('[.]html$', html))) browseURL(html)
   }
-  res = Filter(function(x) !is.null(x), res)
-  if (length(res)) res
+  unlist(res)
 }
 
 # remove the OK lines in the check log
