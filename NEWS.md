@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.27
 
+- Exported and documented the function `xfun::base_pkgs()` (to return base R package names).
 
 # CHANGES IN xfun VERSION 0.26
 

@@ -325,6 +325,13 @@ news2md = function(package, ..., output = 'NEWS.md', category = TRUE) {
   if (is.na(output)) raw_string(res) else write_utf8(res, output)
 }
 
+#' Get base R package names
+#'
+#' Return names of packages from \code{\link{installed.packages}()} of which the
+#' priority is \code{"base"}.
+#' @return A character vector of base R package names.
+#' @export
+#' @examples xfun::base_pkgs()
 base_pkgs = function() rownames(installed.packages(priority = 'base'))
 
 # update one package (from source by default)
