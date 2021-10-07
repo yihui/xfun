@@ -116,7 +116,16 @@ rev_check = function(
 
   # install packages that are not loadable (testing in parallel)
   p_install = function(pkgs) {
-    pkg_install(unlist(plapply(pkgs, function(p) if (!loadable(p)) p)))
+    pkgs_up = NULL
+    if (update) {
+      message('Updating all R packages...')
+      pkgs_up = intersect(old.packages(checkBuilt = TRUE)[, 'Package'], pkgs)
+      pkg_install(pkgs_up)
+    }
+    pkgs = setdiff(pkgs, pkgs_up)  # don't install pkgs that were just updated
+    print(system.time(
+      pkg_install(unlist(plapply(pkgs, function(p) if (!loadable(p)) p)))
+    ))
   }
 
   unlink('*.Rcheck2', recursive = TRUE)
@@ -132,15 +141,8 @@ rev_check = function(
     recheck
   } else {
     res = check_deps(pkg, db, which)
-    pkgs_up = NULL
-    if (update) {
-      message('Updating all R packages...')
-      pkgs_up = intersect(old.packages(checkBuilt = TRUE)[, 'Package'], res$install)
-      pkg_install(pkgs_up)
-    }
     message('Installing dependencies of reverse dependencies')
     res$install = setdiff(res$install, ignore_deps())
-    res$install = setdiff(res$install, pkgs_up)  # don't install pkgs that were just updated
     print(system.time(p_install(res$install)))
     res$check
   }
