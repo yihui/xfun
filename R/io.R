@@ -210,14 +210,14 @@ download_file = function(url, output = url_filename(url), ...) {
     opts = options(timeout = 3600)  # one hour
     on.exit(options(opts), add = TRUE)
   }
-  download = function(method = 'auto') download.file(url, output, ..., method = method)
+  download = function(method = 'auto') {
+    tryCatch(download.file(url, output, ..., method = method), error = function(e) 1L)
+  }
   for (method in c(if (is_windows()) 'wininet', 'libcurl', 'auto')) {
-    if (!inherits(try_silent(res <- download(method = method)), 'try-error') && res == 0)
-      return(res)
+    if (download(method = method) == 0) return(0L)
   }
 
   # check for libcurl/curl/wget/lynx, call download.file with appropriate method
-  res = NA
   if (Sys.which('curl') != '') {
     # curl needs to add a -L option to follow redirects
     opts = if (is.null(getOption('download.file.extra'))) options(download.file.extra = '-L')
@@ -230,9 +230,8 @@ download_file = function(url, output = url_filename(url), ...) {
   if (Sys.which('lynx') != '') {
     if ((res <- download(method = 'lynx')) == 0) return(res)
   }
-  if (is.na(res)) stop('No download method works (auto/wininet/wget/curl/lynx)')
 
-  res
+  stop('No download method works (auto/wininet/wget/curl/lynx)')
 }
 
 #' Get the tags of Github releases of a repository
