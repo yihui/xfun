@@ -146,6 +146,8 @@ rev_check = function(
     print(system.time(p_install(res$install)))
     res$check
   }
+  pkgs = intersect(pkgs, rownames(db))  # make sure the pkgs are on CRAN
+
   lib_cran = './library-cran'
   on.exit(unlink(lib_cran, recursive = TRUE), add = TRUE)
   dir.create(lib_cran, showWarnings = FALSE)
