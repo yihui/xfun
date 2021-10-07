@@ -41,7 +41,9 @@ file will be read as a character vector and passed to this argument.}
 
 \item{update}{Whether to update all packages before the check.}
 
-\item{timeout}{Timeout in seconds for \command{R CMD check}.}
+\item{timeout}{Timeout in seconds for \command{R CMD check} to check each
+package. The (approximate) total time can be limited by the global option
+\code{xfun.rev_check.timeout_total}.}
 
 \item{src}{The path of the source package directory.}
 
@@ -58,6 +60,12 @@ full diffs of the logs. If \code{FALSE}, compare the full logs under
 \item{output}{The output Markdown file to which the diffs in check logs will
 be written. If the \pkg{markdown} package is available, the Markdown file
 will be converted to HTML, so you can see the diffs more clearly.}
+}
+\value{
+A named numeric vector with the names being package names of reverse
+  dependencies; \code{0} indicates check success, \code{1} indicates failure,
+  and \code{2} indicates that a package was not checked due to global
+  timeout.
 }
 \description{
 Install the source package, figure out the reverse dependencies on CRAN,
