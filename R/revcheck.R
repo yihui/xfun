@@ -288,6 +288,17 @@ identical_logs = function(dirs) {
   TRUE
 }
 
+# delete files/dirs that are usually not helpful
+clean_Rcheck2 = function(dir = '.') {
+  owd = setwd(dir); on.exit(setwd(owd), add = TRUE)
+  ds = list.files('.', '.+[.]Rcheck2$')
+  for (d in c(ds, gsub('2$', '', ds))) {
+    f1 = list.files(d, full.names = TRUE)
+    f2 = file.path(d, c('00_pkg_src', '00check.log', '00install.log'), fsep = '/')
+    unlink(setdiff(f1, f2), recursive = TRUE)
+  }
+}
+
 # add a new library path to R_LIBS_USER
 tweak_r_libs = function(new) {
   x = read_all(c('~/.Renviron', '.Renviron'))
