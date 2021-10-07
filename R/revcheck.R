@@ -319,18 +319,21 @@ pkg_dep = function(x, ...) {
 # calculate the packages required to check a package
 check_deps = function(x, db = available.packages(), which = 'all') {
   if (identical(which, 'hard')) which = c('Depends', 'Imports', 'LinkingTo')
+  x0 = db[, 'Package']  # all available packages
   # packages that reverse depend on me
   x1 = pkg_dep(x, db, which, reverse = TRUE)
+  x1 = intersect(x1, x0)
   # only check a sample of soft reverse dependencies (useful if there are too many)
   if (identical(which, 'all') && (n <- getOption('xfun.rev_check.sample', 100)) >= 0) {
     x2 = pkg_dep(x, db, c('Suggests', 'Enhances'), reverse = TRUE)
+    x2 = intersect(x2, x0)
     if (n < length(x2)) x1 = c(setdiff(x1, x2), sample(x2, n))
   }
   # to R CMD check x1, I have to install all their dependencies
   x2 = pkg_dep(x1, db, 'all')
   # and for those dependencies, I have to install the default dependencies
   x3 = pkg_dep(x2, db, recursive = TRUE)
-  list(check = x1, install = unique(c(x1, x2, x3)))
+  list(check = x1, install = intersect(c(x1, x2, x3), x0))
 }
 
 # mclapply() with a different default for mc.cores and disable prescheduling
