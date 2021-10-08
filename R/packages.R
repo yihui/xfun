@@ -128,7 +128,7 @@ pkg_install = function(pkgs, install = TRUE, ...) {
     }
   )
   if (identical(install, 'pak')) install = pak::pkg_install
-  install(pkgs, ...)
+  retry(install, pkgs, ..., .pause = 0)
 }
 
 #' Find out broken packages and reinstall them
