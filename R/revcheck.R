@@ -124,7 +124,7 @@ rev_check = function(
     }
     pkgs = setdiff(pkgs, pkgs_up)  # don't install pkgs that were just updated
     print(system.time(
-      pkg_install(unlist(plapply(pkgs, function(p) if (!loadable(p)) p)))
+      pkg_install(unlist(plapply(pkgs, function(p) if (!loadable(p, new_session = TRUE)) p)))
     ))
   }
 
