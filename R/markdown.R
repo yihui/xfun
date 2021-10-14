@@ -92,10 +92,11 @@ escape_math = function(x) {
     x[i] = gsub('^([$][$])([^ ]+)', '`\\1\\2', x[i], perl = TRUE)
     x[i] = gsub('([^ ])([$][$])$', '\\1\\2`', x[i], perl = TRUE)
   }
-  # equation environments (\begin and \end must be matched)
+  # equation environments (\begin and \end must match)
   i1 = grep('^\\\\begin\\{[^}]+\\}$', x)
   i2 = grep('^\\\\end\\{[^}]+\\}$', x)
   if (length(i1) == length(i2)) {
+    # TODO: do not protect inner environments in case of nested environments (#57)
     x[i1] = paste0('`', x[i1])
     x[i2] = paste0(x[i2], '`')
   }
