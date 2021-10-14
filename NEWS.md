@@ -2,6 +2,8 @@
 
 - Exported and documented the function `xfun::base_pkgs()` (to return base R package names).
 
+- Changed the default value of the `status_only` argument of `compare_Rcheck()` from `FALSE` to `TRUE`.
+
 # CHANGES IN xfun VERSION 0.26
 
 - The `windows_only` argument of `native_encode()` has been removed. Now `native_encode()` only tries the conversion to native encoding on platforms where `l10n_info()[['UTF-8']]` does not return `TRUE`.

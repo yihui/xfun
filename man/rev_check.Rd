@@ -16,7 +16,7 @@ rev_check(
   src_dir = getOption("xfun.rev_check.src_dir")
 )
 
-compare_Rcheck(status_only = FALSE, output = "00check_diffs.md")
+compare_Rcheck(status_only = TRUE, output = "00check_diffs.md")
 }
 \arguments{
 \item{pkg}{The package name.}

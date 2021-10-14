@@ -388,7 +388,7 @@ clean_Rcheck = function(dir, log = read_utf8(file.path(dir, '00check.log'))) {
 #'   be written. If the \pkg{markdown} package is available, the Markdown file
 #'   will be converted to HTML, so you can see the diffs more clearly.
 #' @export
-compare_Rcheck = function(status_only = FALSE, output = '00check_diffs.md') {
+compare_Rcheck = function(status_only = TRUE, output = '00check_diffs.md') {
   if (length(dirs <- list.files('.', '.+[.]Rcheck2$')) == 0) {
     # clean up the `recheck` file
     if (file.exists('recheck')) writeLines(character(), 'recheck')
@@ -405,10 +405,12 @@ compare_Rcheck = function(status_only = FALSE, output = '00check_diffs.md') {
     if (status_only) {
       status_line = function(file) {
         x = tail(read_utf8(file), 1)
-        if (!grepl('^Status: ', x)) stop('The last line of ', file, ' is not the status.')
-        x
+        if (grepl('^Status: ', x)) x else {
+          warning('The last line of ', file, ' is not the status.')
+          NULL
+        }
       }
-      if (status_line(f[1]) == status_line(f[2])) {
+      if (identical(status_line(f[1]), status_line(f[2]))) {
         unlink(d2(d), recursive = TRUE); next
       }
     }
