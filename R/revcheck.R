@@ -276,6 +276,8 @@ clean_log = function() {
   x[grep(dirname(tempdir()), x, fixed = TRUE)] = 'RANDOM TEMPDIR/TEMPFILE PATH DELETED'
   # delete the download progress
   x = grep('^\\s*\\[\\d+%] Downloaded \\d+ bytes...\\s*$', x, invert = TRUE, value = TRUE)
+  # delete lines of the form "address 0x1067143eb, cause 'illegal opcode'"
+  x = grep("address 0x[[:xdigit:]]+, cause '[^']+'", x, invert = TRUE, value = TRUE)
   writeLines(tail(x, -2), l)  # remove the first 2 lines (log dir name and R version)
 }
 
