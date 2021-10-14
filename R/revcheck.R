@@ -422,7 +422,7 @@ compare_Rcheck = function(status_only = TRUE, output = '00check_diffs.md') {
       '```diff', file_diff(f), '```', ''
     )
     if (length(res2 <- cran_check_page(p, NULL))) res = c(
-      res, 'CRAN check logs:\n\n```', unique(unlist(strsplit(res2, '\n'))), '```\n'
+      res, 'CRAN check logs:\n\n```', head_tail(unique(unlist(strsplit(res2, '\n')))), '```\n'
     )
   }
   writeLines(res, output)
@@ -438,6 +438,12 @@ compare_Rcheck = function(status_only = TRUE, output = '00check_diffs.md') {
   )
   if (!getOption('xfun.rev_check.keep_md', FALSE)) unlink(output)
   html_file
+}
+
+# keep the first and last n elements in x, and omit the middle
+head_tail = function(x, n = 10) {
+  if (length(x) <= 2 * n) return(x)
+  c(head(x, n), '....', tail(x, n))
 }
 
 # compute the diffs of two files; if diffs too large, dedup them
