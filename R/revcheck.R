@@ -248,11 +248,16 @@ rev_check = function(
       }
       # clean up the check log, and recheck with the current CRAN version of pkg
       cleanup = function() in_dir(d, {
-        clean_log()
+        x = clean_log()
         # so that I can easily preview it in the Finder on macOS
         file.exists('00install.out') && file.rename('00install.out', '00install.log')
+        x
       })
-      cleanup()
+      # try one more time if vignettes failed to build for some reason
+      if (recheck_vig(cleanup())) {
+        check_it()
+        if (clean_Rcheck(d)) return(timing())
+      }
       file.rename(d, d2 <- paste0(d, '2'))
       check_it('--no-environ', env = tweak_r_libs(lib_cran))
       if (!dir.exists(d)) file.rename(d2, d) else {
@@ -278,7 +283,26 @@ clean_log = function() {
   x = grep('^\\s*\\[\\d+%] Downloaded \\d+ bytes...\\s*$', x, invert = TRUE, value = TRUE)
   # delete lines of the form "address 0x1067143eb, cause 'illegal opcode'"
   x = grep("address 0x[[:xdigit:]]+, cause '[^']+'", x, invert = TRUE, value = TRUE)
-  writeLines(tail(x, -2), l)  # remove the first 2 lines (log dir name and R version)
+  x = x[x != 'Error: Vignette re-building failed.']
+  x = tail(x, -2)
+  writeLines(x, l)  # remove the first 2 lines (log dir name and R version)
+  x
+}
+
+# sometimes R CMD check fails to build vignettes for unknown reasons; try to
+# recheck the package in this case
+recheck_vig = function(x) {
+  if (!any(i1 <- (x == '* checking re-building of vignette outputs ... WARNING')))
+    return(FALSE)
+
+  i1 = which(i1)[1]
+  i2 = which(x == 'Execution halted')
+  i2 = i2[i2 > i1]
+  if (length(i2) == 0) return(FALSE)
+
+  # return TRUE if no errors were found in processing vignettes
+  i2 = tail(i2, 1)
+  length(grep('Error: processing vignette .+ failed with diagnostics:', x[i1:i2])) == 0
 }
 
 # are the check logs identical under a series of *.Rcheck directories?
