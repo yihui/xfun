@@ -517,6 +517,7 @@ crandalf_id = function(pkg, ...) {
 }
 
 crandalf_merge = function(pkg) {
+  unlink(list.files('.', '[.]Rcheck2?$'), recursive = TRUE)
   x1 = x2 = x3 = NULL
   f1 = '00check_diffs.html'; f3 = 'latex.txt'
   for (d in list.files('.', '^crandalf-.+')) {
