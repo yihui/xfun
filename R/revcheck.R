@@ -297,6 +297,13 @@ recheck_vig = function(x) {
   i2 = i2[i2 > i1]
   if (length(i2) == 0) return(x)
 
+  i3 = grep('^[*] checking ', x)  # next checking item
+  i3 = i3[i3 > i1]
+  if (length(i3)) {
+    i2 = i2[i2 < i3[1]]  # 'Execution halted' needs to appear before next '* checking'
+    if (length(i2) == 0) return(x)
+  }
+
   # if no explicit errors were found in processing vignettes, remove the relevant log
   i2 = tail(i2, 1)
   if (length(grep('Error: processing vignette .+ failed with diagnostics:', x[i1:i2])) == 0)
