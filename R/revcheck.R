@@ -583,7 +583,10 @@ compare_Rcheck = function(status_only = TRUE, output = '00check_diffs.md') {
           NULL
         }
       }
-      if (identical(status_line(f[1]), status_line(f[2]))) {
+      # if the check with current CRAN version of package also failed, or the
+      # two statues are the same, chances are we are good to go
+      s1 = status_line(f[1])
+      if (length(grep('Status: .*\\d+ ERROR', s1)) || identical(s1, status_line(f[2]))) {
         unlink(d2(d), recursive = TRUE); next
       }
     }
