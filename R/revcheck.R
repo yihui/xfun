@@ -498,7 +498,7 @@ crandalf_results = function(pkg, repo = NA, limit = 200, wait = 5 * 60) {
     message('Downloading check results (', i, '/', nrow(res), ')')
     gh_run('download', res[i, 7], '-D', tempfile('crandalf-', '.'), repo = repo)
   }
-  if (interactive()) browseURL(crandalf_merge())
+  if (interactive()) browseURL(crandalf_merge(pkg))
 }
 
 # retrieve the first N jobs info
@@ -516,7 +516,7 @@ crandalf_id = function(pkg, ...) {
   }
 }
 
-crandalf_merge = function() {
+crandalf_merge = function(pkg) {
   x1 = x2 = x3 = NULL
   f1 = '00check_diffs.html'; f3 = 'latex.txt'
   for (d in list.files('.', '^crandalf-.+')) {
@@ -544,11 +544,18 @@ crandalf_merge = function() {
     }
     unlink(d, recursive = TRUE)
   }
-  write_utf8(x1, f1)
+  write_utf8(x1, f1)  # the full summary
+
+  # store newly detected missing latex packages in latex.txt and commit/push
+  git_co('main')
+  append_unique(x3, f3)
+  find_missing_latex()
+  git(c('commit', '-m', 'add more latex packages', f3))
+  git('push')
+
+  git_co(paste0('check-', pkg))
   r = '[.]Rcheck2$'
   write_utf8(sort(unique(c(x2, gsub(r, '', list.files('.', r))))), 'recheck')
-  append_unique(x3, f3)
-  find_missing_latex()  # store missing latex packages in latex.txt
   f1
 }
 
