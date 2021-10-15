@@ -494,8 +494,8 @@ crandalf_id = function(pkg, ...) {
 }
 
 crandalf_merge = function() {
-  x1 = x2 = NULL
-  f1 = '00check_diffs.html'
+  x1 = x2 = x3 = NULL
+  f1 = '00check_diffs.html'; f3 = 'latex.txt'
   for (d in list.files('.', '^crandalf-.+')) {
     if (!dir_exists(d)) next
     p = file.path(d, 'macOS-rev-check-results')
@@ -515,10 +515,16 @@ crandalf_merge = function() {
     }
     cs = list.files(p, '[.]Rcheck[2]?$', full.names = TRUE)
     file.rename(cs, basename(cs))
+    if (file_exists(f <- file.path(p, f3))) {
+      x3 = c(x3, read_utf8(f))
+      file.remove(f)
+    }
     unlink(d, recursive = TRUE)
   }
   write_utf8(x1, f1)
   write_utf8(x2, 'recheck')
+  write_utf8(sort(c(x3, read_utf8(f3))), f3)
+  find_missing_latex()  # store missing latex packages in latex.txt
   f1
 }
 
@@ -660,13 +666,18 @@ cran_check_pages = function() {
 }
 
 # parse the check log for missing LaTeX packages and install them
-install_missing_latex = function() {
-  dirs = list.files('.', '[.]Rcheck$')
+find_missing_latex = function() {
+  dirs = list.files('.', '[.]Rcheck2?$')
   pkgs = NULL
   for (d in dirs) {
     if (dir.exists(d)) pkgs = c(pkgs, in_dir(
       d, tinytex::parse_packages('00check.log', quiet = c(TRUE, FALSE, FALSE))
     ))
   }
-  tinytex::tlmgr_install(unique(pkgs))
+  pkgs = unique(pkgs)
+  if (file_exists(f <- 'latex.txt')) {
+    res = read_utf8(f)
+    write_utf8(sort(unique(c(res, pkgs))), f)
+  }
+  pkgs
 }
