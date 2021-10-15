@@ -351,6 +351,177 @@ check_deps = function(x, db = available.packages(), which = 'all') {
   list(check = x1, install = intersect(c(x1, x2, x3), x0))
 }
 
+#' Submit check jobs to crandalf
+#'
+#' Check the reverse dependencies of a package using the crandalf service:
+#' \url{https://github.com/yihui/crandalf}. If the number of reverse
+#' dependencies is large, they will be split into batches and pushed to crandalf
+#' one by one.
+#'
+#' Due to the time limit of a single job on Github Actions (6 hours), you will
+#' have to split the large number of reverse dependencies into batches and check
+#' them sequentially on Github (at most 5 jobs in parallel). The function
+#' \code{crandalf_check()} does this automatically when necessary. It requires
+#' the \command{git} command to be available.
+#'
+#' The function \code{crandalf_results()} fetches check results from Github
+#' after all checks are completed, merge the results, and show a full summary of
+#' check results. It requires \code{gh} (Github CLI:
+#' \url{https://cli.github.com/manual/}) to be installed and you also need to
+#' authenticate with your Github account beforehand.
+#' @param pkg The package name of which the reverse dependencies are to be
+#'   checked.
+#' @param size The number of reverse dependencies to be checked in each job.
+#' @param jobs The number of jobs to run in Github Actions (by default, all jobs
+#'   are submitted, but you can choose to submit the first few jobs).
+#' @param which The type of dependencies (see \code{\link{rev_check}()}).
+#' @export
+crandalf_check = function(pkg, size = 400, jobs = Inf, which = 'all') {
+  git_test_branch()
+  git_co('main')
+  on.exit(git_co('main'), add = TRUE)
+  git_test_branch()
+
+  # do everything inside the check-pkg branch
+  b = paste0('check-', pkg)
+  if (git_co(b, stderr = FALSE) != 0) {
+    git_co(c('-b', b))
+    writeLines('# placeholder', 'recheck')
+    git(c('add', 'recheck'))
+    git(c('commit', '-m', shQuote(paste('Revcheck', pkg))))
+    git('push')
+    message(
+      'Please create a pull request from the branch ', b,
+      ' on Github and re-run xfun::crandalf_check("', pkg, '").'
+    )
+    return(invisible())
+  }
+  git(c('merge', 'main'))
+
+  x = check_deps(pkg, which = which)$check
+  n = length(x)
+  if (n <= size) {
+    message('No need to split ', n, ' reverse dependencies into batches of size ', size, '.')
+    if (any(grepl('Your branch is ahead of ', git('status', stdout = TRUE)))) {
+      git('push')
+    } else if (Sys.which('gh') != '' && !is.null(id <- crandalf_id(pkg))) {
+      gh(c('run', 'rerun', id))
+    } else {
+      message('Remember to re-run the last job for the package ', pkg, ' on Github.')
+    }
+    return(invisible())
+  }
+
+  b = ceiling(n/size)
+  i = rep(seq_len(b), each = size)[seq_len(n)]
+  k = 1
+  # use an id in the commit so that I know which jobs are for the same pkg
+  id = format(Sys.time(), '%Y%m%d%H%M')
+  for (p in head(split(x, i), jobs)) {
+    message('Batch ', k)
+    writeLines(p, 'recheck')
+    git(c('add', 'recheck'))
+    git(c('commit', '-m', shQuote(paste(
+      c(id, 'checking:', head(p, 3), '...'), collapse = ' '
+    ))))
+    git('push')
+    Sys.sleep(10)
+    k = k + 1
+  }
+}
+
+#' @param repo The crandalf repo on Github (of the form \code{user/repo} such as
+#'   \code{"yihui/crandalf"}). Usually you do not need to specify it, unless you
+#'   are not calling this function inside the crandalf project, because
+#'   \command{gh} should be able to figure out the repo automatically.
+#' @param limit The maximum of records for \command{gh run list} to retrieve.
+#'   You only need a larger number if the check results are very early in the
+#'   Github Action history.
+#' @param wait Number of seconds to wait if not all jobs have been completed on
+#'   Github. By default, this function checks the status every 5 minutes until
+#'   all jobs are completed. Set \code{wait} to 0 to disable waiting (and throw
+#'   an error immediately when any jobs are not completed).
+#' @rdname crandalf_check
+#' @export
+crandalf_results = function(pkg, repo = NA, limit = 200, wait = 5 * 60) {
+  res = crandalf_jobs(pkg, repo, limit)
+  if (NROW(res) == 0) {
+    stop('Did not find check results for ', pkg, ' from Github Actions.')
+  }
+  if (any(res[, 1] != 'completed')) {
+    if (wait <= 0) stop('Please wait till all jobs have been completed on Github Actions.')
+    status = NULL
+    repeat {
+      res = crandalf_jobs(pkg, repo, limit)
+      if (all(res[, 1] == 'completed')) break
+      if (is.null(status) || !identical(status, table(res[, 1]))) {
+        status = table(res[, 1])
+        timestamp()
+        print(status)
+      }
+      Sys.sleep(wait)
+    }
+  }
+  ids = grep_sub('^(\\d+) checking: .+', '\\1', res[, 3])
+  if (length(ids) == 0) {
+    stop('Failed to find the ID in the commit messages.')
+  }
+  res = res[grep(sprintf('^%s checking: ', ids[1]), res[, 3]), , drop = FALSE]
+  res = res[res[, 2] == 'failure', , drop = FALSE]
+  if (NROW(res) == 0) {
+    stop('Did not find any failed results on Github Actions.')
+  }
+  for (i in seq_len(nrow(res))) {
+    message('Downloading check results (', i, '/', nrow(res), ')')
+    gh_run('download', res[i, 7], '-D', tempfile('crandalf-', '.'))
+  }
+  if (interactive()) browseURL(crandalf_merge())
+}
+
+# retrieve the first N jobs info
+crandalf_jobs = function(pkg, repo = NA, limit = 200) {
+  res = gh_run('list', '-L', limit, '-w', 'rev-check', repo = repo)
+  res = res[grep(paste0('rev-check\tcheck-', pkg), res)]
+  do.call(rbind, strsplit(res, '\t'))
+}
+
+# find the id of the last job triggered by the check-pkg branch
+crandalf_id = function(pkg, ...) {
+  for (i in c(50, 200, 1000)) {
+    res = crandalf_jobs(pkg, limit = i, ...)
+    if (NROW(res) > 0 && res[1, 1] == 'completed') return(res[1, 7])
+  }
+}
+
+crandalf_merge = function() {
+  x1 = x2 = NULL
+  f1 = '00check_diffs.html'
+  for (d in list.files('.', '^crandalf-.+')) {
+    if (!dir_exists(d)) next
+    p = file.path(d, 'macOS-rev-check-results')
+    if (file_exists(f <- file.path(p, f1))) {
+      x = read_utf8(f)
+      x1 = if (length(x1) == 0) x else {
+        i1 = grep('<body>', x)[1]
+        i2 = tail(grep('</body>', x), 1)
+        i3 = tail(grep('</body>', x1), 1)
+        append(x1, x[(i1 + 1):(i2 - 1)], i3 - 1)
+      }
+      file.remove(f)
+    }
+    if (file_exists(f <- file.path(p, 'recheck2'))) {
+      x2 = c(x2, read_utf8(f))
+      file.remove(f)
+    }
+    cs = list.files(p, '[.]Rcheck[2]?$', full.names = TRUE)
+    file.rename(cs, basename(cs))
+    unlink(d, recursive = TRUE)
+  }
+  write_utf8(x1, f1)
+  write_utf8(x2, 'recheck')
+  f1
+}
+
 # mclapply() with a different default for mc.cores and disable prescheduling
 plapply = function(X, FUN, ...) {
   parallel::mclapply(

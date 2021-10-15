@@ -18,3 +18,28 @@ github_releases = function(repo, subpath = '', pattern = '(v[0-9.]+)') {
   v = gsub(r, '\\1', grep(r, h, value = TRUE))
   unique(v)
 }
+
+git = function(...) {
+  if (Sys.which('git') == '') stop('git is not available')
+  system2('git', ...)
+}
+
+git_co = function(args = NULL, ...) {
+  git(c('checkout', args), ...)
+}
+
+git_test_branch = function() {
+  if (length(d <- git(c('diff', '--name-only'), stdout = TRUE))) stop(
+    'The current branch has changes not stated for commit:\n',
+    paste(d, collapse = '\n')
+  )
+}
+
+gh = function(...) {
+  if (Sys.which('gh') == '') stop('Github CLI not found: https://cli.github.com')
+  system2('gh', ...)
+}
+
+gh_run = function(..., repo = NA) {
+  gh(c(if (!is.na(repo)) c('-R', repo), 'run', ...), stdout = TRUE)
+}
