@@ -248,16 +248,13 @@ rev_check = function(
       }
       # clean up the check log, and recheck with the current CRAN version of pkg
       cleanup = function() in_dir(d, {
-        x = clean_log()
+        clean_log()
         # so that I can easily preview it in the Finder on macOS
         file.exists('00install.out') && file.rename('00install.out', '00install.log')
-        x
       })
-      # try one more time if vignettes failed to build for some reason
-      if (recheck_vig(cleanup())) {
-        check_it()
-        if (clean_Rcheck(d)) return(timing())
-      }
+      # ignore vignettes that failed to build for unknown reasons
+      cleanup()
+      if (clean_Rcheck(d)) return(timing())
       file.rename(d, d2 <- paste0(d, '2'))
       check_it('--no-environ', env = tweak_r_libs(lib_cran))
       if (!dir.exists(d)) file.rename(d2, d) else {
@@ -283,7 +280,7 @@ clean_log = function() {
   x = grep('^\\s*\\[\\d+%] Downloaded \\d+ bytes...\\s*$', x, invert = TRUE, value = TRUE)
   # delete lines of the form "address 0x1067143eb, cause 'illegal opcode'"
   x = grep("address 0x[[:xdigit:]]+, cause '[^']+'", x, invert = TRUE, value = TRUE)
-  x = x[x != 'Error: Vignette re-building failed.']
+  x = recheck_vig(x)
   x = tail(x, -2)
   writeLines(x, l)  # remove the first 2 lines (log dir name and R version)
   x
@@ -293,16 +290,18 @@ clean_log = function() {
 # recheck the package in this case
 recheck_vig = function(x) {
   if (!any(i1 <- (x == '* checking re-building of vignette outputs ... WARNING')))
-    return(FALSE)
+    return(x)
 
   i1 = which(i1)[1]
   i2 = which(x == 'Execution halted')
   i2 = i2[i2 > i1]
-  if (length(i2) == 0) return(FALSE)
+  if (length(i2) == 0) return(x)
 
-  # return TRUE if no errors were found in processing vignettes
+  # if no explicit errors were found in processing vignettes, remove the relevant log
   i2 = tail(i2, 1)
-  length(grep('Error: processing vignette .+ failed with diagnostics:', x[i1:i2])) == 0
+  if (length(grep('Error: processing vignette .+ failed with diagnostics:', x[i1:i2])) == 0)
+    x = x[-(i1:i2)]
+  x
 }
 
 # are the check logs identical under a series of *.Rcheck directories?
@@ -578,6 +577,8 @@ download_tarball = function(p, db = available.packages(type = 'source'), dir = '
 
 # clean up *.Rcheck if there are no warnings, errors, or notes in the log
 clean_Rcheck = function(dir, log = read_utf8(file.path(dir, '00check.log'))) {
+  # do not check the status line
+  if (length(grep('^Status: ', tail(log, 1)))) log = head(log, -1)
   if (length(grep('(WARNING|ERROR|NOTE)$', log)) == 0) unlink(dir, recursive = TRUE)
   !dir.exists(dir)
 }
