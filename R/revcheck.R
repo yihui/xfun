@@ -473,7 +473,7 @@ crandalf_results = function(pkg, repo = NA, limit = 200, wait = 5 * 60) {
   }
   for (i in seq_len(nrow(res))) {
     message('Downloading check results (', i, '/', nrow(res), ')')
-    gh_run('download', res[i, 7], '-D', tempfile('crandalf-', '.'))
+    gh_run('download', res[i, 7], '-D', tempfile('crandalf-', '.'), repo = repo)
   }
   if (interactive()) browseURL(crandalf_merge())
 }
