@@ -546,8 +546,9 @@ crandalf_merge = function() {
     unlink(d, recursive = TRUE)
   }
   write_utf8(x1, f1)
-  write_utf8(x2, 'recheck')
-  write_utf8(sort(c(x3, read_utf8(f3))), f3)
+  r = '[.]Rcheck2$'
+  write_utf8(sort(unique(c(x2, gsub(r, '', list.files('.', r))))), 'recheck')
+  append_unique(x3, f3)
   find_missing_latex()  # store missing latex packages in latex.txt
   f1
 }
