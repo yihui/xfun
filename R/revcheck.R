@@ -699,9 +699,6 @@ find_missing_latex = function() {
     ))
   }
   pkgs = unique(pkgs)
-  if (file_exists(f <- 'latex.txt')) {
-    res = read_utf8(f)
-    write_utf8(sort(unique(c(res, pkgs))), f)
-  }
+  if (file_exists(f <- 'latex.txt')) append_unique(pkgs, f)
   pkgs
 }

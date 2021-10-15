@@ -4,6 +4,11 @@
 #' is roughly \code{readLines(encoding = 'UTF-8')} (a warning will be issued if
 #' non-UTF8 lines are found), and \code{write_utf8()} calls
 #' \code{writeLines(enc2utf8(text), useBytes = TRUE)}.
+#'
+#' The function \code{append_utf8()} appends UTF-8 content to a file or
+#' connection based on \code{read_utf8()} and \code{write_utf8()}, and
+#' optionally sort the content. The function \code{append_unique()} appends
+#' unique lines to a file or connection.
 #' @param con A connection or a file path.
 #' @param error Whether to signal an error when non-UTF8 characters are detected
 #'   (if \code{FALSE}, only a warning message is issued).
@@ -39,6 +44,25 @@ write_utf8 = function(text, con, ...) {
     opts = options(encoding = 'native.enc'); on.exit(options(opts), add = TRUE)
     writeLines(enc2utf8(text), con, ..., useBytes = TRUE)
   }
+}
+
+#' @param sort Logical (\code{FALSE} means not to sort the content) or a
+#'   function to sort the content; \code{TRUE} is equivalent to
+#'   \code{base::sort}.
+#' @rdname read_utf8
+#' @export
+append_utf8 = function(text, con, sort = TRUE) {
+  x = read_utf8(con, error = TRUE)
+  x = c(x, text)
+  if (is.logical(sort)) sort = if (sort) base::sort else identity
+  if (is.function(sort)) x = sort(x)
+  write_utf8(x, con)
+}
+
+#' @rdname read_utf8
+#' @export
+append_unique = function(text, con, sort = function(x) sort(unique(x))) {
+  append_utf8(text, con, sort)
 }
 
 # which lines are invalid UTF-8

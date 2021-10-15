@@ -3,11 +3,17 @@
 \name{read_utf8}
 \alias{read_utf8}
 \alias{write_utf8}
+\alias{append_utf8}
+\alias{append_unique}
 \title{Read / write files encoded in UTF-8}
 \usage{
 read_utf8(con, error = FALSE)
 
 write_utf8(text, con, ...)
+
+append_utf8(text, con, sort = TRUE)
+
+append_unique(text, con, sort = function(x) sort(unique(x)))
 }
 \arguments{
 \item{con}{A connection or a file path.}
@@ -20,10 +26,20 @@ write_utf8(text, con, ...)
 
 \item{...}{Other arguments passed to \code{\link{writeLines}()} (except
 \code{useBytes}, which is \code{TRUE} in \code{write_utf8()}).}
+
+\item{sort}{Logical (\code{FALSE} means not to sort the content) or a
+function to sort the content; \code{TRUE} is equivalent to
+\code{base::sort}.}
 }
 \description{
 Read or write files, assuming they are encoded in UTF-8. \code{read_utf8()}
 is roughly \code{readLines(encoding = 'UTF-8')} (a warning will be issued if
 non-UTF8 lines are found), and \code{write_utf8()} calls
 \code{writeLines(enc2utf8(text), useBytes = TRUE)}.
+}
+\details{
+The function \code{append_utf8()} appends UTF-8 content to a file or
+connection based on \code{read_utf8()} and \code{write_utf8()}, and
+optionally sort the content. The function \code{append_unique()} appends
+unique lines to a file or connection.
 }
