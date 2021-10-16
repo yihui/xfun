@@ -61,7 +61,7 @@ append_utf8 = function(text, con, sort = TRUE) {
 
 #' @rdname read_utf8
 #' @export
-append_unique = function(text, con, sort = function(x) sort(unique(x))) {
+append_unique = function(text, con, sort = function(x) base::sort(unique(x))) {
   append_utf8(text, con, sort)
 }
 

@@ -13,7 +13,7 @@ write_utf8(text, con, ...)
 
 append_utf8(text, con, sort = TRUE)
 
-append_unique(text, con, sort = function(x) sort(unique(x)))
+append_unique(text, con, sort = function(x) base::sort(unique(x)))
 }
 \arguments{
 \item{con}{A connection or a file path.}
