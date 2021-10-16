@@ -163,7 +163,7 @@ check_built = function(dir = '.', dry_run = TRUE) {
   r =  paste0('_[-.0-9]+[.]', ext, '$')
   pkgs = list.files(dir, r, full.names = TRUE)
   meta = file.path(dir, 'PACKAGES')
-  info = if (file.exists(meta)) read.dcf(meta)
+  info = if (file_exists(meta)) read.dcf(meta)
   extract = if (grepl('gz$', ext)) untar else unzip
   for (f in pkgs) {
     d = file.path(gsub(r, '', basename(f)), 'DESCRIPTION')

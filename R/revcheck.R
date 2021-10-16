@@ -105,7 +105,7 @@ rev_check = function(
   timeout = getOption('xfun.rev_check.timeout', 15 * 60),
   src = file.path(src_dir, pkg), src_dir = getOption('xfun.rev_check.src_dir')
 ) {
-  if (length(src) != 1 || !dir.exists(src)) stop(
+  if (length(src) != 1 || !dir_exists(src)) stop(
     'The package source dir (the "src" argument) must be an existing directory'
   )
 
@@ -132,7 +132,7 @@ rev_check = function(
   if (missing(recheck)) {
     dirs = list.files('.', '.+[.]Rcheck$')
     pkgs = gsub('.Rcheck$', '', dirs)
-    recheck = if (length(pkgs) == 0 && file.exists('recheck')) {
+    recheck = if (length(pkgs) == 0 && file_exists('recheck')) {
       scan('recheck', 'character')
     } else pkgs
   }
@@ -160,7 +160,7 @@ rev_check = function(
     message('No reverse dependencies to be checked for the package ', pkg); return()
   }
 
-  if (missing(ignore) && file.exists('00ignore')) ignore = scan('00ignore', 'character')
+  if (missing(ignore) && file_exists('00ignore')) ignore = scan('00ignore', 'character')
   if (length(ignore)) {
     message('Ignoring packages: ', paste(ignore, collapse = ' '))
     unlink(sprintf('%s.Rcheck', ignore), recursive = TRUE)
@@ -188,9 +188,9 @@ rev_check = function(
 
     timing = function() {
       # in case two packages finish at exactly the same time
-      while (file.exists(l)) Sys.sleep(.1)
+      while (file_exists(l)) Sys.sleep(.1)
       file.create(l); on.exit(unlink(l), add = TRUE)
-      done = c(if (file.exists(f)) readRDS(f), p)
+      done = c(if (file_exists(f)) readRDS(f), p)
       saveRDS(done, f)
       n2 = length(setdiff(pkgs, done))  # remaining packages
       t1 = Sys.time(); t2 = Sys.time() + n2 * (t1 - t0) / (n - n2)
@@ -202,7 +202,7 @@ rev_check = function(
       setNames(as.integer(dir_exists(d)), p)
     }
 
-    if (!file.exists(z <- tars[p])) {
+    if (!file_exists(z <- tars[p])) {
       dir.create(d, showWarnings = FALSE)
       return(timing())
     }
@@ -222,14 +222,14 @@ rev_check = function(
     check_it()
 
     if (!clean_Rcheck(d)) {
-      if (!dir.exists(d)) {dir.create(d); return(timing())}
+      if (!dir_exists(d)) {dir.create(d); return(timing())}
       # try to install missing LaTeX packages for vignettes if possible, then recheck
       vigs = list.files(
         file.path(d, 'vign_test', p, 'vignettes'), '[.](Rnw|Rmd)',
         ignore.case = TRUE, full.names = TRUE
       )
       pkg_load2('tinytex')
-      if (length(vigs) && any(file.exists(with_ext(vigs, 'log')))) {
+      if (length(vigs) && any(file_exists(with_ext(vigs, 'log')))) {
         if (tinytex::is_tinytex()) for (vig in vigs) in_dir(dirname(vig), {
           Rscript(shQuote(c('-e', 'if (grepl("[.]Rnw$", f <- commandArgs(T), ignore.case = T)) knitr::knit2pdf(f) else rmarkdown::render(f)', basename(vig))))
         })
@@ -250,14 +250,14 @@ rev_check = function(
       cleanup = function() in_dir(d, {
         clean_log()
         # so that I can easily preview it in the Finder on macOS
-        file.exists('00install.out') && file.rename('00install.out', '00install.log')
+        file_exists('00install.out') && file.rename('00install.out', '00install.log')
       })
       # ignore vignettes that failed to build for unknown reasons
       cleanup()
       if (clean_Rcheck(d)) return(timing())
       file.rename(d, d2 <- paste0(d, '2'))
       check_it('--no-environ', env = tweak_r_libs(lib_cran))
-      if (!dir.exists(d)) file.rename(d2, d) else {
+      if (!dir_exists(d)) file.rename(d2, d) else {
         cleanup()
         if (identical_logs(c(d, d2))) unlink(c(d, d2), recursive = TRUE)
       }
@@ -272,7 +272,7 @@ rev_check = function(
 
 # remove the OK lines in the check log
 clean_log = function() {
-  if (!file.exists(l <- '00check.log')) return()
+  if (!file_exists(l <- '00check.log')) return()
   x = grep('^[*].+OK$', read_utf8(l), invert = TRUE, value = TRUE)
   # don't want diffs in random tempdir/tempfile paths when comparing check logs
   x[grep(dirname(tempdir()), x, fixed = TRUE)] = 'RANDOM TEMPDIR/TEMPFILE PATH DELETED'
@@ -314,7 +314,7 @@ recheck_vig = function(x) {
 # are the check logs identical under a series of *.Rcheck directories?
 identical_logs = function(dirs) {
   if (length(dirs) < 2) return(FALSE)
-  if (!all(file.exists(logs <- file.path(dirs, '00check.log')))) return(FALSE)
+  if (!all(file_exists(logs <- file.path(dirs, '00check.log')))) return(FALSE)
   x = read_utf8(logs[1])
   for (i in 2:length(dirs)) if (!identical(x, read_utf8(logs[i]))) return(FALSE)
   TRUE
@@ -353,7 +353,7 @@ path_sep = function(...) paste(..., sep = .Platform$path.sep)
 
 # read all files that exist
 read_all = function(files) {
-  unlist(lapply(files, function(f) if (file.exists(f)) read_utf8(f)))
+  unlist(lapply(files, function(f) if (file_exists(f)) read_utf8(f)))
 }
 
 # a shorthand of tools::package_dependencies()
@@ -577,13 +577,13 @@ plapply = function(X, FUN, ...) {
 
 # download the source package from CRAN
 download_tarball = function(p, db = available.packages(type = 'source'), dir = '.', retry = 3) {
-  if (!dir.exists(dir)) dir.create(dir, recursive = TRUE)
+  if (!dir_exists(dir)) dir.create(dir, recursive = TRUE)
   z = file.path(dir, sprintf('%s_%s.tar.gz', p, db[p, 'Version']))
   mapply(function(p, z) {
     # remove other versions of the package tarball
     unlink(setdiff(list.files(dir, sprintf('^%s_.+.tar.gz', p), full.names = TRUE), z))
     for (i in seq_len(retry)) {
-      if (file.exists(z)) break
+      if (file_exists(z)) break
       try(download.file(paste(db[p, 'Repository'], basename(z), sep = '/'), z, mode = 'wb'))
     }
   }, p, z, SIMPLIFY = FALSE)
@@ -595,7 +595,7 @@ clean_Rcheck = function(dir, log = read_utf8(file.path(dir, '00check.log'))) {
   # do not check the status line
   if (length(grep('^Status: ', tail(log, 1)))) log = head(log, -1)
   if (length(grep('(WARNING|ERROR|NOTE)$', log)) == 0) unlink(dir, recursive = TRUE)
-  !dir.exists(dir)
+  !dir_exists(dir)
 }
 
 #' @rdname rev_check
@@ -611,12 +611,12 @@ clean_Rcheck = function(dir, log = read_utf8(file.path(dir, '00check.log'))) {
 compare_Rcheck = function(status_only = TRUE, output = '00check_diffs.md') {
   if (length(dirs <- list.files('.', '.+[.]Rcheck2$')) == 0) {
     # clean up the `recheck` file
-    if (file.exists('recheck')) writeLines(character(), 'recheck')
+    if (file_exists('recheck')) writeLines(character(), 'recheck')
     return()
   }
   d2 = function(d) c(sub('2$', '', d), d)
   logs = function(d) file.path(d2(d), '00check.log')
-  dirs = dirs[rowSums(matrix(file.exists(logs(dirs)), ncol = 2)) == 2]
+  dirs = dirs[rowSums(matrix(file_exists(logs(dirs)), ncol = 2)) == 2]
   res = NULL
   if (!status_only && Sys.which('diff') == '')
     warning("The command 'diff' is not available; will not calculate exact diffs in logs.")
@@ -679,7 +679,7 @@ file_diff = function(files, len = 200, use_diff = Sys.which('diff') != '') {
 
 # specify a list of package names to be ignored when installing all dependencies
 ignore_deps = function() {
-  if (file.exists('00ignore_deps')) scan('00ignore_deps', 'character')
+  if (file_exists('00ignore_deps')) scan('00ignore_deps', 'character')
 }
 
 # download a check summary of a package from CRAN
@@ -702,7 +702,7 @@ cran_check_page = function(pkg, con = '00check-cran.log') {
 cran_check_pages = function() {
   dirs = list.files('.', '[.]Rcheck$')
   for (d in dirs) {
-    if (dir.exists(d)) in_dir(d, cran_check_page(gsub('[.]Rcheck$', '', d)))
+    if (dir_exists(d)) in_dir(d, cran_check_page(gsub('[.]Rcheck$', '', d)))
   }
 }
 
@@ -711,7 +711,7 @@ find_missing_latex = function() {
   dirs = list.files('.', '[.]Rcheck2?$')
   pkgs = NULL
   for (d in dirs) {
-    if (dir.exists(d)) pkgs = c(pkgs, in_dir(
+    if (dir_exists(d)) pkgs = c(pkgs, in_dir(
       d, tinytex::parse_packages('00check.log', quiet = c(TRUE, FALSE, FALSE))
     ))
   }

@@ -72,7 +72,7 @@ Rscript_call = function(
     c(options, shQuote(c(pkg_file('scripts', 'call-fun.R'), f)))
     ,..., wait = wait
   )
-  if (wait) if (file.exists(f[2])) readRDS(f[2]) else stop(fail, call. = FALSE)
+  if (wait) if (file_exists(f[2])) readRDS(f[2]) else stop(fail, call. = FALSE)
 }
 
 # call a function in a background process
@@ -211,7 +211,7 @@ bg_process = function(
     get_pid = function() {
       # make sure the command points to an actual executable (e.g., resolve 'R'
       # to 'R.exe')
-      if (!file.exists(command)) {
+      if (!file_exists(command)) {
         if (Sys.which(command) != '') command = Sys.which(command)
       }
       cmd = basename(command)

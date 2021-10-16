@@ -121,7 +121,7 @@ cache_rds = function(
   path = sub(r, paste0('_', md5, '\\1'), path)
   if (rerun) unlink(path)
   if (clean) clean_cache(path)
-  if (file.exists(path)) readRDS(path) else {
+  if (file_exists(path)) readRDS(path) else {
     obj = expr  # lazy evaluation
     dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
     saveRDS(obj, path, ...)
