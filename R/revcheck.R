@@ -558,7 +558,7 @@ crandalf_merge = function(pkg) {
   git_co('main')
   append_unique(x3, f3)
   find_missing_latex()
-  git(c('commit', '-m', 'add more latex packages', f3))
+  git(c('commit', '-m', shQuote('add more latex packages'), f3))
   git('push')
 
   git_co(paste0('check-', pkg))
