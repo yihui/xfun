@@ -646,7 +646,8 @@ compare_Rcheck = function(status_only = TRUE, output = '00check_diffs.md') {
       res, 'CRAN check logs:\n\n```', head_tail(unique(unlist(strsplit(res2, '\n')))), '```\n'
     )
   }
-  writeLines(res, output)
+  if (length(res) == 0) return()
+  xfun::write_utf8(res, output)
   if (!loadable('markdown')) return(output)
   markdown::markdownToHTML(
     text = gsub('>', '+', gsub('^<', '-', res)),
