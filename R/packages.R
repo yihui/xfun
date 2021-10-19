@@ -331,7 +331,8 @@ news2md = function(package, ..., output = 'NEWS.md', category = TRUE) {
 #' priority is \code{"base"}.
 #' @return A character vector of base R package names.
 #' @export
-#' @examples xfun::base_pkgs()
+#' @examplesIf interactive()
+#' xfun::base_pkgs()
 base_pkgs = function() rownames(installed.packages(priority = 'base'))
 
 # update one package (from source by default)
