@@ -38,6 +38,8 @@ returns the version of Pandoc, which can be very useful information for
 diagnostics.
 }
 \examples{
-if (interactive()) xfun::session_info()
-if (interactive() && loadable("MASS")) xfun::session_info("MASS")
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+xfun::session_info()
+if (xfun::loadable("MASS")) xfun::session_info("MASS")
+\dontshow{\}) # examplesIf}
 }

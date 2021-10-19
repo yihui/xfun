@@ -24,8 +24,9 @@
 #' @return A character vector of the session information marked as
 #'   \code{\link{raw_string}()}.
 #' @export
-#' @examples if (interactive()) xfun::session_info()
-#' if (interactive() && loadable('MASS')) xfun::session_info('MASS')
+#' @examplesIf interactive()
+#' xfun::session_info()
+#' if (xfun::loadable('MASS')) xfun::session_info('MASS')
 session_info = function(packages = NULL, dependencies = TRUE) {
   res = sessionInfo()
   res$matprod = res$BLAS = res$LAPACK = NULL

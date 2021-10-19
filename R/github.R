@@ -11,7 +11,8 @@
 #'   It must contain a group (i.e., must have a pair of parentheses).
 #' @export
 #' @return A character vector of (GIT) tags.
-#' @examples if (interactive()) xfun::github_releases('yihui/xfun')
+#' @examplesIf interactive()
+#' xfun::github_releases('yihui/xfun')
 github_releases = function(repo, subpath = '', pattern = '(v[0-9.]+)') {
   h = readLines(sprintf('https://github.com/%s/releases/%s', repo, subpath), warn = FALSE)
   r = sprintf('^.*?releases/tag/%s".*', pattern)

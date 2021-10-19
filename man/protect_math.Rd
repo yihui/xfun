@@ -38,6 +38,8 @@ If you are using Pandoc or the \pkg{rmarkdown} package, there is no
 }
 \examples{
 library(xfun)
-protect_math(c("hi $a+b$", "hello $$\\\\alpha$$", "no math here: $x is $10 dollars"))
-protect_math(c("hi $$", "\\\\begin{equation}", "x + y = z", "\\\\end{equation}"))
+protect_math(c("hi $a+b$", "hello $$\\\\alpha$$",
+    "no math here: $x is $10 dollars"))
+protect_math(c("hi $$", "\\\\begin{equation}", "x + y = z",
+    "\\\\end{equation}"))
 }

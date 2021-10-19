@@ -25,5 +25,7 @@ A character vector of (GIT) tags.
 Read the HTML source of the release page and parse the tags of the releases.
 }
 \examples{
-if (interactive()) xfun::github_releases("yihui/xfun")
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+xfun::github_releases("yihui/xfun")
+\dontshow{\}) # examplesIf}
 }

@@ -60,10 +60,10 @@ images, you may either use \code{output = identity}, or set the value of the
 \code{history} argument in \file{.Rprofile} or \file{.Renviron}.
 }
 \examples{
-if (interactive()) {
-    f = file.path(R.home("doc"), "html", "logo.jpg")
-    xfun::tinify(f)  # remember to set the API key before trying this
-}
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+f = file.path(R.home("doc"), "html", "logo.jpg")
+xfun::tinify(f)  # remember to set the API key before trying this
+\dontshow{\}) # examplesIf}
 }
 \references{
 Tinify API: \url{https://tinypng.com/developers}.

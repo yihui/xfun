@@ -24,6 +24,8 @@ One application of this function is to download a web resource. Since the
 download might fail sometimes, you may want to retry it for a few more times.
 }
 \examples{
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # read the Github releases info of the repo yihui/xfun
-if (interactive()) xfun::retry(xfun::github_releases, "yihui/xfun")
+xfun::retry(xfun::github_releases, "yihui/xfun")
+\dontshow{\}) # examplesIf}
 }

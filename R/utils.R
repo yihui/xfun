@@ -163,8 +163,9 @@ try_silent = function(expr) try(expr, silent = TRUE)
 #' @param .times The number of times.
 #' @param .pause The number of seconds to wait before the next attempt.
 #' @export
-#' @examples # read the Github releases info of the repo yihui/xfun
-#' if (interactive()) xfun::retry(xfun::github_releases, 'yihui/xfun')
+#' @examplesIf interactive()
+#' # read the Github releases info of the repo yihui/xfun
+#' xfun::retry(xfun::github_releases, 'yihui/xfun')
 retry = function(fun, ..., .times = 3, .pause = 5) {
   for (i in seq_len(.times)) {
     if (!inherits(res <- tryCatch(fun(...), error = identity), 'error'))

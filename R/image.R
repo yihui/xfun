@@ -51,11 +51,9 @@ add_border = function(input, pixels = 1, color = 'black', output) {
 #'   is a more comprehensive implementation of the Tinify API, whereas
 #'   \code{xfun::tinify()} has only implemented the feature of shrinking images.
 #' @export
-#' @examples
-#' if (interactive()) {
-#'   f = file.path(R.home('doc'), 'html', 'logo.jpg')
-#'   xfun::tinify(f)  # remember to set the API key before trying this
-#' }
+#' @examplesIf interactive()
+#' f = file.path(R.home('doc'), 'html', 'logo.jpg')
+#' xfun::tinify(f)  # remember to set the API key before trying this
 tinify = function(
   input, output, quiet = FALSE, force = FALSE,
   key = getOption('xfun.tinify.key', Sys.getenv('R_XFUN_TINIFY_KEY')),
