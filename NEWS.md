@@ -1,3 +1,7 @@
+# CHANGES IN xfun VERSION 0.28
+
+- Added a new function `url_accessible()` to test if a URL can be downloaded.
+
 # CHANGES IN xfun VERSION 0.27
 
 - Exported and documented the function `xfun::base_pkgs()` (to return base R package names).

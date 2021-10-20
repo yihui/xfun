@@ -258,6 +258,22 @@ download_file = function(url, output = url_filename(url), ...) {
   stop('No download method works (auto/wininet/wget/curl/lynx)')
 }
 
+#' Test if a URL is accessible
+#'
+#' Try to download a URL via \code{xfun::\link{download_file}()} and see if it
+#' succeeds.
+#' @param x A URL as a character string.
+#' @return \code{TRUE} or \code{FALSE}.
+#' @export
+#' @examples xfun::url_accessible('https://yihui.org')
+url_accessible = function(x) {
+  tf = tempfile(); on.exit(unlink(tf), add = TRUE)
+  tryCatch(suppressWarnings({
+    xfun::download_file(x, tf, quiet = TRUE)
+    TRUE
+  }), error = function(e) FALSE)
+}
+
 #' Generate a message with \code{cat()}
 #'
 #' This function is similar to \code{\link{message}()}, and the difference is
