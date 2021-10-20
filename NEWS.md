@@ -2,6 +2,8 @@
 
 - Added a new function `url_accessible()` to test if a URL can be downloaded.
 
+- Added a new function `try_error()` to try an expression and see if it throws an error.
+
 # CHANGES IN xfun VERSION 0.27
 
 - Exported and documented the function `xfun::base_pkgs()` (to return base R package names).
