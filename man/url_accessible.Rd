@@ -4,17 +4,20 @@
 \alias{url_accessible}
 \title{Test if a URL is accessible}
 \usage{
-url_accessible(x)
+url_accessible(x, use_curl = loadable("curl"))
 }
 \arguments{
 \item{x}{A URL as a character string.}
+
+\item{use_curl}{Whether to use the \pkg{curl} package.}
 }
 \value{
 \code{TRUE} or \code{FALSE}.
 }
 \description{
-Try to download a URL via \code{xfun::\link{download_file}()} and see if it
-succeeds.
+Try to send a \code{HEAD} request to a URL if \pkg{curl} is available,
+otherwise try to download the URL via \code{xfun::\link{download_file}()},
+and see if it succeeds.
 }
 \examples{
 xfun::url_accessible("https://yihui.org")
