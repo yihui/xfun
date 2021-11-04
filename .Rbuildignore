@@ -5,3 +5,4 @@
 ^codecov\.yml$
 ^\.github$
 ^README\.md$
+^cran-comments\.md$
