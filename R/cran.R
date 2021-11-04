@@ -101,8 +101,9 @@ submit_cran = function(file = pkg_build(), comment = '') {
   }
   params = list(
     uploaded_file = curl::form_file(file), name = info[1], email = info[2],
-    comment = comment, upload = 'Upload package'
+    upload = 'Upload package'
   )
+  params$comment = if (length(comment)) comment
   server = 'https://xmpalantir.wu.ac.at/cransubmit/index2.php'
 
   # submit the form
