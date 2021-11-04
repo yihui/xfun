@@ -1,3 +1,6 @@
+# CHANGES IN xfun VERSION 0.29
+
+
 # CHANGES IN xfun VERSION 0.28
 
 - Added a new function `url_accessible()` to test if a URL can be downloaded.
