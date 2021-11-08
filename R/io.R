@@ -234,9 +234,9 @@ download_file = function(url, output = url_filename(url), ...) {
     opts = options(timeout = 3600)  # one hour
     on.exit(options(opts), add = TRUE)
   }
-  download = function(method = 'auto') {
+  download = function(method = 'auto') suppressWarnings({
     tryCatch(download.file(url, output, ..., method = method), error = function(e) 1L)
-  }
+  })
   for (method in c(if (is_windows()) 'wininet', 'libcurl', 'auto')) {
     if (download(method = method) == 0) return(0L)
   }
