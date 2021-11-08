@@ -244,8 +244,10 @@ download_file = function(url, output = url_filename(url), ...) {
   # check for libcurl/curl/wget/lynx, call download.file with appropriate method
   if (Sys.which('curl') != '') {
     # curl needs to add a -L option to follow redirects
-    opts = if (is.null(getOption('download.file.extra'))) options(download.file.extra = '-L')
-    res = download(method = 'curl'); options(opts)
+    opts2 = if (is.null(getOption('download.file.extra')))
+      options(download.file.extra = c('-L', '--fail'))
+    on.exit(options(opts2), add = TRUE)
+    res = download(method = 'curl')
     if (res == 0) return(res)
   }
   if (Sys.which('wget') != '') {
