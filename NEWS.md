@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.29
 
+- `github_releases()` can fetch all releases (tags) of a Github repo now.
 
 # CHANGES IN xfun VERSION 0.28
 

@@ -4,28 +4,32 @@
 \alias{github_releases}
 \title{Get the tags of Github releases of a repository}
 \usage{
-github_releases(repo, subpath = "", pattern = "(v[0-9.]+)")
+github_releases(
+  repo,
+  tag = "",
+  pattern = "v[0-9.]+",
+  use_jsonlite = loadable("jsonlite")
+)
 }
 \arguments{
 \item{repo}{The repository name of the form \code{user/repo}, e.g.,
 \code{"yihui/xfun"}.}
 
-\item{subpath}{A character string to be appended to the URL of Github
-releases (i.e., \verb{https://github.com/user/repo/releases/}). For
-example, you may use \code{subpath = "latest"} to get the tag of the latest
-release.}
+\item{tag}{A tag as a character string. If provided, it will be returned if
+the tag exists. If \code{tag = "latest"}, the tag of the latest release is
+returned.}
 
-\item{pattern}{A regular expression to extract the tags from the HTML source.
-It must contain a group (i.e., must have a pair of parentheses).}
+\item{pattern}{A regular expression to match the tags.}
 }
 \value{
 A character vector of (GIT) tags.
 }
 \description{
-Read the HTML source of the release page and parse the tags of the releases.
+Use the Github API to obtain the tags of the releases.
 }
 \examples{
 \dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 xfun::github_releases("yihui/xfun")
+xfun::github_releases("gohugoio/hugo")
 \dontshow{\}) # examplesIf}
 }

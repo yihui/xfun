@@ -1,22 +1,44 @@
 #' Get the tags of Github releases of a repository
 #'
-#' Read the HTML source of the release page and parse the tags of the releases.
+#' Use the Github API to obtain the tags of the releases.
 #' @param repo The repository name of the form \code{user/repo}, e.g.,
 #'   \code{"yihui/xfun"}.
-#' @param subpath A character string to be appended to the URL of Github
-#'   releases (i.e., \verb{https://github.com/user/repo/releases/}). For
-#'   example, you may use \code{subpath = "latest"} to get the tag of the latest
-#'   release.
-#' @param pattern A regular expression to extract the tags from the HTML source.
-#'   It must contain a group (i.e., must have a pair of parentheses).
+#' @param tag A tag as a character string. If provided, it will be returned if
+#'   the tag exists. If \code{tag = "latest"}, the tag of the latest release is
+#'   returned.
+#' @param pattern A regular expression to match the tags.
 #' @export
 #' @return A character vector of (GIT) tags.
 #' @examplesIf interactive()
 #' xfun::github_releases('yihui/xfun')
-github_releases = function(repo, subpath = '', pattern = '(v[0-9.]+)') {
-  h = readLines(sprintf('https://github.com/%s/releases/%s', repo, subpath), warn = FALSE)
-  r = sprintf('^.*?releases/tag/%s".*', pattern)
-  v = gsub(r, '\\1', grep(r, h, value = TRUE))
+#' xfun::github_releases('gohugoio/hugo')
+github_releases = function(
+  repo, tag = '', pattern = 'v[0-9.]+', use_jsonlite = loadable('jsonlite')
+) {
+  i = 1; v = character()
+  repeat {
+    h = sprintf('https://api.github.com/repos/%s/tags?per_page=100&page=%d', repo, i)
+    v2 = unlist(if (use_jsonlite) {
+      res = jsonlite::fromJSON(h, FALSE)
+      lapply(res, `[[`, 'name')
+    } else {
+      res = read_utf8(h)
+      m = gregexec('\\{"name":"([^"]+)",', res)
+      lapply(regmatches(res, m), function(x) x[2, ])
+    })
+    if (length(v2) == 0) break
+    if (tag == 'latest') return(v2[1])
+    v = c(v, v2)
+    if (tag %in% v) return(tag)
+    if (length(v2) < 100) break  # not enough items for the next page
+    i = i + 1
+  }
+  if (length(v)) return(grep(sprintf('^%s$', pattern), unique(v), value = TRUE))
+
+  # the fallback method (read HTML source)
+  h = read_utf8(sprintf('https://github.com/%s/releases/%s', repo, tag))
+  r = sprintf('^.*?releases/tag/(%s)".*', pattern)
+  v = grep_sub(r, '\\1', h)
   unique(v)
 }
 
