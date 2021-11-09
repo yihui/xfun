@@ -7,6 +7,7 @@
 #'   the tag exists. If \code{tag = "latest"}, the tag of the latest release is
 #'   returned.
 #' @param pattern A regular expression to match the tags.
+#' @param use_jsonlite Whether to use \pkg{jsonlite} to parse the releases info.
 #' @export
 #' @return A character vector of (GIT) tags.
 #' @examplesIf interactive()

@@ -20,6 +20,8 @@ the tag exists. If \code{tag = "latest"}, the tag of the latest release is
 returned.}
 
 \item{pattern}{A regular expression to match the tags.}
+
+\item{use_jsonlite}{Whether to use \pkg{jsonlite} to parse the releases info.}
 }
 \value{
 A character vector of (GIT) tags.
