@@ -38,7 +38,7 @@ github_releases = function(
 
   # the fallback method (read HTML source)
   h = read_utf8(sprintf('https://github.com/%s/releases/%s', repo, tag))
-  r = sprintf('^.*?releases/tag/(%s)".*', pattern)
+  r = sprintf('^.*?%s/releases/tag/(%s)".*', repo, pattern)
   v = grep_sub(r, '\\1', h)
   unique(v)
 }
