@@ -33,6 +33,7 @@ github_releases = function(
     if (length(v2) < 100) break  # not enough items for the next page
     i = i + 1
   }
+  if (tag != '') return(intersect(tag, v))
   if (length(v)) return(grep(sprintf('^%s$', pattern), unique(v), value = TRUE))
 
   # the fallback method (read HTML source)
