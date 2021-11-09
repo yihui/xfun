@@ -2,6 +2,8 @@
 
 - `github_releases()` can fetch all releases (tags) of a Github repo now.
 
+- Added an argument `.error` to `download_file()` so that users can customize the error message when the download fails.
+
 # CHANGES IN xfun VERSION 0.28
 
 - Added a new function `url_accessible()` to test if a URL can be downloaded.

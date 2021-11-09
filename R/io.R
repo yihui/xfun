@@ -220,6 +220,7 @@ grep_sub = function(pattern, replacement, x, ...) {
 #'   \code{\link{url_filename}()}.
 #' @param ... Other arguments to be passed to \code{\link{download.file}()}
 #'   (except \code{method}).
+#' @param .error An error message to signal when the download fails.
 #' @note To allow downloading large files, the \code{timeout} option in
 #'   \code{\link{options}()} will be temporarily set to one hour (3600 seconds)
 #'   inside this function when this option has the default value of 60 seconds.
@@ -229,7 +230,10 @@ grep_sub = function(pattern, replacement, x, ...) {
 #' @return The integer code \code{0} for success, or an error if none of the
 #'   methods work.
 #' @export
-download_file = function(url, output = url_filename(url), ...) {
+download_file = function(
+  url, output = url_filename(url), ...,
+  .error = 'No download method works (auto/wininet/wget/curl/lynx)'
+) {
   if (getOption('timeout') == 60L) {
     opts = options(timeout = 3600)  # one hour
     on.exit(options(opts), add = TRUE)
@@ -257,7 +261,7 @@ download_file = function(url, output = url_filename(url), ...) {
     if ((res <- download(method = 'lynx')) == 0) return(res)
   }
 
-  stop('No download method works (auto/wininet/wget/curl/lynx)')
+  stop(.error)
 }
 
 #' Test if a URL is accessible

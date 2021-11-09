@@ -4,7 +4,12 @@
 \alias{download_file}
 \title{Try various methods to download a file}
 \usage{
-download_file(url, output = url_filename(url), ...)
+download_file(
+  url,
+  output = url_filename(url),
+  ...,
+  .error = "No download method works (auto/wininet/wget/curl/lynx)"
+)
 }
 \arguments{
 \item{url}{The URL of the file.}
@@ -14,6 +19,8 @@ download_file(url, output = url_filename(url), ...)
 
 \item{...}{Other arguments to be passed to \code{\link{download.file}()}
 (except \code{method}).}
+
+\item{.error}{An error message to signal when the download fails.}
 }
 \value{
 The integer code \code{0} for success, or an error if none of the
