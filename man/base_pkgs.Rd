@@ -13,8 +13,7 @@ A character vector of base R package names.
 Return names of packages from \code{\link{installed.packages}()} of which the
 priority is \code{"base"}.
 }
-\examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\examples{\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 xfun::base_pkgs()
 \dontshow{\}) # examplesIf}
 }
