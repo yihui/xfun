@@ -1,6 +1,7 @@
 #' Get the tags of Github releases of a repository
 #'
-#' Use the Github API to obtain the tags of the releases.
+#' Use the Github API (\code{\link{github_api}()}) to obtain the tags of the
+#' releases.
 #' @param repo The repository name of the form \code{user/repo}, e.g.,
 #'   \code{"yihui/xfun"}.
 #' @param tag A tag as a character string. If provided, it will be returned if
@@ -48,12 +49,23 @@ github_releases2 = function(repo, tag = '', pattern = '[^"&]+') {
   unique(grep_sub(r, '\\1', h))
 }
 
-# obtain results from Github API
+#' @details \code{github_api()} is a wrapper function based on
+#'   \code{rest_api_raw()} to obtain data from the Github API:
+#'   \url{https://docs.github.com/en/rest}. You can provide a personal access
+#'   token (PAT) via the \code{token} argument, or via one of the environment
+#'   variables \var{GITHUB_PAT}, \var{GITHUB_TOKEN}, \var{GH_TOKEN}. A PAT
+#'   allows for a much higher rate limit in API calls. Without a token, you can
+#'   only make 60 calls in an hour.
+#' @param raw Whether to return the raw response or parse the response with
+#'   \pkg{jsonlite}.
+#' @rdname rest_api
+#' @export
 github_api = function(
-  endpoint, params = list(), headers = NULL, raw = !loadable('jsonlite')
+  endpoint, token = '', params = list(), headers = NULL, raw = !loadable('jsonlite')
 ) {
-  token = unname(Sys.getenv(envs <- c('GITHUB_PAT', 'GITHUB_TOKEN', 'GH_TOKEN')))
-  token = if (length(token <-  token[token != ''])) c(token = token[1]) else ''
+  token = c(token, unname(Sys.getenv(envs <- c('GITHUB_PAT', 'GITHUB_TOKEN', 'GH_TOKEN'))))
+  token = if (length(token <-  token[token != ''])) token[1] else ''
+  names(token) = 'token'
   error = TRUE
   on.exit(if (error && token == '') message(
     'You may need to save a Github personal access token in one of the ',
