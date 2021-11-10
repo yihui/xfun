@@ -99,6 +99,13 @@ numbers_to_words = function(x, cap = FALSE, hyphen = TRUE, and = FALSE) {
 #' @rdname numbers_to_words
 n2w = numbers_to_words
 
+# create a URL query string from named parameters
+query_params = function(..., .list = list()) {
+  x = if (missing(.list)) list(...) else .list
+  x = paste(names(x), x, sep = '=', collapse = '&')
+  if (x != '') paste0('?', x) else x
+}
+
 #' Split a character vector by line breaks
 #'
 #' Call \code{unlist(strsplit(x, '\n'))} on the character vector \code{x} and

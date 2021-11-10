@@ -16,34 +16,52 @@
 github_releases = function(
   repo, tag = '', pattern = 'v[0-9.]+', use_jsonlite = loadable('jsonlite')
 ) {
+  if (tag != '') return(github_releases2(repo, tag))
+
   i = 1; v = character()
   repeat {
-    h = sprintf('https://api.github.com/repos/%s/tags?per_page=100&page=%d', repo, i)
+    res = github_api(
+      sprintf('/repos/%s/tags', repo), list(per_page = 100, page = i),
+      raw = !use_jsonlite
+    )
     v2 = unlist(if (use_jsonlite) {
-      res = jsonlite::fromJSON(h, FALSE)
       lapply(res, `[[`, 'name')
     } else {
-      res = read_utf8(h)
       m = gregexec('\\{"name":"([^"]+)",', res)
       lapply(regmatches(res, m), function(x) x[2, ])
     })
     if (length(v2) == 0) break
-    if (tag == 'latest') return(v2[1])
     v = c(v, v2)
-    if (tag %in% v) return(tag)
     if (length(v2) < 100) break  # not enough items for the next page
     i = i + 1
   }
-  if (tag != '') return(intersect(tag, v))
-  if (length(v)) return(grep(sprintf('^%s$', pattern), unique(v), value = TRUE))
+  grep(sprintf('^%s$', pattern), unique(v), value = TRUE)
+}
 
-  # the fallback method (read HTML source)
-  h = suppressWarnings(
+# the fallback method to retrieve release tags (read HTML source)
+github_releases2 = function(repo, tag = '') {
+  read = function() suppressWarnings(
     read_utf8(sprintf('https://github.com/%s/releases/%s', repo, tag))
   )
-  r = sprintf('^.*?%s/releases/tag/(%s)".*', repo, pattern)
-  v = grep_sub(r, '\\1', h)
-  unique(v)
+  h = if (tag == '') read() else tryCatch(read(), error = function(e) '')
+  r = sprintf('^.*?%s/releases/tag/([^"]+)".*', repo)
+  grep_sub(r, '\\1', h)
+}
+
+# obtain results from Github API
+github_api = function(
+  endpoint, params = list(), headers = NULL, raw = !loadable('jsonlite')
+) {
+  token = unname(Sys.getenv(envs <- c('GITHUB_PAT', 'GITHUB_TOKEN', 'GH_TOKEN')))
+  token = if (length(token <-  token[token != ''])) c(token = token[1]) else ''
+  error = TRUE
+  on.exit(if (error && token == '') message(
+    'You may need to save a Github personal access token in one of the ',
+    'environment variables: ', paste(envs, collapse = ', ')
+  ))
+  res = rest_api_raw('https://api.github.com', endpoint, token, params, headers)
+  error = FALSE
+  if (raw) res else jsonlite::fromJSON(res, FALSE)
 }
 
 git = function(...) {
