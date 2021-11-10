@@ -16,7 +16,7 @@
 github_releases = function(
   repo, tag = '', pattern = 'v[0-9.]+', use_jsonlite = loadable('jsonlite')
 ) {
-  if (tag != '') return(github_releases2(repo, tag))
+  if (tag != '') return(github_releases2(repo, tag, pattern))
 
   i = 1; v = character()
   repeat {
@@ -39,13 +39,13 @@ github_releases = function(
 }
 
 # the fallback method to retrieve release tags (read HTML source)
-github_releases2 = function(repo, tag = '') {
+github_releases2 = function(repo, tag = '', pattern = '[^"&]+') {
   read = function() suppressWarnings(
     read_utf8(sprintf('https://github.com/%s/releases/%s', repo, tag))
   )
   h = if (tag == '') read() else tryCatch(read(), error = function(e) '')
-  r = sprintf('^.*?%s/releases/tag/([^"]+)".*', repo)
-  grep_sub(r, '\\1', h)
+  r = sprintf('^.*?%s/releases/tag/(%s)".*', repo, pattern)
+  unique(grep_sub(r, '\\1', h))
 }
 
 # obtain results from Github API
