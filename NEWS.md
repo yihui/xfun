@@ -4,6 +4,8 @@
 
 - Added an argument `.error` to `download_file()` so that users can customize the error message when the download fails.
 
+- Added functions `rest_api_raw()` and `rest_api()` to get data from a REST API; also added the function `github_api()` to get data from the Github API based on `rest_api_raw()`.
+
 # CHANGES IN xfun VERSION 0.28
 
 - Added a new function `url_accessible()` to test if a URL can be downloaded.
