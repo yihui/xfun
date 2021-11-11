@@ -22,7 +22,7 @@ github_releases = function(
   i = 1; v = character()
   repeat {
     res = github_api(
-      sprintf('/repos/%s/tags', repo), list(per_page = 100, page = i),
+      sprintf('/repos/%s/tags', repo), NULL, list(per_page = 100, page = i),
       raw = !use_jsonlite
     )
     v2 = unlist(if (use_jsonlite) {
