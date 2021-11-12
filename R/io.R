@@ -250,8 +250,8 @@ download_file = function(
     # curl needs to add a -L option to follow redirects
     opts2 = if (is.null(getOption('download.file.extra')))
       options(download.file.extra = c('-L', '--fail'))
-    on.exit(options(opts2), add = TRUE)
     res = download(method = 'curl')
+    options(opts2)
     if (res == 0) return(res)
   }
   if (Sys.which('wget') != '') {
