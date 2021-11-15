@@ -493,10 +493,8 @@ crandalf_results = function(pkg, repo = NA, limit = 200, wait = 5 * 60) {
     }
   }
   ids = grep_sub('^(\\d+) checking: .+', '\\1', res[, 3])
-  if (length(ids) == 0) {
-    stop('Failed to find the ID in the commit messages.')
-  }
-  res = res[grep(sprintf('^%s checking: ', ids[1]), res[, 3]), , drop = FALSE]
+  i = if (length(ids) > 0) grep(sprintf('^%s checking: ', ids[1]), res[, 3]) else 1
+  res = res[i, , drop = FALSE]
   res = res[res[, 2] == 'failure', , drop = FALSE]
   if (NROW(res) == 0) {
     stop('Did not find any failed results on Github Actions.')
