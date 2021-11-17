@@ -6,6 +6,8 @@
 
 - Added functions `rest_api_raw()` and `rest_api()` to get data from a REST API; also added the function `github_api()` to get data from the Github API based on `rest_api_raw()`.
 
+- Added a wrapper function `system3()` based on `system2()` to mark the character output of `system2()` as UTF-8 if appropriate.
+
 # CHANGES IN xfun VERSION 0.28
 
 - Added a new function `url_accessible()` to test if a URL can be downloaded.

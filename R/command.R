@@ -1,3 +1,28 @@
+#' Run \code{system2()} and mark its character output as UTF-8 if appropriate
+#'
+#' This is a wrapper function based on \code{system2()}. If \code{system2()}
+#' returns character output (e.g., with the argument \code{stdout = TRUE}),
+#' check if the output is encoded in UTF-8. If it is, mark it with UTF-8
+#' explicitly.
+#' @param ... Passed to \code{\link{system2}()}.
+#' @return The value returned by \code{system2()}.
+#' @export
+#' @examplesIf interactive()
+#' a = shQuote(c('-e', 'print(intToUtf8(c(20320, 22909)))'))
+#' x2 = system2('Rscript', a, stdout = TRUE)
+#' Encoding(x2)  # unknown
+#'
+#' x3 = xfun::system3('Rscript', a, stdout = TRUE)
+#' # encoding of x3 should be UTF-8 if the current locale is UTF-8
+#' !l10n_info()[['UTF-8']] || Encoding(x3) == 'UTF-8'  # should be TRUE
+system3 = function(...) {
+  res = system2(...)
+  if (is.character(res)) {
+    if (all(is_utf8(res))) Encoding(res) = 'UTF-8'
+  }
+  if (is.integer(res) && res == 0) invisible(res) else res
+}
+
 #' Run OptiPNG on all PNG files under a directory
 #'
 #' Call the command \command{optipng} via \code{system2()} to optimize all PNG
