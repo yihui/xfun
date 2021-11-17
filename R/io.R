@@ -67,7 +67,16 @@ append_unique = function(text, con, sort = function(x) base::sort(unique(x))) {
 
 # which lines are invalid UTF-8
 invalid_utf8 = function(x) {
-  which(!is.na(x) & is.na(iconv(x, 'UTF-8', 'UTF-8')))
+  which(!is_utf8(x))
+}
+
+test_utf8 = function(x) {
+  is.na(x) | !is.na(iconv(x, 'UTF-8', 'UTF-8'))
+}
+
+# validUTF8() was added to base R 3.3.0
+is_utf8 = function(x) {
+  if ('validUTF8' %in% ls(baseenv())) validUTF8(x) else test_utf8(x)
 }
 
 #' Read a text file and concatenate the lines by \code{'\n'}
