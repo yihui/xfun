@@ -122,11 +122,12 @@ read_bin = function(file, what = 'raw', n = file.info(file)$size, ...) {
 #' @return A character vector.
 #' @export
 #' @examples
+#' # two files in this package
 #' fs = system.file('scripts', c('call-fun.R', 'child-pids.sh'), package = 'xfun')
 #' xfun::read_all(fs)
 #'
 #' # add file paths before file content and an empty line after content
-#' xfun::read_all(fs, before = function(f) paste('#-----', f, '-----'), after = function(f) '')
+#' xfun::read_all(fs, before = function(f) paste('#-----', f, '-----'), after = '')
 #'
 #' # add constants
 #' xfun::read_all(fs, before = '/*', after = c('*/', ''))
