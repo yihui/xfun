@@ -151,7 +151,7 @@ proc_kill = function(pid, recursive = TRUE, ...) {
 
 # obtain pids of all child processes (recursively)
 child_pids = function(id) {
-  x = system2('sh', shQuote(c(pkg_file('scripts', 'child_pids.sh'), id)), stdout = TRUE)
+  x = system2('sh', shQuote(c(pkg_file('scripts', 'child-pids.sh'), id)), stdout = TRUE)
   grep('^[0-9]+$', x, value = TRUE)
 }
 
