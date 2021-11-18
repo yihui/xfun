@@ -8,6 +8,8 @@
 
 - Added a wrapper function `system3()` based on `system2()` to mark the character output of `system2()` as UTF-8 if appropriate.
 
+- Added a function `existing_files()` to return file paths that exist (a shorthand of `x[file.exists(x)]`).
+
 # CHANGES IN xfun VERSION 0.28
 
 - Added a new function `url_accessible()` to test if a URL can be downloaded.
