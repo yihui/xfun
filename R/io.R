@@ -111,6 +111,33 @@ read_bin = function(file, what = 'raw', n = file.info(file)$size, ...) {
   readBin(file, what, n, ...)
 }
 
+#' Read all text files and concatenate their content
+#'
+#' Read files one by one, and optionally add text before/after the content. Then
+#' combine all content into one character vector.
+#' @param files A vector of file paths.
+#' @param before,after A function that takes one file path as the input and
+#'   returns values to be added before or after the content of the file.
+#'   Alternatively, they can be constant values to be added.
+#' @return A character vector.
+#' @export
+#' @examples
+#' fs = system.file('scripts', c('call-fun.R', 'child-pids.sh'), package = 'xfun')
+#' xfun::read_all(fs)
+#'
+#' # add file paths before file content and an empty line after content
+#' xfun::read_all(fs, before = function(f) paste('#-----', f, '-----'), after = function(f) '')
+#'
+#' # add constants
+#' xfun::read_all(fs, before = '/*', after = c('*/', ''))
+read_all = function(files, before = function(f) NULL, after = function(f) NULL) {
+  b = before; a = after
+  x = unlist(lapply(files, function(f) {
+    c(if (is.function(b)) b(f) else b, read_utf8(f), if (is.function(a)) a(f) else a)
+  }))
+  raw_string(x)
+}
+
 #' Read a text file, process the text with a function, and write the text back
 #'
 #' Read a text file with the UTF-8 encoding, apply a function to the text, and

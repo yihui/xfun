@@ -10,6 +10,8 @@
 
 - Added a function `existing_files()` to return file paths that exist (a shorthand of `x[file.exists(x)]`).
 
+- Added a function `read_all()` to read multiple files and concatenate the content into a character vector.
+
 # CHANGES IN xfun VERSION 0.28
 
 - Added a new function `url_accessible()` to test if a URL can be downloaded.

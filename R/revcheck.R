@@ -351,11 +351,6 @@ tweak_r_libs = function(new) {
 # separate paths by the path separator on a specific platform
 path_sep = function(...) paste(..., sep = .Platform$path.sep)
 
-# read all files that exist
-read_all = function(files) {
-  unlist(lapply(files, function(f) if (file_exists(f)) read_utf8(f)))
-}
-
 # a shorthand of tools::package_dependencies()
 pkg_dep = function(x, ...) {
   if (length(x)) unique(unlist(tools::package_dependencies(x, ...)))
