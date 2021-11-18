@@ -333,7 +333,7 @@ clean_Rcheck2 = function(dir = '.') {
 
 # add a new library path to R_LIBS_USER
 tweak_r_libs = function(new) {
-  x = read_all(c('~/.Renviron', '.Renviron'))
+  x = read_all(existing_files(c('~/.Renviron', '.Renviron')))
   x = grep('^\\s*#', x, invert = TRUE, value = TRUE)
   x = gsub('^\\s+|\\s+$', '', x)
   x = x[x != '']
