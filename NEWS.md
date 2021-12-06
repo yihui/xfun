@@ -12,6 +12,8 @@
 
 - Added a function `read_all()` to read multiple files and concatenate the content into a character vector.
 
+- `url_accessible()` uses `curlGetHeaders()` by default (instead of `download_file()`) to test if a URL is accessible when the **curl** package is not available.
+
 # CHANGES IN xfun VERSION 0.28
 
 - Added a new function `url_accessible()` to test if a URL can be downloaded.

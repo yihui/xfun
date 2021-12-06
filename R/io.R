@@ -303,23 +303,27 @@ download_file = function(
 
 #' Test if a URL is accessible
 #'
-#' Try to send a \code{HEAD} request to a URL if \pkg{curl} is available,
-#' otherwise try to download the URL via \code{xfun::\link{download_file}()},
-#' and see if it succeeds.
+#' Try to send a \code{HEAD} request to a URL using
+#' \code{\link{curlGetHeaders}()} or the \pkg{curl} package, and see if it
+#' returns a successful status code.
 #' @param x A URL as a character string.
-#' @param use_curl Whether to use the \pkg{curl} package.
+#' @param use_curl Whether to use the \pkg{curl} package or the
+#'   \code{curlGetHeaders()} function in base R to send the request to the URL.
+#'   By default, \pkg{curl} will be used when base R does not have the
+#'   \command{libcurl} capability (which should be rare).
+#' @param ... Arguments to be passed to \code{curlGetHeaders()}.
 #' @return \code{TRUE} or \code{FALSE}.
 #' @export
 #' @examples xfun::url_accessible('https://yihui.org')
-url_accessible = function(x, use_curl = loadable('curl')) {
+url_accessible = function(x, use_curl = !capabilities('libcurl'), ...) {
+  try_status = function(code) tryCatch(code < 400, error = function(e) FALSE)
   if (use_curl) {
     h = curl::new_handle()
-    curl::handle_setopt(h, customrequest = "HEAD", nobody = TRUE)
-    !try_error(curl::curl_fetch_memory(x, h))
+    curl::handle_setopt(h, customrequest = 'HEAD', nobody = TRUE)
+    try_status(curl::curl_fetch_memory(x, h)$status_code)
   } else {
-    # try to fully download the url
-    tf = tempfile(); on.exit(unlink(tf), add = TRUE)
-    !try_error(suppressWarnings(download_file(x, tf, quiet = TRUE)))
+    # use curlGetHeaders() instead
+    try_status(attr(curlGetHeaders(x, ...), 'status'))
   }
 }
 
