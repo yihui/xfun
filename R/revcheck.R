@@ -222,8 +222,6 @@ rev_check = function(
     check_it()
 
     if (!clean_Rcheck(d)) {
-      # whether to check the package against the CRAN version?
-      if (!getOption('xfun.rev_check.compare', TRUE)) return(timing())
       if (!dir_exists(d)) {dir.create(d); return(timing())}
       # try to install missing LaTeX packages for vignettes if possible, then recheck
       vigs = list.files(
@@ -257,6 +255,8 @@ rev_check = function(
       # ignore vignettes that failed to build for unknown reasons
       cleanup()
       if (clean_Rcheck(d)) return(timing())
+      # whether to check the package against the CRAN version?
+      if (!getOption('xfun.rev_check.compare', TRUE)) return(timing())
       file.rename(d, d2 <- paste0(d, '2'))
       check_it('--no-environ', env = tweak_r_libs(lib_cran))
       if (!dir_exists(d)) file.rename(d2, d) else {
