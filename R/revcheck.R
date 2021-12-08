@@ -27,13 +27,13 @@
 #'
 #' If a check on a reverse dependency failed, its \file{*.Rcheck} directory will
 #' be renamed to \file{*.Rcheck2}, and another check will be run against the
-#' CRAN version of the package. If the logs of the two checks are the same, it
-#' means no new problems were introduced in the package, and you can probably
-#' ignore this particular reverse dependency. The function
-#' \code{compare_Rcheck()} can be used to create a summary of all the
-#' differences in the check logs under \file{*.Rcheck} and \file{*.Rcheck2}.
-#' This will be done automatically if \code{options(xfun.rev_check.summary =
-#' TRUE)} has been set.
+#' CRAN version of the package unless \code{options(xfun.rev_check.compare =
+#' FALSE)} is set. If the logs of the two checks are the same, it means no new
+#' problems were introduced in the package, and you can probably ignore this
+#' particular reverse dependency. The function \code{compare_Rcheck()} can be
+#' used to create a summary of all the differences in the check logs under
+#' \file{*.Rcheck} and \file{*.Rcheck2}. This will be done automatically if
+#' \code{options(xfun.rev_check.summary = TRUE)} has been set.
 #'
 #' A recommended workflow is to use a special directory to run
 #' \code{rev_check()}, set the global \code{\link{options}}
@@ -222,6 +222,8 @@ rev_check = function(
     check_it()
 
     if (!clean_Rcheck(d)) {
+      # whether to check the package against the CRAN version?
+      if (!getOption('xfun.rev_check.compare', TRUE)) return(timing())
       if (!dir_exists(d)) {dir.create(d); return(timing())}
       # try to install missing LaTeX packages for vignettes if possible, then recheck
       vigs = list.files(

@@ -20,6 +20,8 @@
 
 - Added a new function `try_error()` to try an expression and see if it throws an error.
 
+- When `options(xfun.rev_check.compare = FALSE)`, `rev_check()` will run `R CMD check` on reverse dependencies against a source package but not the CRAN version of this package. By default, this option is `TRUE`, meaning that `R CMD check` will run against both versions of the package.
+
 # CHANGES IN xfun VERSION 0.27
 
 - Exported and documented the function `xfun::base_pkgs()` (to return base R package names).
