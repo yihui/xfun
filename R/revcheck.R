@@ -436,6 +436,7 @@ crandalf_check = function(pkg, size = 400, jobs = Inf, which = 'all') {
       git('push')
     } else if (Sys.which('gh') != '') {
       gh(c('workflow', 'run', 'rev-check.yaml', '--ref', b))
+      message('Triggering rev-check.yaml job against ', b, ' branch in crandalf repo on Github.')
     } else {
       message('Remember to re-run the last job for the package ', pkg, ' on Github.')
     }
