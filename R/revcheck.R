@@ -604,20 +604,19 @@ clean_Rcheck = function(dir, log = read_utf8(file.path(dir, '00check.log'))) {
 #'   will be converted to HTML, so you can see the diffs more clearly.
 #' @export
 compare_Rcheck = function(status_only = TRUE, output = '00check_diffs.md') {
-  if (length(dirs <- list.files('.', '.+[.]Rcheck2$')) == 0) {
+  if (length(dirs <- list.files('.', '.+[.]Rcheck$')) == 0) {
     # clean up the `recheck` file
     if (file_exists('recheck')) writeLines(character(), 'recheck')
     return()
   }
-  d2 = function(d) c(sub('2$', '', d), d)
+  d2 = function(d) c(d, paste0(d, '2'))
   logs = function(d) file.path(d2(d), '00check.log')
-  dirs = dirs[rowSums(matrix(file_exists(logs(dirs)), ncol = 2)) == 2]
   res = NULL
   if (!status_only && Sys.which('diff') == '')
     warning("The command 'diff' is not available; will not calculate exact diffs in logs.")
   for (d in dirs) {
-    f = logs(d)
-    if (status_only) {
+    f = existing_files(logs(d))
+    if (status_only && length(f) == 2) {
       status_line = function(file) {
         x = tail(read_utf8(file), 1)
         if (grepl('^Status: ', x)) x else {
@@ -665,6 +664,12 @@ head_tail = function(x, n = 10) {
 
 # compute the diffs of two files; if diffs too large, dedup them
 file_diff = function(files, len = 200, use_diff = Sys.which('diff') != '') {
+  n = length(files)
+  if (n == 0) return()
+  if (n == 1) {
+    f = tempfile(); on.exit(unlink(f), add = TRUE); file.create(f)
+    files = c(f, files)
+  }
   d = if (use_diff) {
     suppressWarnings(system2('diff', shQuote(files), stdout = TRUE))
   } else {
