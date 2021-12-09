@@ -431,8 +431,9 @@ crandalf_check = function(pkg, size = 400, jobs = Inf, which = 'all') {
     message('No need to split ', n, ' reverse dependencies into batches of size ', size, '.')
     if (any(grepl('Your branch is ahead of ', git('status', stdout = TRUE)))) {
       git('push')
-    } else if (Sys.which('gh') != '' && !is.null(id <- crandalf_id(pkg))) {
-      gh(c('run', 'rerun', id))
+    } else if (Sys.which('gh') != '') {
+      gh(c('workflow', 'run', 'rev-check.yaml', '--ref', b))
+      message('Triggering rev-check.yaml job against ', b, ' branch in crandalf repo on Github.')
     } else {
       message('Remember to re-run the last job for the package ', pkg, ' on Github.')
     }
