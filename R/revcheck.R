@@ -435,7 +435,7 @@ crandalf_check = function(pkg, size = 400, jobs = Inf, which = 'all') {
     if (any(grepl('Your branch is ahead of ', git('status', stdout = TRUE)))) {
       git('push')
     } else if (Sys.which('gh') != '') {
-      gh(c('workflow', 'run', 'rev-check.yaml'; '--ref', b))
+      gh(c('workflow', 'run', 'rev-check.yaml', '--ref', b))
     } else {
       message('Remember to re-run the last job for the package ', pkg, ' on Github.')
     }
