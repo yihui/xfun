@@ -225,7 +225,7 @@ rev_check = function(
       if (!dir_exists(d)) {dir.create(d); return(timing())}
       # try to install missing LaTeX packages for vignettes if possible, then recheck
       vigs = list.files(
-        file.path(d, 'vign_test', p, 'vignettes'), '[.](Rnw|Rmd)',
+        file.path(d, 'vign_test', p, 'vignettes'), '[.](Rnw|Rmd)$',
         ignore.case = TRUE, full.names = TRUE
       )
       pkg_load2('tinytex')
