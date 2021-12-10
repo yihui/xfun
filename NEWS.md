@@ -14,13 +14,13 @@
 
 - `url_accessible()` uses `curlGetHeaders()` by default (instead of `download_file()`) to test if a URL is accessible when the **curl** package is not available.
 
+- When `options(xfun.rev_check.compare = FALSE)`, `rev_check()` will run `R CMD check` on reverse dependencies against a source package but not the CRAN version of this package. By default, this option is `TRUE`, meaning that `R CMD check` will run against both versions of the package.
+
 # CHANGES IN xfun VERSION 0.28
 
 - Added a new function `url_accessible()` to test if a URL can be downloaded.
 
 - Added a new function `try_error()` to try an expression and see if it throws an error.
-
-- When `options(xfun.rev_check.compare = FALSE)`, `rev_check()` will run `R CMD check` on reverse dependencies against a source package but not the CRAN version of this package. By default, this option is `TRUE`, meaning that `R CMD check` will run against both versions of the package.
 
 # CHANGES IN xfun VERSION 0.27
 
