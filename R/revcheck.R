@@ -511,14 +511,6 @@ crandalf_jobs = function(pkg, repo = NA, limit = 200) {
   do.call(rbind, strsplit(res, '\t'))
 }
 
-# find the id of the last job triggered by the check-pkg branch
-crandalf_id = function(pkg, ...) {
-  for (i in c(50, 200, 1000)) {
-    res = crandalf_jobs(pkg, limit = i, ...)
-    if (NROW(res) > 0 && res[1, 1] == 'completed') return(res[1, 7])
-  }
-}
-
 crandalf_merge = function(pkg) {
   unlink(list.files('.', '[.]Rcheck2?$'), recursive = TRUE)
   x1 = x2 = x3 = NULL
