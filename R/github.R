@@ -78,6 +78,10 @@ github_api = function(
 
 git = function(...) {
   if (Sys.which('git') == '') stop('git is not available')
+  if (is_windows()) {
+    env = xfun::set_envvar(c(HOME = Sys.getenv('USERPROFILE')))
+    on.exit(xfun::set_envvar(env))
+  }
   system2('git', ...)
 }
 
