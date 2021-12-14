@@ -78,9 +78,11 @@ github_api = function(
 
 git = function(...) {
   if (Sys.which('git') == '') stop('git is not available')
+  # R's HOME var is different from the system's HOME on Windows:
+  # https://github.com/yihui/crandalf/issues/24
   if (is_windows()) {
-    env = xfun::set_envvar(c(HOME = Sys.getenv('USERPROFILE')))
-    on.exit(xfun::set_envvar(env))
+    env = set_envvar(c(HOME = Sys.getenv('USERPROFILE')))
+    on.exit(set_envvar(env), add = TRUE)
   }
   system2('git', ...)
 }
