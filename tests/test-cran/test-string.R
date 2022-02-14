@@ -1,5 +1,13 @@
 library(testit)
 
+assert('is_blank() tests if a vector is blank', {
+  (is_blank(''))
+  (is_blank(NULL))
+  (is_blank(c('', '   ', '\n', '\t')))
+  (!is_blank('abc'))
+  (!is_blank(c('', 'abc')))
+})
+
 assert('n2w converts numbers to words', {
   (n2w(0) %==% 'zero')
   # cap capitalizes the first letter

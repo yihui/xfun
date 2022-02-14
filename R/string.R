@@ -1,3 +1,19 @@
+#' Test if a character vector consists of blank strings
+#'
+#' Return \code{TRUE} if all elements of a character vector are blank (white
+#' spaces or empty strings).
+#' @param x A character vector.
+#' @return \code{TRUE} if the input is blank, or \code{FALSE} otherwise.
+#' @export
+#' @examples
+#' xfun::is_blank('')
+#' xfun::is_blank('abc')
+#' xfun::is_blank(c('', '  ', '\n\t'))
+#' xfun::is_blank(c('', ' ', 'abc'))
+is_blank = function(x) {
+  all(grepl('^\\s*$', x))
+}
+
 #' Convert numbers to English words
 #'
 #' This can be helpful when writing reports with \pkg{knitr}/\pkg{rmarkdown} if

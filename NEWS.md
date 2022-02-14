@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.30
 
+- Added a new function `is_blank()` (previously existed in **knitr**) to test if all elements of a character vector are blank (white spaces or empty strings).
 
 # CHANGES IN xfun VERSION 0.29
 
