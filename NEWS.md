@@ -2,6 +2,8 @@
 
 - Added a new function `is_blank()` (previously existed in **knitr**) to test if all elements of a character vector are blank (white spaces or empty strings).
 
+- Added a new argument `error = TRUE` to `existing_files()`.
+
 # CHANGES IN xfun VERSION 0.29
 
 - `github_releases()` can fetch all releases (tags) of a Github repo now.

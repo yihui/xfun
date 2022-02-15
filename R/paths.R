@@ -84,16 +84,23 @@ same_path = function(p1, p2, ...) {
 #' first existing file path.
 #' @param x A vector of file paths.
 #' @param first Whether to return the first existing path. If \code{TRUE} and no
-#'   specified files exist, it will signal an error.
+#'   specified files exist, it will signal an error unless the argument
+#'   \code{error = FALSE}.
+#' @param error Whether to throw an error when \code{first = TRUE} but no files
+#'   exist. It can also take a character value, which will be used as the error
+#'   message.
 #' @return A vector of existing file paths.
 #' @export
 #' @examples
 #' xfun::existing_files(c('foo.txt', system.file('DESCRIPTION', package='xfun')))
-existing_files = function(x, first = FALSE) {
+existing_files = function(x, first = FALSE, error = TRUE) {
   x = x[file_exists(x)]
   if (!first) return(x)
   x = head(x, 1)
-  if (length(x) != 1) stop('None of the specified files exist.')
+  if (length(x) != 1 && !isFALSE(error)) {
+    if (isTRUE(error)) error = 'None of the specified files exist.'
+    stop(error, call. = FALSE)
+  }
   x
 }
 

@@ -4,13 +4,18 @@
 \alias{existing_files}
 \title{Find file paths that exist}
 \usage{
-existing_files(x, first = FALSE)
+existing_files(x, first = FALSE, error = TRUE)
 }
 \arguments{
 \item{x}{A vector of file paths.}
 
 \item{first}{Whether to return the first existing path. If \code{TRUE} and no
-specified files exist, it will signal an error.}
+specified files exist, it will signal an error unless the argument
+\code{error = FALSE}.}
+
+\item{error}{Whether to throw an error when \code{first = TRUE} but no files
+exist. It can also take a character value, which will be used as the error
+message.}
 }
 \value{
 A vector of existing file paths.
