@@ -306,9 +306,11 @@ recheck_vig = function(x) {
     if (length(i2) == 0) return(x)
   }
 
-  # if no explicit errors were found in processing vignettes, remove the relevant log
+  # if no explicit errors were found in processing vignettes (except pandoc
+  # error), remove the relevant log
   i2 = tail(i2, 1)
-  if (length(grep('Error: processing vignette .+ failed with diagnostics:', x[i1:i2])) == 0)
+  if (length(grep('pandoc document conversion failed with error', x[i1:i2])) > 0 ||
+      length(grep('Error: processing vignette .+ failed with diagnostics:', x[i1:i2])) == 0)
     x = x[-(i1:i2)]
   x
 }
