@@ -586,7 +586,9 @@ download_tarball = function(p, db = available.packages(type = 'source'), dir = '
 clean_Rcheck = function(dir, log = read_utf8(file.path(dir, '00check.log'))) {
   # do not check the status line
   if (length(grep('^Status: ', tail(log, 1)))) log = head(log, -1)
-  if (length(grep('(WARNING|ERROR|NOTE)$', log)) == 0) unlink(dir, recursive = TRUE)
+  if (length(grep('(WARNING|ERROR|NOTE)$', log)) == 0 ||
+      length(grep('[*] checking whether package .+ can be installed ... ERROR', log)))
+    unlink(dir, recursive = TRUE)
   !dir_exists(dir)
 }
 
