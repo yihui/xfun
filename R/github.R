@@ -28,8 +28,7 @@ github_releases = function(
     v2 = unlist(if (use_jsonlite) {
       lapply(res, `[[`, 'name')
     } else {
-      m = gregexec('\\{"name":"([^"]+)",', res)
-      lapply(regmatches(res, m), function(x) x[2, ])
+      reg_match('\\{"name":"([^"]+)",', res)
     })
     if (length(v2) == 0) break
     v = c(v, v2)
@@ -37,6 +36,17 @@ github_releases = function(
     i = i + 1
   }
   grep(sprintf('^%s$', pattern), unique(v), value = TRUE)
+}
+
+# extract the matched elements in the n-th pair of () in the regex
+reg_match = function(p, x, n = 1, ...) {
+  # TODO: gregexec was added in R 4.1.0; remove this workaround when we don't
+  # need to support R < 4.1.0
+  v = 'gregexec' %in% ls(baseenv())
+  m = (if (v) base::gregexec else base::gregexpr)(p, x, ...)
+  lapply(regmatches(x, m), function(x) {
+    if (v) x[n + 1, ] else gsub(p, paste0('\\', n), x)
+  })
 }
 
 # the fallback method to retrieve release tags (read HTML source)

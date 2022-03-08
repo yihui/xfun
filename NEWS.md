@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.31
 
+- `github_releases(use_jsonlite = FALSE)` supports R versions below 4.1.0 now.
 
 # CHANGES IN xfun VERSION 0.30
 
