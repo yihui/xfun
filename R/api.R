@@ -49,7 +49,10 @@ rest_api = function(...) {
 rest_api_raw = function(root, endpoint, token = '', params = list(), headers = NULL)  {
   if (is.null(names(token))) names(token) = 'Basic'
   endpoint = sub('^/?', '/', endpoint)  # make sure it has a leading /
-  con = url(
+  url2 = if ('headers' %in% names(formals(url))) url else stop2(
+    "The url() function does not support the 'headers' argument. Please upgrade R (>= 3.6.0)."
+  )
+  con = url2(
     paste0(root, endpoint, query_params(.list = params)), encoding = 'UTF-8',
     headers = c(
       headers, if (token != '') c(Authorization = sprintf('%s %s', names(token), token))
