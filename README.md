@@ -1,8 +1,8 @@
 # xfun
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/yihui/xfun/workflows/R-CMD-check/badge.svg)](https://github.com/yihui/xfun/actions)
-[![Coverage status](https://codecov.io/gh/yihui/xfun/branch/master/graph/badge.svg)](https://codecov.io/github/yihui/xfun?branch=master)
+[![R-CMD-check](https://github.com/yihui/xfun/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/yihui/xfun/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/yihui/xfun/branch/main/graph/badge.svg)](https://app.codecov.io/gh/yihui/xfun?branch=main)
 [![CRAN release](https://www.r-pkg.org/badges/version/xfun)](https://cran.r-project.org/package=xfun)
 <!-- badges: end -->
 
