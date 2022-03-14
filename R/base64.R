@@ -71,12 +71,17 @@ base64_encode_r = function(x) {
 #' can be used to embed data in HTML documents, e.g., in the \code{src}
 #' attribute of the \verb{<img />} tag.
 #' @param x A file path.
+#' @param type The MIME type of the file, e.g., \code{"image/png"} for a PNG
+#'   image file.
 #' @return A string of the form \verb{data:<media type>;base64,<data>}.
+#' @note By default, this function requires the \pkg{mime} package to determine
+#'   the MIME type of the file.
 #' @export
 #' @examples
 #' logo = xfun:::R_logo()
 #' img = htmltools::img(src = xfun::base64_uri(logo), alt = 'R logo')
 #' if (interactive()) htmltools::browsable(img)
-base64_uri = function(x) {
-  paste0("data:", mime::guess_type(x), ";base64,", base64_encode(x))
+base64_uri = function(x, type = mime::guess_type(x)) {
+  if (missing(type)) pkg_require('mime')
+  paste0("data:", type, ";base64,", base64_encode(x))
 }

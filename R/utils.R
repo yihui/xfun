@@ -292,3 +292,9 @@ format_bytes = function(x, units = 'auto', ...) {
     format(structure(b, class = 'object_size'), units = units, ...)
   }, character(1))
 }
+
+# get the function name of the parent call
+func_name = function(which = 1) {
+  x = sys.call(which)[[1]]
+  deparse(x)[1]
+}

@@ -105,6 +105,17 @@ pkg_attach2 = function(...) pkg_attach(..., install = TRUE)
 #' @export
 pkg_load2 = function(...) pkg_load(..., install = TRUE)
 
+pkg_require = function(pkgs, which = length(sys.calls()) - 1) {
+  f = func_name(which)
+  for (p in pkgs) if (!loadable(p)) stop2(
+    "The '", p, "' package is required by the function '", f, "' but not available.",
+    if (is_R_CMD_check()) c(
+      " If you are developing an R package, you need to declare the dependency on '",
+      p, "' in the DESCRIPTION file (e.g., in 'Imports')."
+    )
+  )
+}
+
 pkg_update = function(...) {
   update.packages(ask = FALSE, checkBuilt = TRUE, ...)
 }

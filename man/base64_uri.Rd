@@ -4,10 +4,13 @@
 \alias{base64_uri}
 \title{Generate the Data URI for a file}
 \usage{
-base64_uri(x)
+base64_uri(x, type = mime::guess_type(x))
 }
 \arguments{
 \item{x}{A file path.}
+
+\item{type}{The MIME type of the file, e.g., \code{"image/png"} for a PNG
+image file.}
 }
 \value{
 A string of the form \verb{data:<media type>;base64,<data>}.
@@ -16,6 +19,10 @@ A string of the form \verb{data:<media type>;base64,<data>}.
 Encode the file in the base64 encoding, and add the media type. The data URI
 can be used to embed data in HTML documents, e.g., in the \code{src}
 attribute of the \verb{<img />} tag.
+}
+\note{
+By default, this function requires the \pkg{mime} package to determine
+  the MIME type of the file.
 }
 \examples{
 logo = xfun:::R_logo()
