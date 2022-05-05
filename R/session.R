@@ -58,6 +58,7 @@ session_info = function(packages = NULL, dependencies = TRUE) {
 
   res$basePkgs = raw_string(list())
   info = c(res$otherPkgs, res$loadedOnly)
+  packages = setdiff(packages, '')  # remove empty strings (#65)
   if (length(packages) > 0) {
     info = info[intersect(names(info), packages)]
     info = c(info, version_info(setdiff(packages, names(info))))
