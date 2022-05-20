@@ -116,10 +116,10 @@ in_dir = function(dir, expr) {
 }
 
 #' Test if an object is identical to \code{FALSE}
-#' *NO LONGER* exported: base::isFALSE() is faster and better,
-#'    when FALSE has an attribute: base::isFALSE(c(a = FALSE)) is TRUE
+#'
 #' A simple abbreviation of \code{identical(x, FALSE)}.
 #' @param x An R object.
+#' @export
 #' @examples
 #' library(xfun)
 #' isFALSE(TRUE)  # false
