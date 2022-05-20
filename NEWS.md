@@ -2,6 +2,8 @@
 
 - Fixed the issue that `xfun::base_pkgs()` could hang R (thanks, @mmaechler, #66).
 
+- Started deprecating `xfun::isFALSE()` in favor of `base::isFALSE()` for R >= 3.5.0 (thanks, @mmaechler, #66); `isFALSE()` will eventually be removed from **xfun** when we do not need to support R < 3.5.0.
+
 # CHANGES IN xfun VERSION 0.31
 
 - `github_releases(use_jsonlite = FALSE)` supports R versions below 4.1.0 now.

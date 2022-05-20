@@ -119,13 +119,26 @@ in_dir = function(dir, expr) {
 #'
 #' A simple abbreviation of \code{identical(x, FALSE)}.
 #' @param x An R object.
+#' @note If your R version is greater than or equal to 3.5.0, we recommend that
+#'   you use \code{base::\link[base]{isFALSE}()} instead. However, note that its
+#'   meaning is different with \code{xfun::isFALSE()}, so please be careful to
+#'   decide whether you want to use \code{base::isFALSE(x)} or
+#'   \code{identical(x, FALSE)}, e.g., for \code{c(foo = FALSE)}, the former
+#'   returns \code{TRUE} but the latter requires \code{FALSE}.
 #' @export
 #' @examples
 #' library(xfun)
 #' isFALSE(TRUE)  # false
 #' isFALSE(FALSE)  # true
 #' isFALSE(c(FALSE, FALSE))  # false
-isFALSE = function(x) identical(x, FALSE)
+isFALSE = function(x) {
+  if (!('isFALSE' %in% ls(baseenv()))) return(identical(x, FALSE))
+  do_once(message(
+    'The function xfun::isFALSE() will be deprecated in the future. Please ',
+    'consider using base::isFALSE(x) or identical(x, FALSE) instead.'
+  ), 'xfun.isFALSE.message', '')
+  base::isFALSE(x)
+}
 
 #' Parse R code and do not keep the source
 #'
