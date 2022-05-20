@@ -344,7 +344,7 @@ news2md = function(package, ..., output = 'NEWS.md', category = TRUE) {
 #' @export
 #' @examplesIf interactive()
 #' xfun::base_pkgs()
-base_pkgs = function() rownames(installed.packages(priority = 'base'))
+base_pkgs = function() rownames(installed.packages(.Library, priority = 'base'))
 
 # update one package (from source by default)
 pkg_update_one = function(pkg, type = 'source') {
