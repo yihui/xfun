@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.32
 
+- Fixed the issue that `xfun::base_pkgs()` could hang R (thanks, @mmaechler, #66).
 
 # CHANGES IN xfun VERSION 0.31
 
