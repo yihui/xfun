@@ -401,7 +401,7 @@ file_exists = function(x) file_test('-f', x)
 #'   successfully created.
 #' @export
 dir_create = function(x, recursive = TRUE, ...) {
-  dir_exists(x) || dir.create(x, recursive = recursive)
+  dir_exists(x) || dir.create(x, recursive = recursive, ...)
 }
 
 #' Rename files with a sequential numeric prefix

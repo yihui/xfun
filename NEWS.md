@@ -2,6 +2,8 @@
 
 - Fixed the issue that `xfun::base_pkgs()` could hang R (thanks, @mmaechler, #66).
 
+- The `...` argument in `dir_create()` was not passed to `dir.create()`.
+
 # CHANGES IN xfun VERSION 0.31
 
 - `github_releases(use_jsonlite = FALSE)` supports R versions below 4.1.0 now.
