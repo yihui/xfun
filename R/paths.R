@@ -49,7 +49,7 @@ with_ext = function(x, ext) {
 }
 
 # regex to extract base path and extension from a file path
-reg_ext  = '([.](([[:alnum:]]+|tar[.](gz|bz2|xz)|nb[.]html)[~#]?))$'
+reg_ext  = '([.](([-+!_#[:alnum:]]+|tar[.](gz|bz2|xz)|nb[.]html)[~#]?))$'
 reg_path = paste0('^(.*?)', reg_ext)
 
 #' Normalize paths

@@ -5,6 +5,9 @@ assert('file_ext() and sans_ext() work', {
   (file_ext(p) %==% c('doc', 'tex#', 'Rmd', 'ppt~', 'tar.xz'))
   (sans_ext(p) %==% c('abc', 'def123', 'path/to/foo', 'backup', 'pkg'))
   (file_ext(c('foo.bar.gz', 'foo', 'file.nb.html')) %==% c('gz', '', 'nb.html'))
+  # some special extensions
+  p = c('abc.c++', 'def.c--', 'ghi.e##', 'jkl.FB2K-COMPONENT', 'mno.WITNESS_CAMPAIGN', 'pqr.H!')
+  (file_ext(p) %==% c('c++', 'c--', 'e##', 'FB2K-COMPONENT', 'WITNESS_CAMPAIGN', 'H!'))
 })
 
 assert('with_ext() works for corner cases', {

@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.32
 
+- `file_ext()` supports more file extensions now, such as `.c++`, `.FB2K-COMPONENT`, and so on (thanks, @tentacles-from-outer-space, #68).
+
 - Fixed the issue that `xfun::base_pkgs()` could hang R (thanks, @mmaechler, #66).
 
 - The `...` argument in `dir_create()` was not passed to `dir.create()`.
