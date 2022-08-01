@@ -10,8 +10,7 @@ Rscript_call(
   options = NULL,
   ...,
   wait = TRUE,
-  fail = sprintf("Failed to run '\%s' in a new R session.",
-    deparse(substitute(fun))[1])
+  fail = sprintf("Failed to run '\%s' in a new R session.", deparse(substitute(fun))[1])
 )
 }
 \arguments{
