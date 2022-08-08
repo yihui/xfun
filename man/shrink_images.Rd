@@ -7,7 +7,7 @@
 shrink_images(
   width = 800,
   dir = ".",
-  files = all_files("[.](png|jpe?g)$", dir),
+  files = all_files("[.](png|jpe?g|webp)$", dir),
   tinify = FALSE
 )
 }
@@ -16,8 +16,8 @@ shrink_images(
 
 \item{dir}{The directory of images.}
 
-\item{files}{A vector of image file paths. By default, this is all \file{png}
-and \file{jpeg} images under \code{dir}.}
+\item{files}{A vector of image file paths. By default, this is all
+\file{.png}, \file{.jpeg}, and \file{.webp} images under \code{dir}.}
 
 \item{tinify}{Whether to compress images using \code{\link{tinify}()}.}
 }

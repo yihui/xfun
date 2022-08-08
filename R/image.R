@@ -120,13 +120,13 @@ tinify = function(
   invisible(output)
 }
 
-#' @param dir A directory under which all \file{.png} and \file{.jpeg} files are
-#'   to be compressed.
+#' @param dir A directory under which all \file{.png}, \file{.jpeg}, and
+#'   \file{.webp} files are to be compressed.
 #' @param ... Arguments passed to \code{\link{tinify}()}.
 #' @rdname tinify
 #' @export
 tinify_dir = function(dir = '.', ...) {
-  tinify(all_files('[.](png|jpe?g)$', dir), ...)
+  tinify(all_files('[.](png|jpe?g|webp)$', dir), ...)
 }
 
 #' Shrink images to a maximum width
@@ -136,8 +136,8 @@ tinify_dir = function(dir = '.', ...) {
 #' \code{width}, and optionally call \code{\link{tinify}()} to compress it.
 #' @param width The desired maximum width of images.
 #' @param dir The directory of images.
-#' @param files A vector of image file paths. By default, this is all \file{png}
-#'   and \file{jpeg} images under \code{dir}.
+#' @param files A vector of image file paths. By default, this is all
+#'   \file{.png}, \file{.jpeg}, and \file{.webp} images under \code{dir}.
 #' @param tinify Whether to compress images using \code{\link{tinify}()}.
 #' @export
 #' @examples
@@ -149,7 +149,7 @@ tinify_dir = function(dir = '.', ...) {
 #' magick::image_info(magick::image_read(f))  # width: 300 and 100
 #' file.remove(f)
 shrink_images = function(
-  width = 800, dir = '.', files = all_files('[.](png|jpe?g)$', dir),
+  width = 800, dir = '.', files = all_files('[.](png|jpe?g|webp)$', dir),
   tinify = FALSE
 ) {
   for (f in files) {

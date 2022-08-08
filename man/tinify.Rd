@@ -47,8 +47,8 @@ compressed images. If the checksum of an expected output image exists in
 this file and \code{force = FALSE}, the compression will be skipped. This
 can help you avoid unnecessary API calls.}
 
-\item{dir}{A directory under which all \file{.png} and \file{.jpeg} files are
-to be compressed.}
+\item{dir}{A directory under which all \file{.png}, \file{.jpeg}, and
+\file{.webp} files are to be compressed.}
 
 \item{...}{Arguments passed to \code{\link{tinify}()}.}
 }
