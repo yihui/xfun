@@ -508,3 +508,14 @@ mark_dirs = function(x) {
   x[i] = paste0(x[i], "/")
   x
 }
+
+# change list.files()'s default argument values
+all_files = function(
+  pattern = NULL, dir = '.', ignore.case = TRUE, full.names = TRUE,
+  recursive = TRUE, ...
+) {
+  list.files(
+    dir, pattern, ignore.case = ignore.case, full.names = full.names,
+    recursive = recursive, no.. = TRUE, ...
+  )
+}

@@ -32,9 +32,7 @@ system3 = function(...) {
 #' @param ... Arguments to be passed to \code{system2()}.
 #' @references OptiPNG: \url{http://optipng.sourceforge.net}.
 #' @export
-optipng = function(
-  dir = '.', files = list.files(dir, '[.]png$', recursive = TRUE, full.names = TRUE), ...
-) {
+optipng = function(dir = '.', files = all_files('[.]png$', dir), ...) {
   if (Sys.which('optipng') != '') for (f in files) system2('optipng', shQuote(f), ...)
 }
 
