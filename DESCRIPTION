@@ -1,7 +1,7 @@
 Package: xfun
 Type: Package
 Title: Supporting Functions for Packages Maintained by 'Yihui Xie'
-Version: 0.31.4
+Version: 0.31.5
 Authors@R: c(
   person("Yihui", "Xie", role = c("aut", "cre", "cph"), email = "xie@yihui.name", comment = c(ORCID = "0000-0003-0645-5666")),
   person("Wush", "Wu", role = "ctb"),
@@ -29,6 +29,7 @@ Suggests:
     renv,
     curl,
     jsonlite,
+    magick,
     rmarkdown
 License: MIT + file LICENSE
 URL: https://github.com/yihui/xfun

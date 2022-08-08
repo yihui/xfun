@@ -1,5 +1,9 @@
 # CHANGES IN xfun VERSION 0.32
 
+- Added a function `shrink_images()` to shrink images to a maximum width using the **magick** package (thanks, @apreshill, rstudio/blogdown#614).
+
+- Added a function `tinify_dir()` as a wrapper of `tinify()` to compress images under a directory.
+
 - `file_ext()` supports more file extensions now, such as `.c++`, `.FB2K-COMPONENT`, and so on (thanks, @tentacles-from-outer-space, #68).
 
 - Fixed the issue that `xfun::base_pkgs()` could hang R (thanks, @mmaechler, #66).
