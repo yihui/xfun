@@ -27,11 +27,11 @@ image if its width is larger than the value specified by the argument
 \code{width}, and optionally call \code{\link{tinify}()} to compress it.
 }
 \examples{
-f = xfun:::R_logo(all = TRUE)
+f = xfun:::all_files("[.](png|jpe?g)$", R.home("doc"))
 file.copy(f, tempdir())
 f = file.path(tempdir(), basename(f))
-magick::image_info(magick::image_read(f))  # width: 724 (svg) and 100 (jpg)
+magick::image_info(magick::image_read(f))  # some widths are larger than 300
 xfun::shrink_images(300, files = f)
-magick::image_info(magick::image_read(f))  # width: 300 and 100
+magick::image_info(magick::image_read(f))  # all widths <= 300 now
 file.remove(f)
 }

@@ -141,12 +141,12 @@ tinify_dir = function(dir = '.', ...) {
 #' @param tinify Whether to compress images using \code{\link{tinify}()}.
 #' @export
 #' @examples
-#' f = xfun:::R_logo(all = TRUE)
+#' f = xfun:::all_files('[.](png|jpe?g)$', R.home('doc'))
 #' file.copy(f, tempdir())
 #' f = file.path(tempdir(), basename(f))
-#' magick::image_info(magick::image_read(f))  # width: 724 (svg) and 100 (jpg)
+#' magick::image_info(magick::image_read(f))  # some widths are larger than 300
 #' xfun::shrink_images(300, files = f)
-#' magick::image_info(magick::image_read(f))  # width: 300 and 100
+#' magick::image_info(magick::image_read(f))  # all widths <= 300 now
 #' file.remove(f)
 shrink_images = function(
   width = 800, dir = '.', files = all_files('[.](png|jpe?g|webp)$', dir),
