@@ -454,10 +454,10 @@ print.xfun_rename_seq = function(x, ...) {
 
 # return path to R's svg logo if it exists, otherwise return the jpg logo; or
 # specify a regex to match the logo path, e.g., ext = 'jpg$'
-R_logo = function(ext = NULL) {
+R_logo = function(ext = NULL, all = FALSE) {
   x = file.path(R.home('doc'), 'html', c('Rlogo.svg', 'logo.jpg'))
   if (!is.null(ext)) x = grep(ext, x, value = TRUE)
-  existing_files(x, first = TRUE)
+  existing_files(x, first = !all)
 }
 
 #' Extract filenames from a URLs
