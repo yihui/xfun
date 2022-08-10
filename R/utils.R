@@ -91,6 +91,10 @@ exit_call = function(fun, n = 2, ...) {
 stringsAsStrings = function() {
   # TODO: remove this function in the future since stringsAsFactors starts to
   # default to FALSE since R 4.0.0
+  warning(
+    'The function xfun::stringsAsStrings() will be deprecated in a future release of xfun. ',
+    'Since R 4.0.0, stringsAsFactors = FALSE has become the default.'
+  )
   if (isFALSE(getOption('stringsAsFactors'))) return(invisible())
   opts = options(stringsAsFactors = FALSE)
   exit_call(function() options(opts))

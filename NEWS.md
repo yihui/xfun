@@ -1,3 +1,7 @@
+# CHANGES IN xfun VERSION 0.33
+
+- The function `stringsAsStrings()` will be deprecated in a future release of **xfun**, because the global option `stringsAsFactors = FALSE` has become the default in base R since 4.0.0.
+
 # CHANGES IN xfun VERSION 0.32
 
 - Added a function `shrink_images()` to shrink images to a maximum width using the **magick** package (thanks, @apreshill, rstudio/blogdown#614).
