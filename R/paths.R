@@ -10,30 +10,39 @@
 #' doesn't allow double extensions by default), and allow characters \code{~}
 #' and \code{#} to be present at the end of a filename.
 #' @param x A character of file paths.
+#' @param extra Extra characters to be allowed in the extensions. By default,
+#'   only alphanumeric characters are allowed (and also some special cases in
+#'   \sQuote{Details}). If other characters should be allowed, they can be
+#'   specified in a character string, e.g., \code{"-+!_#"}.
 #' @export
 #' @return A character vector of the same length as \code{x}.
 #' @examples library(xfun)
 #' p = c('abc.doc', 'def123.tex', 'path/to/foo.Rmd', 'backup.ppt~', 'pkg.tar.xz')
 #' file_ext(p); sans_ext(p); with_ext(p, '.txt')
 #' with_ext(p, c('.ppt', '.sty', '.Rnw', 'doc', 'zip')); with_ext(p, 'html')
-file_ext = function(x) {
+#'
+#' # allow for more characters in extensions
+#' p = c('a.c++', 'b.c--', 'c.e##')
+#' file_ext(p)  # -/+/# not recognized by default
+#' file_ext(p, extra = '-+#')
+file_ext = function(x, extra = '') {
   ext = character(length(x))
-  i = grep(reg_path, x)
-  ext[i] = sub(reg_path, '\\3', x[i])
+  i = grep(r <- reg_path(extra), x)
+  ext[i] = sub(r, '\\3', x[i])
   ext
 }
 
 #' @rdname file_ext
 #' @export
-sans_ext = function(x) {
-  sub(reg_path, '\\1', x)
+sans_ext = function(x, extra = '') {
+  sub(reg_path(extra), '\\1', x)
 }
 
 #' @param ext A vector of new extensions. It must be either of length 1, or the
 #'   same length as \code{x}.
 #' @rdname file_ext
 #' @export
-with_ext = function(x, ext) {
+with_ext = function(x, ext, extra = '') {
   if (anyNA(ext)) stop("NA is not allowed in 'ext'")
   n1 = length(x); n2 = length(ext)
   if (n1 * n2 == 0) return(x)
@@ -41,7 +50,7 @@ with_ext = function(x, ext) {
   ext[i] = paste0('.', ext[i])
 
   if (all(ext == '')) ext = ''
-  r = sub('[$]$', '?$', reg_ext)  # make extensions in 'x' optional
+  r = sub('[$]$', '?$', reg_ext(extra))  # make extensions in 'x' optional
   if (length(ext) == 1) return(sub(r, ext, x))
 
   if (n1 > 1 && n1 != n2) stop("'ext' must be of the same length as 'x'")
@@ -49,8 +58,10 @@ with_ext = function(x, ext) {
 }
 
 # regex to extract base path and extension from a file path
-reg_ext  = '([.](([-+!_#[:alnum:]]+|tar[.](gz|bz2|xz)|nb[.]html)[~#]?))$'
-reg_path = paste0('^(.*?)', reg_ext)
+reg_ext  = function(extra = '') {
+  sprintf('([.](([%s[:alnum:]]+|tar[.](gz|bz2|xz)|nb[.]html)[~#]?))$', extra)
+}
+reg_path = function(...) paste0('^(.*?)', reg_ext(...))
 
 #' Normalize paths
 #'

@@ -6,14 +6,19 @@
 \alias{with_ext}
 \title{Manipulate filename extensions}
 \usage{
-file_ext(x)
+file_ext(x, extra = "")
 
-sans_ext(x)
+sans_ext(x, extra = "")
 
-with_ext(x, ext)
+with_ext(x, ext, extra = "")
 }
 \arguments{
 \item{x}{A character of file paths.}
+
+\item{extra}{Extra characters to be allowed in the extensions. By default,
+only alphanumeric characters are allowed (and also some special cases in
+\sQuote{Details}). If other characters should be allowed, they can be
+specified in a character string, e.g., \code{"-+!_#"}.}
 
 \item{ext}{A vector of new extensions. It must be either of length 1, or the
 same length as \code{x}.}
@@ -41,4 +46,9 @@ sans_ext(p)
 with_ext(p, ".txt")
 with_ext(p, c(".ppt", ".sty", ".Rnw", "doc", "zip"))
 with_ext(p, "html")
+
+# allow for more characters in extensions
+p = c("a.c++", "b.c--", "c.e##")
+file_ext(p)  # -/+/# not recognized by default
+file_ext(p, extra = "-+#")
 }
