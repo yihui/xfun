@@ -415,7 +415,7 @@ crandalf_check = function(pkg, size = 400, jobs = Inf, which = 'all') {
   b = paste0('check-', pkg)
   if (git_co(b, stderr = FALSE) != 0) {
     git_co(c('-b', b))
-    writeLines('# placeholder', 'recheck')
+    file.create('recheck')
     git(c('add', 'recheck'))
     git(c('commit', '-m', shQuote(paste('Revcheck', pkg))))
     git('push')
