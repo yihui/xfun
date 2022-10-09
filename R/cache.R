@@ -112,7 +112,7 @@ cache_rds = function(
     if (missing(dir) && !is.null(d <- knitr::opts_current$get('cache.path')))
       dir = d
   }
-  path = paste0(dir, file)
+  path = file.path(dir, file)
   if (!grepl(r <- '([.]rds)$', path)) path = paste0(path, '.rds')
   code = deparse(substitute(expr))
   md5  = md5sum_obj(code)
