@@ -79,8 +79,7 @@ exit_call = function(fun, n = 2, ...) {
 #' a parent function and restore the option after the parent function exits
 #'
 #' This is a shorthand of \code{opts = options(stringsAsFactors = FALSE);
-#' on.exit(options(opts), add = TRUE)}; \code{strings_please()} is an alias of
-#' \code{stringsAsStrings()}.
+#' on.exit(options(opts), add = TRUE)}.
 #' @export
 #' @examples
 #' f = function() {
@@ -91,18 +90,11 @@ exit_call = function(fun, n = 2, ...) {
 stringsAsStrings = function() {
   # TODO: remove this function in the future since stringsAsFactors starts to
   # default to FALSE since R 4.0.0
-  warning(
-    'The function xfun::stringsAsStrings() will be deprecated in a future release of xfun. ',
+  stop(
+    'The function xfun::stringsAsStrings() has been deprecated. ',
     'Since R 4.0.0, stringsAsFactors = FALSE has become the default.'
   )
-  if (isFALSE(getOption('stringsAsFactors'))) return(invisible())
-  opts = options(stringsAsFactors = FALSE)
-  exit_call(function() options(opts))
 }
-
-#' @rdname stringsAsStrings
-#' @export
-strings_please = stringsAsStrings
 
 #' Evaluate an expression under a specified working directory
 #'

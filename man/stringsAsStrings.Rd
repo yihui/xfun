@@ -2,18 +2,14 @@
 % Please edit documentation in R/utils.R
 \name{stringsAsStrings}
 \alias{stringsAsStrings}
-\alias{strings_please}
 \title{Set the global option \code{\link{options}(stringsAsFactors = FALSE)} inside
 a parent function and restore the option after the parent function exits}
 \usage{
 stringsAsStrings()
-
-strings_please()
 }
 \description{
 This is a shorthand of \code{opts = options(stringsAsFactors = FALSE);
-on.exit(options(opts), add = TRUE)}; \code{strings_please()} is an alias of
-\code{stringsAsStrings()}.
+on.exit(options(opts), add = TRUE)}.
 }
 \examples{
 f = function() {

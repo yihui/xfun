@@ -2,6 +2,8 @@
 
 - Added a new function `alnum_id()` to generate ID strings from a character vector.
 
+- The function `stringsAsStrings()` has been deprecated.
+
 # CHANGES IN xfun VERSION 0.33
 
 - Reverted the change for #68: the characters `-+!_#` are no longer accepted by default in filename extensions, since they are relatively rare and caused a breakage in rstudio/bookdown#1369. If you wish to allow for these characters, you may use the new `extra` argument in `file_ext()` and related functions, e.g., `xfun::file_ext(x, extra = '-+!_#')`.
