@@ -11,10 +11,4 @@ stringsAsStrings()
 This is a shorthand of \code{opts = options(stringsAsFactors = FALSE);
 on.exit(options(opts), add = TRUE)}.
 }
-\examples{
-f = function() {
-    xfun::strings_please()
-    data.frame(x = letters[1:4], y = factor(letters[1:4]))
-}
-str(f())  # the first column should be character
-}
+\keyword{internal}

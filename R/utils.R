@@ -81,12 +81,7 @@ exit_call = function(fun, n = 2, ...) {
 #' This is a shorthand of \code{opts = options(stringsAsFactors = FALSE);
 #' on.exit(options(opts), add = TRUE)}.
 #' @export
-#' @examples
-#' f = function() {
-#' xfun::strings_please()
-#' data.frame(x = letters[1:4], y = factor(letters[1:4]))
-#' }
-#' str(f())  # the first column should be character
+#' @keywords internal
 stringsAsStrings = function() {
   # TODO: remove this function in the future since stringsAsFactors starts to
   # default to FALSE since R 4.0.0
