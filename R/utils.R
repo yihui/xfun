@@ -75,22 +75,6 @@ exit_call = function(fun, n = 2, ...) {
   )
 }
 
-#' Set the global option \code{\link{options}(stringsAsFactors = FALSE)} inside
-#' a parent function and restore the option after the parent function exits
-#'
-#' This is a shorthand of \code{opts = options(stringsAsFactors = FALSE);
-#' on.exit(options(opts), add = TRUE)}.
-#' @export
-#' @keywords internal
-stringsAsStrings = function() {
-  # TODO: remove this function in the future since stringsAsFactors starts to
-  # default to FALSE since R 4.0.0
-  stop(
-    'The function xfun::stringsAsStrings() has been deprecated. ',
-    'Since R 4.0.0, stringsAsFactors = FALSE has become the default.'
-  )
-}
-
 #' Evaluate an expression under a specified working directory
 #'
 #' Change the working directory, evaluate the expression, and restore the

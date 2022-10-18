@@ -1,3 +1,7 @@
+# CHANGES IN xfun VERSION 0.35
+
+- `stringsAsStrings()` has been removed from this package.
+
 # CHANGES IN xfun VERSION 0.34
 
 - Added a new function `alnum_id()` to generate ID strings from a character vector.
