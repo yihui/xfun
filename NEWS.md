@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.34
 
+- Added a new function `alnum_id()` to generate ID strings from a character vector.
 
 # CHANGES IN xfun VERSION 0.33
 
