@@ -30,7 +30,7 @@ system3 = function(...) {
 #' @param dir Path to a directory.
 #' @param files Alternatively, you can choose the specific files to optimize.
 #' @param ... Arguments to be passed to \code{system2()}.
-#' @references OptiPNG: \url{http://optipng.sourceforge.net}.
+#' @references OptiPNG: \url{https://optipng.sourceforge.net}.
 #' @export
 optipng = function(dir = '.', files = all_files('[.]png$', dir), ...) {
   if (Sys.which('optipng') != '') for (f in files) system2('optipng', shQuote(f), ...)

@@ -18,5 +18,5 @@ Call the command \command{optipng} via \code{system2()} to optimize all PNG
 files under a directory.
 }
 \references{
-OptiPNG: \url{http://optipng.sourceforge.net}.
+OptiPNG: \url{https://optipng.sourceforge.net}.
 }
