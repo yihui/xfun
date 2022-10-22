@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.35
 
+- Added a new argument `token` to `protect_math()` to optionally include a token around math expressions.
+
 - `stringsAsStrings()` has been removed from this package.
 
 # CHANGES IN xfun VERSION 0.34
