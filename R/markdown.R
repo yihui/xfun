@@ -148,7 +148,7 @@ escape_math = function(x, token = '') {
 #' if (interactive()) htmltools::browsable(link)
 embed_file = function(path, name = basename(path), text = paste('Download', name), ...) {
   pkg_require(c('mime', 'htmltools'))
-  h = paste0("data:", mime::guess_type(path), ";base64,", base64_encode(path))
+  h = base64_uri(path)
   htmltools::a(text, href = h, download = name, ...)
 }
 
