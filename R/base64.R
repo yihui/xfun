@@ -89,7 +89,7 @@ base64_uri = function(x, type = mime::guess_type(x)) {
 # a limited version of mime::guess_type()
 guess_type = function(x, use_mime = loadable('mime')) {
   if (use_mime) return(mime::guess_type(x))
-  res = mimemap[file_ext(x)]
+  res = mimemap[tolower(file_ext(x))]
   if (any(i <- is.na(res))) {
     warning(
       'Cannot determine the MIME type(s) of ', paste(x[i], collapse = ', '),
