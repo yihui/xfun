@@ -92,7 +92,6 @@ in_dir = function(dir, expr) {
 
 #' Test if an object is identical to \code{FALSE}
 #'
-#' A simple abbreviation of \code{identical(x, FALSE)}.
 #' @param x An R object.
 #' @export
 #' @examples
@@ -100,7 +99,8 @@ in_dir = function(dir, expr) {
 #' isFALSE(TRUE)  # false
 #' isFALSE(FALSE)  # true
 #' isFALSE(c(FALSE, FALSE))  # false
-isFALSE = function(x) identical(x, FALSE)
+# TODO: replace by base::isFALSE() when min R for knitr will be 3.5.0
+isFALSE = function(x) is.logical(x) && length(x) == 1L && !is.na(x) && !x
 
 #' Parse R code and do not keep the source
 #'

@@ -10,7 +10,7 @@ isFALSE(x)
 \item{x}{An R object.}
 }
 \description{
-A simple abbreviation of \code{identical(x, FALSE)}.
+Test if an object is identical to \code{FALSE}
 }
 \examples{
 library(xfun)
