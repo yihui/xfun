@@ -57,3 +57,9 @@ assert('valid_syntax() tells if a code fragment is syntactically valid', {
   (!valid_syntax(c('if(T){', 'F')))
   (valid_syntax(c('if(T){', 'F}')))
 })
+
+assert('alnum_id() generates ID strings', {
+  x = c('Hello world 123!', 'a  &b*^##c 456')
+  (alnum_id(x) %==% c('hello-world-123', 'a-b-c-456'))
+  (alnum_id(x, '[^[:alpha:]]+') %==% c('hello-world', 'a-b-c'))
+})

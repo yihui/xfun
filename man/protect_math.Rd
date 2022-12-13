@@ -4,10 +4,14 @@
 \alias{protect_math}
 \title{Protect math expressions in pairs of backticks in Markdown}
 \usage{
-protect_math(x)
+protect_math(x, token = "")
 }
 \arguments{
 \item{x}{A character vector of text in Markdown.}
+
+\item{token}{A character string to wrap math expressions at both ends. This
+can be a unique token so that math expressions can be reliably identified
+and restored after the Markdown text is converted.}
 }
 \value{
 A character vector with math expressions in backticks.
@@ -40,4 +44,5 @@ If you are using Pandoc or the \pkg{rmarkdown} package, there is no
 library(xfun)
 protect_math(c("hi $a+b$", "hello $$\\\\alpha$$", "no math here: $x is $10 dollars"))
 protect_math(c("hi $$", "\\\\begin{equation}", "x + y = z", "\\\\end{equation}"))
+protect_math("$a+b$", "===")
 }

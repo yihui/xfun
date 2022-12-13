@@ -5,7 +5,8 @@
 \title{Cache the value of an R expression to an RDS file}
 \usage{
 cache_rds(
-  expr = { },
+  expr = {
+ },
   rerun = FALSE,
   file = "cache.rds",
   dir = "cache/",

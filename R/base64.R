@@ -82,6 +82,29 @@ base64_encode_r = function(x) {
 #' img = htmltools::img(src = xfun::base64_uri(logo), alt = 'R logo')
 #' if (interactive()) htmltools::browsable(img)
 base64_uri = function(x, type = mime::guess_type(x)) {
-  if (missing(type)) pkg_require('mime')
+  if (missing(type)) type = guess_type(x)
   paste0("data:", type, ";base64,", base64_encode(x))
 }
+
+# a limited version of mime::guess_type()
+guess_type = function(x, use_mime = loadable('mime')) {
+  if (use_mime) return(mime::guess_type(x))
+  res = mimemap[tolower(file_ext(x))]
+  if (any(i <- is.na(res))) {
+    warning(
+      'Cannot determine the MIME type(s) of ', paste(x[i], collapse = ', '),
+      '. You may try to install the "mime" package or report an issue to ',
+      packageDescription('xfun')$BugReports, '.'
+    )
+    res[i] = 'application/octet-stream'
+  }
+  unname(res)
+}
+
+# a comprehensive version is mime::mimemap (can extend it upon user request)
+mimemap = c(
+  css = 'text/css', csv = 'text/csv', gif = 'image/gif', jpeg = 'image/jpeg',
+  jpg = 'image/jpeg', js = 'application/javascript', png = 'image/png',
+  svg = 'image/svg+xml', ttf = 'application/font-sfnt',
+  woff = 'application/font-woff', woff2 = 'application/octet-stream'
+)

@@ -4,11 +4,7 @@
 \alias{optipng}
 \title{Run OptiPNG on all PNG files under a directory}
 \usage{
-optipng(
-  dir = ".",
-  files = list.files(dir, "[.]png$", recursive = TRUE, full.names = TRUE),
-  ...
-)
+optipng(dir = ".", files = all_files("[.]png$", dir), ...)
 }
 \arguments{
 \item{dir}{Path to a directory.}
@@ -22,5 +18,5 @@ Call the command \command{optipng} via \code{system2()} to optimize all PNG
 files under a directory.
 }
 \references{
-OptiPNG: \url{http://optipng.sourceforge.net}.
+OptiPNG: \url{https://optipng.sourceforge.net}.
 }

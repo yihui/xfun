@@ -244,3 +244,20 @@ pair_chars = function(x = read_utf8(file), file, chars = c('\U201c', '\U201d')) 
     invisible(x)
   } else x
 }
+
+#' Generate ID strings
+#'
+#' Substitute certain (by default, non-alphanumeric) characters with dashes and
+#' remove extra dashes at both ends to generate ID strings.
+#' @param x A character vector.
+#' @param exclude A (Perl) regular expression to detect characters to be
+#'   replaced by dashes. By default, non-alphanumeric characters are replaced.
+#' @return A character vector of IDs.
+#' @export
+#' @examples
+#' x = c('Hello world 123!', 'a  &b*^##c 456')
+#' xfun::alnum_id(x)
+#' xfun::alnum_id(x, '[^[:alpha:]]+')  # only keep alphabetical chars
+alnum_id = function(x, exclude = '[^[:alnum:]]+') {
+  tolower(gsub('^-+|-+$', '', gsub(exclude, '-', x, perl = TRUE)))
+}

@@ -2,6 +2,7 @@
 % Please edit documentation in R/image.R
 \name{tinify}
 \alias{tinify}
+\alias{tinify_dir}
 \title{Use the Tinify API to compress PNG and JPEG images}
 \usage{
 tinify(
@@ -12,6 +13,8 @@ tinify(
   key = getOption("xfun.tinify.key", Sys.getenv("R_XFUN_TINIFY_KEY")),
   history = getOption("xfun.tinify.history", Sys.getenv("R_XFUN_TINIFY_HISTORY"))
 )
+
+tinify_dir(dir = ".", ...)
 }
 \arguments{
 \item{input}{A vector of input paths of images.}
@@ -43,14 +46,20 @@ environment variable \code{R_XFUN_TINIFY_KEY} (you may set it in
 compressed images. If the checksum of an expected output image exists in
 this file and \code{force = FALSE}, the compression will be skipped. This
 can help you avoid unnecessary API calls.}
+
+\item{dir}{A directory under which all \file{.png}, \file{.jpeg}, and
+\file{.webp} files are to be compressed.}
+
+\item{...}{Arguments passed to \code{\link{tinify}()}.}
 }
 \value{
 The output file paths.
 }
 \description{
 Compress PNG/JPEG images with \samp{api.tinify.com}, and download the
-compressed images. This function requires R packages \pkg{curl} and
-\pkg{jsonlite}.
+compressed images. These functions require R packages \pkg{curl} and
+\pkg{jsonlite}. \code{tinify_dir()} is a wrapper function of \code{tinify()}
+to compress images under a directory.
 }
 \details{
 You are recommended to set the API key in \file{.Rprofile} or
@@ -60,7 +69,7 @@ images, you may either use \code{output = identity}, or set the value of the
 \code{history} argument in \file{.Rprofile} or \file{.Renviron}.
 }
 \examples{\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-f = file.path(R.home("doc"), "html", "logo.jpg")
+f = xfun:::R_logo("jpg$")
 xfun::tinify(f)  # remember to set the API key before trying this
 \dontshow{\}) # examplesIf}
 }

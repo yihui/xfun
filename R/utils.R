@@ -75,31 +75,6 @@ exit_call = function(fun, n = 2, ...) {
   )
 }
 
-#' Set the global option \code{\link{options}(stringsAsFactors = FALSE)} inside
-#' a parent function and restore the option after the parent function exits
-#'
-#' This is a shorthand of \code{opts = options(stringsAsFactors = FALSE);
-#' on.exit(options(opts), add = TRUE)}; \code{strings_please()} is an alias of
-#' \code{stringsAsStrings()}.
-#' @export
-#' @examples
-#' f = function() {
-#' xfun::strings_please()
-#' data.frame(x = letters[1:4], y = factor(letters[1:4]))
-#' }
-#' str(f())  # the first column should be character
-stringsAsStrings = function() {
-  # TODO: remove this function in the future since stringsAsFactors starts to
-  # default to FALSE since R 4.0.0
-  if (isFALSE(getOption('stringsAsFactors'))) return(invisible())
-  opts = options(stringsAsFactors = FALSE)
-  exit_call(function() options(opts))
-}
-
-#' @rdname stringsAsStrings
-#' @export
-strings_please = stringsAsStrings
-
 #' Evaluate an expression under a specified working directory
 #'
 #' Change the working directory, evaluate the expression, and restore the

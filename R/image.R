@@ -13,8 +13,9 @@ add_border = function(input, pixels = 1, color = 'black', output) {
 #' Use the Tinify API to compress PNG and JPEG images
 #'
 #' Compress PNG/JPEG images with \samp{api.tinify.com}, and download the
-#' compressed images. This function requires R packages \pkg{curl} and
-#' \pkg{jsonlite}.
+#' compressed images. These functions require R packages \pkg{curl} and
+#' \pkg{jsonlite}. \code{tinify_dir()} is a wrapper function of \code{tinify()}
+#' to compress images under a directory.
 #'
 #' You are recommended to set the API key in \file{.Rprofile} or
 #' \file{.Renviron}. After that, the only required argument of this function is
@@ -52,7 +53,7 @@ add_border = function(input, pixels = 1, color = 'black', output) {
 #'   \code{xfun::tinify()} has only implemented the feature of shrinking images.
 #' @export
 #' @examplesIf interactive()
-#' f = file.path(R.home('doc'), 'html', 'logo.jpg')
+#' f = xfun:::R_logo('jpg$')
 #' xfun::tinify(f)  # remember to set the API key before trying this
 tinify = function(
   input, output, quiet = FALSE, force = FALSE,
@@ -62,6 +63,7 @@ tinify = function(
   if (!(is.character(key) && length(key) == 1 && key != '')) stop(
     "The value of the 'key' argument must be a single non-empty character string."
   )
+  if (length(input) == 0) return(invisible(input))
   if (any(i <- !file_exists(input))) stop(
     'Input file(s) not found: ', paste(input[i], collapse = ', ')
   )
@@ -73,7 +75,8 @@ tinify = function(
 
   # avoid optimizing the input image if its md5 checksum exists in history
   save_history = function(file) {
-    if (!is.character(history)) return()
+    if (!is.character(history) || history == '') return()
+    dir_create(dirname(history))
     cat(paste0(tools::md5sum(file), '\n'), file = history, append = TRUE)
   }
   test_history = function(file) {
@@ -115,4 +118,45 @@ tinify = function(
   })
 
   invisible(output)
+}
+
+#' @param dir A directory under which all \file{.png}, \file{.jpeg}, and
+#'   \file{.webp} files are to be compressed.
+#' @param ... Arguments passed to \code{\link{tinify}()}.
+#' @rdname tinify
+#' @export
+tinify_dir = function(dir = '.', ...) {
+  tinify(all_files('[.](png|jpe?g|webp)$', dir), ...)
+}
+
+#' Shrink images to a maximum width
+#'
+#' Use \code{\link[magick:image_resize]{magick::image_resize}()} to shrink an
+#' image if its width is larger than the value specified by the argument
+#' \code{width}, and optionally call \code{\link{tinify}()} to compress it.
+#' @param width The desired maximum width of images.
+#' @param dir The directory of images.
+#' @param files A vector of image file paths. By default, this is all
+#'   \file{.png}, \file{.jpeg}, and \file{.webp} images under \code{dir}.
+#' @param tinify Whether to compress images using \code{\link{tinify}()}.
+#' @export
+#' @examples
+#' f = xfun:::all_files('[.](png|jpe?g)$', R.home('doc'))
+#' file.copy(f, tempdir())
+#' f = file.path(tempdir(), basename(f))
+#' magick::image_info(magick::image_read(f))  # some widths are larger than 300
+#' xfun::shrink_images(300, files = f)
+#' magick::image_info(magick::image_read(f))  # all widths <= 300 now
+#' file.remove(f)
+shrink_images = function(
+  width = 800, dir = '.', files = all_files('[.](png|jpe?g|webp)$', dir),
+  tinify = FALSE
+) {
+  for (f in files) {
+    x = magick::image_read(f)
+    if (magick::image_info(x)$width <= width) next
+    x = magick::image_resize(x, sprintf('%dx', width))
+    magick::image_write(x, f)
+  }
+  if (tinify) tinify(files, identity)
 }

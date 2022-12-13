@@ -53,6 +53,9 @@ prose_index = function(x, warn = TRUE) {
 #' Besides, LaTeX environments (\verb{\begin{*}} and \verb{\end{*}}) are also
 #' protected in backticks.
 #' @param x A character vector of text in Markdown.
+#' @param token A character string to wrap math expressions at both ends. This
+#'   can be a unique token so that math expressions can be reliably identified
+#'   and restored after the Markdown text is converted.
 #' @return A character vector with math expressions in backticks.
 #' @note If you are using Pandoc or the \pkg{rmarkdown} package, there is no
 #'   need to use this function, because Pandoc's Markdown can recognize math
@@ -61,26 +64,27 @@ prose_index = function(x, warn = TRUE) {
 #' @examples library(xfun)
 #' protect_math(c('hi $a+b$', 'hello $$\\alpha$$', 'no math here: $x is $10 dollars'))
 #' protect_math(c('hi $$', '\\begin{equation}', 'x + y = z', '\\end{equation}'))
-protect_math = function(x) {
+#' protect_math('$a+b$', '===')
+protect_math = function(x, token = '') {
   i = prose_index(x)
-  if (length(i)) x[i] = escape_math(x[i])
+  if (length(i)) x[i] = escape_math(x[i], token)
   x
 }
 
-escape_math = function(x) {
+escape_math = function(x, token = '') {
   # replace $x$ with `\(x\)` (protect inline math in <code></code>)
   m = gregexpr('(?<=^|[\\s])[$](?! )[^$]+?(?<! )[$](?![$0123456789])', x, perl = TRUE)
   regmatches(x, m) = lapply(regmatches(x, m), function(z) {
     if (length(z) == 0) return(z)
-    z = sub('^[$]', '`\\\\(', z)
-    z = sub('[$]$', '\\\\)`', z)
+    z = sub('^[$]', paste0('`', token, '\\\\('), z)
+    z = sub('[$]$', paste0('\\\\)', token, '`'), z)
     z
   })
   # replace $$x$$ with `$$x$$` (protect display math)
   m = gregexpr('(?<=^|[\\s])[$][$](?! )[^$]+?(?<! )[$][$]', x, perl = TRUE)
   regmatches(x, m) = lapply(regmatches(x, m), function(z) {
     if (length(z) == 0) return(z)
-    paste0('`', z, '`')
+    paste0('`', token, z, token, '`')
   })
   # now, if there are still lines starting and ending with $$, they might be
   # math expressions of display style spanning multiple lines, e.g.,
@@ -89,16 +93,16 @@ escape_math = function(x) {
   # we assume that $$ can only appear once on one line
   i = vapply(gregexpr('[$]', x), length, integer(1)) == 2
   if (any(i)) {
-    x[i] = gsub('^([$][$])([^ ]+)', '`\\1\\2', x[i], perl = TRUE)
-    x[i] = gsub('([^ ])([$][$])$', '\\1\\2`', x[i], perl = TRUE)
+    x[i] = gsub('^([$][$])([^ ]+)', paste0('`', token, '\\1\\2'), x[i], perl = TRUE)
+    x[i] = gsub('([^ ])([$][$])$', paste0('\\1\\2', token, '`'), x[i], perl = TRUE)
   }
   # equation environments (\begin and \end must match)
   i1 = grep('^\\\\begin\\{[^}]+\\}$', x)
   i2 = grep('^\\\\end\\{[^}]+\\}$', x)
   if (length(i1) == length(i2)) {
     # TODO: do not protect inner environments in case of nested environments (#57)
-    x[i1] = paste0('`', x[i1])
-    x[i2] = paste0(x[i2], '`')
+    x[i1] = paste0('`', token, x[i1])
+    x[i2] = paste0(x[i2], token, '`')
   }
   x
 }
@@ -144,7 +148,7 @@ escape_math = function(x) {
 #' if (interactive()) htmltools::browsable(link)
 embed_file = function(path, name = basename(path), text = paste('Download', name), ...) {
   pkg_require(c('mime', 'htmltools'))
-  h = paste0("data:", mime::guess_type(path), ";base64,", base64_encode(path))
+  h = base64_uri(path)
   htmltools::a(text, href = h, download = name, ...)
 }
 
