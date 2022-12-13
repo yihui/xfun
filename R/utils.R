@@ -100,7 +100,6 @@ in_dir = function(dir, expr) {
 #'   use \code{base::\link[base]{isFALSE}()} instead. If you have to support R
 #'   versions lower than 3.5.0, you may use \code{identical(x, FALSE)}, but
 #'   please note that it is not equivalent to \code{base::isFALSE()}.
-#' @export
 #' @examples
 #' library(xfun)
 #' isFALSE(TRUE)  # false
