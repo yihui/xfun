@@ -90,16 +90,16 @@ in_dir = function(dir, expr) {
   expr
 }
 
-#' Test if an object is identical to \code{FALSE}
+#' Test if an object is \code{FALSE}
 #'
-#' A simple abbreviation of \code{identical(x, FALSE)}.
+#' For R versions lower than 3.5.0, this function is a simple abbreviation of
+#' \code{identical(x, FALSE)}. For higher R versions, this function calls
+#' \code{base::isFALSE()}.
 #' @param x An R object.
-#' @note If your R version is greater than or equal to 3.5.0, we recommend that
-#'   you use \code{base::\link[base]{isFALSE}()} instead. However, note that its
-#'   meaning is different with \code{xfun::isFALSE()}, so please be careful to
-#'   decide whether you want to use \code{base::isFALSE(x)} or
-#'   \code{identical(x, FALSE)}, e.g., for \code{c(foo = FALSE)}, the former
-#'   returns \code{TRUE} but the latter requires \code{FALSE}.
+#' @note This function will be deprecated in the future. We recommend that you
+#'   use \code{base::\link[base]{isFALSE}()} instead. If you have to support R
+#'   versions lower than 3.5.0, you may use \code{identical(x, FALSE)}, but
+#'   please note that it is not equivalent to \code{base::isFALSE()}.
 #' @export
 #' @examples
 #' library(xfun)
