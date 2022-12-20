@@ -74,13 +74,15 @@ reg_path = function(...) paste0('^(.*?)', reg_ext(...))
 #' normalize_path('~')
 normalize_path = function(x, winslash = '/', must_work = FALSE, resolve_symlink = TRUE) {
   if (!resolve_symlink) {
-    d = dirname(x)
-    b = basename(x)
-    x = d  # normalize the dirs of symlinks instead
+    i = file_test('-L', x)
+    b = basename(x[i])
+    x[i] = dirname(x[i])  # normalize the dirs of symlinks instead
   }
   res = normalizePath(x, winslash = winslash, mustWork = must_work)
-  if (!resolve_symlink) res = file.path(res, b, fsep = winslash)
   if (is_windows()) res[is.na(x)] = NA
+  if (!resolve_symlink) {
+    res[i] = file.path(res[i], b, fsep = winslash)
+  }
   res
 }
 

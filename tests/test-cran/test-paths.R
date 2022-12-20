@@ -40,6 +40,8 @@ assert('normalize_path() works', {
   (basename(normalize_path(f2)) %==% basename(f1))
   # do not resolve symlink
   (basename(normalize_path(f2, resolve_symlink = FALSE)) %==% basename(f2))
+  # resolve_symlink = FALSE should work with inputs like . and ..
+  (normalize_path(c('.', '..'), resolve_symlink = FALSE) %==% normalize_path(c('.', '..')))
 })
 
 assert('url_filename() returns the file names in URLs', {
