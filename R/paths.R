@@ -74,7 +74,9 @@ reg_path = function(...) paste0('^(.*?)', reg_ext(...))
 #' normalize_path('~')
 normalize_path = function(x, winslash = '/', must_work = FALSE, resolve_symlink = TRUE) {
   if (!resolve_symlink) {
-    i = is_symlink(x)
+    # apply the trick on all files on Windows since Sys.readlink() doesn't work
+    # and we can't know which files are symlinks
+    i = if (is_windows()) file_test('-f', x) else is_symlink(x)
     b = basename(x[i])
     x[i] = dirname(x[i])  # normalize the dirs of symlinks instead
   }
