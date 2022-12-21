@@ -35,11 +35,11 @@ assert('normalize_path() works', {
   f1 = tempfile()
   writeLines('test symlink', f1)
   f2 = paste0(f1, '~')
-  file.symlink(f1, f2)
+  res = file.symlink(f1, f2)  # this may fail (on Windows), i.e., res = FALSE
   # resolve symlink by default
-  (basename(normalize_path(f2)) %==% basename(f1))
+  (!res || basename(normalize_path(f2)) %==% basename(f1))
   # do not resolve symlink
-  (basename(normalize_path(f2, resolve_symlink = FALSE)) %==% basename(f2))
+  (!res || basename(normalize_path(f2, resolve_symlink = FALSE)) %==% basename(f2))
   # resolve_symlink = FALSE should work with inputs like . and ..
   (normalize_path(c('.', '..'), resolve_symlink = FALSE) %==% normalize_path(c('.', '..')))
 })
