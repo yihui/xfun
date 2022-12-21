@@ -74,7 +74,7 @@ reg_path = function(...) paste0('^(.*?)', reg_ext(...))
 #' normalize_path('~')
 normalize_path = function(x, winslash = '/', must_work = FALSE, resolve_symlink = TRUE) {
   if (!resolve_symlink) {
-    i = file_test('-L', x)
+    i = is_symlink(x)
     b = basename(x[i])
     x[i] = dirname(x[i])  # normalize the dirs of symlinks instead
   }
@@ -84,6 +84,10 @@ normalize_path = function(x, winslash = '/', must_work = FALSE, resolve_symlink 
     res[i] = file.path(res[i], b, fsep = winslash)
   }
   res
+}
+
+is_symlink = function(x) {
+  !is.na(y <- Sys.readlink(x)) & (y != '')
 }
 
 #' Test if two paths are the same after they are normalized
