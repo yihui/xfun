@@ -1,6 +1,5 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^tools$
 ^\.travis\.yml$
 ^codecov\.yml$
 ^\.github$
