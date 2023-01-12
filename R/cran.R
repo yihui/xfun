@@ -9,7 +9,9 @@ cran_pkg_dates = function(full = FALSE, maintainer = 'Yihui Xie') {
     i = which(x == '<td>Published:</td>')
     if (length(i) == 0) stop('Cannot find the publishing date from ', u)
     d = as.Date(gsub('</?td>', '', x[i[1] + 1]))
-    x = try_silent(readLines(u <- sprintf('https://cran.r-project.org/src/contrib/Archive/%s/', p)))
+    x = try_silent(suppressWarnings(readLines(
+      u <- sprintf('https://cran.r-project.org/src/contrib/Archive/%s/', p)
+    )))
     if (inherits(x, 'try-error')) {
       info[[p]] = d; next
     }
