@@ -39,13 +39,14 @@ cran_updatable = function(days = 90, maintainer = 'Yihui Xie') {
     f = tempfile()
     u = paste0(b, '/raw/HEAD/DESCRIPTION')
     if (is.null(tryCatch(download.file(u, f, quiet = TRUE), error = function(e) NULL))) next
-    message('Found package on Github: ', b)
     d = read.dcf(f)
     file.remove(f)
     if (!'Version' %in% colnames(d)) next
     if (as.numeric_version(d[, 'Version']) <= paste0(info$Version[i], '.1')) {
       pkgs = setdiff(pkgs, info$Package[i])
       message('Skipped package ', info$Package[i], ' ', d[, 'Version'], ' (no new version).')
+    } else {
+      message('Package can be updated: ', b)
     }
   }
   pkgs
