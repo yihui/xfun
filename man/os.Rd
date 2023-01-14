@@ -5,6 +5,7 @@
 \alias{is_unix}
 \alias{is_macos}
 \alias{is_linux}
+\alias{is_arm64}
 \title{Test for types of operating systems}
 \usage{
 is_windows()
@@ -14,6 +15,8 @@ is_unix()
 is_macos()
 
 is_linux()
+
+is_arm64()
 }
 \description{
 Functions based on \code{.Platform$OS.type} and \code{Sys.info()} to test if
@@ -25,4 +28,6 @@ library(xfun)
 is_windows()
 is_unix() && is_macos()
 is_linux()
+# In newer Macs, CPU can be either Intel or Apple
+is_arm64()  # TRUE on Apple silicone machines
 }
