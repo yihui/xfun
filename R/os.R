@@ -11,8 +11,7 @@
 #' is_unix() && is_macos()
 #' is_linux()
 #' # In newer Macs, CPU can be either Intel or Apple
-#' is_arm64() # TRUE on Apple silicone machines
-
+#' is_arm64()  # TRUE on Apple silicone machines
 is_windows = function() .Platform$OS.type == 'windows'
 
 #' @rdname os
@@ -29,4 +28,4 @@ is_linux = function() unname(Sys.info()['sysname'] == 'Linux')
 
 #' @rdname os
 #' @export
-is_arm64 = function() Sys.info()[["machine"]] == "arm64"
+is_arm64 = function() Sys.info()[['machine']] == 'arm64'
