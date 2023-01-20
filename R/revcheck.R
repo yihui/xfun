@@ -719,3 +719,31 @@ find_missing_latex = function() {
   if (file_exists(f <- 'latex.txt')) append_unique(pkgs, f)
   pkgs
 }
+
+# run revdepcheck::cloud_check()
+cloud_check = function(pkgs = NULL, ...) {
+  get_fun = function(name) getFromNamespace(name, 'revdepcheck')
+  check = get_fun('cloud_check')
+  # if the current R version doesn't work, use the highest supported version
+  tryCatch(
+    check(r_version = format(getRversion()), revdep_packages = pkgs, ...),
+    error = function(e) {
+      r = ".*?\\[(('([0-9.]+)'(,\\s+)?)+)].*"
+      x = grep(r, e$message, value = TRUE)
+      x = gsub(r, '\\1', x)
+      v = unlist(strsplit(x, "('|,\\s+)"))
+      v = v[v != ''][1]
+      if (is.na(v)) stop(e)
+      check(r_version = v, revdep_packages = pkgs, ...)
+    }
+  )
+  get_fun('cloud_status')(update_interval = 60)
+  if (length(res <- get_fun('cloud_broken')())) {
+    get_fun('cloud_report')()
+    for (p in res) print(get_fun('cloud_details')(revdep = p))
+    fs = list.files(list.files('revdep/cloud.noindex', full.names = TRUE), full.names = TRUE)
+    # only keep results from broken packages
+    unlink(fs[!basename(fs) %in% c(res, paste0(res, '.tar.gz'))], recursive = TRUE)
+    stop('Package(s) broken: ', paste(res, collapse = ' '))
+  }
+}
