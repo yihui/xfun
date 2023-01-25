@@ -101,6 +101,7 @@ in_dir = function(dir, expr) {
 #'   versions lower than 3.5.0, you may use \code{identical(x, FALSE)}, but
 #'   please note that it is not equivalent to \code{base::isFALSE()}.
 #' @export
+#' @keywords internal
 #' @examplesIf getRversion() < '3.5.0'
 #' library(xfun)
 #' isFALSE(TRUE)  # false

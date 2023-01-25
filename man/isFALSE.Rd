@@ -27,3 +27,4 @@ isFALSE(FALSE)  # true
 isFALSE(c(FALSE, FALSE))  # false
 \dontshow{\}) # examplesIf}
 }
+\keyword{internal}

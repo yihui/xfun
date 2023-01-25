@@ -123,7 +123,7 @@ existing_files = function(x, first = FALSE, error = TRUE) {
   x = x[file_exists(x)]
   if (!first) return(x)
   x = head(x, 1)
-  if (length(x) != 1 && !isFALSE(error)) {
+  if (length(x) != 1 && !base::isFALSE(error)) {
     if (isTRUE(error)) error = 'None of the specified files exist.'
     stop(error, call. = FALSE)
   }
