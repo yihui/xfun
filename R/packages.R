@@ -313,7 +313,7 @@ reinstall_from_cran = function(dry_run = TRUE, skip_github = TRUE) {
 #' @return If \code{output = NA}, returns the Markdown content as a character
 #'   vector, otherwise the content is written to the output file.
 #' @export
-#' @examples
+#' @examplesIf interactive()
 #' # news for the current version of R
 #' xfun::news2md('R', Version == getRversion(), output = NA)
 news2md = function(package, ..., output = 'NEWS.md', category = TRUE) {

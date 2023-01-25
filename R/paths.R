@@ -68,13 +68,28 @@ reg_path = function(...) paste0('^(.*?)', reg_ext(...))
 #' A wrapper function of \code{normalizePath()} with different defaults.
 #' @param x,winslash,must_work Arguments passed to
 #'   \code{\link{normalizePath}()}.
+#' @param resolve_symlink Whether to resolve symbolic links.
 #' @export
 #' @examples library(xfun)
 #' normalize_path('~')
-normalize_path = function(x, winslash = '/', must_work = FALSE) {
+normalize_path = function(x, winslash = '/', must_work = FALSE, resolve_symlink = TRUE) {
+  if (!resolve_symlink) {
+    # apply the trick on all files on Windows since Sys.readlink() doesn't work
+    # and we can't know which files are symlinks
+    i = if (is_windows()) file_test('-f', x) else is_symlink(x)
+    b = basename(x[i])
+    x[i] = dirname(x[i])  # normalize the dirs of symlinks instead
+  }
   res = normalizePath(x, winslash = winslash, mustWork = must_work)
   if (is_windows()) res[is.na(x)] = NA
+  if (!resolve_symlink) {
+    res[i] = file.path(res[i], b, fsep = winslash)
+  }
   res
+}
+
+is_symlink = function(x) {
+  !is.na(y <- Sys.readlink(x)) & (y != '')
 }
 
 #' Test if two paths are the same after they are normalized

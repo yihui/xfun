@@ -4,11 +4,13 @@
 \alias{normalize_path}
 \title{Normalize paths}
 \usage{
-normalize_path(x, winslash = "/", must_work = FALSE)
+normalize_path(x, winslash = "/", must_work = FALSE, resolve_symlink = TRUE)
 }
 \arguments{
 \item{x, winslash, must_work}{Arguments passed to
 \code{\link{normalizePath}()}.}
+
+\item{resolve_symlink}{Whether to resolve symbolic links.}
 }
 \description{
 A wrapper function of \code{normalizePath()} with different defaults.

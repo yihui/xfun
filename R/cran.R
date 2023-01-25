@@ -9,7 +9,9 @@ cran_pkg_dates = function(full = FALSE, maintainer = 'Yihui Xie') {
     i = which(x == '<td>Published:</td>')
     if (length(i) == 0) stop('Cannot find the publishing date from ', u)
     d = as.Date(gsub('</?td>', '', x[i[1] + 1]))
-    x = try(readLines(u <- sprintf('https://cran.r-project.org/src/contrib/Archive/%s/', p)))
+    x = try_silent(suppressWarnings(readLines(
+      u <- sprintf('https://cran.r-project.org/src/contrib/Archive/%s/', p)
+    )))
     if (inherits(x, 'try-error')) {
       info[[p]] = d; next
     }
@@ -26,7 +28,28 @@ cran_updatable = function(days = 90, maintainer = 'Yihui Xie') {
   flag = unlist(lapply(info, function(d) {
     sum(d > Sys.Date() - 180) < 6 && d[1] < Sys.Date() - days
   }))
-  names(which(flag))
+  if (length(pkgs <- names(which(flag))) == 0) return(pkgs)
+  # look into DESCRIPTION in Github repos and see if new version has been pushed
+  info = tools::CRAN_package_db()
+  info = info[info$Package %in% pkgs, , drop = FALSE]
+  pkgs = info$Package
+  for (i in seq_len(nrow(info))) {
+    b = grep_sub('^(https://github.com/[^/]+/[^/]+)/issues$', '\\1', info$BugReports[i])
+    if (length(b) != 1) next
+    f = tempfile()
+    u = paste0(b, '/raw/HEAD/DESCRIPTION')
+    if (is.null(tryCatch(download.file(u, f, quiet = TRUE), error = function(e) NULL))) next
+    d = read.dcf(f)
+    file.remove(f)
+    if (!'Version' %in% colnames(d)) next
+    if (as.numeric_version(d[, 'Version']) <= paste0(info$Version[i], '.1')) {
+      pkgs = setdiff(pkgs, info$Package[i])
+      message('Skipped package ', info$Package[i], ' ', d[, 'Version'], ' (no new version).')
+    } else {
+      message('Package can be updated: ', b)
+    }
+  }
+  pkgs
 }
 
 

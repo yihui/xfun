@@ -31,6 +31,19 @@ assert('same_path() works', {
   (!same_path(tempdir(), 'foo'))
 })
 
+assert('normalize_path() works', {
+  f1 = tempfile()
+  writeLines('test symlink', f1)
+  f2 = paste0(f1, '~')
+  res = file.symlink(f1, f2)  # this may fail (on Windows), i.e., res = FALSE
+  # resolve symlink by default
+  (!res || basename(normalize_path(f2)) %==% basename(f1))
+  # do not resolve symlink
+  (!res || basename(normalize_path(f2, resolve_symlink = FALSE)) %==% basename(f2))
+  # resolve_symlink = FALSE should work with inputs like . and ..
+  (normalize_path(c('.', '..'), resolve_symlink = FALSE) %==% normalize_path(c('.', '..')))
+})
+
 assert('url_filename() returns the file names in URLs', {
   (url_filename('https://yihui.org/images/logo.png') %==% 'logo.png')
   (url_filename(c(
