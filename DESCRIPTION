@@ -21,7 +21,7 @@ Suggests:
     tinytex (>= 0.30),
     mime,
     markdown,
-    knitr,
+    knitr (>= 1.42),
     htmltools,
     remotes,
     pak,
