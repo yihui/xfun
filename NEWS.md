@@ -2,6 +2,8 @@
 
 - Added a function `is_arm64()` to test the CPU type (thanks, @AlbanSagouis, #72).
 
+- Started deprecating `xfun::isFALSE()` in favor of `base::isFALSE()` for R >= 3.5.0 (thanks, @mmaechler, #66); `isFALSE()` will eventually be removed from **xfun** when we do not need to support R < 3.5.0.
+
 # CHANGES IN xfun VERSION 0.36
 
 - Added a new argument `resolve_symlink` to `normalize_path()` to get the absolute paths of symlinks without resolving them (with `resolve_symlink = FALSE`).

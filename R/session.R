@@ -106,7 +106,7 @@ do_once = function(task, option, hint = c(
   'If you never want to see this message,',
   sprintf('you may set options(%s = FALSE) in your .Rprofile.', option)
 )) {
-  if (isFALSE(getOption(option))) return(invisible())
+  if (base::isFALSE(getOption(option))) return(invisible())
   task
   hint = paste(hint, collapse = ' ')
   if (hint != '') message(hint)
