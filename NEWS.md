@@ -1,3 +1,6 @@
+# CHANGES IN xfun VERSION 0.38
+
+
 # CHANGES IN xfun VERSION 0.37
 
 - Added a function `is_arm64()` to test the CPU type (thanks, @AlbanSagouis, #72).
