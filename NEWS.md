@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.38
 
+- `is_arm64()` also supports Linux now (thanks, @eitsupi, #74).
 
 # CHANGES IN xfun VERSION 0.37
 

@@ -28,4 +28,4 @@ is_linux = function() unname(Sys.info()['sysname'] == 'Linux')
 
 #' @rdname os
 #' @export
-is_arm64 = function() Sys.info()[['machine']] == 'arm64'
+is_arm64 = function() Sys.info()[['machine']] %in% c('arm64', 'aarch64')
