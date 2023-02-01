@@ -93,13 +93,14 @@ in_dir = function(dir, expr) {
 #' Test if an object is \code{FALSE}
 #'
 #' For R versions lower than 3.5.0, this function is a simple abbreviation of
-#' \code{identical(x, FALSE)}. For higher R versions, this function calls
-#' \code{base::isFALSE()}.
+#' \code{identical(x, FALSE)}. For higher R versions, this function throws an
+#' error asking users to call \code{base::isFALSE()} instead.
 #' @param x An R object.
-#' @note This function will be deprecated in the future. We recommend that you
-#'   use \code{base::\link[base]{isFALSE}()} instead. If you have to support R
-#'   versions lower than 3.5.0, you may use \code{identical(x, FALSE)}, but
-#'   please note that it is not equivalent to \code{base::isFALSE()}.
+#' @note This function will be removed from \pkg{xfun} in future. We recommend
+#'   that you use \code{base::\link[base]{isFALSE}()} instead. If you have to
+#'   support R versions lower than 3.5.0, you may use \code{identical(x,
+#'   FALSE)}, but please note that it is not equivalent to
+#'   \code{base::isFALSE()}.
 #' @export
 #' @keywords internal
 #' @examplesIf getRversion() < '3.5.0'
@@ -108,12 +109,11 @@ in_dir = function(dir, expr) {
 #' isFALSE(FALSE)  # true
 #' isFALSE(c(FALSE, FALSE))  # false
 isFALSE = function(x) {
-  if (!('isFALSE' %in% ls(baseenv()))) return(identical(x, FALSE))
-  do_once((if (is_R_CMD_check()) stop else warning)(
-    'The function xfun::isFALSE() will be deprecated in the future. Please ',
+  if ('isFALSE' %in% ls(baseenv())) stop(
+    'The function xfun::isFALSE() has been deprecated. Please ',
     'consider using base::isFALSE(x) or identical(x, FALSE) instead.'
-  ), 'xfun.isFALSE.message', '')
-  base::isFALSE(x)
+  )
+  identical(x, FALSE)
 }
 
 #' Parse R code and do not keep the source
