@@ -47,7 +47,7 @@ pkg_attach = function(
     suppressPackageStartupMessages(base::library(...))
   }
   for (i in c(...)) {
-    if (!base::isFALSE(install) && !loadable(i)) pkg_install(i, install)
+    if (!identical(install, FALSE) && !loadable(i)) pkg_install(i, install)
     library(i, character.only = TRUE)
   }
 }
@@ -60,7 +60,7 @@ pkg_load = function(..., error = TRUE, install = FALSE) {
   if (n == 0) return(invisible(res))
   for (i in seq_len(n)) {
     res[i] = loadable(p <- pkg[i])
-    if (!base::isFALSE(install) && !res[i]) {
+    if (!identical(install, FALSE) && !res[i]) {
       pkg_install(p, install); res[i] = loadable(p)
     }
   }
