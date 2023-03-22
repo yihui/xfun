@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.38
 
+- Added an argument `default` to `url_filename()` to provide a default filename when it cannot be determined from the URL.
+
 - `is_arm64()` also supports Linux now (thanks, @eitsupi, #74).
 
 # CHANGES IN xfun VERSION 0.37

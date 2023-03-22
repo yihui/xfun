@@ -491,6 +491,8 @@ R_logo = function(ext = NULL, all = FALSE) {
 #' Get the base names of URLs via \code{\link{basename}()}, and remove the
 #' possible query parameters or hash from the names.
 #' @param x A character vector of URLs.
+#' @param default The default filename when it cannot be determined from the
+#'   URL, e.g., when the URL ends with a slash.
 #' @return A character vector of filenames at the end of URLs.
 #' @export
 #' @examples
@@ -498,8 +500,13 @@ R_logo = function(ext = NULL, all = FALSE) {
 #' xfun::url_filename('https://yihui.org/index.html')
 #' xfun::url_filename('https://yihui.org/index.html?foo=bar')
 #' xfun::url_filename('https://yihui.org/index.html#about')
-url_filename = function(x) {
-  gsub('[?#].*$', '', basename(x))  # remove query/hash from url
+#' xfun::url_filename('https://yihui.org')
+#' xfun::url_filename('https://yihui.org/')
+url_filename = function(x, default = 'index.html') {
+  # protocol shouldn't be treated as dir name, and query/hash should be removed
+  x = gsub('^https?://|[?#].*$', '', x)
+  f = basename(x)
+  ifelse(grepl('/$', x) | x == f, default, f)
 }
 
 #' Delete an empty directory
