@@ -115,9 +115,9 @@ cache_rds = function(
   path = paste0(dir, file)
   if (!grepl(r <- '([.]rds)$', path)) path = paste0(path, '.rds')
   code = deparse(substitute(expr))
-  md5  = md5sum_obj(code)
+  md5  = md5_obj(code)
   if (identical(hash, 'auto')) hash = global_vars(code, parent.frame(2))
-  if (is.list(hash)) md5 = md5sum_obj(c(md5, md5sum_obj(hash)))
+  if (is.list(hash)) md5 = md5_obj(c(md5, md5_obj(hash)))
   path = sub(r, paste0('_', md5, '\\1'), path)
   if (rerun) unlink(path)
   if (clean) clean_cache(path)
@@ -130,10 +130,10 @@ cache_rds = function(
 }
 
 # write an object to a file and return the md5 sum
-md5sum_obj = function(x) {
+md5_obj = function(x) {
   f = tempfile(); on.exit(unlink(f), add = TRUE)
   if (is.character(x)) writeLines(x, f) else saveRDS(x, f)
-  tools::md5sum(f)
+  unname(tools::md5sum(f))
 }
 
 # clean up old cache files (those with the same base names as the new cache
