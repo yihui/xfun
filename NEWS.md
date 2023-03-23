@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.38
 
+- Added an object `download_cache`, which is a list of methods to download a URL, cache the result, retrieve the result from the cache, and clear the cache.
+
 - Added an argument `default` to `url_filename()` to provide a default filename when it cannot be determined from the URL.
 
 - `is_arm64()` also supports Linux now (thanks, @eitsupi, #74).

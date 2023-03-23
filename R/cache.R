@@ -162,3 +162,108 @@ known_globals = c(
 global_vars = function(code, env) {
   if (length(vars <- find_globals(code)) > 0) mget(vars, env)
 }
+
+#' Download a file from a URL and cache it on disk
+#'
+#' This object provides methods to download files and cache them on disk.
+#' @format A list of methods:
+#'
+#'   \code{$get(url, mode)} downloads a URL, caches it, and returns the file
+#'   content according to the value of \code{mode} (possible values:
+#'   \code{"text"} means the text content; \code{"base64"} means the base64
+#'   encoded data; \code{"raw"} means the raw binary content; \code{"auto"} is
+#'   the default and means the ).
+#'
+#'   \code{$summary()} gives a summary of existing cache files.
+#'
+#'   \code{$remove(url, mode)} removes a single cache file.
+#'
+#'   \code{$purge()} deletes all cache files.
+#' @export
+#' @examplesIf interactive()
+#' # the first time it may take a few seconds
+#' x1 = xfun::download_cache$get('https://www.r-project.org/')
+#' head(x1)
+#'
+#' # now you can get the cached content
+#' x2 = xfun::download_cache$get('https://www.r-project.org/')
+#' identical(x1, x2)  # TRUE
+#'
+#' # a binary file
+#' x3 = xfun::download_cache$get('https://yihui.org/images/logo.png')
+#' length(x3)
+#'
+#' # show a summary
+#' xfun::download_cache$summary()
+#' # remove a specific cache file
+#' xfun::download_cache$remove('https://yihui.org/images/logo.png')
+#' # remove all cache files
+#' xfun::download_cache$purge()
+download_cache = local({
+  pre = 'url'  # file prefix
+  c_dir = function() {
+    getOption('xfun.cache.dir', tools::R_user_dir('xfun', 'cache'))
+  }
+  c_file = function(url, mode) {
+    file.path(c_dir(), sprintf('%s_%s_%s.rds', pre, mode, md5_obj(url)))
+  }
+  read = function(url, mode) {
+    if (length(f <- c_file(url, mode)) && file.exists(f)) readRDS(f)
+  }
+  write = function(url, mode, data) {
+    if (length(f <- c_file(url, mode))) {
+      dir_create(dirname(f))
+      saveRDS(data, f)
+    }
+  }
+  list_cache = function() {
+    d = c_dir()
+    list.files(d, sprintf('^%s_.+[.]rds$', pre), full.names = TRUE)
+  }
+  list(
+    get = function(url, mode = c('auto', 'text', 'base64', 'raw')) {
+      mode = mode[1]
+      if (!is.null(x <- read(url, mode))) return(x[[url]])
+      if ((auto <- mode == 'auto')) mode = if (length(grep(
+        '^content-type:\\s+(text/.+|[^;]+;\\s+charset=utf-8)\\s*$',
+        curlGetHeaders(url), ignore.case = TRUE
+      ))) 'text' else 'raw'
+      dir_create(d <- tempfile())
+      on.exit(unlink(d, recursive = TRUE), add = TRUE)
+      x = in_dir(d, {
+        o = url_filename(url)
+        download_file(url, o)
+        switch(
+          mode, text = read_utf8(o), base64 = base64_uri(o), raw = read_bin(o)
+        )
+      })
+      write(url, if (auto) 'auto' else mode, setNames(list(x), url))
+      x
+    },
+    summary = function() {
+      f = list_cache()
+      if (length(f) == 0) return(invisible())
+      t = gsub('^url_([^_]+)_.+$', '\\1', basename(f))
+      u = vapply(f, function(x) names(readRDS(x)), character(1))
+      s = file.size(f)
+      if (length(f) > 1) {
+        u = c(u, 'Total')
+        t = c(t, '')
+        s = c(s, sum(s))
+      }
+      d = data.frame(url = u, mode = t, size = s, size_h = format_bytes(s))
+      rownames(d) = NULL
+      d
+    },
+    remove = function(url, mode = 'auto') file.remove(c_file(url, mode)),
+    purge = function() {
+      f = list_cache()
+      fs = file.size(f)
+      i = file.remove(f)
+      message(sprintf(
+        "Purged %d cache file(s) from '%s' (%s)",
+        sum(i), c_dir(), format_bytes(sum(fs[i]))
+      ))
+    }
+  )
+})
