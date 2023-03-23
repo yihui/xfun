@@ -20,7 +20,7 @@ tinify_dir(dir = ".", ...)
 \item{input}{A vector of input paths of images.}
 
 \item{output}{A vector of output paths or a function that takes \code{input}
-and returns a vector of output paths (e.g., \code{output = \link{identity}}
+and returns a vector of output paths (e.g., \verb{output = }\code{\link{identity}}
 means \code{output = input}). By default, if the \code{history} argument is
 not a provided, \code{output} is \code{input} with a suffix \code{-min}
 (e.g., when \code{input = 'foo.png'}, \code{output = 'foo-min.png'}),
@@ -29,7 +29,7 @@ original image files will be overwritten.}
 
 \item{quiet}{Whether to suppress detailed information about the compression,
 which is of the form \samp{input.png (10 Kb) ==> output.png (5 Kb, 50\%);
-compression count: 42}. The percentage after \code{output.png} stands for
+  compression count: 42}. The percentage after \code{output.png} stands for
 the compression ratio, and the compression count shows the number of
 compressions used for the current month.}
 
@@ -50,7 +50,7 @@ can help you avoid unnecessary API calls.}
 \item{dir}{A directory under which all \file{.png}, \file{.jpeg}, and
 \file{.webp} files are to be compressed.}
 
-\item{...}{Arguments passed to \code{\link{tinify}()}.}
+\item{...}{Arguments passed to \code{\link[=tinify]{tinify()}}.}
 }
 \value{
 The output file paths.
@@ -78,6 +78,6 @@ Tinify API: \url{https://tinypng.com/developers}.
 }
 \seealso{
 The \pkg{tinieR} package (\url{https://github.com/jmablog/tinieR/})
-  is a more comprehensive implementation of the Tinify API, whereas
-  \code{xfun::tinify()} has only implemented the feature of shrinking images.
+is a more comprehensive implementation of the Tinify API, whereas
+\code{xfun::tinify()} has only implemented the feature of shrinking images.
 }

@@ -45,15 +45,15 @@ browser. A common use case is to embed data files for readers to download.
 }
 \note{
 Windows users may need to install Rtools to obtain the \command{zip}
-  command to use \code{embed_dir()} and \code{embed_files()}.
+command to use \code{embed_dir()} and \code{embed_files()}.
 
-  These functions require R packages \pkg{mime} and \pkg{htmltools}. If you
-  have installed the \pkg{rmarkdown} package, these packages should be
-  available, otherwise you need to install them separately.
+These functions require R packages \pkg{mime} and \pkg{htmltools}. If you
+have installed the \pkg{rmarkdown} package, these packages should be
+available, otherwise you need to install them separately.
 
-  Currently Internet Explorer does not support downloading embedded files
-  (\url{https://caniuse.com/#feat=download}). Chrome has a 2MB limit on the
-  file size.
+Currently Internet Explorer does not support downloading embedded files
+(\url{https://caniuse.com/#feat=download}). Chrome has a 2MB limit on the
+file size.
 }
 \examples{
 logo = xfun:::R_logo()

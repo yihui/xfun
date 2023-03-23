@@ -1,11 +1,11 @@
 #' Get the tags of Github releases of a repository
 #'
-#' Use the Github API (\code{\link{github_api}()}) to obtain the tags of the
+#' Use the Github API ([github_api()]) to obtain the tags of the
 #' releases.
-#' @param repo The repository name of the form \code{user/repo}, e.g.,
-#'   \code{"yihui/xfun"}.
+#' @param repo The repository name of the form `user/repo`, e.g.,
+#'   `"yihui/xfun"`.
 #' @param tag A tag as a character string. If provided, it will be returned if
-#'   the tag exists. If \code{tag = "latest"}, the tag of the latest release is
+#'   the tag exists. If `tag = "latest"`, the tag of the latest release is
 #'   returned.
 #' @param pattern A regular expression to match the tags.
 #' @param use_jsonlite Whether to use \pkg{jsonlite} to parse the releases info.
@@ -59,10 +59,10 @@ github_releases2 = function(repo, tag = '', pattern = '[^"&]+') {
   unique(grep_sub(r, '\\1', h))
 }
 
-#' @details \code{github_api()} is a wrapper function based on
-#'   \code{rest_api_raw()} to obtain data from the Github API:
-#'   \url{https://docs.github.com/en/rest}. You can provide a personal access
-#'   token (PAT) via the \code{token} argument, or via one of the environment
+#' @details `github_api()` is a wrapper function based on
+#'   `rest_api_raw()` to obtain data from the Github API:
+#'   <https://docs.github.com/en/rest>. You can provide a personal access
+#'   token (PAT) via the `token` argument, or via one of the environment
 #'   variables \var{GITHUB_PAT}, \var{GITHUB_TOKEN}, \var{GH_TOKEN}. A PAT
 #'   allows for a much higher rate limit in API calls. Without a token, you can
 #'   only make 60 calls in an hour.

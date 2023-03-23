@@ -18,8 +18,8 @@ A logical vector.
 \description{
 On Unix, check if the paths start with \file{/} or \file{~} (if they do, they
 are absolute paths). On Windows, check if a path remains the same (via
-\code{xfun::\link{same_path}()}) if it is prepended with \file{./} (if it
-does, it is a relative path).
+\code{\link[=same_path]{same_path()}}) if it is prepended with \file{./} (if it does, it is a
+relative path).
 }
 \examples{
 xfun::is_abs_path(c("C:/foo", "foo.txt", "/Users/john/", tempdir()))

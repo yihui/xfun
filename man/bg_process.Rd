@@ -12,33 +12,31 @@ bg_process(
 }
 \arguments{
 \item{command, args}{The system command and its arguments. They do not need to
-be quoted, since they will be quoted via \code{\link{shQuote}()}
-internally.}
+be quoted, since they will be quoted via \code{\link[=shQuote]{shQuote()}} internally.}
 
-\item{verbose}{If \code{FALSE}, suppress the output from \verb{stdout} (and
-also \verb{stderr} on Windows). The default value of this argument can be
-set via a global option, e.g., \code{options(xfun.bg_process.verbose =
-TRUE)}.}
+\item{verbose}{If \code{FALSE}, suppress the output from \code{stdout} (and also
+\code{stderr} on Windows). The default value of this argument can be set via a
+global option, e.g., \code{options(xfun.bg_process.verbose = TRUE)}.}
 }
 \value{
 The process ID as a character string.
 }
 \description{
-Start a background process using the PowerShell cmdlet \command{Start-Process
--PassThru} on Windows or the ampersand \command{&} on Unix, and return the
-process ID.
+Start a background process using the PowerShell cmdlet
+\command{Start-Process-PassThru} on Windows or the ampersand \command{&} on
+Unix, and return the process ID.
 }
 \note{
 On Windows, if PowerShell is not available, try to use
-  \code{\link{system2}(wait = FALSE)} to start the background process
-  instead. The process ID will be identified from the output of the command
-  \command{tasklist}. This method of looking for the process ID may not be
-  reliable. If the search is not successful in 30 seconds, it will throw an
-  error (timeout). If a longer time is needed, you may set
-  \code{options(xfun.bg_process.timeout)} to a larger value, but it should be
-  very rare that a process cannot be started in 30 seconds. When you reach
-  the timeout, it is more likely that the command actually failed.
+\code{\link{system2}}\code{(wait = FALSE)} to start the background process instead. The
+process ID will be identified from the output of the command
+\command{tasklist}. This method of looking for the process ID may not be
+reliable. If the search is not successful in 30 seconds, it will throw an
+error (timeout). If a longer time is needed, you may set
+\code{options(xfun.bg_process.timeout)} to a larger value, but it should be very
+rare that a process cannot be started in 30 seconds. When you reach the
+timeout, it is more likely that the command actually failed.
 }
 \seealso{
-\code{\link{proc_kill}()} to kill a process.
+\code{\link[=proc_kill]{proc_kill()}} to kill a process.
 }

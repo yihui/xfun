@@ -22,9 +22,9 @@ append_unique(text, con, sort = function(x) base::sort(unique(x)))
 (if \code{FALSE}, only a warning message is issued).}
 
 \item{text}{A character vector (will be converted to UTF-8 via
-\code{\link{enc2utf8}()}).}
+\code{\link[=enc2utf8]{enc2utf8()}}).}
 
-\item{...}{Other arguments passed to \code{\link{writeLines}()} (except
+\item{...}{Other arguments passed to \code{\link[=writeLines]{writeLines()}} (except
 \code{useBytes}, which is \code{TRUE} in \code{write_utf8()}).}
 
 \item{sort}{Logical (\code{FALSE} means not to sort the content) or a

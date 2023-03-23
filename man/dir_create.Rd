@@ -11,13 +11,13 @@ dir_create(x, recursive = TRUE, ...)
 
 \item{recursive}{Whether to create all directory components in the path.}
 
-\item{...}{Other arguments to be passed to \code{\link{dir.create}()}.}
+\item{...}{Other arguments to be passed to \code{\link[=dir.create]{dir.create()}}.}
 }
 \value{
 A logical value indicating if the directory either exists or is
-  successfully created.
+successfully created.
 }
 \description{
 First check if a directory exists. If it does, return \code{TRUE}, otherwise
-create it with \code{\link{dir.create}(recursive = TRUE)} by default.
+create it with \code{\link{dir.create}}\code{(recursive = TRUE)} by default.
 }

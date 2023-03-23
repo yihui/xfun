@@ -9,7 +9,7 @@ format_bytes(x, units = "auto", ...)
 \arguments{
 \item{x}{A numeric vector (each element represents a number of bytes).}
 
-\item{units, ...}{Passed to \code{\link[=format.object_size]{format}()}.}
+\item{units, ...}{Passed to \code{\link[=format.object_size]{format()}}.}
 }
 \value{
 A character vector.

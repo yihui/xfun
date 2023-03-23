@@ -10,16 +10,15 @@ split_lines(x)
 \item{x}{A character vector.}
 }
 \value{
-All elements of the character vector are split by \code{'\n'} into
-  lines.
+All elements of the character vector are split by \code{'\\n'} into
+lines.
 }
 \description{
-Call \code{unlist(strsplit(x, '\n'))} on the character vector \code{x} and
+Call \code{unlist(strsplit(x, '\\n'))} on the character vector \code{x} and
 make sure it works in a few edge cases: \code{split_lines('')} returns
 \code{''} instead of \code{character(0)} (which is the returned value of
-\code{strsplit('', '\n')}); \code{split_lines('a\n')} returns \code{c('a',
-'')} instead of \code{c('a')} (which is the returned value of
-\code{strsplit('a\n', '\n')}.
+\code{strsplit('', '\\n')}); \code{split_lines('a\\n')} returns \code{c('a', '')} instead of \code{c('a')} (which is the returned value of
+\code{strsplit('a\\n', '\\n')}.
 }
 \examples{
 xfun::split_lines(c("a", "b\nc"))

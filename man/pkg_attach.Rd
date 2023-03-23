@@ -30,13 +30,12 @@ pkg_load2(...)
 \item{...}{Package names (character vectors, and must always be quoted).}
 
 \item{install}{Whether to automatically install packages that are not
-available using \code{\link{install.packages}()}. Besides \code{TRUE} and
+available using \code{\link[=install.packages]{install.packages()}}. Besides \code{TRUE} and
 \code{FALSE}, the value of this argument can also be a function to install
-packages (\code{install = TRUE} is equivalent to \code{install =
-install.packages}), or a character string \code{"pak"} (equivalent to
+packages (\code{install = TRUE} is equivalent to \code{install = install.packages}), or a character string \code{"pak"} (equivalent to
 \code{install = pak::pkg_install}, which requires the \pkg{pak} package).
 You are recommended to set a CRAN mirror in the global option \code{repos}
-via \code{\link{options}()} if you want to automatically install packages.}
+via \code{\link[=options]{options()}} if you want to automatically install packages.}
 
 \item{message}{Whether to show the package startup messages (if any startup
 messages are provided in a package).}
@@ -45,9 +44,9 @@ messages are provided in a package).}
 
 \item{pkg}{A single package name.}
 
-\item{strict}{If \code{TRUE}, use \code{\link{requireNamespace}()} to test if
+\item{strict}{If \code{TRUE}, use \code{\link[=requireNamespace]{requireNamespace()}} to test if
 a package is loadable; otherwise only check if the package is in
-\code{\link{.packages}(TRUE)} (this does not really load the package, so it
+\code{\link{.packages}}\code{(TRUE)} (this does not really load the package, so it
 is less rigorous but on the other hand, it can keep the current R session
 clean).}
 
@@ -59,13 +58,13 @@ package is available and do not check its version.}
 }
 \value{
 \code{pkg_attach()} returns \code{NULL} invisibly. \code{pkg_load()}
-  returns a logical vector, indicating whether the packages can be loaded.
+returns a logical vector, indicating whether the packages can be loaded.
 }
 \description{
-\code{pkg_attach()} is a vectorized version of \code{\link{library}()} over
+\code{pkg_attach()} is a vectorized version of \code{\link[=library]{library()}} over
 the \code{package} argument to attach multiple packages in a single function
 call. \code{pkg_load()} is a vectorized version of
-\code{\link{requireNamespace}()} to load packages (without attaching them).
+\code{\link[=requireNamespace]{requireNamespace()}} to load packages (without attaching them).
 The functions \code{pkg_attach2()} and \code{pkg_load2()} are wrappers of
 \code{pkg_attach(install = TRUE)} and \code{pkg_load(install = TRUE)},
 respectively. \code{loadable()} is an abbreviation of
@@ -87,8 +86,8 @@ pkg_attach("stats", "graphics")
 }
 \seealso{
 \code{pkg_attach2()} is similar to \code{pacman::p_load()}, but does
-  not allow non-standard evaluation (NSE) of the \code{...} argument, i.e.,
-  you must pass a real character vector of package names to it, and all names
-  must be quoted. Allowing NSE adds too much complexity with too little gain
-  (the only gain is that it saves your effort in typing two quotes).
+not allow non-standard evaluation (NSE) of the \code{...} argument, i.e.,
+you must pass a real character vector of package names to it, and all names
+must be quoted. Allowing NSE adds too much complexity with too little gain
+(the only gain is that it saves your effort in typing two quotes).
 }

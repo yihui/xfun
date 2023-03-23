@@ -33,19 +33,19 @@ an RStudio project), return the path to the project root directory.
 \details{
 The search for the root directory is performed by a series of tests,
 currently including looking for a \file{DESCRIPTION} file that contains
-\code{Package: *} (which usually indicates an R package), and a
-\file{*.Rproj} file that contains \code{Version: *} (which usually indicates
+\verb{Package: *} (which usually indicates an R package), and a
+\file{*.Rproj} file that contains \verb{Version: *} (which usually indicates
 an RStudio project). If files with the expected patterns are not found in the
 initial directory, the search will be performed recursively in upper-level
 directories.
 }
 \note{
 This function was inspired by the \pkg{rprojroot} package, but is much
-  less sophisticated. It is a rather simple function designed to be used in
-  some of packages that I maintain, and may not meet the need of general
-  users until this note is removed in the future (which should be unlikely).
-  If you are sure that you are working on the types of projects mentioned in
-  the \sQuote{Details} section, this function may be helpful to you,
-  otherwise please consider using \pkg{rprojroot} instead.
+less sophisticated. It is a rather simple function designed to be used in
+some of packages that I maintain, and may not meet the need of general
+users until this note is removed in the future (which should be unlikely).
+If you are sure that you are working on the types of projects mentioned in
+the \sQuote{Details} section, this function may be helpful to you,
+otherwise please consider using \pkg{rprojroot} instead.
 }
 \keyword{datasets}

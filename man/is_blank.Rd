@@ -10,11 +10,11 @@ is_blank(x)
 \item{x}{A character vector.}
 }
 \value{
-\code{TRUE} if the input is blank, or \code{FALSE} otherwise.
+\code{TRUE} for blank elements, or \code{FALSE} otherwise.
 }
 \description{
-Return \code{TRUE} if all elements of a character vector are blank (white
-spaces or empty strings).
+Return a logical vector indicating if elements of a character vector are
+blank (white spaces or empty strings).
 }
 \examples{
 xfun::is_blank("")

@@ -19,12 +19,12 @@ shrink_images(
 \item{files}{A vector of image file paths. By default, this is all
 \file{.png}, \file{.jpeg}, and \file{.webp} images under \code{dir}.}
 
-\item{tinify}{Whether to compress images using \code{\link{tinify}()}.}
+\item{tinify}{Whether to compress images using \code{\link[=tinify]{tinify()}}.}
 }
 \description{
-Use \code{\link[magick:image_resize]{magick::image_resize}()} to shrink an
+Use \code{\link[magick:transform]{magick::image_resize()}} to shrink an
 image if its width is larger than the value specified by the argument
-\code{width}, and optionally call \code{\link{tinify}()} to compress it.
+\code{width}, and optionally call \code{\link[=tinify]{tinify()}} to compress it.
 }
 \examples{
 f = xfun:::all_files("[.](png|jpe?g)$", R.home("doc"))

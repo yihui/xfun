@@ -1,16 +1,16 @@
 #' Encode/decode data into/from base64 encoding.
 #'
-#' The function \code{base64_encode()} encodes a file or a raw vector into the
-#' base64 encoding. The function \code{base64_decode()} decodes data from the
+#' The function `base64_encode()` encodes a file or a raw vector into the
+#' base64 encoding. The function `base64_decode()` decodes data from the
 #' base64 encoding.
-#' @param x For \code{base64_encode()}, a raw vector. If not raw, it is assumed
-#'   to be a file or a connection to be read via \code{readBin()}. For
-#'   \code{base64_decode()}, a string.
-#' @param from If provided (and \code{x} is not provided), a connection or file
-#'   to be read via \code{readChar()}, and the result will be passed to the
-#'   argument \code{x}.
-#' @return \code{base64_encode()} returns a character string.
-#'   \code{base64_decode()} returns a raw vector.
+#' @param x For `base64_encode()`, a raw vector. If not raw, it is assumed
+#'   to be a file or a connection to be read via `readBin()`. For
+#'   `base64_decode()`, a string.
+#' @param from If provided (and `x` is not provided), a connection or file
+#'   to be read via `readChar()`, and the result will be passed to the
+#'   argument `x`.
+#' @return `base64_encode()` returns a character string.
+#'   `base64_decode()` returns a raw vector.
 #' @useDynLib xfun, .registration = TRUE
 #' @export
 #' @examples xfun::base64_encode(as.raw(1:10))
@@ -68,14 +68,14 @@ base64_encode_r = function(x) {
 #' Generate the Data URI for a file
 #'
 #' Encode the file in the base64 encoding, and add the media type. The data URI
-#' can be used to embed data in HTML documents, e.g., in the \code{src}
-#' attribute of the \verb{<img />} tag.
+#' can be used to embed data in HTML documents, e.g., in the `src` attribute of
+#' the `<img />` tag.
 #' @param x A file path.
-#' @param type The MIME type of the file, e.g., \code{"image/png"} for a PNG
-#'   image file.
-#' @return A string of the form \verb{data:<media type>;base64,<data>}.
-#' @note By default, this function requires the \pkg{mime} package to determine
-#'   the MIME type of the file.
+#' @param type The MIME type of the file, e.g., `"image/png"` for a PNG image
+#'   file.
+#' @return A string of the form `data:<media type>;base64,<data>`.
+#' @note This function requires the \pkg{mime} package to determine the MIME
+#'   type of the file except for a few common MIME types.
 #' @export
 #' @examples
 #' logo = xfun:::R_logo()

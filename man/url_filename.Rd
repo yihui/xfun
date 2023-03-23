@@ -4,16 +4,19 @@
 \alias{url_filename}
 \title{Extract filenames from a URLs}
 \usage{
-url_filename(x)
+url_filename(x, default = "index.html")
 }
 \arguments{
 \item{x}{A character vector of URLs.}
+
+\item{default}{The default filename when it cannot be determined from the
+URL, e.g., when the URL ends with a slash.}
 }
 \value{
 A character vector of filenames at the end of URLs.
 }
 \description{
-Get the base names of URLs via \code{\link{basename}()}, and remove the
+Get the base names of URLs via \code{\link[=basename]{basename()}}, and remove the
 possible query parameters or hash from the names.
 }
 \examples{
@@ -21,4 +24,6 @@ xfun::url_filename("https://yihui.org/images/logo.png")
 xfun::url_filename("https://yihui.org/index.html")
 xfun::url_filename("https://yihui.org/index.html?foo=bar")
 xfun::url_filename("https://yihui.org/index.html#about")
+xfun::url_filename("https://yihui.org")
+xfun::url_filename("https://yihui.org/")
 }

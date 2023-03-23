@@ -13,7 +13,7 @@ try_error(expr)
 \code{TRUE} (error) or \code{FALSE} (success).
 }
 \description{
-Use \code{\link{tryCatch}()} to check if an expression throws an error.
+Use \code{\link[=tryCatch]{tryCatch()}} to check if an expression throws an error.
 }
 \examples{
 xfun::try_error(stop("foo"))  # TRUE

@@ -7,7 +7,7 @@
 system3(...)
 }
 \arguments{
-\item{...}{Passed to \code{\link{system2}()}.}
+\item{...}{Passed to \code{\link[=system2]{system2()}}.}
 }
 \value{
 The value returned by \code{system2()}.

@@ -29,8 +29,8 @@ upload_win_builder(
 it on Solaris.}
 }
 \value{
-Status code returned from \code{\link{system2}()} or
-  \code{curl::curl_fetch_memory()}.
+Status code returned from \code{\link[=system2]{system2()}} or
+\code{curl::curl_fetch_memory()}.
 }
 \description{
 The function \code{upload_ftp()} runs the command \command{curl -T file

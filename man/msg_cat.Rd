@@ -14,15 +14,15 @@ string via \code{paste(c(...), collapse = '')}.}
 Invisible \code{NULL}, with the side-effect of printing the message.
 }
 \description{
-This function is similar to \code{\link{message}()}, and the difference is
-that \code{msg_cat()} uses \code{\link{cat}()} to write out the message,
-which is sent to \code{\link{stdout}} instead of \code{\link{stderr}}. The
-message can be suppressed by \code{\link{suppressMessages}()}.
+This function is similar to \code{\link[=message]{message()}}, and the difference is
+that \code{msg_cat()} uses \code{\link[=cat]{cat()}} to write out the message,
+which is sent to \code{\link[=stdout]{stdout()}} instead of \code{\link[=stderr]{stderr()}}. The
+message can be suppressed by \code{\link[=suppressMessages]{suppressMessages()}}.
 }
 \note{
 By default, a newline will not be appended to the message. If you need
-  a newline, you have to explicitly add it to the message (see
-  \sQuote{Examples}).
+a newline, you have to explicitly add it to the message (see
+\sQuote{Examples}).
 }
 \examples{
 {

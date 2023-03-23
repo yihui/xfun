@@ -9,20 +9,20 @@ base64_uri(x, type = mime::guess_type(x))
 \arguments{
 \item{x}{A file path.}
 
-\item{type}{The MIME type of the file, e.g., \code{"image/png"} for a PNG
-image file.}
+\item{type}{The MIME type of the file, e.g., \code{"image/png"} for a PNG image
+file.}
 }
 \value{
 A string of the form \verb{data:<media type>;base64,<data>}.
 }
 \description{
 Encode the file in the base64 encoding, and add the media type. The data URI
-can be used to embed data in HTML documents, e.g., in the \code{src}
-attribute of the \verb{<img />} tag.
+can be used to embed data in HTML documents, e.g., in the \code{src} attribute of
+the \verb{<img />} tag.
 }
 \note{
-By default, this function requires the \pkg{mime} package to determine
-  the MIME type of the file.
+This function requires the \pkg{mime} package to determine the MIME
+type of the file except for a few common MIME types.
 }
 \examples{
 logo = xfun:::R_logo()

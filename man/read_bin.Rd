@@ -13,8 +13,8 @@ read_bin(file, what = "raw", n = file.info(file)$size, ...)
 A vector returned from \code{readBin()}.
 }
 \description{
-This is a wrapper function of \code{\link{readBin}()} with default arguments
-\code{what = "raw"} and \code{n = \link{file.size}(file)}, which means it
+This is a wrapper function of \code{\link[=readBin]{readBin()}} with default arguments
+\code{what = "raw"} and \verb{n = }\code{\link{file.size}}\code{(file)}, which means it
 will read the full content of a binary file as a raw vector by default.
 }
 \examples{

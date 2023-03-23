@@ -8,7 +8,7 @@ normalize_path(x, winslash = "/", must_work = FALSE, resolve_symlink = TRUE)
 }
 \arguments{
 \item{x, winslash, must_work}{Arguments passed to
-\code{\link{normalizePath}()}.}
+\code{\link[=normalizePath]{normalizePath()}}.}
 
 \item{resolve_symlink}{Whether to resolve symbolic links.}
 }

@@ -9,7 +9,7 @@ same_path(p1, p2, ...)
 \arguments{
 \item{p1, p2}{Two vectors of paths.}
 
-\item{...}{Arguments to be passed to \code{\link{normalize_path}()}.}
+\item{...}{Arguments to be passed to \code{\link[=normalize_path]{normalize_path()}}.}
 }
 \description{
 Compare two paths after normalizing them with the same separator (\code{/}).

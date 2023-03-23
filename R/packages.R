@@ -1,35 +1,35 @@
 #' Attach or load packages, and automatically install missing packages if
 #' requested
 #'
-#' \code{pkg_attach()} is a vectorized version of \code{\link{library}()} over
-#' the \code{package} argument to attach multiple packages in a single function
-#' call. \code{pkg_load()} is a vectorized version of
-#' \code{\link{requireNamespace}()} to load packages (without attaching them).
-#' The functions \code{pkg_attach2()} and \code{pkg_load2()} are wrappers of
-#' \code{pkg_attach(install = TRUE)} and \code{pkg_load(install = TRUE)},
-#' respectively. \code{loadable()} is an abbreviation of
-#' \code{requireNamespace(quietly = TRUE)}. \code{pkg_available()} tests if a
+#' `pkg_attach()` is a vectorized version of [library()] over
+#' the `package` argument to attach multiple packages in a single function
+#' call. `pkg_load()` is a vectorized version of
+#' [requireNamespace()] to load packages (without attaching them).
+#' The functions `pkg_attach2()` and `pkg_load2()` are wrappers of
+#' `pkg_attach(install = TRUE)` and `pkg_load(install = TRUE)`,
+#' respectively. `loadable()` is an abbreviation of
+#' `requireNamespace(quietly = TRUE)`. `pkg_available()` tests if a
 #' package with a minimal version is available.
 #'
 #' These are convenience functions that aim to solve these common problems: (1)
 #' We often need to attach or load multiple packages, and it is tedious to type
-#' several \code{library()} calls; (2) We are likely to want to install the
+#' several `library()` calls; (2) We are likely to want to install the
 #' packages when attaching/loading them but they have not been installed.
 #' @param ... Package names (character vectors, and must always be quoted).
 #' @param install Whether to automatically install packages that are not
-#'   available using \code{\link{install.packages}()}. Besides \code{TRUE} and
-#'   \code{FALSE}, the value of this argument can also be a function to install
-#'   packages (\code{install = TRUE} is equivalent to \code{install =
-#'   install.packages}), or a character string \code{"pak"} (equivalent to
-#'   \code{install = pak::pkg_install}, which requires the \pkg{pak} package).
-#'   You are recommended to set a CRAN mirror in the global option \code{repos}
-#'   via \code{\link{options}()} if you want to automatically install packages.
+#'   available using [install.packages()]. Besides `TRUE` and
+#'   `FALSE`, the value of this argument can also be a function to install
+#'   packages (`install = TRUE` is equivalent to `install =
+#'   install.packages`), or a character string `"pak"` (equivalent to
+#'   `install = pak::pkg_install`, which requires the \pkg{pak} package).
+#'   You are recommended to set a CRAN mirror in the global option `repos`
+#'   via [options()] if you want to automatically install packages.
 #' @param message Whether to show the package startup messages (if any startup
 #'   messages are provided in a package).
-#' @return \code{pkg_attach()} returns \code{NULL} invisibly. \code{pkg_load()}
+#' @return `pkg_attach()` returns `NULL` invisibly. `pkg_load()`
 #'   returns a logical vector, indicating whether the packages can be loaded.
-#' @seealso \code{pkg_attach2()} is similar to \code{pacman::p_load()}, but does
-#'   not allow non-standard evaluation (NSE) of the \code{...} argument, i.e.,
+#' @seealso `pkg_attach2()` is similar to `pacman::p_load()`, but does
+#'   not allow non-standard evaluation (NSE) of the `...` argument, i.e.,
 #'   you must pass a real character vector of package names to it, and all names
 #'   must be quoted. Allowing NSE adds too much complexity with too little gain
 #'   (the only gain is that it saves your effort in typing two quotes).
@@ -47,7 +47,7 @@ pkg_attach = function(
     suppressPackageStartupMessages(base::library(...))
   }
   for (i in c(...)) {
-    if (!base::isFALSE(install) && !loadable(i)) pkg_install(i, install)
+    if (!identical(install, FALSE) && !loadable(i)) pkg_install(i, install)
     library(i, character.only = TRUE)
   }
 }
@@ -60,7 +60,7 @@ pkg_load = function(..., error = TRUE, install = FALSE) {
   if (n == 0) return(invisible(res))
   for (i in seq_len(n)) {
     res[i] = loadable(p <- pkg[i])
-    if (!base::isFALSE(install) && !res[i]) {
+    if (!identical(install, FALSE) && !res[i]) {
       pkg_install(p, install); res[i] = loadable(p)
     }
   }
@@ -69,13 +69,13 @@ pkg_load = function(..., error = TRUE, install = FALSE) {
 }
 
 #' @param pkg A single package name.
-#' @param strict If \code{TRUE}, use \code{\link{requireNamespace}()} to test if
+#' @param strict If `TRUE`, use [requireNamespace()] to test if
 #'   a package is loadable; otherwise only check if the package is in
-#'   \code{\link{.packages}(TRUE)} (this does not really load the package, so it
+#'   [`.packages`]`(TRUE)` (this does not really load the package, so it
 #'   is less rigorous but on the other hand, it can keep the current R session
 #'   clean).
 #' @param new_session Whether to test if a package is loadable in a new R
-#'   session. Note that \code{new_session = TRUE} implies \code{strict = TRUE}.
+#'   session. Note that `new_session = TRUE` implies `strict = TRUE`.
 #' @rdname pkg_attach
 #' @export
 loadable = function(pkg, strict = TRUE, new_session = FALSE) {
@@ -89,7 +89,7 @@ loadable = function(pkg, strict = TRUE, new_session = FALSE) {
   }
 }
 
-#' @param version A minimal version number. If \code{NULL}, only test if a
+#' @param version A minimal version number. If `NULL`, only test if a
 #'   package is available and do not check its version.
 #' @rdname pkg_attach
 #' @export
@@ -144,12 +144,11 @@ pkg_install = function(pkgs, install = TRUE, ...) {
 
 #' Find out broken packages and reinstall them
 #'
-#' If a package is broken (i.e., not \code{\link{loadable}()}), reinstall it.
+#' If a package is broken (i.e., not [loadable()]), reinstall it.
 #'
 #' Installed R packages could be broken for several reasons. One common reason
-#' is that you have upgraded R to a newer \code{x.y} version, e.g., from
-#' \code{4.0.5} to \code{4.1.0}, in which case you need to reinstall previously
-#' installed packages.
+#' is that you have upgraded R to a newer `x.y` version, e.g., from `4.0.5` to
+#' `4.1.0`, in which case you need to reinstall previously installed packages.
 #' @param reinstall Whether to reinstall the broken packages, or only list their
 #'   names.
 #' @return A character vector of names of broken package.
@@ -205,7 +204,7 @@ major_minor_smaller = function(v1, v2) {
 #' \command{R CMD INSTALL} to install it.
 #' @param pkg The package source directory.
 #' @param build Whether to build a tarball from the source directory. If
-#'   \code{FALSE}, run \command{R CMD INSTALL} on the directory directly (note
+#'   `FALSE`, run \command{R CMD INSTALL} on the directory directly (note
 #'   that vignettes will not be automatically built).
 #' @param build_opts The options for \command{R CMD build}.
 #' @param install_opts The options for \command{R CMD INSTALL}.
@@ -271,16 +270,14 @@ pkg_needs_compilation = function(db = installed.packages()) {
   pkgs[!is.na(pkgs)]
 }
 
-#' An alias of \code{remotes::install_github()}
+#' An alias of `remotes::install_github()`
 #'
-#' This alias is to make autocomplete faster via \code{xfun::install_github},
-#' because most \code{remotes::install_*} functions are never what I want. I
-#' only use \code{install_github} and it is inconvenient to autocomplete it,
-#' e.g. \code{install_git} always comes before \code{install_github}, but I
-#' never use it. In RStudio, I only need to type \code{xfun::ig} to get
-#' \code{xfun::install_github}.
-#' @param ... Arguments to be passed to
-#'   \code{remotes::\link[remotes]{install_github}()}.
+#' This alias is to make autocomplete faster via `xfun::install_github`, because
+#' most `remotes::install_*` functions are never what I want. I only use
+#' `install_github` and it is inconvenient to autocomplete it, e.g.
+#' `install_git` always comes before `install_github`, but I never use it. In
+#' RStudio, I only need to type `xfun::ig` to get `xfun::install_github`.
+#' @param ... Arguments to be passed to [remotes::install_github()].
 #' @export
 install_github = function(...) remotes::install_github(...)
 
@@ -302,15 +299,15 @@ reinstall_from_cran = function(dry_run = TRUE, skip_github = TRUE) {
 
 #' Convert package news to the Markdown format
 #'
-#' Read the package news with \code{\link{news}()}, convert the result to
+#' Read the package news with [news()], convert the result to
 #' Markdown, and write to an output file (e.g., \file{NEWS.md}). Each package
 #' version appears in a first-level header, each category (e.g., \samp{NEW
 #' FEATURES} or \samp{BUG FIXES}) is in a second-level header, and the news
 #' items are written into bullet lists.
-#' @param package,... Arguments to be passed to \code{\link{news}()}.
+#' @param package,... Arguments to be passed to [news()].
 #' @param output The output file path.
 #' @param category Whether to keep the category names.
-#' @return If \code{output = NA}, returns the Markdown content as a character
+#' @return If `output = NA`, returns the Markdown content as a character
 #'   vector, otherwise the content is written to the output file.
 #' @export
 #' @examplesIf interactive()
@@ -338,8 +335,8 @@ news2md = function(package, ..., output = 'NEWS.md', category = TRUE) {
 
 #' Get base R package names
 #'
-#' Return names of packages from \code{\link{installed.packages}()} of which the
-#' priority is \code{"base"}.
+#' Return names of packages from [installed.packages()] of which the
+#' priority is `"base"`.
 #' @return A character vector of base R package names.
 #' @export
 #' @examplesIf interactive()

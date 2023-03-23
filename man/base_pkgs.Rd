@@ -10,7 +10,7 @@ base_pkgs()
 A character vector of base R package names.
 }
 \description{
-Return names of packages from \code{\link{installed.packages}()} of which the
+Return names of packages from \code{\link[=installed.packages]{installed.packages()}} of which the
 priority is \code{"base"}.
 }
 \examples{\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

@@ -7,11 +7,10 @@
 attr(...)
 }
 \arguments{
-\item{...}{Passed to \code{base::\link[base]{attr}()} (without the
-\code{exact} argument).}
+\item{...}{Passed to \code{\link[base:attr]{base::attr()}} (without the \code{exact} argument).}
 }
 \description{
-An abbreviation of \code{base::\link[base]{attr}(exact = TRUE)}.
+An abbreviation of \code{\link[base:attr]{base::attr}}\code{(exact = TRUE)}.
 }
 \examples{
 z = structure(list(a = 1), foo = 2)

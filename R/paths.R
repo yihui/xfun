@@ -1,21 +1,21 @@
 #' Manipulate filename extensions
 #'
-#' Functions to obtain (\code{file_ext()}), remove (\code{sans_ext()}), and
-#' change (\code{with_ext()}) extensions in filenames.
+#' Functions to obtain (`file_ext()`), remove (`sans_ext()`), and
+#' change (`with_ext()`) extensions in filenames.
 #'
-#' \code{file_ext()} is similar to \code{tools::\link{file_ext}()}, and
-#' \code{sans_ext()} is similar to \code{tools::\link{file_path_sans_ext}()}.
-#' The main differences are that they treat \code{tar.(gz|bz2|xz)} and
-#' \code{nb.html} as extensions (but functions in the \pkg{tools} package
-#' doesn't allow double extensions by default), and allow characters \code{~}
-#' and \code{#} to be present at the end of a filename.
+#' `file_ext()` is similar to [tools::file_ext()], and
+#' `sans_ext()` is similar to [tools::file_path_sans_ext()].
+#' The main differences are that they treat `tar.(gz|bz2|xz)` and
+#' `nb.html` as extensions (but functions in the \pkg{tools} package
+#' doesn't allow double extensions by default), and allow characters `~`
+#' and `#` to be present at the end of a filename.
 #' @param x A character of file paths.
 #' @param extra Extra characters to be allowed in the extensions. By default,
 #'   only alphanumeric characters are allowed (and also some special cases in
 #'   \sQuote{Details}). If other characters should be allowed, they can be
-#'   specified in a character string, e.g., \code{"-+!_#"}.
+#'   specified in a character string, e.g., `"-+!_#"`.
 #' @export
-#' @return A character vector of the same length as \code{x}.
+#' @return A character vector of the same length as `x`.
 #' @examples library(xfun)
 #' p = c('abc.doc', 'def123.tex', 'path/to/foo.Rmd', 'backup.ppt~', 'pkg.tar.xz')
 #' file_ext(p); sans_ext(p); with_ext(p, '.txt')
@@ -39,7 +39,7 @@ sans_ext = function(x, extra = '') {
 }
 
 #' @param ext A vector of new extensions. It must be either of length 1, or the
-#'   same length as \code{x}.
+#'   same length as `x`.
 #' @rdname file_ext
 #' @export
 with_ext = function(x, ext, extra = '') {
@@ -65,9 +65,9 @@ reg_path = function(...) paste0('^(.*?)', reg_ext(...))
 
 #' Normalize paths
 #'
-#' A wrapper function of \code{normalizePath()} with different defaults.
+#' A wrapper function of `normalizePath()` with different defaults.
 #' @param x,winslash,must_work Arguments passed to
-#'   \code{\link{normalizePath}()}.
+#'   [normalizePath()].
 #' @param resolve_symlink Whether to resolve symbolic links.
 #' @export
 #' @examples library(xfun)
@@ -94,9 +94,9 @@ is_symlink = function(x) {
 
 #' Test if two paths are the same after they are normalized
 #'
-#' Compare two paths after normalizing them with the same separator (\code{/}).
+#' Compare two paths after normalizing them with the same separator (`/`).
 #' @param p1,p2 Two vectors of paths.
-#' @param ... Arguments to be passed to \code{\link{normalize_path}()}.
+#' @param ... Arguments to be passed to [normalize_path()].
 #' @export
 #' @examples library(xfun)
 #' same_path('~/foo', file.path(Sys.getenv('HOME'), 'foo'))
@@ -106,13 +106,13 @@ same_path = function(p1, p2, ...) {
 
 #' Find file paths that exist
 #'
-#' This is a shorthand of \code{x[file.exists(x)]}, and optionally returns the
+#' This is a shorthand of `x[file.exists(x)]`, and optionally returns the
 #' first existing file path.
 #' @param x A vector of file paths.
-#' @param first Whether to return the first existing path. If \code{TRUE} and no
+#' @param first Whether to return the first existing path. If `TRUE` and no
 #'   specified files exist, it will signal an error unless the argument
-#'   \code{error = FALSE}.
-#' @param error Whether to throw an error when \code{first = TRUE} but no files
+#'   `error = FALSE`.
+#' @param error Whether to throw an error when `first = TRUE` but no files
 #'   exist. It can also take a character value, which will be used as the error
 #'   message.
 #' @return A vector of existing file paths.
@@ -123,7 +123,7 @@ existing_files = function(x, first = FALSE, error = TRUE) {
   x = x[file_exists(x)]
   if (!first) return(x)
   x = head(x, 1)
-  if (length(x) != 1 && !base::isFALSE(error)) {
+  if (length(x) != 1 && !identical(error, FALSE)) {
     if (isTRUE(error)) error = 'None of the specified files exist.'
     stop(error, call. = FALSE)
   }
@@ -137,8 +137,8 @@ existing_files = function(x, first = FALSE, error = TRUE) {
 #'
 #' The search for the root directory is performed by a series of tests,
 #' currently including looking for a \file{DESCRIPTION} file that contains
-#' \code{Package: *} (which usually indicates an R package), and a
-#' \file{*.Rproj} file that contains \code{Version: *} (which usually indicates
+#' `Package: *` (which usually indicates an R package), and a
+#' \file{*.Rproj} file that contains `Version: *` (which usually indicates
 #' an RStudio project). If files with the expected patterns are not found in the
 #' initial directory, the search will be performed recursively in upper-level
 #' directories.
@@ -149,7 +149,7 @@ existing_files = function(x, first = FALSE, error = TRUE) {
 #'   and the second column contains regular expressions to match the content of
 #'   the matched files. The regular expression can be an empty string, meaning
 #'   that it will match anything.
-#' @return Path to the root directory if found, otherwise \code{NULL}.
+#' @return Path to the root directory if found, otherwise `NULL`.
 #' @export
 #' @note This function was inspired by the \pkg{rprojroot} package, but is much
 #'   less sophisticated. It is a rather simple function designed to be used in
@@ -189,12 +189,12 @@ root_rules = matrix(c(
 #' @param x A vector of paths to be converted to relative paths.
 #' @param use.. Whether to use double-dots (\file{..}) in the relative path. A
 #'   double-dot indicates the parent directory (starting from the directory
-#'   provided by the \code{dir} argument).
+#'   provided by the `dir` argument).
 #' @param error Whether to signal an error if a path cannot be converted to a
 #'   relative path.
 #' @return A vector of relative paths if the conversion succeeded; otherwise the
-#'   original paths when \code{error = FALSE}, and an error when \code{error =
-#'   TRUE}.
+#'   original paths when `error = FALSE`, and an error when `error =
+#'   TRUE`.
 #' @export
 #' @examples
 #' xfun::relative_path('foo/bar.txt', 'foo/')
@@ -246,11 +246,11 @@ relative_path_one = function(x, dir, use.., error) {
 #' Check if the path starts with the dir path.
 #' @inheritParams is_abs_path
 #' @param dir A vector of directory paths.
-#' @param n The length of \code{dir} paths.
+#' @param n The length of `dir` paths.
 #' @return A logical vector.
-#' @note You may want to normalize the values of the \code{x} and \code{dir}
-#'   arguments first (with \code{xfun::\link{normalize_path}()}), to make sure
-#'   the path separators are consistent.
+#' @note You may want to normalize the values of the `x` and `dir` arguments
+#'   first (with [xfun::normalize_path()]), to make sure the path separators
+#'   are consistent.
 #' @export
 #' @examples
 #' xfun::is_sub_path('a/b/c.txt', 'a/b')  # TRUE
@@ -268,8 +268,8 @@ get_subpath = function(p, n1, n2) {
 #'
 #' On Unix, check if the paths start with \file{/} or \file{~} (if they do, they
 #' are absolute paths). On Windows, check if a path remains the same (via
-#' \code{xfun::\link{same_path}()}) if it is prepended with \file{./} (if it
-#' does, it is a relative path).
+#' [xfun::same_path()]) if it is prepended with \file{./} (if it does, it is a
+#' relative path).
 #' @param x A vector of paths.
 #' @return A logical vector.
 #' @export
@@ -302,19 +302,19 @@ is_web_path = function(x) {
 #' directory
 #'
 #' First compose an absolute path using the project root directory and the
-#' relative path components, i.e., \code{\link{file.path}(root, ...)}. Then
-#' convert it to a relative path with \code{\link{relative_path}()}, which is
+#' relative path components, i.e., [`file.path`]`(root, ...)`. Then
+#' convert it to a relative path with [relative_path()], which is
 #' relative to the current working directory.
 #'
-#' This function was inspired by \code{here::here()}, and the major difference
+#' This function was inspired by `here::here()`, and the major difference
 #' is that it returns a relative path by default, which is more portable.
-#' @param ... A character vector of path components \emph{relative to the root
-#'   directory of the project}.
+#' @param ... A character vector of path components *relative to the root
+#'   directory of the project*.
 #' @param root The root directory of the project.
 #' @param error Whether to signal an error if the path cannot be converted to a
 #'   relative path.
 #' @return A relative path, or an error when the project root directory cannot
-#'   be determined or the conversion failed and \code{error = TRUE}.
+#'   be determined or the conversion failed and `error = TRUE`.
 #' @export
 #' @examples
 #' \dontrun{
@@ -330,21 +330,21 @@ from_root = function(..., root = proj_root(), error = TRUE) {
 #'
 #' Given a path, try to find it recursively under a root directory. The input
 #' path can be an incomplete path, e.g., it can be a base filename, and
-#' \code{magic_path()} will try to find this file under subdirectories.
+#' `magic_path()` will try to find this file under subdirectories.
 #' @param ... A character vector of path components.
 #' @param root The root directory under which to search for the path. If
-#'   \code{NULL}, the current working directory is used.
+#'   `NULL`, the current working directory is used.
 #' @param relative Whether to return a relative path.
 #' @param error Whether to signal an error if the path is not found, or multiple
 #'   paths are found.
 #' @param message Whether to emit a message when multiple paths are found and
-#'   \code{error = FALSE}.
+#'   `error = FALSE`.
 #' @param n_dirs The number of subdirectories to recursively search. The
 #'   recursive search may be time-consuming when there are a large number of
 #'   subdirectories under the root directory. If you really want to search for
-#'   all subdirectories, you may try \code{n_dirs = Inf}.
-#' @return The path found under the root directory, or an error when \code{error
-#'   = TRUE} and the path is not found (or multiple paths are found).
+#'   all subdirectories, you may try `n_dirs = Inf`.
+#' @return The path found under the root directory, or an error when `error
+#'   = TRUE` and the path is not found (or multiple paths are found).
 #' @export
 #' @examples
 #' \dontrun{
@@ -401,11 +401,11 @@ magic_path = function(
 
 #' Test the existence of files and directories
 #'
-#' These are wrapper functions of \code{utils::\link{file_test}()} to test the
-#' existence of directories and files. Note that \code{file_exists()} only tests
+#' These are wrapper functions of [`utils::file_test()]` to test the
+#' existence of directories and files. Note that `file_exists()` only tests
 #' files but not directories, which is the main difference between
-#' \code{\link{file.exists}()} in base R. If you use are using the R version
-#' 3.2.0 or above, \code{dir_exists()} is the same as \code{\link{dir.exists}()}
+#' [file.exists()] in base R. If you use are using the R version
+#' 3.2.0 or above, `dir_exists()` is the same as [dir.exists()]
 #' in base R.
 #' @param x A vector of paths.
 #' @export
@@ -418,11 +418,11 @@ file_exists = function(x) file_test('-f', x)
 
 #' Create a directory recursively by default
 #'
-#' First check if a directory exists. If it does, return \code{TRUE}, otherwise
-#' create it with \code{\link{dir.create}(recursive = TRUE)} by default.
+#' First check if a directory exists. If it does, return `TRUE`, otherwise
+#' create it with [`dir.create`]`(recursive = TRUE)` by default.
 #' @param x A path name.
 #' @param recursive Whether to create all directory components in the path.
-#' @param ... Other arguments to be passed to \code{\link{dir.create}()}.
+#' @param ... Other arguments to be passed to [dir.create()].
 #' @return A logical value indicating if the directory either exists or is
 #'   successfully created.
 #' @export
@@ -435,21 +435,21 @@ dir_create = function(x, recursive = TRUE, ...) {
 #' Rename a series of files and add an incremental numeric prefix to the
 #' filenames. For example, files \file{a.txt}, \file{b.txt}, and \file{c.txt}
 #' can be renamed to \file{1-a.txt}, \file{2-b.txt}, and \file{3-c.txt}.
-#' @param pattern A regular expression for \code{\link{list.files}()} to obtain
-#'   the files to be renamed. For example, to rename \code{.jpeg} files, use
-#'   \code{pattern = "[.]jpeg$"}.
+#' @param pattern A regular expression for [list.files()] to obtain
+#'   the files to be renamed. For example, to rename `.jpeg` files, use
+#'   `pattern = "[.]jpeg$"`.
 #' @param format The format for the numeric prefix. This is passed to
-#'   \code{\link{sprintf}()}. The default format is \code{"\%0Nd"} where \code{N
-#'   = floor(log10(n)) + 1} and \code{n} is the number of files, which means the
+#'   [sprintf()]. The default format is `"\%0Nd"` where `N
+#'   = floor(log10(n)) + 1` and `n` is the number of files, which means the
 #'   prefix may be padded with zeros. For example, if there are 150 files to be
-#'   renamed, the format will be \code{"\%03d"} and the prefixes will be
-#'   \code{001}, \code{002}, ..., \code{150}.
+#'   renamed, the format will be `"\%03d"` and the prefixes will be
+#'   `001`, `002`, ..., `150`.
 #' @param replace Whether to remove existing numeric prefixes in filenames.
 #' @param start The starting number for the prefix (it can start from 0).
 #' @param dry_run Whether to not really rename files. To be safe, the default is
-#'   \code{TRUE}. If you have looked at the new filenames and are sure the new
-#'   names are what you want, you may rerun \code{rename_seq()} with
-#'   \code{dry_run = FALSE)} to actually rename files.
+#'   `TRUE`. If you have looked at the new filenames and are sure the new
+#'   names are what you want, you may rerun `rename_seq()` with
+#'   `dry_run = FALSE` to actually rename files.
 #' @return A named character vector. The names are original filenames, and the
 #'   vector itself is the new filenames.
 #' @export
@@ -488,9 +488,11 @@ R_logo = function(ext = NULL, all = FALSE) {
 
 #' Extract filenames from a URLs
 #'
-#' Get the base names of URLs via \code{\link{basename}()}, and remove the
+#' Get the base names of URLs via [basename()], and remove the
 #' possible query parameters or hash from the names.
 #' @param x A character vector of URLs.
+#' @param default The default filename when it cannot be determined from the
+#'   URL, e.g., when the URL ends with a slash.
 #' @return A character vector of filenames at the end of URLs.
 #' @export
 #' @examples
@@ -498,15 +500,20 @@ R_logo = function(ext = NULL, all = FALSE) {
 #' xfun::url_filename('https://yihui.org/index.html')
 #' xfun::url_filename('https://yihui.org/index.html?foo=bar')
 #' xfun::url_filename('https://yihui.org/index.html#about')
-url_filename = function(x) {
-  gsub('[?#].*$', '', basename(x))  # remove query/hash from url
+#' xfun::url_filename('https://yihui.org')
+#' xfun::url_filename('https://yihui.org/')
+url_filename = function(x, default = 'index.html') {
+  # protocol shouldn't be treated as dir name, and query/hash should be removed
+  x = gsub('^https?://|[?#].*$', '', x)
+  f = basename(x)
+  ifelse(grepl('/$', x) | x == f, default, f)
 }
 
 #' Delete an empty directory
 #'
-#' Use \code{list.file()} to check if there are any files or subdirectories
+#' Use `list.file()` to check if there are any files or subdirectories
 #' under a directory. If not, delete this empty directory.
-#' @param dir Path to a directory. If \code{NULL} or the directory does not
+#' @param dir Path to a directory. If `NULL` or the directory does not
 #'   exist, no action will be performed.
 #' @export
 del_empty_dir = function(dir) {
@@ -521,9 +528,9 @@ del_empty_dir = function(dir) {
 #' in messages to the console for example to quickly identify directories from
 #' files.
 #'
-#' If \code{x} is a vector of relative paths, directory test is done with
-#' path relative to the current working dir. Use \code{xfun::\link{in_dir}()} or
-#' use absolute paths.
+#' If `x` is a vector of relative paths, directory test is done with path
+#' relative to the current working dir. Use [xfun::in_dir()] or use absolute
+#' paths.
 #'
 #' @param x Character vector of paths to files and directories.
 #' @examples

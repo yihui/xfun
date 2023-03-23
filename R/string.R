@@ -1,33 +1,31 @@
 #' Test if a character vector consists of blank strings
 #'
-#' Return \code{TRUE} if all elements of a character vector are blank (white
-#' spaces or empty strings).
+#' Return a logical vector indicating if elements of a character vector are
+#' blank (white spaces or empty strings).
 #' @param x A character vector.
-#' @return \code{TRUE} if the input is blank, or \code{FALSE} otherwise.
+#' @return `TRUE` for blank elements, or `FALSE` otherwise.
 #' @export
 #' @examples
 #' xfun::is_blank('')
 #' xfun::is_blank('abc')
 #' xfun::is_blank(c('', '  ', '\n\t'))
 #' xfun::is_blank(c('', ' ', 'abc'))
-is_blank = function(x) {
-  all(grepl('^\\s*$', x))
-}
+is_blank = function(x) grepl('^\\s*$', x)
 
 #' Convert numbers to English words
 #'
 #' This can be helpful when writing reports with \pkg{knitr}/\pkg{rmarkdown} if
 #' we want to print numbers as English words in the output. The function
-#' \code{n2w()} is an alias of \code{numbers_to_words()}.
+#' `n2w()` is an alias of `numbers_to_words()`.
 #' @param x A numeric vector. Values should be integers. The absolute values
-#'   should be less than \code{1e15}.
+#'   should be less than `1e15`.
 #' @param cap Whether to capitalize the first letter of the word. This can be
 #'   useful when the word is at the beginning of a sentence. Default is
-#'   \code{FALSE}.
+#'   `FALSE`.
 #' @param hyphen Whether to insert hyphen (-) when the number is between 21 and
 #'   99 (except 30, 40, etc.).
-#' @param and Whether to insert \code{and} between hundreds and tens, e.g.,
-#'   write 110 as \dQuote{one hundred and ten} if \code{TRUE} instead of
+#' @param and Whether to insert `and` between hundreds and tens, e.g.,
+#'   write 110 as \dQuote{one hundred and ten} if `TRUE` instead of
 #'   \dQuote{one hundred ten}.
 #' @return A character vector.
 #' @author Daijiang Li
@@ -124,14 +122,14 @@ query_params = function(..., .list = list()) {
 
 #' Split a character vector by line breaks
 #'
-#' Call \code{unlist(strsplit(x, '\n'))} on the character vector \code{x} and
-#' make sure it works in a few edge cases: \code{split_lines('')} returns
-#' \code{''} instead of \code{character(0)} (which is the returned value of
-#' \code{strsplit('', '\n')}); \code{split_lines('a\n')} returns \code{c('a',
-#' '')} instead of \code{c('a')} (which is the returned value of
-#' \code{strsplit('a\n', '\n')}.
+#' Call `unlist(strsplit(x, '\n'))` on the character vector `x` and
+#' make sure it works in a few edge cases: `split_lines('')` returns
+#' `''` instead of `character(0)` (which is the returned value of
+#' `strsplit('', '\n')`); `split_lines('a\n')` returns `c('a',
+#' '')` instead of `c('a')` (which is the returned value of
+#' `strsplit('a\n', '\n')`.
 #' @param x A character vector.
-#' @return All elements of the character vector are split by \code{'\n'} into
+#' @return All elements of the character vector are split by `'\n'` into
 #'   lines.
 #' @export
 #' @examples xfun::split_lines(c('a', 'b\nc'))
@@ -169,11 +167,11 @@ split_source = function(x) {
 
 #' Check if the syntax of the code is valid
 #'
-#' Try to \code{\link{parse}()} the code and see if an error occurs.
+#' Try to [parse()] the code and see if an error occurs.
 #' @param code A character vector of R source code.
 #' @param silent Whether to suppress the error message when the code is not
 #'   valid.
-#' @return \code{TRUE} if the code could be parsed, otherwise \code{FALSE}.
+#' @return `TRUE` if the code could be parsed, otherwise `FALSE`.
 #' @export
 #' @examples xfun::valid_syntax('1+1')
 #' xfun::valid_syntax('1+')
@@ -184,11 +182,11 @@ valid_syntax = function(code, silent = TRUE) {
 
 #' Bump version numbers
 #'
-#' Increase the last digit of version numbers, e.g., from \code{0.1} to
-#' \code{0.2}, or \code{7.23.9} to \code{7.23.10}.
-#' @param x A vector of version numbers (of the class \code{"numeric_version"}),
+#' Increase the last digit of version numbers, e.g., from `0.1` to
+#' `0.2`, or `7.23.9` to `7.23.10`.
+#' @param x A vector of version numbers (of the class `"numeric_version"`),
 #'   or values that can be coerced to version numbers via
-#'   \code{as.numeric_version()}.
+#'   `as.numeric_version()`.
 #' @return A vector of new version numbers.
 #' @export
 #' @examples xfun::bump_version(c('0.1', '91.2.14'))
@@ -207,11 +205,11 @@ bump_version = function(x) {
 #'
 #' For example, the curly braces may be wrong (the opening and closing braces
 #' are swapped for some reason).
-#' @param x A character vector (by default, read from \code{file}).
+#' @param x A character vector (by default, read from `file`).
 #' @param file Path to a text file.
 #' @param chars A vector of characters of length 2. By default, it is a pair of
 #'   curly double quotes.
-#' @references \url{https://d.cosx.org/d/420794/5}
+#' @references <https://d.cosx.org/d/420794/5>
 #' @noRd
 #' @examples
 #' files = list.files('.', '[.]R?md$', recursive = TRUE, full.names = TRUE)

@@ -20,22 +20,22 @@ as_strict_list(x)
 \code{print()} method.}
 
 \item{x}{For \code{as_strict_list()}, the object to be coerced to a strict
-  list.
+list.
 
-  For \code{print()}, a strict list.}
+For \code{print()}, a strict list.}
 
 \item{name}{The name (a character string) of the list element.}
 }
 \value{
 Both \code{strict_list()} and \code{as_strict_list()} return a list
-  with the class \code{xfun_strict_list}. Whereas \code{as_strict_list()}
-  attempts to coerce its argument \code{x} to a list if necessary,
-  \code{strict_list()} just wraps its argument \code{...} in a list, i.e., it
-  will add another list level regardless if \code{...} already is of type
-  list.
+with the class \code{xfun_strict_list}. Whereas \code{as_strict_list()}
+attempts to coerce its argument \code{x} to a list if necessary,
+\code{strict_list()} just wraps its argument \code{...} in a list, i.e., it
+will add another list level regardless if \code{...} already is of type
+list.
 }
 \description{
-A strict list is essentially a normal \code{\link{list}()} but it does not
+A strict list is essentially a normal \code{\link[=list]{list()}} but it does not
 allow partial matching with \code{$}.
 }
 \details{

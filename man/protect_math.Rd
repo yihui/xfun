@@ -37,8 +37,8 @@ protected in backticks.
 }
 \note{
 If you are using Pandoc or the \pkg{rmarkdown} package, there is no
-  need to use this function, because Pandoc's Markdown can recognize math
-  expressions.
+need to use this function, because Pandoc's Markdown can recognize math
+expressions.
 }
 \examples{
 library(xfun)

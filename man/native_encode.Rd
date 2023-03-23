@@ -10,14 +10,14 @@ native_encode(x)
 \item{x}{A character vector.}
 }
 \description{
-Apply \code{enc2native()} to the character vector, and check if
-\code{enc2utf8()} can convert it back without a loss. If it does, return
-\code{enc2native(x)}, otherwise return the original vector with a warning.
+Apply \code{enc2native()} to the character vector, and check if \code{enc2utf8()} can
+convert it back without a loss. If it does, return \code{enc2native(x)}, otherwise
+return the original vector with a warning.
 }
 \note{
 On platforms that supports UTF-8 as the native encoding
-  (\code{\link{l10n_info}()[['UTF-8']]} returns \code{TRUE}), the conversion
-  will be skipped.
+(\code{\link[=l10n_info]{l10n_info()}}\verb{[['UTF-8']]} returns \code{TRUE}), the conversion will be
+skipped.
 }
 \examples{
 library(xfun)

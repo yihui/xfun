@@ -11,7 +11,7 @@ proc_kill(pid, recursive = TRUE, ...)
 
 \item{recursive}{Whether to kill the child processes of the process.}
 
-\item{...}{Arguments to be passed to \code{\link{system2}()} to run the
+\item{...}{Arguments to be passed to \code{\link[=system2]{system2()}} to run the
 command to kill the process.}
 }
 \value{

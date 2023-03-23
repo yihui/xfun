@@ -18,9 +18,9 @@ the \code{raw_string()} object.}
 \description{
 The function \code{raw_string()} assigns the class \code{xfun_raw_string} to
 the character vector, and the corresponding printing function
-\code{print.xfun_raw_string()} uses \code{cat(x, sep = '\n')} to write the
+\code{print.xfun_raw_string()} uses \code{cat(x, sep = '\\n')} to write the
 character vector to the console, which will suppress the leading indices
-(such as \code{[1]}) and double quotes, and it may be easier to read the
+(such as \verb{[1]}) and double quotes, and it may be easier to read the
 characters in the raw form (especially when there are escape sequences).
 }
 \examples{

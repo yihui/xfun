@@ -39,13 +39,13 @@ types, e.g., \code{'^text/'} for plain text files. This requires the
 \pkg{mime} package.}
 }
 \description{
-These functions provide the "file" version of \code{\link{gsub}()}, i.e.,
+These functions provide the "file" version of \code{\link[=gsub]{gsub()}}, i.e.,
 they perform searching and replacement in files via \code{gsub()}.
 }
 \note{
 These functions perform in-place replacement, i.e., the files will be
-  overwritten. Make sure you backup your files in advance, or use version
-  control!
+overwritten. Make sure you backup your files in advance, or use version
+control!
 }
 \examples{
 library(xfun)

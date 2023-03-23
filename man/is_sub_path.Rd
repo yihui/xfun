@@ -20,9 +20,9 @@ A logical vector.
 Check if the path starts with the dir path.
 }
 \note{
-You may want to normalize the values of the \code{x} and \code{dir}
-  arguments first (with \code{xfun::\link{normalize_path}()}), to make sure
-  the path separators are consistent.
+You may want to normalize the values of the \code{x} and \code{dir} arguments
+first (with \code{\link[=normalize_path]{normalize_path()}}), to make sure the path separators
+are consistent.
 }
 \examples{
 xfun::is_sub_path("a/b/c.txt", "a/b")  # TRUE

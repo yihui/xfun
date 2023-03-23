@@ -7,14 +7,12 @@
 install_github(...)
 }
 \arguments{
-\item{...}{Arguments to be passed to
-\code{remotes::\link[remotes]{install_github}()}.}
+\item{...}{Arguments to be passed to \code{\link[remotes:install_github]{remotes::install_github()}}.}
 }
 \description{
-This alias is to make autocomplete faster via \code{xfun::install_github},
-because most \code{remotes::install_*} functions are never what I want. I
-only use \code{install_github} and it is inconvenient to autocomplete it,
-e.g. \code{install_git} always comes before \code{install_github}, but I
-never use it. In RStudio, I only need to type \code{xfun::ig} to get
-\code{xfun::install_github}.
+This alias is to make autocomplete faster via \code{xfun::install_github}, because
+most \verb{remotes::install_*} functions are never what I want. I only use
+\code{install_github} and it is inconvenient to autocomplete it, e.g.
+\code{install_git} always comes before \code{install_github}, but I never use it. In
+RStudio, I only need to type \code{xfun::ig} to get \code{xfun::install_github}.
 }

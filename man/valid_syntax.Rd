@@ -16,7 +16,7 @@ valid.}
 \code{TRUE} if the code could be parsed, otherwise \code{FALSE}.
 }
 \description{
-Try to \code{\link{parse}()} the code and see if an error occurs.
+Try to \code{\link[=parse]{parse()}} the code and see if an error occurs.
 }
 \examples{
 xfun::valid_syntax("1+1")
