@@ -4,9 +4,8 @@ warning2 = function(...) warning(..., call. = FALSE)
 
 #' Obtain an attribute of an object without partial matching
 #'
-#' An abbreviation of \code{base::\link[base]{attr}(exact = TRUE)}.
-#' @param ... Passed to \code{base::\link[base]{attr}()} (without the
-#'   \code{exact} argument).
+#' An abbreviation of [`base::attr`]`(exact = TRUE)`.
+#' @param ... Passed to [base::attr()] (without the `exact` argument).
 #' @export
 #' @examples
 #' z = structure(list(a = 1), foo = 2)
@@ -20,12 +19,12 @@ attr = function(...) base::attr(..., exact = TRUE)
 #' Set environment variables from a named character vector, and return the old
 #' values of the variables, so they could be restored later.
 #'
-#' The motivation of this function is that \code{\link{Sys.setenv}()} does not
+#' The motivation of this function is that [Sys.setenv()] does not
 #' return the old values of the environment variables, so it is not
 #' straightforward to restore the variables later.
-#' @param vars A named character vector of the form \code{c(VARIABLE = VALUE)}.
-#'   If any value is \code{NA}, this function will try to unset the variable.
-#' @return Old values of the variables (if not set, \code{NA}).
+#' @param vars A named character vector of the form `c(VARIABLE = VALUE)`.
+#'   If any value is `NA`, this function will try to unset the variable.
+#' @return Old values of the variables (if not set, `NA`).
 #' @export
 #' @examples
 #' vars = xfun::set_envvar(c(FOO = '1234'))
@@ -43,20 +42,20 @@ set_envvar = function(vars) {
   invisible(vals)
 }
 
-#' Call \code{on.exit()} in a parent function
+#' Call `on.exit()` in a parent function
 #'
-#' The function \code{\link{on.exit}()} is often used to perform tasks when the
-#' current function exits. This \code{exit_call()} function allows calling a
+#' The function [on.exit()] is often used to perform tasks when the
+#' current function exits. This `exit_call()` function allows calling a
 #' function when a parent function exits (thinking of it as inserting an
-#' \code{on.exit()} call into the parent function).
+#' `on.exit()` call into the parent function).
 #' @param fun A function to be called when the parent function exits.
-#' @param n The parent frame number. For \code{n = 1}, \code{exit_call(fun)} is
-#'   the same as \code{on.exit(fun())}; \code{n = 2} means adding
-#'   \code{on.exit(fun())} in the parent function; \code{n = 3} means the
+#' @param n The parent frame number. For `n = 1`, `exit_call(fun)` is
+#'   the same as `on.exit(fun())`; `n = 2` means adding
+#'   `on.exit(fun())` in the parent function; `n = 3` means the
 #'   grandparent, etc.
-#' @param ... Other arguments to be passed to \code{on.exit()}.
+#' @param ... Other arguments to be passed to `on.exit()`.
 #' @references This function was inspired by Kevin Ushey:
-#'   \url{https://yihui.org/en/2017/12/on-exit-parent/}
+#'   <https://yihui.org/en/2017/12/on-exit-parent/>
 #' @export
 #' @examples
 #' f = function(x) {
@@ -90,16 +89,16 @@ in_dir = function(dir, expr) {
   expr
 }
 
-#' Test if an object is \code{FALSE}
+#' Test if an object is `FALSE`
 #'
 #' For R versions lower than 3.5.0, this function is a simple abbreviation of
-#' \code{identical(x, FALSE)}. For higher R versions, this function calls
-#' \code{base::isFALSE()}.
+#' `identical(x, FALSE)`. For higher R versions, this function calls
+#' `base::isFALSE()`.
 #' @param x An R object.
 #' @note This function will be deprecated in the future. We recommend that you
-#'   use \code{base::\link[base]{isFALSE}()} instead. If you have to support R
-#'   versions lower than 3.5.0, you may use \code{identical(x, FALSE)}, but
-#'   please note that it is not equivalent to \code{base::isFALSE()}.
+#'   use [base::isFALSE()] instead. If you have to support R versions lower
+#'   than 3.5.0, you may use `identical(x, FALSE)`, but please note that it is
+#'   not equivalent to `base::isFALSE()`.
 #' @export
 #' @keywords internal
 #' @examplesIf getRversion() < '3.5.0'
@@ -118,10 +117,10 @@ isFALSE = function(x) {
 
 #' Parse R code and do not keep the source
 #'
-#' An abbreviation of \code{parse(keep.source = FALSE)}.
+#' An abbreviation of `parse(keep.source = FALSE)`.
 #' @param code A character vector of the R source code.
 #' @export
-#' @return R \code{\link{expression}}s.
+#' @return R [expression()]s.
 #' @examples library(xfun)
 #' parse_only('1+1'); parse_only(c('y~x', '1:5 # a comment'))
 #' parse_only(character(0))
@@ -132,7 +131,7 @@ parse_only = function(code) {
 
 #' Try to evaluate an expression silently
 #'
-#' An abbreviation of \code{try(silent = TRUE)}.
+#' An abbreviation of `try(silent = TRUE)`.
 #' @param expr An R expression.
 #' @export
 #' @examples library(xfun)
@@ -142,9 +141,9 @@ try_silent = function(expr) try(expr, silent = TRUE)
 
 #' Try an expression and see if it throws an error
 #'
-#' Use \code{\link{tryCatch}()} to check if an expression throws an error.
+#' Use [tryCatch()] to check if an expression throws an error.
 #' @inheritParams try_silent
-#' @return \code{TRUE} (error) or \code{FALSE} (success).
+#' @return `TRUE` (error) or `FALSE` (success).
 #' @export
 #' @examples
 #' xfun::try_error(stop('foo'))  # TRUE
@@ -181,17 +180,17 @@ retry = function(fun, ..., .times = 3, .pause = 5) {
 
 gsubi = function(...) gsub(..., ignore.case = TRUE)
 
-#' Turn the output of \code{\link{str}()} into a tree diagram
+#' Turn the output of [str()] into a tree diagram
 #'
-#' The super useful function \code{str()} uses \verb{..} to indicate the level
+#' The super useful function `str()` uses \verb{..} to indicate the level
 #' of sub-elements of an object, which may be difficult to read. This function
 #' uses vertical pipes to connect all sub-elements on the same level, so it is
 #' clearer which elements belong to the same parent element in an object with a
 #' nested structure (such as a nested list).
-#' @param ... Arguments to be passed to \code{\link{str}()} (note that the
-#'   \code{comp.str} is hardcoded inside this function, and it is the only
+#' @param ... Arguments to be passed to [str()] (note that the
+#'   `comp.str` is hardcoded inside this function, and it is the only
 #'   argument that you cannot customize).
-#' @return A character string as a \code{\link{raw_string}()}.
+#' @return A character string as a [raw_string()].
 #' @export
 #' @examples fit = lsfit(1:9, 1:9)
 #' str(fit)
@@ -268,9 +267,9 @@ pkg_file = function(...) system.file(..., package = 'xfun', mustWork = TRUE)
 
 #' Format numbers of bytes using a specified unit
 #'
-#' Call the S3 method \code{format.object_size()} to format numbers of bytes.
+#' Call the S3 method `format.object_size()` to format numbers of bytes.
 #' @param x A numeric vector (each element represents a number of bytes).
-#' @param units,... Passed to \code{\link[=format.object_size]{format}()}.
+#' @param units,... Passed to [`format()`][format.object_size].
 #' @return A character vector.
 #' @export
 #' @examples

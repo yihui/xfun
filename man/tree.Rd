@@ -2,17 +2,17 @@
 % Please edit documentation in R/utils.R
 \name{tree}
 \alias{tree}
-\title{Turn the output of \code{\link{str}()} into a tree diagram}
+\title{Turn the output of \code{\link[=str]{str()}} into a tree diagram}
 \usage{
 tree(...)
 }
 \arguments{
-\item{...}{Arguments to be passed to \code{\link{str}()} (note that the
+\item{...}{Arguments to be passed to \code{\link[=str]{str()}} (note that the
 \code{comp.str} is hardcoded inside this function, and it is the only
 argument that you cannot customize).}
 }
 \value{
-A character string as a \code{\link{raw_string}()}.
+A character string as a \code{\link[=raw_string]{raw_string()}}.
 }
 \description{
 The super useful function \code{str()} uses \verb{..} to indicate the level

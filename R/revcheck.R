@@ -20,50 +20,50 @@
 #' failed, and you need to take a look at the log files under that directory.
 #'
 #' The time to finish the check is recorded for each package. As the check goes
-#' on, the total remaining time will be roughly estimated via \code{n *
-#' mean(times)}, where \code{n} is the number of packages remaining to be
-#' checked, and \code{times} is a vector of elapsed time of packages that have
+#' on, the total remaining time will be roughly estimated via `n *
+#' mean(times)`, where `n` is the number of packages remaining to be
+#' checked, and `times` is a vector of elapsed time of packages that have
 #' been checked.
 #'
 #' If a check on a reverse dependency failed, its \file{*.Rcheck} directory will
 #' be renamed to \file{*.Rcheck2}, and another check will be run against the
-#' CRAN version of the package unless \code{options(xfun.rev_check.compare =
-#' FALSE)} is set. If the logs of the two checks are the same, it means no new
+#' CRAN version of the package unless `options(xfun.rev_check.compare =
+#' FALSE)` is set. If the logs of the two checks are the same, it means no new
 #' problems were introduced in the package, and you can probably ignore this
-#' particular reverse dependency. The function \code{compare_Rcheck()} can be
+#' particular reverse dependency. The function `compare_Rcheck()` can be
 #' used to create a summary of all the differences in the check logs under
 #' \file{*.Rcheck} and \file{*.Rcheck2}. This will be done automatically if
-#' \code{options(xfun.rev_check.summary = TRUE)} has been set.
+#' `options(xfun.rev_check.summary = TRUE)` has been set.
 #'
 #' A recommended workflow is to use a special directory to run
-#' \code{rev_check()}, set the global \code{\link{options}}
-#' \code{xfun.rev_check.src_dir} and \code{repos} in the R startup (see
-#' \code{?\link{Startup}}) profile file \code{.Rprofile} under this directory,
-#' and (optionally) set \code{R_LIBS_USER} in \file{.Renviron} to use a special
+#' `rev_check()`, set the global [options()]
+#' `xfun.rev_check.src_dir` and `repos` in the R startup (see
+#' `?`[`Startup`]) profile file `.Rprofile` under this directory,
+#' and (optionally) set `R_LIBS_USER` in \file{.Renviron} to use a special
 #' library path (so that your usual library will not be cluttered). Then run
-#' \code{xfun::rev_check(pkg)} once, investigate and fix the problems or (if you
+#' `xfun::rev_check(pkg)` once, investigate and fix the problems or (if you
 #' believe it was not your fault) ignore broken packages in the file
-#' \file{00ignore}, and run \code{xfun::rev_check(pkg)} again to recheck the
+#' \file{00ignore}, and run `xfun::rev_check(pkg)` again to recheck the
 #' failed packages. Repeat this process until all \file{*.Rcheck} directories
 #' are gone.
 #'
-#' As an example, I set \code{options(repos = c(CRAN =
-#' 'https://cran.rstudio.com'), xfun.rev_check.src_dir = '~/Dropbox/repo')} in
-#' \file{.Rprofile}, and \code{R_LIBS_USER=~/R-tmp} in \file{.Renviron}. Then I
-#' can run, for example, \code{xfun::rev_check('knitr')} repeatedly under a
+#' As an example, I set `options(repos = c(CRAN =
+#' 'https://cran.rstudio.com'), xfun.rev_check.src_dir = '~/Dropbox/repo')` in
+#' \file{.Rprofile}, and `R_LIBS_USER=~/R-tmp` in \file{.Renviron}. Then I
+#' can run, for example, `xfun::rev_check('knitr')` repeatedly under a
 #' special directory \file{~/Downloads/revcheck}. Reverse dependencies and their
 #' dependencies will be installed to \file{~/R-tmp}, and \pkg{knitr} will be
 #' installed from \file{~/Dropbox/repo/kintr}.
 #' @param pkg The package name.
 #' @param which Which types of reverse dependencies to check. See
-#'   \code{tools::\link[tools]{package_dependencies}()} for possible values. The
-#'   special value \code{'hard'} means the hard dependencies, i.e.,
-#'   \code{c('Depends', 'Imports', 'LinkingTo')}.
+#'   [tools::package_dependencies()] for possible values. The
+#'   special value `'hard'` means the hard dependencies, i.e.,
+#'   `c('Depends', 'Imports', 'LinkingTo')`.
 #' @param recheck A vector of package names to be (re)checked. If not provided
 #'   and there are any \file{*.Rcheck} directories left by certain packages
-#'   (this often means these packages failed the last time), \code{recheck} will
+#'   (this often means these packages failed the last time), `recheck` will
 #'   be these packages; if there are no \file{*.Rcheck} directories but a text
-#'   file \file{recheck} exists, \code{recheck} will be the character vector
+#'   file \file{recheck} exists, `recheck` will be the character vector
 #'   read from this file. This provides a way for you to manually specify the
 #'   packages to be checked. If there are no packages to be rechecked, all
 #'   reverse dependencies will be checked.
@@ -77,26 +77,26 @@
 #'   parent directory.
 #' @param timeout Timeout in seconds for \command{R CMD check} to check each
 #'   package. The (approximate) total time can be limited by the global option
-#'   \code{xfun.rev_check.timeout_total}.
+#'   `xfun.rev_check.timeout_total`.
 #' @return A named numeric vector with the names being package names of reverse
-#'   dependencies; \code{0} indicates check success, \code{1} indicates failure,
-#'   and \code{2} indicates that a package was not checked due to global
+#'   dependencies; `0` indicates check success, `1` indicates failure,
+#'   and `2` indicates that a package was not checked due to global
 #'   timeout.
-#' @seealso \code{devtools::revdep_check()} is more sophisticated, but currently
+#' @seealso `devtools::revdep_check()` is more sophisticated, but currently
 #'   has a few major issues that affect me: (1) It always deletes the
 #'   \file{*.Rcheck} directories
-#'   (\url{https://github.com/r-lib/devtools/issues/1395}), which makes it
+#'   (<https://github.com/r-lib/devtools/issues/1395>), which makes it
 #'   difficult to know more information about the failures; (2) It does not
 #'   fully install the source package before checking its reverse dependencies
-#'   (\url{https://github.com/r-lib/devtools/pull/1397}); (3) I feel it is
+#'   (<https://github.com/r-lib/devtools/pull/1397>); (3) I feel it is
 #'   fairly difficult to iterate the check (ignore the successful packages and
-#'   only check the failed packages); by comparison, \code{xfun::rev_check()}
+#'   only check the failed packages); by comparison, `xfun::rev_check()`
 #'   only requires you to run a short command repeatedly (failed packages are
 #'   indicated by the existing \file{*.Rcheck} directories, and automatically
 #'   checked again the next time).
 #'
-#'   \code{xfun::rev_check()} borrowed a very nice feature from
-#'   \code{devtools::revdep_check()}: estimating and displaying the remaining
+#'   `xfun::rev_check()` borrowed a very nice feature from
+#'   `devtools::revdep_check()`: estimating and displaying the remaining
 #'   time. This is particularly useful for packages with huge numbers of reverse
 #'   dependencies.
 #' @export
@@ -383,27 +383,27 @@ check_deps = function(x, db = available.packages(), which = 'all') {
 #' Submit check jobs to crandalf
 #'
 #' Check the reverse dependencies of a package using the crandalf service:
-#' \url{https://github.com/yihui/crandalf}. If the number of reverse
+#' <https://github.com/yihui/crandalf>. If the number of reverse
 #' dependencies is large, they will be split into batches and pushed to crandalf
 #' one by one.
 #'
 #' Due to the time limit of a single job on Github Actions (6 hours), you will
 #' have to split the large number of reverse dependencies into batches and check
 #' them sequentially on Github (at most 5 jobs in parallel). The function
-#' \code{crandalf_check()} does this automatically when necessary. It requires
+#' `crandalf_check()` does this automatically when necessary. It requires
 #' the \command{git} command to be available.
 #'
-#' The function \code{crandalf_results()} fetches check results from Github
+#' The function `crandalf_results()` fetches check results from Github
 #' after all checks are completed, merge the results, and show a full summary of
-#' check results. It requires \code{gh} (Github CLI:
-#' \url{https://cli.github.com/manual/}) to be installed and you also need to
+#' check results. It requires `gh` (Github CLI:
+#' <https://cli.github.com/manual/>) to be installed and you also need to
 #' authenticate with your Github account beforehand.
 #' @param pkg The package name of which the reverse dependencies are to be
 #'   checked.
 #' @param size The number of reverse dependencies to be checked in each job.
 #' @param jobs The number of jobs to run in Github Actions (by default, all jobs
 #'   are submitted, but you can choose to submit the first few jobs).
-#' @param which The type of dependencies (see \code{\link{rev_check}()}).
+#' @param which The type of dependencies (see [rev_check()]).
 #' @export
 crandalf_check = function(pkg, size = 400, jobs = Inf, which = 'all') {
   git_test_branch()
@@ -460,8 +460,8 @@ crandalf_check = function(pkg, size = 400, jobs = Inf, which = 'all') {
   }
 }
 
-#' @param repo The crandalf repo on Github (of the form \code{user/repo} such as
-#'   \code{"yihui/crandalf"}). Usually you do not need to specify it, unless you
+#' @param repo The crandalf repo on Github (of the form `user/repo` such as
+#'   `"yihui/crandalf"`). Usually you do not need to specify it, unless you
 #'   are not calling this function inside the crandalf project, because
 #'   \command{gh} should be able to figure out the repo automatically.
 #' @param limit The maximum of records for \command{gh run list} to retrieve.
@@ -469,7 +469,7 @@ crandalf_check = function(pkg, size = 400, jobs = Inf, which = 'all') {
 #'   Github Action history.
 #' @param wait Number of seconds to wait if not all jobs have been completed on
 #'   Github. By default, this function checks the status every 5 minutes until
-#'   all jobs are completed. Set \code{wait} to 0 to disable waiting (and throw
+#'   all jobs are completed. Set `wait` to 0 to disable waiting (and throw
 #'   an error immediately when any jobs are not completed).
 #' @rdname crandalf_check
 #' @export
@@ -593,10 +593,10 @@ clean_Rcheck = function(dir, log = read_utf8(file.path(dir, '00check.log'))) {
 }
 
 #' @rdname rev_check
-#' @param status_only If \code{TRUE}, only compare the final statuses of the
+#' @param status_only If `TRUE`, only compare the final statuses of the
 #'   checks (the last line of \file{00check.log}), and delete \file{*.Rcheck}
 #'   and \file{*.Rcheck2} if the statuses are identical, otherwise write out the
-#'   full diffs of the logs. If \code{FALSE}, compare the full logs under
+#'   full diffs of the logs. If `FALSE`, compare the full logs under
 #'   \file{*.Rcheck} and \file{*.Rcheck2}.
 #' @param output The output Markdown file to which the diffs in check logs will
 #'   be written. If the \pkg{markdown} package is available, the Markdown file

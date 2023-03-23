@@ -6,18 +6,15 @@
 \title{Download a file from a URL and cache it on disk}
 \format{
 A list of methods:
-
-  \code{$get(url, mode)} downloads a URL, caches it, and returns the file
-  content according to the value of \code{mode} (possible values:
-  \code{"text"} means the text content; \code{"base64"} means the base64
-  encoded data; \code{"raw"} means the raw binary content; \code{"auto"} is
-  the default and means the ).
-
-  \code{$summary()} gives a summary of existing cache files.
-
-  \code{$remove(url, mode)} removes a single cache file.
-
-  \code{$purge()} deletes all cache files.
+\itemize{
+\item \verb{$get(url, mode)} downloads a URL, caches it, and returns the file
+content according to the value of \code{mode} (possible values: \code{"text"} means
+the text content; \code{"base64"} means the base64 encoded data; \code{"raw"} means
+the raw binary content; \code{"auto"} is the default and means the ).
+\item \verb{$summary()} gives a summary of existing cache files.
+\item \verb{$remove(url, mode)} removes a single cache file.
+\item \verb{$purge()} deletes all cache files.
+}
 }
 \usage{
 download_cache
@@ -35,13 +32,13 @@ x2 = xfun::download_cache$get("https://www.r-project.org/")
 identical(x1, x2)  # TRUE
 
 # a binary file
-x3 = xfun::download_cache$get("https://yihui.org/images/logo.png")
+x3 = xfun::download_cache$get("https://yihui.org/images/logo.png", "raw")
 length(x3)
 
 # show a summary
 xfun::download_cache$summary()
 # remove a specific cache file
-xfun::download_cache$remove("https://yihui.org/images/logo.png")
+xfun::download_cache$remove("https://yihui.org/images/logo.png", "raw")
 # remove all cache files
 xfun::download_cache$purge()
 \dontshow{\}) # examplesIf}

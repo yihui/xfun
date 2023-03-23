@@ -96,15 +96,15 @@ pkg_maintainers = function(pkgs) {
 #' @param file The path to the source package tarball. By default, the current
 #'   working directory is treated as the package root directory, and
 #'   automatically built into a tarball, which is deleted after submission. This
-#'   means you should run \code{xfun::submit_cran()} in the root directory of a
+#'   means you should run `xfun::submit_cran()` in the root directory of a
 #'   package project, unless you want to pass a path explicitly to the
-#'   \code{file} argument.
+#'   `file` argument.
 #' @param comment Submission comments for CRAN. By default, if a file
 #'   \file{cran-comments.md} exists, its content will be read and used as the
 #'   comment.
-#' @seealso \code{devtools::submit_cran()} does the same job, with a few more
+#' @seealso `devtools::submit_cran()` does the same job, with a few more
 #'   dependencies in addition to \pkg{curl} (such as \pkg{cli});
-#'   \code{xfun::submit_cran()} only depends on \pkg{curl}.
+#'   `xfun::submit_cran()` only depends on \pkg{curl}.
 #' @export
 submit_cran = function(file = pkg_build(), comment = '') {
   # if the tarball is automatically created, delete it after submission

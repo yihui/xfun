@@ -12,7 +12,7 @@ json_vector(x, to_array = FALSE, quote = TRUE)
 \arguments{
 \item{x}{An R object.}
 
-\item{to_array}{Whether to convert a vector to a JSON array (use \code{[]}).}
+\item{to_array}{Whether to convert a vector to a JSON array (use \verb{[]}).}
 
 \item{quote}{Whether to double quote the elements.}
 }

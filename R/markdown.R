@@ -114,7 +114,7 @@ escape_math = function(x, token = '') {
 #' download="filename">Download filename</a>}. The file can be downloaded when
 #' the link is clicked in modern web browsers. For a directory, it will be
 #' compressed as a zip archive first, and the zip file is passed to
-#' \code{embed_file()}. For multiple files, they are also compressed to a zip
+#' `embed_file()`. For multiple files, they are also compressed to a zip
 #' file first.
 #'
 #' These functions can be called in R code chunks in R Markdown documents with
@@ -123,21 +123,21 @@ escape_math = function(x, token = '') {
 #' browser. A common use case is to embed data files for readers to download.
 #' @param path Path to the file(s) or directory.
 #' @param name The default filename to use when downloading the file. Note that
-#'   for \code{embed_dir()}, only the base name (of the zip filename) will be
+#'   for `embed_dir()`, only the base name (of the zip filename) will be
 #'   used.
 #' @param text The text for the hyperlink.
-#' @param ... For \code{embed_file()}, additional arguments to be passed to
-#'   \code{htmltools::a()} (e.g., \code{class = 'foo'}). For \code{embed_dir()}
-#'   and \code{embed_files()}, arguments passed to \code{embed_file()}.
+#' @param ... For `embed_file()`, additional arguments to be passed to
+#'   `htmltools::a()` (e.g., `class = 'foo'`). For `embed_dir()`
+#'   and `embed_files()`, arguments passed to `embed_file()`.
 #' @note Windows users may need to install Rtools to obtain the \command{zip}
-#'   command to use \code{embed_dir()} and \code{embed_files()}.
+#'   command to use `embed_dir()` and `embed_files()`.
 #'
 #'   These functions require R packages \pkg{mime} and \pkg{htmltools}. If you
 #'   have installed the \pkg{rmarkdown} package, these packages should be
 #'   available, otherwise you need to install them separately.
 #'
 #'   Currently Internet Explorer does not support downloading embedded files
-#'   (\url{https://caniuse.com/#feat=download}). Chrome has a 2MB limit on the
+#'   (<https://caniuse.com/#feat=download>). Chrome has a 2MB limit on the
 #'   file size.
 #' @return An HTML tag \samp{<a>} with the appropriate attributes.
 #' @export

@@ -18,12 +18,12 @@ relative path.}
 }
 \value{
 A relative path, or an error when the project root directory cannot
-  be determined or the conversion failed and \code{error = TRUE}.
+be determined or the conversion failed and \code{error = TRUE}.
 }
 \description{
 First compose an absolute path using the project root directory and the
-relative path components, i.e., \code{\link{file.path}(root, ...)}. Then
-convert it to a relative path with \code{\link{relative_path}()}, which is
+relative path components, i.e., \code{\link{file.path}}\verb{(root, ...)}. Then
+convert it to a relative path with \code{\link[=relative_path]{relative_path()}}, which is
 relative to the current working directory.
 }
 \details{

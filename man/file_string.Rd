@@ -2,7 +2,7 @@
 % Please edit documentation in R/io.R
 \name{file_string}
 \alias{file_string}
-\title{Read a text file and concatenate the lines by \code{'\n'}}
+\title{Read a text file and concatenate the lines by \code{'\\n'}}
 \usage{
 file_string(file)
 }
@@ -10,7 +10,7 @@ file_string(file)
 \item{file}{Path to a text file (should be encoded in UTF-8).}
 }
 \value{
-A character string of text lines concatenated by \code{'\n'}.
+A character string of text lines concatenated by \code{'\\n'}.
 }
 \description{
 The source code of this function should be self-explanatory.

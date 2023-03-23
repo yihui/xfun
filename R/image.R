@@ -14,43 +14,43 @@ add_border = function(input, pixels = 1, color = 'black', output) {
 #'
 #' Compress PNG/JPEG images with \samp{api.tinify.com}, and download the
 #' compressed images. These functions require R packages \pkg{curl} and
-#' \pkg{jsonlite}. \code{tinify_dir()} is a wrapper function of \code{tinify()}
+#' \pkg{jsonlite}. `tinify_dir()` is a wrapper function of `tinify()`
 #' to compress images under a directory.
 #'
 #' You are recommended to set the API key in \file{.Rprofile} or
 #' \file{.Renviron}. After that, the only required argument of this function is
-#' \code{input}. If the original images can be overwritten by the compressed
-#' images, you may either use \code{output = identity}, or set the value of the
-#' \code{history} argument in \file{.Rprofile} or \file{.Renviron}.
+#' `input`. If the original images can be overwritten by the compressed
+#' images, you may either use `output = identity`, or set the value of the
+#' `history` argument in \file{.Rprofile} or \file{.Renviron}.
 #' @param input A vector of input paths of images.
-#' @param output A vector of output paths or a function that takes \code{input}
-#'   and returns a vector of output paths (e.g., \code{output = \link{identity}}
-#'   means \code{output = input}). By default, if the \code{history} argument is
-#'   not a provided, \code{output} is \code{input} with a suffix \code{-min}
-#'   (e.g., when \code{input = 'foo.png'}, \code{output = 'foo-min.png'}),
-#'   otherwise \code{output} is the same as \code{input}, which means the
+#' @param output A vector of output paths or a function that takes `input`
+#'   and returns a vector of output paths (e.g., `output = `[`identity`]
+#'   means `output = input`). By default, if the `history` argument is
+#'   not a provided, `output` is `input` with a suffix `-min`
+#'   (e.g., when `input = 'foo.png'`, `output = 'foo-min.png'`),
+#'   otherwise `output` is the same as `input`, which means the
 #'   original image files will be overwritten.
 #' @param quiet Whether to suppress detailed information about the compression,
 #'   which is of the form \samp{input.png (10 Kb) ==> output.png (5 Kb, 50\%);
-#'   compression count: 42}. The percentage after \code{output.png} stands for
+#'   compression count: 42}. The percentage after `output.png` stands for
 #'   the compression ratio, and the compression count shows the number of
 #'   compressions used for the current month.
 #' @param force Whether to compress an image again when it appears to have been
-#'   compressed before. This argument only makes sense when the \code{history}
+#'   compressed before. This argument only makes sense when the `history`
 #'   argument is provided.
 #' @param key The Tinify API key. It can be set via either the global option
-#'   \code{xfun.tinify.key} (you may set it in \file{~/.Rprofile}) or the
-#'   environment variable \code{R_XFUN_TINIFY_KEY} (you may set it in
+#'   `xfun.tinify.key` (you may set it in \file{~/.Rprofile}) or the
+#'   environment variable `R_XFUN_TINIFY_KEY` (you may set it in
 #'   \file{~/.Renviron}).
 #' @param history Path to a history file to record the MD5 checksum of
 #'   compressed images. If the checksum of an expected output image exists in
-#'   this file and \code{force = FALSE}, the compression will be skipped. This
+#'   this file and `force = FALSE`, the compression will be skipped. This
 #'   can help you avoid unnecessary API calls.
 #' @return The output file paths.
-#' @references Tinify API: \url{https://tinypng.com/developers}.
-#' @seealso The \pkg{tinieR} package (\url{https://github.com/jmablog/tinieR/})
+#' @references Tinify API: <https://tinypng.com/developers>.
+#' @seealso The \pkg{tinieR} package (<https://github.com/jmablog/tinieR/>)
 #'   is a more comprehensive implementation of the Tinify API, whereas
-#'   \code{xfun::tinify()} has only implemented the feature of shrinking images.
+#'   `xfun::tinify()` has only implemented the feature of shrinking images.
 #' @export
 #' @examplesIf interactive()
 #' f = xfun:::R_logo('jpg$')
@@ -122,7 +122,7 @@ tinify = function(
 
 #' @param dir A directory under which all \file{.png}, \file{.jpeg}, and
 #'   \file{.webp} files are to be compressed.
-#' @param ... Arguments passed to \code{\link{tinify}()}.
+#' @param ... Arguments passed to [tinify()].
 #' @rdname tinify
 #' @export
 tinify_dir = function(dir = '.', ...) {
@@ -131,14 +131,14 @@ tinify_dir = function(dir = '.', ...) {
 
 #' Shrink images to a maximum width
 #'
-#' Use \code{\link[magick:image_resize]{magick::image_resize}()} to shrink an
+#' Use [magick::image_resize()] to shrink an
 #' image if its width is larger than the value specified by the argument
-#' \code{width}, and optionally call \code{\link{tinify}()} to compress it.
+#' `width`, and optionally call [tinify()] to compress it.
 #' @param width The desired maximum width of images.
 #' @param dir The directory of images.
 #' @param files A vector of image file paths. By default, this is all
-#'   \file{.png}, \file{.jpeg}, and \file{.webp} images under \code{dir}.
-#' @param tinify Whether to compress images using \code{\link{tinify}()}.
+#'   \file{.png}, \file{.jpeg}, and \file{.webp} images under `dir`.
+#' @param tinify Whether to compress images using [tinify()].
 #' @export
 #' @examples
 #' f = xfun:::all_files('[.](png|jpe?g)$', R.home('doc'))

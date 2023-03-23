@@ -20,8 +20,7 @@ relative path.}
 }
 \value{
 A vector of relative paths if the conversion succeeded; otherwise the
-  original paths when \code{error = FALSE}, and an error when \code{error =
-  TRUE}.
+original paths when \code{error = FALSE}, and an error when \code{error = TRUE}.
 }
 \description{
 Given a directory, return the relative path that is relative to this

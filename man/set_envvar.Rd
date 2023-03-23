@@ -18,7 +18,7 @@ Set environment variables from a named character vector, and return the old
 values of the variables, so they could be restored later.
 }
 \details{
-The motivation of this function is that \code{\link{Sys.setenv}()} does not
+The motivation of this function is that \code{\link[=Sys.setenv]{Sys.setenv()}} does not
 return the old values of the environment variables, so it is not
 straightforward to restore the variables later.
 }

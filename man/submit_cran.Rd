@@ -23,6 +23,6 @@ Build a source package and submit it to CRAN with the \pkg{curl} package.
 }
 \seealso{
 \code{devtools::submit_cran()} does the same job, with a few more
-  dependencies in addition to \pkg{curl} (such as \pkg{cli});
-  \code{xfun::submit_cran()} only depends on \pkg{curl}.
+dependencies in addition to \pkg{curl} (such as \pkg{cli});
+\code{xfun::submit_cran()} only depends on \pkg{curl}.
 }

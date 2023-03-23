@@ -1,11 +1,11 @@
-#' Run \code{system2()} and mark its character output as UTF-8 if appropriate
+#' Run `system2()` and mark its character output as UTF-8 if appropriate
 #'
-#' This is a wrapper function based on \code{system2()}. If \code{system2()}
-#' returns character output (e.g., with the argument \code{stdout = TRUE}),
+#' This is a wrapper function based on `system2()`. If `system2()`
+#' returns character output (e.g., with the argument `stdout = TRUE`),
 #' check if the output is encoded in UTF-8. If it is, mark it with UTF-8
 #' explicitly.
-#' @param ... Passed to \code{\link{system2}()}.
-#' @return The value returned by \code{system2()}.
+#' @param ... Passed to [system2()].
+#' @return The value returned by `system2()`.
 #' @export
 #' @examplesIf interactive()
 #' a = shQuote(c('-e', 'print(intToUtf8(c(20320, 22909)))'))
@@ -25,12 +25,12 @@ system3 = function(...) {
 
 #' Run OptiPNG on all PNG files under a directory
 #'
-#' Call the command \command{optipng} via \code{system2()} to optimize all PNG
+#' Call the command \command{optipng} via `system2()` to optimize all PNG
 #' files under a directory.
 #' @param dir Path to a directory.
 #' @param files Alternatively, you can choose the specific files to optimize.
-#' @param ... Arguments to be passed to \code{system2()}.
-#' @references OptiPNG: \url{https://optipng.sourceforge.net}.
+#' @param ... Arguments to be passed to `system2()`.
+#' @references OptiPNG: <https://optipng.sourceforge.net>.
 #' @export
 optipng = function(dir = '.', files = all_files('[.]png$', dir), ...) {
   if (Sys.which('optipng') != '') for (f in files) system2('optipng', shQuote(f), ...)
@@ -40,9 +40,9 @@ optipng = function(dir = '.', files = all_files('[.]png$', dir), ...) {
 #'
 #' Wrapper functions to run the commands \command{Rscript} and \command{R CMD}.
 #' @param args A character vector of command-line arguments.
-#' @param ... Other arguments to be passed to \code{\link{system2}()}.
+#' @param ... Other arguments to be passed to [system2()].
 #' @export
-#' @return A value returned by \code{system2()}.
+#' @return A value returned by `system2()`.
 #' @examples library(xfun)
 #' Rscript(c('-e', '1+1'))
 #' Rcmd(c('build', '--help'))
@@ -60,17 +60,17 @@ Rcmd = function(args, ...) {
   system2(file.path(R.home('bin'), 'R'), c('CMD', args), ...)
 }
 
-#' Call a function in a new R session via \code{Rscript()}
+#' Call a function in a new R session via `Rscript()`
 #'
 #' Save the argument values of a function in a temporary RDS file, open a new R
-#' session via \code{\link{Rscript}()}, read the argument values, call the
+#' session via [Rscript()], read the argument values, call the
 #' function, and read the returned value back to the current R session.
 #' @param fun A function, or a character string that can be parsed and evaluated
 #'   to a function.
 #' @param args A list of argument values.
 #' @param options A character vector of options to passed to
-#'   \code{\link{Rscript}}, e.g., \code{"--vanilla"}.
-#' @param ...,wait Arguments to be passed to \code{\link{system2}()}.
+#'   [Rscript()], e.g., `"--vanilla"`.
+#' @param ...,wait Arguments to be passed to [system2()].
 #' @param fail The desired error message when an error occurred in calling the
 #'   function.
 #' @export
@@ -135,9 +135,9 @@ Rscript_bg = function(fun, args = list(), timeout = 10) {
 #' Unix, respectively, to kill a process.
 #' @param pid The process ID.
 #' @param recursive Whether to kill the child processes of the process.
-#' @param ... Arguments to be passed to \code{\link{system2}()} to run the
+#' @param ... Arguments to be passed to [system2()] to run the
 #'   command to kill the process.
-#' @return The status code returned from \code{system2()}.
+#' @return The status code returned from `system2()`.
 #' @export
 proc_kill = function(pid, recursive = TRUE, ...) {
   if (is_windows()) {
@@ -179,28 +179,26 @@ ps_quote = function(x) {
 
 #' Start a background process
 #'
-#' Start a background process using the PowerShell cmdlet \command{Start-Process
-#' -PassThru} on Windows or the ampersand \command{&} on Unix, and return the
-#' process ID.
+#' Start a background process using the PowerShell cmdlet
+#' \command{Start-Process-PassThru} on Windows or the ampersand \command{&} on
+#' Unix, and return the process ID.
 #' @param command,args The system command and its arguments. They do not need to
-#'   be quoted, since they will be quoted via \code{\link{shQuote}()}
-#'   internally.
-#' @param verbose If \code{FALSE}, suppress the output from \verb{stdout} (and
-#'   also \verb{stderr} on Windows). The default value of this argument can be
-#'   set via a global option, e.g., \code{options(xfun.bg_process.verbose =
-#'   TRUE)}.
+#'   be quoted, since they will be quoted via [shQuote()] internally.
+#' @param verbose If `FALSE`, suppress the output from `stdout` (and also
+#'   `stderr` on Windows). The default value of this argument can be set via a
+#'   global option, e.g., `options(xfun.bg_process.verbose = TRUE)`.
 #' @return The process ID as a character string.
 #' @note On Windows, if PowerShell is not available, try to use
-#'   \code{\link{system2}(wait = FALSE)} to start the background process
-#'   instead. The process ID will be identified from the output of the command
+#'   [`system2`]`(wait = FALSE)` to start the background process instead. The
+#'   process ID will be identified from the output of the command
 #'   \command{tasklist}. This method of looking for the process ID may not be
 #'   reliable. If the search is not successful in 30 seconds, it will throw an
 #'   error (timeout). If a longer time is needed, you may set
-#'   \code{options(xfun.bg_process.timeout)} to a larger value, but it should be
-#'   very rare that a process cannot be started in 30 seconds. When you reach
-#'   the timeout, it is more likely that the command actually failed.
+#'   `options(xfun.bg_process.timeout)` to a larger value, but it should be very
+#'   rare that a process cannot be started in 30 seconds. When you reach the
+#'   timeout, it is more likely that the command actually failed.
 #' @export
-#' @seealso \code{\link{proc_kill}()} to kill a process.
+#' @seealso [proc_kill()] to kill a process.
 bg_process = function(
   command, args = character(), verbose = getOption('xfun.bg_process.verbose', FALSE)
 ) {
@@ -268,22 +266,22 @@ bg_process = function(
 
 #' Upload to an FTP server via \command{curl}
 #'
-#' The function \code{upload_ftp()} runs the command \command{curl -T file
+#' The function `upload_ftp()` runs the command \command{curl -T file
 #' server} to upload a file to an FTP server if the system command
 #' \command{curl} is available, otherwise it uses the R package \pkg{curl}. The
-#' function \code{upload_win_builder()} uses \code{upload_ftp()} to upload
+#' function `upload_win_builder()` uses `upload_ftp()` to upload
 #' packages to the win-builder server.
 #'
 #' These functions were written mainly to save package developers the trouble of
 #' going to the win-builder web page and uploading packages there manually.
 #' @param file Path to a local file.
-#' @param server The address of the FTP server. For \code{upload_win_builder()},
-#'   \code{server = 'https'} means uploading to
-#'   \code{'https://win-builder.r-project.org/upload.aspx'}.
+#' @param server The address of the FTP server. For `upload_win_builder()`,
+#'   `server = 'https'` means uploading to
+#'   `'https://win-builder.r-project.org/upload.aspx'`.
 #' @param dir The remote directory to which the file should be uploaded.
 #' @param version The R version(s) on win-builder.
-#' @return Status code returned from \code{\link{system2}()} or
-#'   \code{curl::curl_fetch_memory()}.
+#' @return Status code returned from [system2()] or
+#'   `curl::curl_fetch_memory()`.
 #' @export
 upload_ftp = function(file, server, dir = '') {
   if (dir != '') dir = gsub('/*$', '/', dir)

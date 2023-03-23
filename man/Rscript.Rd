@@ -12,7 +12,7 @@ Rcmd(args, ...)
 \arguments{
 \item{args}{A character vector of command-line arguments.}
 
-\item{...}{Other arguments to be passed to \code{\link{system2}()}.}
+\item{...}{Other arguments to be passed to \code{\link[=system2]{system2()}}.}
 }
 \value{
 A value returned by \code{system2()}.

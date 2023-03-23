@@ -15,9 +15,9 @@ in messages to the console for example to quickly identify directories from
 files.
 }
 \details{
-If \code{x} is a vector of relative paths, directory test is done with
-path relative to the current working dir. Use \code{xfun::\link{in_dir}()} or
-use absolute paths.
+If \code{x} is a vector of relative paths, directory test is done with path
+relative to the current working dir. Use \code{\link[=in_dir]{in_dir()}} or use absolute
+paths.
 }
 \examples{
 mark_dirs(list.files(find.package("xfun"), full.names = TRUE))

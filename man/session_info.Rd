@@ -16,10 +16,10 @@ dependencies of packages.}
 }
 \value{
 A character vector of the session information marked as
-  \code{\link{raw_string}()}.
+\code{\link[=raw_string]{raw_string()}}.
 }
 \description{
-This function tweaks the output of \code{\link{sessionInfo}()}: (1) It adds
+This function tweaks the output of \code{\link[=sessionInfo]{sessionInfo()}}: (1) It adds
 the RStudio version information if running in the RStudio IDE; (2) It removes
 the information about matrix products, BLAS, and LAPACK; (3) It removes the
 names of base R packages; (4) It prints out package versions in a single

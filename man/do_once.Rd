@@ -17,7 +17,7 @@ do_once(
 e.g., \code{warning('Danger!')} or \code{message('Today is ', Sys.Date())}.}
 
 \item{option}{An R option name. This name should be as unique as possible in
-\code{\link{options}()}. After the task has been successfully performed,
+\code{\link[=options]{options()}}. After the task has been successfully performed,
 this option will be set to \code{FALSE} in the current R session, to
 prevent the task from being performed again the next time when
 \code{do_once()} is called.}

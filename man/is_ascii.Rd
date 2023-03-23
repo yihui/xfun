@@ -11,7 +11,7 @@ is_ascii(x)
 }
 \value{
 A logical vector indicating whether each element of the character
-  vector is ASCII.
+vector is ASCII.
 }
 \description{
 Converts the encoding of a character vector to \code{'ascii'}, and check if

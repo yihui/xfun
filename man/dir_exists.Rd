@@ -16,10 +16,10 @@ file_exists(x)
 A logical vector.
 }
 \description{
-These are wrapper functions of \code{utils::\link{file_test}()} to test the
+These are wrapper functions of [\verb{utils::file_test()]} to test the
 existence of directories and files. Note that \code{file_exists()} only tests
 files but not directories, which is the main difference between
-\code{\link{file.exists}()} in base R. If you use are using the R version
-3.2.0 or above, \code{dir_exists()} is the same as \code{\link{dir.exists}()}
+\code{\link[=file.exists]{file.exists()}} in base R. If you use are using the R version
+3.2.0 or above, \code{dir_exists()} is the same as \code{\link[=dir.exists]{dir.exists()}}
 in base R.
 }

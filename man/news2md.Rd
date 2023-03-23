@@ -7,7 +7,7 @@
 news2md(package, ..., output = "NEWS.md", category = TRUE)
 }
 \arguments{
-\item{package, ...}{Arguments to be passed to \code{\link{news}()}.}
+\item{package, ...}{Arguments to be passed to \code{\link[=news]{news()}}.}
 
 \item{output}{The output file path.}
 
@@ -15,10 +15,10 @@ news2md(package, ..., output = "NEWS.md", category = TRUE)
 }
 \value{
 If \code{output = NA}, returns the Markdown content as a character
-  vector, otherwise the content is written to the output file.
+vector, otherwise the content is written to the output file.
 }
 \description{
-Read the package news with \code{\link{news}()}, convert the result to
+Read the package news with \code{\link[=news]{news()}}, convert the result to
 Markdown, and write to an output file (e.g., \file{NEWS.md}). Each package
 version appears in a first-level header, each category (e.g., \samp{NEW
 FEATURES} or \samp{BUG FIXES}) is in a second-level header, and the news

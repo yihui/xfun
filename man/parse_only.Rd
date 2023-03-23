@@ -10,7 +10,7 @@ parse_only(code)
 \item{code}{A character vector of the R source code.}
 }
 \value{
-R \code{\link{expression}}s.
+R \code{\link[=expression]{expression()}}s.
 }
 \description{
 An abbreviation of \code{parse(keep.source = FALSE)}.

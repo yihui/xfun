@@ -14,11 +14,10 @@ names.}
 A character vector of names of broken package.
 }
 \description{
-If a package is broken (i.e., not \code{\link{loadable}()}), reinstall it.
+If a package is broken (i.e., not \code{\link[=loadable]{loadable()}}), reinstall it.
 }
 \details{
 Installed R packages could be broken for several reasons. One common reason
-is that you have upgraded R to a newer \code{x.y} version, e.g., from
-\code{4.0.5} to \code{4.1.0}, in which case you need to reinstall previously
-installed packages.
+is that you have upgraded R to a newer \code{x.y} version, e.g., from \verb{4.0.5} to
+\verb{4.1.0}, in which case you need to reinstall previously installed packages.
 }

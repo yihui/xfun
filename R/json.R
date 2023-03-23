@@ -1,9 +1,9 @@
 #' A simple JSON serializer
 #'
-#' A JSON serializer that only works on a limited types of R data (\code{NULL},
+#' A JSON serializer that only works on a limited types of R data (`NULL`,
 #' lists, logical scalars, character/numeric vectors). A character string of the
-#' class \code{JS_EVAL} is treated as raw JavaScript, so will not be quoted. The
-#' function \code{json_vector()} converts an atomic R vector to JSON.
+#' class `JS_EVAL` is treated as raw JavaScript, so will not be quoted. The
+#' function `json_vector()` converts an atomic R vector to JSON.
 #' @param x An R object.
 #' @export
 #' @return A character string.
@@ -39,7 +39,7 @@ tojson = function(x) {
   stop('The class of x is not supported: ', paste(class(x), collapse = ', '))
 }
 
-#' @param to_array Whether to convert a vector to a JSON array (use \code{[]}).
+#' @param to_array Whether to convert a vector to a JSON array (use `[]`).
 #' @param quote Whether to double quote the elements.
 #' @rdname tojson
 #' @export

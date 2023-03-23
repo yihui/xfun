@@ -20,8 +20,8 @@ sort_file(..., fun = sort)
 }
 \value{
 If \code{file} is provided, invisible \code{NULL} (the file is
-  updated as a side effect), otherwise the processed content (as a character
-  vector).
+updated as a side effect), otherwise the processed content (as a character
+vector).
 }
 \description{
 Read a text file with the UTF-8 encoding, apply a function to the text, and
@@ -29,7 +29,7 @@ write back to the original file.
 }
 \details{
 \code{sort_file()} is an application of \code{process_file()}, with the
-processing function being \code{\link{sort}()}, i.e., it sorts the text lines
+processing function being \code{\link[=sort]{sort()}}, i.e., it sorts the text lines
 in a file and write back the sorted text.
 }
 \examples{

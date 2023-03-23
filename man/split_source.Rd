@@ -11,7 +11,7 @@ split_source(x)
 }
 \value{
 A list of character vectors, and each vector contains a complete R
-  expression.
+expression.
 }
 \description{
 Parse the lines of code one by one to find complete expressions in the code,

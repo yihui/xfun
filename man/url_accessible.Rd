@@ -21,7 +21,7 @@ By default, \pkg{curl} will be used when base R does not have the
 }
 \description{
 Try to send a \code{HEAD} request to a URL using
-\code{\link{curlGetHeaders}()} or the \pkg{curl} package, and see if it
+\code{\link[=curlGetHeaders]{curlGetHeaders()}} or the \pkg{curl} package, and see if it
 returns a successful status code.
 }
 \examples{

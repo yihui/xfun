@@ -1,12 +1,12 @@
 #' Try to use the system native encoding to represent a character vector
 #'
-#' Apply \code{enc2native()} to the character vector, and check if
-#' \code{enc2utf8()} can convert it back without a loss. If it does, return
-#' \code{enc2native(x)}, otherwise return the original vector with a warning.
+#' Apply `enc2native()` to the character vector, and check if `enc2utf8()` can
+#' convert it back without a loss. If it does, return `enc2native(x)`, otherwise
+#' return the original vector with a warning.
 #' @param x A character vector.
 #' @note On platforms that supports UTF-8 as the native encoding
-#'   (\code{\link{l10n_info}()[['UTF-8']]} returns \code{TRUE}), the conversion
-#'   will be skipped.
+#'   ([l10n_info()]`[['UTF-8']]` returns `TRUE`), the conversion will be
+#'   skipped.
 #' @export
 #' @examples
 #' library(xfun)
@@ -24,8 +24,8 @@ native_encode = function(x) {
 
 #' Check if a character vector consists of entirely ASCII characters
 #'
-#' Converts the encoding of a character vector to \code{'ascii'}, and check if
-#' the result is \code{NA}.
+#' Converts the encoding of a character vector to `'ascii'`, and check if
+#' the result is `NA`.
 #' @param x A character vector.
 #' @return A logical vector indicating whether each element of the character
 #'   vector is ASCII.

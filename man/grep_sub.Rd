@@ -7,15 +7,14 @@
 grep_sub(pattern, replacement, x, ...)
 }
 \arguments{
-\item{pattern, replacement, x, ...}{Passed to \code{\link{grep}()} and
+\item{pattern, replacement, x, ...}{Passed to \code{\link[=grep]{grep()}} and
 \code{gsub()}.}
 }
 \value{
 A character vector.
 }
 \description{
-This function is a shorthand of \code{gsub(pattern, replacement,
-grep(pattern, x, value = TRUE))}.
+This function is a shorthand of \code{gsub(pattern, replacement, grep(pattern, x, value = TRUE))}.
 }
 \examples{
 # find elements that matches 'a[b]+c' and capitalize 'b' with perl regex

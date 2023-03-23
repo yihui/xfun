@@ -17,7 +17,7 @@ grandparent, etc.}
 \item{...}{Other arguments to be passed to \code{on.exit()}.}
 }
 \description{
-The function \code{\link{on.exit}()} is often used to perform tasks when the
+The function \code{\link[=on.exit]{on.exit()}} is often used to perform tasks when the
 current function exits. This \code{exit_call()} function allows calling a
 function when a parent function exits (thinking of it as inserting an
 \code{on.exit()} call into the parent function).
@@ -35,5 +35,5 @@ g("An argument of g()!")
 }
 \references{
 This function was inspired by Kevin Ushey:
-  \url{https://yihui.org/en/2017/12/on-exit-parent/}
+\url{https://yihui.org/en/2017/12/on-exit-parent/}
 }

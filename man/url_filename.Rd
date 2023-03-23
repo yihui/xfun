@@ -16,7 +16,7 @@ URL, e.g., when the URL ends with a slash.}
 A character vector of filenames at the end of URLs.
 }
 \description{
-Get the base names of URLs via \code{\link{basename}()}, and remove the
+Get the base names of URLs via \code{\link[=basename]{basename()}}, and remove the
 possible query parameters or hash from the names.
 }
 \examples{

@@ -1,21 +1,21 @@
 #' Read / write files encoded in UTF-8
 #'
-#' Read or write files, assuming they are encoded in UTF-8. \code{read_utf8()}
-#' is roughly \code{readLines(encoding = 'UTF-8')} (a warning will be issued if
-#' non-UTF8 lines are found), and \code{write_utf8()} calls
-#' \code{writeLines(enc2utf8(text), useBytes = TRUE)}.
+#' Read or write files, assuming they are encoded in UTF-8. `read_utf8()`
+#' is roughly `readLines(encoding = 'UTF-8')` (a warning will be issued if
+#' non-UTF8 lines are found), and `write_utf8()` calls
+#' `writeLines(enc2utf8(text), useBytes = TRUE)`.
 #'
-#' The function \code{append_utf8()} appends UTF-8 content to a file or
-#' connection based on \code{read_utf8()} and \code{write_utf8()}, and
-#' optionally sort the content. The function \code{append_unique()} appends
+#' The function `append_utf8()` appends UTF-8 content to a file or
+#' connection based on `read_utf8()` and `write_utf8()`, and
+#' optionally sort the content. The function `append_unique()` appends
 #' unique lines to a file or connection.
 #' @param con A connection or a file path.
 #' @param error Whether to signal an error when non-UTF8 characters are detected
-#'   (if \code{FALSE}, only a warning message is issued).
+#'   (if `FALSE`, only a warning message is issued).
 #' @param text A character vector (will be converted to UTF-8 via
-#'   \code{\link{enc2utf8}()}).
-#' @param ... Other arguments passed to \code{\link{writeLines}()} (except
-#'   \code{useBytes}, which is \code{TRUE} in \code{write_utf8()}).
+#'   [enc2utf8()]).
+#' @param ... Other arguments passed to [writeLines()] (except
+#'   `useBytes`, which is `TRUE` in `write_utf8()`).
 #' @export
 read_utf8 = function(con, error = FALSE) {
   # users may have set options(encoding = 'UTF-8'), which usually won't help but
@@ -46,9 +46,9 @@ write_utf8 = function(text, con, ...) {
   }
 }
 
-#' @param sort Logical (\code{FALSE} means not to sort the content) or a
-#'   function to sort the content; \code{TRUE} is equivalent to
-#'   \code{base::sort}.
+#' @param sort Logical (`FALSE` means not to sort the content) or a
+#'   function to sort the content; `TRUE` is equivalent to
+#'   `base::sort`.
 #' @rdname read_utf8
 #' @export
 append_utf8 = function(text, con, sort = TRUE) {
@@ -79,11 +79,11 @@ is_utf8 = function(x) {
   if ('validUTF8' %in% ls(baseenv())) validUTF8(x) else test_utf8(x)
 }
 
-#' Read a text file and concatenate the lines by \code{'\n'}
+#' Read a text file and concatenate the lines by `'\n'`
 #'
 #' The source code of this function should be self-explanatory.
 #' @param file Path to a text file (should be encoded in UTF-8).
-#' @return A character string of text lines concatenated by \code{'\n'}.
+#' @return A character string of text lines concatenated by `'\n'`.
 #' @export
 #' @examples
 #' xfun::file_string(system.file('DESCRIPTION', package = 'xfun'))
@@ -96,11 +96,11 @@ file_string = function(file) {
 
 #' Read all records of a binary file as a raw vector by default
 #'
-#' This is a wrapper function of \code{\link{readBin}()} with default arguments
-#' \code{what = "raw"} and \code{n = \link{file.size}(file)}, which means it
+#' This is a wrapper function of [readBin()] with default arguments
+#' `what = "raw"` and `n = `[`file.size`]`(file)`, which means it
 #' will read the full content of a binary file as a raw vector by default.
-#' @param file,what,n,... Arguments to be passed to \code{readBin()}.
-#' @return A vector returned from \code{readBin()}.
+#' @param file,what,n,... Arguments to be passed to `readBin()`.
+#' @return A vector returned from `readBin()`.
 #' @export
 #' @examples
 #' f = tempfile()
@@ -144,14 +144,14 @@ read_all = function(files, before = function(f) NULL, after = function(f) NULL) 
 #' Read a text file with the UTF-8 encoding, apply a function to the text, and
 #' write back to the original file.
 #'
-#' \code{sort_file()} is an application of \code{process_file()}, with the
-#' processing function being \code{\link{sort}()}, i.e., it sorts the text lines
+#' `sort_file()` is an application of `process_file()`, with the
+#' processing function being [sort()], i.e., it sorts the text lines
 #' in a file and write back the sorted text.
 #' @param file Path to a text file.
 #' @param fun A function to process the text.
 #' @param x The content of the file.
-#' @param ... Arguments to be passed to \code{process_file()}.
-#' @return If \code{file} is provided, invisible \code{NULL} (the file is
+#' @param ... Arguments to be passed to `process_file()`.
+#' @return If `file` is provided, invisible `NULL` (the file is
 #'   updated as a side effect), otherwise the processed content (as a character
 #'   vector).
 #' @export
@@ -173,21 +173,21 @@ sort_file = function(..., fun = sort) {
 
 #' Search and replace strings in files
 #'
-#' These functions provide the "file" version of \code{\link{gsub}()}, i.e.,
-#' they perform searching and replacement in files via \code{gsub()}.
+#' These functions provide the "file" version of [gsub()], i.e.,
+#' they perform searching and replacement in files via `gsub()`.
 #' @param file Path of a single file.
-#' @param ... For \code{gsub_file()}, arguments passed to \code{gsub()}. For
-#'   other functions, arguments passed to \code{gsub_file()}. Note that the
-#'   argument \code{x} of \code{gsub()} is the content of the file.
+#' @param ... For `gsub_file()`, arguments passed to `gsub()`. For
+#'   other functions, arguments passed to `gsub_file()`. Note that the
+#'   argument `x` of `gsub()` is the content of the file.
 #' @param rw_error Whether to signal an error if the file cannot be read or
-#'   written. If \code{FALSE}, the file will be ignored (with a warning).
+#'   written. If `FALSE`, the file will be ignored (with a warning).
 #' @param files A vector of file paths.
 #' @param dir Path to a directory (all files under this directory will be
 #'   replaced).
 #' @param recursive Whether to find files recursively under a directory.
 #' @param ext A vector of filename extensions (without the leading periods).
 #' @param mimetype A regular expression to filter files based on their MIME
-#'   types, e.g., \code{'^text/'} for plain text files. This requires the
+#'   types, e.g., `'^text/'` for plain text files. This requires the
 #'   \pkg{mime} package.
 #' @note These functions perform in-place replacement, i.e., the files will be
 #'   overwritten. Make sure you backup your files in advance, or use version
@@ -230,12 +230,12 @@ gsub_ext = function(ext, ..., dir = '.', recursive = TRUE) {
   gsub_dir(..., dir = dir, recursive = recursive, ext = ext)
 }
 
-#' Perform replacement with \code{gsub()} on elements matched from \code{grep()}
+#' Perform replacement with `gsub()` on elements matched from `grep()`
 #'
-#' This function is a shorthand of \code{gsub(pattern, replacement,
-#' grep(pattern, x, value = TRUE))}.
-#' @param pattern,replacement,x,... Passed to \code{\link{grep}()} and
-#'   \code{gsub()}.
+#' This function is a shorthand of `gsub(pattern, replacement,
+#' grep(pattern, x, value = TRUE))`.
+#' @param pattern,replacement,x,... Passed to [grep()] and
+#'   `gsub()`.
 #' @return A character vector.
 #' @export
 #' @examples # find elements that matches 'a[b]+c' and capitalize 'b' with perl regex
@@ -247,24 +247,24 @@ grep_sub = function(pattern, replacement, x, ...) {
 
 #' Try various methods to download a file
 #'
-#' Try all possible methods in \code{\link{download.file}()} (e.g.,
-#' \code{libcurl}, \code{curl}, \code{wget}, and \code{wininet}) and see if any
+#' Try all possible methods in [download.file()] (e.g.,
+#' `libcurl`, `curl`, `wget`, and `wininet`) and see if any
 #' method can succeed. The reason to enumerate all methods is that sometimes the
 #' default method does not work, e.g.,
-#' \url{https://stat.ethz.ch/pipermail/r-devel/2016-June/072852.html}.
+#' <https://stat.ethz.ch/pipermail/r-devel/2016-June/072852.html>.
 #' @param url The URL of the file.
 #' @param output Path to the output file. By default, it is determined by
-#'   \code{\link{url_filename}()}.
-#' @param ... Other arguments to be passed to \code{\link{download.file}()}
-#'   (except \code{method}).
+#'   [url_filename()].
+#' @param ... Other arguments to be passed to [download.file()]
+#'   (except `method`).
 #' @param .error An error message to signal when the download fails.
-#' @note To allow downloading large files, the \code{timeout} option in
-#'   \code{\link{options}()} will be temporarily set to one hour (3600 seconds)
+#' @note To allow downloading large files, the `timeout` option in
+#'   [options()] will be temporarily set to one hour (3600 seconds)
 #'   inside this function when this option has the default value of 60 seconds.
-#'   If you want a different \code{timeout} value, you may set it via
-#'   \code{options(timeout = N)}, where \code{N} is the number of seconds (not
+#'   If you want a different `timeout` value, you may set it via
+#'   `options(timeout = N)`, where `N` is the number of seconds (not
 #'   60).
-#' @return The integer code \code{0} for success, or an error if none of the
+#' @return The integer code `0` for success, or an error if none of the
 #'   methods work.
 #' @export
 download_file = function(
@@ -303,16 +303,16 @@ download_file = function(
 
 #' Test if a URL is accessible
 #'
-#' Try to send a \code{HEAD} request to a URL using
-#' \code{\link{curlGetHeaders}()} or the \pkg{curl} package, and see if it
+#' Try to send a `HEAD` request to a URL using
+#' [curlGetHeaders()] or the \pkg{curl} package, and see if it
 #' returns a successful status code.
 #' @param x A URL as a character string.
 #' @param use_curl Whether to use the \pkg{curl} package or the
-#'   \code{curlGetHeaders()} function in base R to send the request to the URL.
+#'   `curlGetHeaders()` function in base R to send the request to the URL.
 #'   By default, \pkg{curl} will be used when base R does not have the
 #'   \command{libcurl} capability (which should be rare).
-#' @param ... Arguments to be passed to \code{curlGetHeaders()}.
-#' @return \code{TRUE} or \code{FALSE}.
+#' @param ... Arguments to be passed to `curlGetHeaders()`.
+#' @return `TRUE` or `FALSE`.
 #' @export
 #' @examples xfun::url_accessible('https://yihui.org')
 url_accessible = function(x, use_curl = !capabilities('libcurl'), ...) {
@@ -327,19 +327,19 @@ url_accessible = function(x, use_curl = !capabilities('libcurl'), ...) {
   }
 }
 
-#' Generate a message with \code{cat()}
+#' Generate a message with `cat()`
 #'
-#' This function is similar to \code{\link{message}()}, and the difference is
-#' that \code{msg_cat()} uses \code{\link{cat}()} to write out the message,
-#' which is sent to \code{\link{stdout}} instead of \code{\link{stderr}}. The
-#' message can be suppressed by \code{\link{suppressMessages}()}.
+#' This function is similar to [message()], and the difference is
+#' that `msg_cat()` uses [cat()] to write out the message,
+#' which is sent to [stdout()] instead of [stderr()]. The
+#' message can be suppressed by [suppressMessages()].
 #' @param ... Character strings of messages, which will be concatenated into one
-#'   string via \code{paste(c(...), collapse = '')}.
+#'   string via `paste(c(...), collapse = '')`.
 #' @note By default, a newline will not be appended to the message. If you need
 #'   a newline, you have to explicitly add it to the message (see
 #'   \sQuote{Examples}).
-#' @return Invisible \code{NULL}, with the side-effect of printing the message.
-#' @seealso This function was inspired by \code{rlang::inform()}.
+#' @return Invisible `NULL`, with the side-effect of printing the message.
+#' @seealso This function was inspired by `rlang::inform()`.
 #' @export
 #' @examples
 #' {

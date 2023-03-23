@@ -20,7 +20,7 @@ Filter out the indices of lines between code block fences such as \verb{```}
 }
 \note{
 If the code fences are not balanced (e.g., a starting fence without an
-  ending fence), this function will treat all lines as prose.
+ending fence), this function will treat all lines as prose.
 }
 \examples{
 library(xfun)

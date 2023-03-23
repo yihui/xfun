@@ -33,8 +33,7 @@ subdirectories under the root directory. If you really want to search for
 all subdirectories, you may try \code{n_dirs = Inf}.}
 }
 \value{
-The path found under the root directory, or an error when \code{error
-  = TRUE} and the path is not found (or multiple paths are found).
+The path found under the root directory, or an error when \code{error = TRUE} and the path is not found (or multiple paths are found).
 }
 \description{
 Given a path, try to find it recursively under a root directory. The input

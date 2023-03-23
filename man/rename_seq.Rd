@@ -13,15 +13,14 @@ rename_seq(
 )
 }
 \arguments{
-\item{pattern}{A regular expression for \code{\link{list.files}()} to obtain
+\item{pattern}{A regular expression for \code{\link[=list.files]{list.files()}} to obtain
 the files to be renamed. For example, to rename \code{.jpeg} files, use
 \code{pattern = "[.]jpeg$"}.}
 
 \item{format}{The format for the numeric prefix. This is passed to
-\code{\link{sprintf}()}. The default format is \code{"\%0Nd"} where \code{N
-= floor(log10(n)) + 1} and \code{n} is the number of files, which means the
+\code{\link[=sprintf]{sprintf()}}. The default format is \code{"\\\%0Nd"} where \code{N = floor(log10(n)) + 1} and \code{n} is the number of files, which means the
 prefix may be padded with zeros. For example, if there are 150 files to be
-renamed, the format will be \code{"\%03d"} and the prefixes will be
+renamed, the format will be \code{"\\\%03d"} and the prefixes will be
 \code{001}, \code{002}, ..., \code{150}.}
 
 \item{replace}{Whether to remove existing numeric prefixes in filenames.}
@@ -31,11 +30,11 @@ renamed, the format will be \code{"\%03d"} and the prefixes will be
 \item{dry_run}{Whether to not really rename files. To be safe, the default is
 \code{TRUE}. If you have looked at the new filenames and are sure the new
 names are what you want, you may rerun \code{rename_seq()} with
-\code{dry_run = FALSE)} to actually rename files.}
+\code{dry_run = FALSE} to actually rename files.}
 }
 \value{
 A named character vector. The names are original filenames, and the
-  vector itself is the new filenames.
+vector itself is the new filenames.
 }
 \description{
 Rename a series of files and add an incremental numeric prefix to the

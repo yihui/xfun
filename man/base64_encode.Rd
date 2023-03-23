@@ -20,7 +20,7 @@ argument \code{x}.}
 }
 \value{
 \code{base64_encode()} returns a character string.
-  \code{base64_decode()} returns a raw vector.
+\code{base64_decode()} returns a raw vector.
 }
 \description{
 The function \code{base64_encode()} encodes a file or a raw vector into the

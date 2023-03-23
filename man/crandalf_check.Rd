@@ -18,7 +18,7 @@ checked.}
 \item{jobs}{The number of jobs to run in Github Actions (by default, all jobs
 are submitted, but you can choose to submit the first few jobs).}
 
-\item{which}{The type of dependencies (see \code{\link{rev_check}()}).}
+\item{which}{The type of dependencies (see \code{\link[=rev_check]{rev_check()}}).}
 
 \item{repo}{The crandalf repo on Github (of the form \code{user/repo} such as
 \code{"yihui/crandalf"}). Usually you do not need to specify it, unless you

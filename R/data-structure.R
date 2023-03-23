@@ -1,21 +1,21 @@
 #' Strict lists
 #'
-#' A strict list is essentially a normal \code{\link{list}()} but it does not
-#' allow partial matching with \code{$}.
+#' A strict list is essentially a normal [list()] but it does not
+#' allow partial matching with `$`.
 #'
 #' To me, partial matching is often more annoying and surprising than
 #' convenient. It can lead to bugs that are very hard to discover, and I have
-#' been bitten by it many times. When I write \code{x$name}, I always mean
-#' precisely \code{name}. You should use a modern code editor to autocomplete
-#' the \code{name} if it is too long to type, instead of using partial names.
+#' been bitten by it many times. When I write `x$name`, I always mean
+#' precisely `name`. You should use a modern code editor to autocomplete
+#' the `name` if it is too long to type, instead of using partial names.
 #' @param ... Objects (list elements), possibly named. Ignored in the
-#'   \code{print()} method.
+#'   `print()` method.
 #' @export
-#' @return Both \code{strict_list()} and \code{as_strict_list()} return a list
-#'   with the class \code{xfun_strict_list}. Whereas \code{as_strict_list()}
-#'   attempts to coerce its argument \code{x} to a list if necessary,
-#'   \code{strict_list()} just wraps its argument \code{...} in a list, i.e., it
-#'   will add another list level regardless if \code{...} already is of type
+#' @return Both `strict_list()` and `as_strict_list()` return a list
+#'   with the class `xfun_strict_list`. Whereas `as_strict_list()`
+#'   attempts to coerce its argument `x` to a list if necessary,
+#'   `strict_list()` just wraps its argument `...` in a list, i.e., it
+#'   will add another list level regardless if `...` already is of type
 #'   list.
 #' @examples library(xfun)
 #' (z = strict_list(aaa = 'I am aaa', b = 1:5))
@@ -35,10 +35,10 @@ strict_list = function(...) {
 
 # https://twitter.com/xieyihui/status/782462926862954496
 
-#' @param x For \code{as_strict_list()}, the object to be coerced to a strict
+#' @param x For `as_strict_list()`, the object to be coerced to a strict
 #'   list.
 #'
-#'   For \code{print()}, a strict list.
+#'   For `print()`, a strict list.
 #' @rdname strict_list
 #' @export
 as_strict_list = function(x) {
@@ -58,14 +58,14 @@ print.xfun_strict_list = function(x, ...) {
 
 #' Print a character vector in its raw form
 #'
-#' The function \code{raw_string()} assigns the class \code{xfun_raw_string} to
+#' The function `raw_string()` assigns the class `xfun_raw_string` to
 #' the character vector, and the corresponding printing function
-#' \code{print.xfun_raw_string()} uses \code{cat(x, sep = '\n')} to write the
+#' `print.xfun_raw_string()` uses `cat(x, sep = '\n')` to write the
 #' character vector to the console, which will suppress the leading indices
-#' (such as \code{[1]}) and double quotes, and it may be easier to read the
+#' (such as `[1]`) and double quotes, and it may be easier to read the
 #' characters in the raw form (especially when there are escape sequences).
-#' @param x For \code{raw_string()}, a character vector. For the print method,
-#'   the \code{raw_string()} object.
+#' @param x For `raw_string()`, a character vector. For the print method,
+#'   the `raw_string()` object.
 #' @export
 #' @examples library(xfun)
 #' raw_string(head(LETTERS))

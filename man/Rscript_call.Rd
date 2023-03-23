@@ -20,9 +20,9 @@ to a function.}
 \item{args}{A list of argument values.}
 
 \item{options}{A character vector of options to passed to
-\code{\link{Rscript}}, e.g., \code{"--vanilla"}.}
+\code{\link[=Rscript]{Rscript()}}, e.g., \code{"--vanilla"}.}
 
-\item{..., wait}{Arguments to be passed to \code{\link{system2}()}.}
+\item{..., wait}{Arguments to be passed to \code{\link[=system2]{system2()}}.}
 
 \item{fail}{The desired error message when an error occurred in calling the
 function.}
@@ -32,7 +32,7 @@ The returned value of the function in the new R session.
 }
 \description{
 Save the argument values of a function in a temporary RDS file, open a new R
-session via \code{\link{Rscript}()}, read the argument values, call the
+session via \code{\link[=Rscript]{Rscript()}}, read the argument values, call the
 function, and read the returned value back to the current R session.
 }
 \examples{
