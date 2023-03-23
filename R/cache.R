@@ -215,7 +215,7 @@ download_cache = local({
     list.files(d, sprintf('^%s_.+[.]rds$', pre), full.names = TRUE)
   }
   list(
-    get = function(url, type = c('auto', 'text', 'base64', 'raw')) {
+    get = function(url, type = c('auto', 'text', 'base64', 'raw'), handler = NULL) {
       type = type[1]
       if (!is.null(x <- read(url, type))) return(x[[url]])
       if ((auto <- type == 'auto')) type = if (length(grep(
@@ -231,6 +231,7 @@ download_cache = local({
           type, text = read_utf8(o), base64 = base64_uri(o), raw = read_bin(o)
         )
       })
+      if (is.function(handler)) x = handler(x)
       write(url, if (auto) 'auto' else type, setNames(list(x), url))
       x
     },
