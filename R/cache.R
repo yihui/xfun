@@ -164,12 +164,14 @@ global_vars = function(code, env) {
 #' This object provides methods to download files and cache them on disk.
 #' @format A list of methods:
 #'
-#' - `$get(url, mode)` downloads a URL, caches it, and returns the file
-#'   content according to the value of `mode` (possible values: `"text"` means
+#' - `$get(url, type, handler)` downloads a URL, caches it, and returns the file
+#'   content according to the value of `type` (possible values: `"text"` means
 #'   the text content; `"base64"` means the base64 encoded data; `"raw"` means
-#'   the raw binary content; `"auto"` is the default and means the ).
+#'   the raw binary content; `"auto"` is the default and means the type is
+#'   determined by the content type in the URL headers). Optionally a `handler`
+#'   function can be applied to the content.
 #' - `$summary()` gives a summary of existing cache files.
-#' - `$remove(url, mode)` removes a single cache file.
+#' - `$remove(url, type)` removes a single cache file.
 #' - `$purge()` deletes all cache files.
 #' @export
 #' @examplesIf interactive()
@@ -196,14 +198,14 @@ download_cache = local({
   c_dir = function() {
     getOption('xfun.cache.dir', tools::R_user_dir('xfun', 'cache'))
   }
-  c_file = function(url, mode) {
-    file.path(c_dir(), sprintf('%s_%s_%s.rds', pre, mode, md5_obj(url)))
+  c_file = function(url, type) {
+    file.path(c_dir(), sprintf('%s_%s_%s.rds', pre, type, md5_obj(url)))
   }
-  read = function(url, mode) {
-    if (length(f <- c_file(url, mode)) && file.exists(f)) readRDS(f)
+  read = function(url, type) {
+    if (length(f <- c_file(url, type)) && file.exists(f)) readRDS(f)
   }
-  write = function(url, mode, data) {
-    if (length(f <- c_file(url, mode))) {
+  write = function(url, type, data) {
+    if (length(f <- c_file(url, type))) {
       dir_create(dirname(f))
       saveRDS(data, f)
     }
@@ -213,10 +215,10 @@ download_cache = local({
     list.files(d, sprintf('^%s_.+[.]rds$', pre), full.names = TRUE)
   }
   list(
-    get = function(url, mode = c('auto', 'text', 'base64', 'raw')) {
-      mode = mode[1]
-      if (!is.null(x <- read(url, mode))) return(x[[url]])
-      if ((auto <- mode == 'auto')) mode = if (length(grep(
+    get = function(url, type = c('auto', 'text', 'base64', 'raw')) {
+      type = type[1]
+      if (!is.null(x <- read(url, type))) return(x[[url]])
+      if ((auto <- type == 'auto')) type = if (length(grep(
         '^content-type:\\s+(text/.+|[^;]+;\\s+charset=utf-8)\\s*$',
         curlGetHeaders(url), ignore.case = TRUE
       ))) 'text' else 'raw'
@@ -226,10 +228,10 @@ download_cache = local({
         o = url_filename(url)
         download_file(url, o)
         switch(
-          mode, text = read_utf8(o), base64 = base64_uri(o), raw = read_bin(o)
+          type, text = read_utf8(o), base64 = base64_uri(o), raw = read_bin(o)
         )
       })
-      write(url, if (auto) 'auto' else mode, setNames(list(x), url))
+      write(url, if (auto) 'auto' else type, setNames(list(x), url))
       x
     },
     summary = function() {
@@ -243,11 +245,11 @@ download_cache = local({
         t = c(t, '')
         s = c(s, sum(s))
       }
-      d = data.frame(url = u, mode = t, size = s, size_h = format_bytes(s))
+      d = data.frame(url = u, type = t, size = s, size_h = format_bytes(s))
       rownames(d) = NULL
       d
     },
-    remove = function(url, mode = 'auto') file.remove(c_file(url, mode)),
+    remove = function(url, type = 'auto') file.remove(c_file(url, type)),
     purge = function() {
       f = list_cache()
       fs = file.size(f)

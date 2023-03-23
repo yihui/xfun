@@ -7,12 +7,14 @@
 \format{
 A list of methods:
 \itemize{
-\item \verb{$get(url, mode)} downloads a URL, caches it, and returns the file
-content according to the value of \code{mode} (possible values: \code{"text"} means
+\item \verb{$get(url, type, handler)} downloads a URL, caches it, and returns the file
+content according to the value of \code{type} (possible values: \code{"text"} means
 the text content; \code{"base64"} means the base64 encoded data; \code{"raw"} means
-the raw binary content; \code{"auto"} is the default and means the ).
+the raw binary content; \code{"auto"} is the default and means the type is
+determined by the content type in the URL headers). Optionally a \code{handler}
+function can be applied to the content.
 \item \verb{$summary()} gives a summary of existing cache files.
-\item \verb{$remove(url, mode)} removes a single cache file.
+\item \verb{$remove(url, type)} removes a single cache file.
 \item \verb{$purge()} deletes all cache files.
 }
 }
