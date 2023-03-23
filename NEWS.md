@@ -10,7 +10,7 @@
 
 - `is_arm64()` also supports Linux now (thanks, @eitsupi, #74).
 
-- `is_blank()` returns a logical vector of the same length as the input vector now, indicating if each element of the input is blank. Previously it returns a logical scalar indicating whether *all* elements are blank.
+- `is_blank()` returns a logical vector of the same length as the input vector now, indicating if each element of the input is blank. Previously it returns a logical scalar indicating whether *all* elements are blank. If you want the old behavior, you can use `all(is_blank())`.
 
 # CHANGES IN xfun VERSION 0.37
 
