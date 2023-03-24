@@ -2,5 +2,13 @@ comment: false
 
 coverage:
   status:
-    project: false
-    patch: false
+    project:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true
