@@ -13,6 +13,7 @@ the text content; \code{"base64"} means the base64 encoded data; \code{"raw"} me
 the raw binary content; \code{"auto"} is the default and means the type is
 determined by the content type in the URL headers). Optionally a \code{handler}
 function can be applied to the content.
+\item \verb{$list()} gives the list of cache files.
 \item \verb{$summary()} gives a summary of existing cache files.
 \item \verb{$remove(url, type)} removes a single cache file.
 \item \verb{$purge()} deletes all cache files.

@@ -170,6 +170,7 @@ global_vars = function(code, env) {
 #'   the raw binary content; `"auto"` is the default and means the type is
 #'   determined by the content type in the URL headers). Optionally a `handler`
 #'   function can be applied to the content.
+#' - `$list()` gives the list of cache files.
 #' - `$summary()` gives a summary of existing cache files.
 #' - `$remove(url, type)` removes a single cache file.
 #' - `$purge()` deletes all cache files.
@@ -246,6 +247,7 @@ download_cache = local({
       rownames(d) = NULL
       unname(split(d, seq_len(nrow(d))))
     },
+    list = list_cache,
     remove = function(url, type = 'auto') file.remove(c_file(url, type)),
     purge = function() {
       f = list_cache()
