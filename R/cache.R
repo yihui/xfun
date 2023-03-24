@@ -241,23 +241,19 @@ download_cache = local({
       t = gsub('^url_([^_]+)_.+$', '\\1', basename(f))
       u = vapply(f, function(x) names(readRDS(x)), character(1))
       s = file.size(f)
-      if (length(f) > 1) {
-        u = c(u, 'Total')
-        t = c(t, '')
-        s = c(s, sum(s))
-      }
+      if (length(f) > 1) message('Total size: ', format_bytes(sum(s)))
       d = data.frame(url = u, type = t, size = s, size_h = format_bytes(s))
       rownames(d) = NULL
-      d
+      unname(split(d, seq_len(nrow(d))))
     },
     remove = function(url, type = 'auto') file.remove(c_file(url, type)),
     purge = function() {
       f = list_cache()
-      fs = file.size(f)
+      s = file.size(f)
       i = file.remove(f)
       message(sprintf(
         "Purged %d cache file(s) from '%s' (%s)",
-        sum(i), c_dir(), format_bytes(sum(fs[i]))
+        sum(i), c_dir(), format_bytes(sum(s[i]))
       ))
     }
   )
