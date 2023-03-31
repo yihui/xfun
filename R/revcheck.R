@@ -674,7 +674,8 @@ file_diff = function(files, len = 200, use_diff = Sys.which('diff') != '') {
   } else {
     c(paste('<', read_utf8(files[1])), '---', paste('>', read_utf8(files[2])))
   }
-  if (length(d) >= len) unique(d) else d
+  if (length(d) >= len) d = unique(d)
+  gsub('^>', '+', gsub('^<', '-', d))
 }
 
 # specify a list of package names to be ignored when installing all dependencies
