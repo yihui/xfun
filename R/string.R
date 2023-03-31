@@ -246,7 +246,9 @@ pair_chars = function(x = read_utf8(file), file, chars = c('\U201c', '\U201d')) 
 #' Generate ID strings
 #'
 #' Substitute certain (by default, non-alphanumeric) characters with dashes and
-#' remove extra dashes at both ends to generate ID strings.
+#' remove extra dashes at both ends to generate ID strings. This function is
+#' intended for generating IDs for HTML elements, so HTML tags in the input text
+#' will be removed first.
 #' @param x A character vector.
 #' @param exclude A (Perl) regular expression to detect characters to be
 #'   replaced by dashes. By default, non-alphanumeric characters are replaced.
@@ -256,6 +258,23 @@ pair_chars = function(x = read_utf8(file), file, chars = c('\U201c', '\U201d')) 
 #' x = c('Hello world 123!', 'a  &b*^##c 456')
 #' xfun::alnum_id(x)
 #' xfun::alnum_id(x, '[^[:alpha:]]+')  # only keep alphabetical chars
+#' # when text contains HTML tags
+#' xfun::alnum_id('<h1>Hello <strong>world</strong>!')
 alnum_id = function(x, exclude = '[^[:alnum:]]+') {
+  x = strip_html(x)
   tolower(gsub('^-+|-+$', '', gsub(exclude, '-', x, perl = TRUE)))
+}
+
+#' Strip HTML tags
+#'
+#' Remove HTML tags and comments from text.
+#' @param x A character vector.
+#' @return A character vector with HTML tags and comments stripped off.
+#' @export
+#' @examples
+#' xfun::strip_html('<a href="#">Hello <!-- comment -->world!</a>')
+strip_html = function (x) {
+  x = gsub('<!--.*?-->', '', x)
+  x = gsub('<[^>]+>', '', x)
+  x
 }

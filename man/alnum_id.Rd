@@ -17,10 +17,14 @@ A character vector of IDs.
 }
 \description{
 Substitute certain (by default, non-alphanumeric) characters with dashes and
-remove extra dashes at both ends to generate ID strings.
+remove extra dashes at both ends to generate ID strings. This function is
+intended for generating IDs for HTML elements, so HTML tags in the input text
+will be removed first.
 }
 \examples{
 x = c("Hello world 123!", "a  &b*^##c 456")
 xfun::alnum_id(x)
 xfun::alnum_id(x, "[^[:alpha:]]+")  # only keep alphabetical chars
+# when text contains HTML tags
+xfun::alnum_id("<h1>Hello <strong>world</strong>!")
 }
