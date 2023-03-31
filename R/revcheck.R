@@ -741,5 +741,7 @@ cloud_check = function(pkgs = NULL, ...) {
     # only keep results from broken packages
     unlink(fs[!basename(fs) %in% c(res, paste0(res, '.tar.gz'))], recursive = TRUE)
     stop('Package(s) broken: ', paste(res, collapse = ' '))
+  } else {
+    message('All reverse dependencies are good!')
   }
 }
