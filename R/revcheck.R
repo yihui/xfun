@@ -642,14 +642,9 @@ compare_Rcheck = function(status_only = TRUE, output = '00check_diffs.md') {
   if (length(res) == 0) return()
   xfun::write_utf8(res, output)
   if (!loadable('markdown')) return(output)
-  markdown::markdownToHTML(
-    text = gsub('>', '+', gsub('^<', '-', res)),
-    output = html_file <- with_ext(output, 'html'),
-    header = c(
-      "<link href='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/github.min.css' rel='stylesheet' type='text/css' />",
-      "<script src='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js'></script>",
-      "<script>hljs.initHighlightingOnLoad();</script>"
-    ), encoding = 'UTF-8'
+  markdown::mark_html(
+    text = res,
+    output = html_file <- with_ext(output, 'html')
   )
   if (!getOption('xfun.rev_check.keep_md', FALSE)) unlink(output)
   html_file
