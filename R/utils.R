@@ -42,6 +42,44 @@ set_envvar = function(vars) {
   invisible(vals)
 }
 
+#' Retrieve a global option from both `options()` and environment variables
+#'
+#' If the option exists in [options()], use its value. If not, query the
+#' environment variable with the name `R_NAME` where `NAME` is the capitalized
+#' option name with dots substituted by underscores. For example, for an option
+#' `xfun.foo`, first we try `getOption('xfun.foo')`; if it does not exist, we
+#' check the environment variable `R_XFUN_FOO`.
+#'
+#' This provides two possible ways, whichever is more convenient, for users to
+#' set an option. For example, global options can be set in the [.Rprofile]
+#' file, and environment variables can be set in the [.Renviron] file.
+#' @param name The option name.
+#' @param default The default value if the option is not found in [options()] or
+#'   environment variables.
+#' @return The option value.
+#' @export
+#' @examples
+#' xfun::env_option('xfun.test.option')  # NULL
+#'
+#' Sys.setenv(R_XFUN_TEST_OPTION = '1234')
+#' xfun::env_option('xfun.test.option')  # 1234
+#'
+#' options(xfun.test.option = TRUE)
+#' xfun::env_option('xfun.test.option')  # TRUE (from options())
+#' options(xfun.test.option = NULL)  # reset the option
+#' xfun::env_option('xfun.test.option')  # 1234 (from env var)
+#'
+#' Sys.unsetenv('R_XFUN_TEST_OPTION')
+#' xfun::env_option('xfun.test.option')  # NULL again
+#'
+#' xfun::env_option('xfun.test.option', FALSE)  # use default
+env_option = function(name, default = NULL) {
+  if (name %in% names(.Options)) return(.Options[[name]])
+  name = toupper(paste0('R_', gsub('[.]', '_', name)))
+  envs = Sys.getenv()
+  if (name %in% names(envs)) envs[[name]] else default
+}
+
 #' Call `on.exit()` in a parent function
 #'
 #' The function [on.exit()] is often used to perform tasks when the
