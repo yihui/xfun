@@ -1,3 +1,6 @@
+# CHANGES IN xfun VERSION 0.40
+
+
 # CHANGES IN xfun VERSION 0.39
 
 - Fixed a bug that `protect_math()` fails to protect the starting `$$` that has leading white spaces.
