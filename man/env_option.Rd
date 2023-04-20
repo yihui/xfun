@@ -24,8 +24,8 @@ check the environment variable \code{R_XFUN_FOO}.
 }
 \details{
 This provides two possible ways, whichever is more convenient, for users to
-set an option. Global options can be set in the \link{.Rprofile} file, and
-environment variables can be set in the \link{.Renviron} file.
+set an option. For example, global options can be set in the \link{.Rprofile}
+file, and environment variables can be set in the \link{.Renviron} file.
 }
 \examples{
 xfun::env_option("xfun.test.option")  # NULL
