@@ -10,27 +10,25 @@ numbers_to_words(x, cap = FALSE, hyphen = TRUE, and = FALSE)
 n2w(x, cap = FALSE, hyphen = TRUE, and = FALSE)
 }
 \arguments{
-\item{x}{A numeric vector. Values should be integers. The absolute values
-should be less than \code{1e15}.}
+\item{x}{A numeric vector. The absolute values should be less than \code{1e15}.}
 
 \item{cap}{Whether to capitalize the first letter of the word. This can be
-useful when the word is at the beginning of a sentence. Default is
-\code{FALSE}.}
+useful when the word is at the beginning of a sentence. Default is \code{FALSE}.}
 
 \item{hyphen}{Whether to insert hyphen (-) when the number is between 21 and
 99 (except 30, 40, etc.).}
 
-\item{and}{Whether to insert \code{and} between hundreds and tens, e.g.,
-write 110 as \dQuote{one hundred and ten} if \code{TRUE} instead of
-\dQuote{one hundred ten}.}
+\item{and}{Whether to insert \code{and} between hundreds and tens, e.g., write 110
+as \dQuote{one hundred and ten} if \code{TRUE} instead of \dQuote{one hundred
+ten}.}
 }
 \value{
 A character vector.
 }
 \description{
 This can be helpful when writing reports with \pkg{knitr}/\pkg{rmarkdown} if
-we want to print numbers as English words in the output. The function
-\code{n2w()} is an alias of \code{numbers_to_words()}.
+we want to print numbers as English words in the output. The function \code{n2w()}
+is an alias of \code{numbers_to_words()}.
 }
 \examples{
 library(xfun)
@@ -40,6 +38,9 @@ n2w(1e+06)
 n2w(1e+11 + 12345678)
 n2w(-987654321)
 n2w(1e+15 - 1)
+n2w(123.456)
+n2w(123.45678901)
+n2w(123.456789098765)
 }
 \author{
 Daijiang Li
