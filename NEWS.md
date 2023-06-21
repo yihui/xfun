@@ -2,6 +2,8 @@
 
 - `number_to_words()` supports decimal numbers now (thanks, @harshvardhaniimi, #80).
 
+- `is_ascii()` is more robust now (thanks, @bastistician, #81).
+
 # CHANGES IN xfun VERSION 0.39
 
 - Fixed a bug that `protect_math()` fails to protect the starting `$$` that has leading white spaces.
