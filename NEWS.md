@@ -1,3 +1,6 @@
+# CHANGES IN xfun VERSION 0.41
+
+
 # CHANGES IN xfun VERSION 0.40
 
 - `number_to_words()` supports decimal numbers now (thanks, @harshvardhaniimi, #80).
