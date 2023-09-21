@@ -162,7 +162,9 @@ read_all = function(files, before = function(f) NULL, after = function(f) NULL) 
 #' file.remove(f)
 process_file = function(file, fun = identity, x = read_utf8(file)) {
   x2 = fun(x)
-  if (missing(file)) x2 else if (!all(x2 == x)) write_utf8(x, file)
+  if (missing(file)) x2 else {
+    if ((length(x2) != length(x)) || !all(x2 == x)) write_utf8(x, file)
+  }
 }
 
 #' @rdname process_file
