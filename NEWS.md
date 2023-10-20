@@ -2,6 +2,8 @@
 
 - `process_file()` will write to the file only if the processed text is different with the input text. This is to avoid writing files unnecessarily.
 
+- `session_info()` will remove extra blank lines (thanks, @chuxinyuan, #82) and also omit the time zone info.
+
 # CHANGES IN xfun VERSION 0.40
 
 - `number_to_words()` supports decimal numbers now (thanks, @harshvardhaniimi, #80).
