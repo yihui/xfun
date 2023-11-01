@@ -729,7 +729,7 @@ cloud_check = function(pkgs = NULL, ...) {
       x = gsub(r, '\\1', x)
       v = unlist(strsplit(x, "('|,\\s+)"))
       v = v[v != ''][1]
-      if (is.na(v)) stop(e)
+      if (length(v) != 1 || is.na(v)) stop(e)
       check(r_version = v, revdep_packages = pkgs, ...)
     }
   )
