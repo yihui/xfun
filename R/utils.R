@@ -145,12 +145,11 @@ in_dir = function(dir, expr) {
 #' isFALSE(FALSE)  # true
 #' isFALSE(c(FALSE, FALSE))  # false
 isFALSE = function(x) {
-  if (!('isFALSE' %in% ls(baseenv()))) return(identical(x, FALSE))
-  do_once((if (is_R_CMD_check()) stop else warning)(
-    'The function xfun::isFALSE() will be deprecated in the future. Please ',
+  if ('isFALSE' %in% ls(baseenv())) stop(
+    'The function xfun::isFALSE() has been deprecated. Please ',
     'consider using base::isFALSE(x) or identical(x, FALSE) instead.'
-  ), 'xfun.isFALSE.message', '')
-  base::isFALSE(x)
+  )
+  identical(x, FALSE)
 }
 
 #' Parse R code and do not keep the source

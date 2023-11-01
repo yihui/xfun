@@ -11,8 +11,8 @@ isFALSE(x)
 }
 \description{
 For R versions lower than 3.5.0, this function is a simple abbreviation of
-\code{identical(x, FALSE)}. For higher R versions, this function calls
-\code{base::isFALSE()}.
+\code{identical(x, FALSE)}. For higher R versions, this function throws an
+error asking users to call \code{base::isFALSE()} instead.
 }
 \note{
 This function will be deprecated in the future. We recommend that you
