@@ -1,3 +1,6 @@
+# CHANGES IN xfun VERSION 0.42
+
+
 # CHANGES IN xfun VERSION 0.41
 
 - `process_file()` will write to the file only if the processed text is different with the input text. This is to avoid writing files unnecessarily.
