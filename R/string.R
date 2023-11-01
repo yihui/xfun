@@ -15,18 +15,16 @@ is_blank = function(x) grepl('^\\s*$', x)
 #' Convert numbers to English words
 #'
 #' This can be helpful when writing reports with \pkg{knitr}/\pkg{rmarkdown} if
-#' we want to print numbers as English words in the output. The function
-#' `n2w()` is an alias of `numbers_to_words()`.
-#' @param x A numeric vector. Values should be integers. The absolute values
-#'   should be less than `1e15`.
+#' we want to print numbers as English words in the output. The function `n2w()`
+#' is an alias of `numbers_to_words()`.
+#' @param x A numeric vector. The absolute values should be less than `1e15`.
 #' @param cap Whether to capitalize the first letter of the word. This can be
-#'   useful when the word is at the beginning of a sentence. Default is
-#'   `FALSE`.
+#'   useful when the word is at the beginning of a sentence. Default is `FALSE`.
 #' @param hyphen Whether to insert hyphen (-) when the number is between 21 and
 #'   99 (except 30, 40, etc.).
-#' @param and Whether to insert `and` between hundreds and tens, e.g.,
-#'   write 110 as \dQuote{one hundred and ten} if `TRUE` instead of
-#'   \dQuote{one hundred ten}.
+#' @param and Whether to insert `and` between hundreds and tens, e.g., write 110
+#'   as \dQuote{one hundred and ten} if `TRUE` instead of \dQuote{one hundred
+#'   ten}.
 #' @return A character vector.
 #' @author Daijiang Li
 #' @export
@@ -37,12 +35,14 @@ is_blank = function(x) grepl('^\\s*$', x)
 #' n2w(1e11+12345678)
 #' n2w(-987654321)
 #' n2w(1e15-1)
+#' n2w(123.456)
+#' n2w(123.45678901)
+#' n2w(123.456789098765)
 numbers_to_words = function(x, cap = FALSE, hyphen = TRUE, and = FALSE) {
-
   if (!is.numeric(x)) stop('The input is not numeric.')
   if (any(abs(x) >= 1e15)) stop('The absolute value must be less than 1e15.')
-  opts = options(scipen = 15); on.exit(options(opts), add = TRUE)  # avoid scientific notation
-  if (any(x != floor(x))) stop('The numbers must be integer. ')
+  opts = options(scipen = 15, OutDec = '.')  # avoid scientific notation
+  on.exit(options(opts), add = TRUE)
 
   zero_to_19 = c(
     'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
@@ -93,7 +93,7 @@ numbers_to_words = function(x, cap = FALSE, hyphen = TRUE, and = FALSE) {
     if (x == 0) {
       out = 'zero'  # because convert_le3 removed all 0s
     } else {
-      x_marks = strsplit(format(x, big.mark = ','), split = ',')[[1]]  # e.g. 123,456,789
+      x_marks = strsplit(format(floor(x), big.mark = ','), split = ',')[[1]]  # e.g. 123,456,789
       out = vapply(x_marks, convert_le3, character(1))  # group by 3 digits
       x_marks2 = marks[length(x_marks):1]  # units?
       x_marks2[which(out == '')] = ''  # e.g. 4,000,123, 000, remove millions
@@ -103,6 +103,11 @@ numbers_to_words = function(x, cap = FALSE, hyphen = TRUE, and = FALSE) {
     out = gsub('^ *|,? *$', '', out)  # trim heading/trailing space
     out = gsub(' {2,}', ' ', out)  # remove multiple spaces
     if (cap) out = sub('^([a-z])', '\\U\\1', out, perl = TRUE)
+    if (x - floor(x) > 0) {
+      frac = sub('^[0-9]+[.]', '', as.character(x))
+      frac = convert_1(strsplit(frac, '')[[1]])
+      out = paste(c(out, 'point', frac), collapse = ' ')
+    }
     out
   }
 
@@ -246,7 +251,9 @@ pair_chars = function(x = read_utf8(file), file, chars = c('\U201c', '\U201d')) 
 #' Generate ID strings
 #'
 #' Substitute certain (by default, non-alphanumeric) characters with dashes and
-#' remove extra dashes at both ends to generate ID strings.
+#' remove extra dashes at both ends to generate ID strings. This function is
+#' intended for generating IDs for HTML elements, so HTML tags in the input text
+#' will be removed first.
 #' @param x A character vector.
 #' @param exclude A (Perl) regular expression to detect characters to be
 #'   replaced by dashes. By default, non-alphanumeric characters are replaced.
@@ -256,6 +263,23 @@ pair_chars = function(x = read_utf8(file), file, chars = c('\U201c', '\U201d')) 
 #' x = c('Hello world 123!', 'a  &b*^##c 456')
 #' xfun::alnum_id(x)
 #' xfun::alnum_id(x, '[^[:alpha:]]+')  # only keep alphabetical chars
+#' # when text contains HTML tags
+#' xfun::alnum_id('<h1>Hello <strong>world</strong>!')
 alnum_id = function(x, exclude = '[^[:alnum:]]+') {
+  x = strip_html(x)
   tolower(gsub('^-+|-+$', '', gsub(exclude, '-', x, perl = TRUE)))
+}
+
+#' Strip HTML tags
+#'
+#' Remove HTML tags and comments from text.
+#' @param x A character vector.
+#' @return A character vector with HTML tags and comments stripped off.
+#' @export
+#' @examples
+#' xfun::strip_html('<a href="#">Hello <!-- comment -->world!</a>')
+strip_html = function (x) {
+  x = gsub('<!--.*?-->', '', x)
+  x = gsub('<[^>]+>', '', x)
+  x
 }

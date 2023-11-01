@@ -142,18 +142,18 @@ read_all = function(files, before = function(f) NULL, after = function(f) NULL) 
 #' Read a text file, process the text with a function, and write the text back
 #'
 #' Read a text file with the UTF-8 encoding, apply a function to the text, and
-#' write back to the original file.
+#' write back to the original file if the processed text is different with the
+#' original input.
 #'
-#' `sort_file()` is an application of `process_file()`, with the
-#' processing function being [sort()], i.e., it sorts the text lines
-#' in a file and write back the sorted text.
+#' `sort_file()` is an application of `process_file()`, with the processing
+#' function being [sort()], i.e., it sorts the text lines in a file and write
+#' back the sorted text.
 #' @param file Path to a text file.
 #' @param fun A function to process the text.
 #' @param x The content of the file.
 #' @param ... Arguments to be passed to `process_file()`.
-#' @return If `file` is provided, invisible `NULL` (the file is
-#'   updated as a side effect), otherwise the processed content (as a character
-#'   vector).
+#' @return If `file` is provided, invisible `NULL` (the file is updated as a
+#'   side effect), otherwise the processed content (as a character vector).
 #' @export
 #' @examples f = tempfile()
 #' xfun::write_utf8('Hello World', f)
@@ -161,8 +161,10 @@ read_all = function(files, before = function(f) NULL, after = function(f) NULL) 
 #' xfun::read_utf8(f)  # see if it has been updated
 #' file.remove(f)
 process_file = function(file, fun = identity, x = read_utf8(file)) {
-  x = fun(x)
-  if (missing(file)) x else write_utf8(x, file)
+  x2 = fun(x)
+  if (missing(file)) x2 else {
+    if ((length(x2) != length(x)) || !all(x2 == x)) write_utf8(x2, file)
+  }
 }
 
 #' @rdname process_file

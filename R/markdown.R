@@ -93,8 +93,8 @@ escape_math = function(x, token = '') {
   # we assume that $$ can only appear once on one line
   i = vapply(gregexpr('[$]', x), length, integer(1)) == 2
   if (any(i)) {
-    x[i] = gsub('^([$][$])([^ ]+)', paste0('`', token, '\\1\\2'), x[i], perl = TRUE)
-    x[i] = gsub('([^ ])([$][$])$', paste0('\\1\\2', token, '`'), x[i], perl = TRUE)
+    x[i] = gsub('^(\\s*)([$][$][^ ]+)', paste0('\\1`', token, '\\2'), x[i], perl = TRUE)
+    x[i] = gsub('([^ ][$][$])$', paste0('\\1', token, '`'), x[i], perl = TRUE)
   }
   # equation environments (\begin and \end must match)
   i1 = grep('^\\\\begin\\{[^}]+\\}$', x)

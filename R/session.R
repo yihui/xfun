@@ -35,7 +35,7 @@ session_info = function(packages = NULL, dependencies = TRUE) {
   }
 
   tweak_info = function(obj, extra = NULL) {
-    res = capture.output(print(obj))
+    res = capture.output(print(obj, tzone = FALSE))
     i = grep('^(attached base packages|Matrix products):\\s*$', res, ignore.case = TRUE)
     if (length(i)) res = res[-c(i, i + 1)]
     res = gsubi('^\\s*locale:\\s*$', 'Locale:', res)
@@ -45,6 +45,11 @@ session_info = function(packages = NULL, dependencies = TRUE) {
     if (length(i <- which(res == 'Locale:')) == 1 && res[i + 2] == '') {
       res[i] = paste(res[i], gsub('\\s*/\\s*', ' / ', gsub('^\\s+', '', res[i + 1])))
       res = res[-(i + 1)]
+    }
+    # remove extra blank lines
+    if ((n <- length(res)) > 1) {
+      i = is_blank(res)
+      res = res[!c(FALSE, i[1:(n-1)] & i[2:n])]
     }
     raw_string(c(res, extra))
   }

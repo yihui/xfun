@@ -1,7 +1,7 @@
 Package: xfun
 Type: Package
 Title: Supporting Functions for Packages Maintained by 'Yihui Xie'
-Version: 0.37.4
+Version: 0.41.1
 Authors@R: c(
   person("Yihui", "Xie", role = c("aut", "cre", "cph"), email = "xie@yihui.name", comment = c(ORCID = "0000-0003-0645-5666")),
   person("Wush", "Wu", role = "ctb"),
@@ -9,6 +9,7 @@ Authors@R: c(
   person("Xianying", "Tan", role = "ctb"),
   person("Salim", "Brüggemann", role = "ctb", email = "salim-b@pm.me", comment = c(ORCID = "0000-0002-5329-5987")),
   person("Christophe", "Dervieux", role = "ctb"),
+  person(given = "Posit Software, PBC", role = c("cph", "fnd")),
   person()
   )
 Description: Miscellaneous functions commonly used in other packages maintained by 'Yihui Xie'.

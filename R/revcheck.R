@@ -642,14 +642,9 @@ compare_Rcheck = function(status_only = TRUE, output = '00check_diffs.md') {
   if (length(res) == 0) return()
   xfun::write_utf8(res, output)
   if (!loadable('markdown')) return(output)
-  markdown::markdownToHTML(
-    text = gsub('>', '+', gsub('^<', '-', res)),
-    output = html_file <- with_ext(output, 'html'),
-    header = c(
-      "<link href='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/styles/github.min.css' rel='stylesheet' type='text/css' />",
-      "<script src='https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.17.1/build/highlight.min.js'></script>",
-      "<script>hljs.initHighlightingOnLoad();</script>"
-    ), encoding = 'UTF-8'
+  markdown::mark_html(
+    text = res,
+    output = html_file <- with_ext(output, 'html')
   )
   if (!getOption('xfun.rev_check.keep_md', FALSE)) unlink(output)
   html_file
@@ -674,7 +669,8 @@ file_diff = function(files, len = 200, use_diff = Sys.which('diff') != '') {
   } else {
     c(paste('<', read_utf8(files[1])), '---', paste('>', read_utf8(files[2])))
   }
-  if (length(d) >= len) unique(d) else d
+  if (length(d) >= len) d = unique(d)
+  gsub('^>', '+', gsub('^<', '-', d))
 }
 
 # specify a list of package names to be ignored when installing all dependencies
@@ -745,5 +741,7 @@ cloud_check = function(pkgs = NULL, ...) {
     # only keep results from broken packages
     unlink(fs[!basename(fs) %in% c(res, paste0(res, '.tar.gz'))], recursive = TRUE)
     stop('Package(s) broken: ', paste(res, collapse = ' '))
+  } else {
+    message('All reverse dependencies are good!')
   }
 }

@@ -1,3 +1,28 @@
+# CHANGES IN xfun VERSION 0.42
+
+
+# CHANGES IN xfun VERSION 0.41
+
+- `process_file()` will write to the file only if the processed text is different with the input text. This is to avoid writing files unnecessarily.
+
+- `session_info()` will remove extra blank lines (thanks, @chuxinyuan, #82) and also omit the time zone info.
+
+# CHANGES IN xfun VERSION 0.40
+
+- `number_to_words()` supports decimal numbers now (thanks, @harshvardhaniimi, #80).
+
+- `is_ascii()` is more robust now (thanks, @bastistician, #81).
+
+# CHANGES IN xfun VERSION 0.39
+
+- Fixed a bug that `protect_math()` fails to protect the starting `$$` that has leading white spaces.
+
+- Added a function `strip_html()` to remove HTML tags and comments from text.
+
+- The function `alnum_id()` will remove HTML tags and comments from text (using `strip_html()`) before converting it to an ID string.
+
+- Added a function `env_option()` to retrieve an option value from `options()`. If the option does not exist there, check the environment variables. This provides a way for users to set an option via either `options()` or an environment variable.
+
 # CHANGES IN xfun VERSION 0.38
 
 - Added an object `download_cache`, which is a list of methods to download a URL, cache the result, retrieve the result from the cache, and clear the cache.
@@ -10,7 +35,7 @@
 
 - `is_arm64()` also supports Linux now (thanks, @eitsupi, #74).
 
-- `is_blank()` returns a logical vector of the same length as the input vector now, indicating if each element of the input is blank. Previously it returns a logical scalar indicating whether *all* elements are blank.
+- `is_blank()` returns a logical vector of the same length as the input vector now, indicating if each element of the input is blank. Previously it returns a logical scalar indicating whether *all* elements are blank. If you want the old behavior, you can use `all(is_blank())`.
 
 # CHANGES IN xfun VERSION 0.37
 
