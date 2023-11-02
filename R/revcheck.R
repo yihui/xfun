@@ -718,13 +718,13 @@ find_missing_latex = function() {
 
 # run revdepcheck::cloud_check()
 cloud_check = function(pkgs = NULL, ...) {
+  get_fun = function(name) getFromNamespace(name, 'revdepcheck')
   tgz = pkg_build()  # tarball
   pkg = gsub('_.*$', '', tgz)
   if (length(pkgs) == 0) pkgs = setdiff(get_fun('cran_revdeps')(pkg, bioc = TRUE), pkg)
   N = 9000  # max is 10000 packages per batch job
   broken = NULL
   rver = format(getRversion())
-  get_fun = function(name) getFromNamespace(name, 'revdepcheck')
   check = function(...) {
     # make sure to check at least 2 packages
     if (length(pkgs) == 1) pkgs = c(pkgs, if (length(broken)) broken[1] else pkgs)
