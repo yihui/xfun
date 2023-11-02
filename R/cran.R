@@ -79,8 +79,8 @@ check_package_name = function() {
 #' @rdname is_R_CMD_check
 #' @export
 check_old_package = function(name, version) {
-  if (is.na(pkg <- check_package_name()) || pkg != name) return(FALSE)
-  tryCatch(packageVersion(name) <= version, error = function(e) FALSE)
+  if (is.na(pkg <- check_package_name()) || !(pkg %in% name)) return(FALSE)
+  tryCatch(packageVersion(pkg) <= version[pkg == name], error = function(e) FALSE)
 }
 
 # return package maintainers (with email addresses)
