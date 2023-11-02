@@ -720,7 +720,7 @@ find_missing_latex = function() {
 cloud_check = function(pkgs = NULL, ...) {
   tgz = pkg_build()  # tarball
   pkg = gsub('_.*$', '', tgz)
-  if (is.null(pkgs)) pkgs = setdiff(get_fun('cran_revdeps')(pkg, bioc = TRUE), pkg)
+  if (length(pkgs) == 0) pkgs = setdiff(get_fun('cran_revdeps')(pkg, bioc = TRUE), pkg)
   N = 9000  # max is 10000 packages per batch job
   broken = NULL
   rver = format(getRversion())
