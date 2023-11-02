@@ -718,29 +718,50 @@ find_missing_latex = function() {
 
 # run revdepcheck::cloud_check()
 cloud_check = function(pkgs = NULL, ...) {
+  tgz = pkg_build()  # tarball
+  pkg = gsub('_.*$', '', tgz)
+  if (is.null(pkgs)) pkgs = setdiff(get_fun('cran_revdeps')(pkg, bioc = TRUE), pkg)
+  N = 9000  # max is 10000 packages per batch job
+  broken = NULL
+  rver = format(getRversion())
   get_fun = function(name) getFromNamespace(name, 'revdepcheck')
-  check = get_fun('cloud_check')
-  # if the current R version doesn't work, use the highest supported version
-  tryCatch(
-    check(r_version = format(getRversion()), revdep_packages = pkgs, ...),
-    error = function(e) {
-      r = ".*?\\[(('([0-9.]+)'(,\\s+)?)+)].*"
-      x = grep(r, e$message, value = TRUE)
-      x = gsub(r, '\\1', x)
-      v = unlist(strsplit(x, "('|,\\s+)"))
-      v = v[v != ''][1]
-      if (length(v) != 1 || is.na(v)) stop(e)
-      check(r_version = v, revdep_packages = pkgs, ...)
+  check = function(...) {
+    # make sure to check at least 2 packages
+    if (length(pkgs) == 1) pkgs = c(pkgs, if (length(broken)) broken[1] else pkgs)
+    try_check = function(...) {
+      get_fun('cloud_check')(tarball = tgz, r_version = rver, revdep_packages = head(pkgs, N), ...)
     }
-  )
-  get_fun('cloud_status')(update_interval = 60)
-  if (length(res <- get_fun('cloud_broken')())) {
-    get_fun('cloud_report')()
-    for (p in res) print(get_fun('cloud_details')(revdep = p))
-    fs = list.files(list.files('revdep/cloud.noindex', full.names = TRUE), full.names = TRUE)
-    # only keep results from broken packages
-    unlink(fs[!basename(fs) %in% c(res, paste0(res, '.tar.gz'))], recursive = TRUE)
-    stop('Package(s) broken: ', paste(res, collapse = ' '))
+    job = tryCatch(
+      try_check(...),
+      error = function(e) {
+        if (getRversion() != rver) stop(e)  # already tried a different version
+        # if the current R version doesn't work, use the highest supported version
+        r = ".*?\\[(('([0-9.]+)'(,\\s+)?)+)].*"
+        x = grep(r, e$message, value = TRUE)
+        x = gsub(r, '\\1', x)
+        v = unlist(strsplit(x, "('|,\\s+)"))
+        v = v[v != ''][1]
+        if (length(v) != 1 || is.na(v)) stop(e)
+        rver <<- v
+        try_check(...)
+      }
+    )
+    get_fun('cloud_status')(update_interval = 60)
+    if (length(res <- get_fun('cloud_broken')())) {
+      get_fun('cloud_report')()
+      for (p in res) print(get_fun('cloud_details')(revdep = p))
+      fs = list.files(file.path('revdep/cloud.noindex', job), full.names = TRUE)
+      # only keep results from broken packages
+      unlink(fs[!basename(fs) %in% c(res, paste0(res, '.tar.gz'))], recursive = TRUE)
+      broken <<- unique(c(res, broken))
+    }
+    pkgs <<- tail(pkgs, -N)
+  }
+  check(...)
+  # if there are more than N revdeps, check the first N of them at one time
+  while (length(pkgs) > 0) check(...)
+  if (length(broken)) {
+    stop('Package(s) broken: ', paste(broken, collapse = ' '))
   } else {
     message('All reverse dependencies are good!')
   }
