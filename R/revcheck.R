@@ -723,7 +723,7 @@ cloud_check = function(pkgs = NULL, ...) {
   pkg = gsub('_.*$', '', tgz)
   if (length(pkgs) == 0) pkgs = setdiff(get_fun('cran_revdeps')(pkg, bioc = TRUE), pkg)
   N = 9000  # max is 10000 packages per batch job
-  broken = NULL
+  jobs = broken = NULL
   rver = format(getRversion())
   check = function(...) {
     # make sure to check at least 2 packages
@@ -731,7 +731,7 @@ cloud_check = function(pkgs = NULL, ...) {
     try_check = function(...) {
       get_fun('cloud_check')(tarball = tgz, r_version = rver, revdep_packages = head(pkgs, N), ...)
     }
-    job = tryCatch(
+    jobs <<- c(jobs, tryCatch(
       try_check(...),
       error = function(e) {
         if (getRversion() != rver) stop(e)  # already tried a different version
@@ -745,7 +745,13 @@ cloud_check = function(pkgs = NULL, ...) {
         rver <<- v
         try_check(...)
       }
-    )
+    ))
+    pkgs <<- tail(pkgs, -N)
+  }
+  # if there are more than N revdeps, check the first N of them at one time
+  while (length(pkgs) > 0) check(...)
+  for (job in jobs) {
+    assign('job_name', job, envir = get_fun('cloud_data'))
     get_fun('cloud_status')(update_interval = 60)
     if (length(res <- get_fun('cloud_broken')())) {
       get_fun('cloud_report')()
@@ -755,11 +761,7 @@ cloud_check = function(pkgs = NULL, ...) {
       unlink(fs[!basename(fs) %in% c(res, paste0(res, '.tar.gz'))], recursive = TRUE)
       broken <<- unique(c(res, broken))
     }
-    pkgs <<- tail(pkgs, -N)
   }
-  check(...)
-  # if there are more than N revdeps, check the first N of them at one time
-  while (length(pkgs) > 0) check(...)
   if (length(broken)) {
     stop('Package(s) broken: ', paste(broken, collapse = ' '))
   } else {
