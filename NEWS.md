@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.42
 
+- `isFALSE()` has been fully deprecated for R >= 3.5.0, and will be completely removed from this package in the future (<https://yihui.org/en/2023/02/xfun-isfalse/>).
+
 - `check_old_package()` has been vectorized, i.e., the arguments `name` and `version` can take vectors now.
 
 # CHANGES IN xfun VERSION 0.41
