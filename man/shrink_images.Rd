@@ -22,7 +22,7 @@ shrink_images(
 \item{tinify}{Whether to compress images using \code{\link[=tinify]{tinify()}}.}
 }
 \description{
-Use \code{\link[magick:transform]{magick::image_resize()}} to shrink an
+Use \code{\link[magick:image_resize]{magick::image_resize()}} to shrink an
 image if its width is larger than the value specified by the argument
 \code{width}, and optionally call \code{\link[=tinify]{tinify()}} to compress it.
 }

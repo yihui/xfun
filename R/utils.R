@@ -139,15 +139,11 @@ in_dir = function(dir, expr) {
 #'   not equivalent to `base::isFALSE()`.
 #' @export
 #' @keywords internal
-#' @examplesIf getRversion() < '3.5.0'
-#' library(xfun)
-#' isFALSE(TRUE)  # false
-#' isFALSE(FALSE)  # true
-#' isFALSE(c(FALSE, FALSE))  # false
 isFALSE = function(x) {
   if ('isFALSE' %in% ls(baseenv())) stop(
     'The function xfun::isFALSE() has been deprecated. Please ',
-    'consider using base::isFALSE(x) or identical(x, FALSE) instead.'
+    'consider using base::isFALSE(x) or identical(x, FALSE) instead. ',
+    'You may see https://yihui.org/en/2023/02/xfun-isfalse/ for more info.'
   )
   identical(x, FALSE)
 }

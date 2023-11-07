@@ -11,20 +11,13 @@ isFALSE(x)
 }
 \description{
 For R versions lower than 3.5.0, this function is a simple abbreviation of
-\code{identical(x, FALSE)}. For higher R versions, this function throws an
-error asking users to call \code{base::isFALSE()} instead.
+\code{identical(x, FALSE)}. For higher R versions, this function calls
+\code{base::isFALSE()}.
 }
 \note{
 This function will be deprecated in the future. We recommend that you
 use \code{\link[base:Logic]{base::isFALSE()}} instead. If you have to support R versions lower
 than 3.5.0, you may use \code{identical(x, FALSE)}, but please note that it is
 not equivalent to \code{base::isFALSE()}.
-}
-\examples{\dontshow{if (getRversion() < '3.5.0') (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-library(xfun)
-isFALSE(TRUE)  # false
-isFALSE(FALSE)  # true
-isFALSE(c(FALSE, FALSE))  # false
-\dontshow{\}) # examplesIf}
 }
 \keyword{internal}
