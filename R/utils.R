@@ -140,12 +140,26 @@ in_dir = function(dir, expr) {
 #' @export
 #' @keywords internal
 isFALSE = function(x) {
+  pkgs = tools::dependsOnPkgs('xfun', dependencies = 'all', recursive = FALSE)
+  pkgs = intersect(pkgs, sys.packages())
+  vers = sapply(pkgs, function(p) as.character(packageVersion(p)))
   if ('isFALSE' %in% ls(baseenv())) stop(
     'The function xfun::isFALSE() has been deprecated. Please ',
-    'consider using base::isFALSE(x) or identical(x, FALSE) instead. ',
+    if (length(vers)) {
+      c('update the possibly outdated package(s): ', paste(pkgs, vers, sep = ' ', collapse = ', '), '. ')
+    } else {
+      'consider using base::isFALSE(x) or identical(x, FALSE) instead. '
+    },
     'You may see https://yihui.org/en/2023/02/xfun-isfalse/ for more info.'
   )
   identical(x, FALSE)
+}
+
+# try to get the names of packages for all functions on the call stack
+sys.packages = function() {
+  unique(unlist(lapply(seq_along(sys.calls()), function(i) {
+    environment(sys.function(i))$.packageName
+  })))
 }
 
 #' Parse R code and do not keep the source
