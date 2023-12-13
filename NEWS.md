@@ -4,6 +4,8 @@
 
 - `yaml_load()` gained an `envir` argument, which can be used to specify the environment to evaluate R expressions in YAML (i.e., expressions written after `!expr` or `!r`). This is not straightforward in the upstream **yaml** package (thanks, @viking, vubiostat/r-yaml#54).
 
+- `yaml_body()` gained the `...` argument to pass more arguments to `yaml_load()`.
+
 - `check_old_package()` has been vectorized, i.e., the arguments `name` and `version` can take vectors now.
 
 # CHANGES IN xfun VERSION 0.41

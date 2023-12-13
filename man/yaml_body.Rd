@@ -4,10 +4,12 @@
 \alias{yaml_body}
 \title{Partition the YAML metadata and the body in a document}
 \usage{
-yaml_body(x)
+yaml_body(x, ...)
 }
 \arguments{
 \item{x}{A character vector of the document content.}
+
+\item{...}{Arguments to be passed to \code{yaml_load()}.}
 }
 \value{
 A list of components \code{yaml} and \code{body}.
