@@ -4,10 +4,14 @@
 \alias{split_source}
 \title{Split source lines into complete expressions}
 \usage{
-split_source(x)
+split_source(x, merge_comments = FALSE)
 }
 \arguments{
 \item{x}{A character vector of R source code.}
+
+\item{merge_comments}{Whether to merge consecutive lines of comments as a
+single expression to be combined with the next non-comment expression (if
+any).}
 }
 \value{
 A list of character vectors, and each vector contains a complete R

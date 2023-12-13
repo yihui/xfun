@@ -150,17 +150,20 @@ split_lines = function(x) {
 #' Parse the lines of code one by one to find complete expressions in the code,
 #' and put them in a list.
 #' @param x A character vector of R source code.
+#' @param merge_comments Whether to merge consecutive lines of comments as a
+#'   single expression to be combined with the next non-comment expression (if
+#'   any).
 #' @return A list of character vectors, and each vector contains a complete R
 #'   expression.
 #' @export
 #' @examples xfun::split_source(c('if (TRUE) {', '1 + 1', '}', 'print(1:5)'))
-split_source = function(x) {
+split_source = function(x, merge_comments = FALSE) {
   if ((n <- length(x)) < 1) return(list(x))
   i = i1 = i2 = 1
   res = list()
   while (i2 <= n) {
     piece = x[i1:i2]
-    if (valid_syntax(piece)) {
+    if ((!merge_comments || (!all(grepl('^#', piece)) || i2 == n)) && valid_syntax(piece)) {
       res[[i]] = piece; i = i + 1
       i1 = i2 + 1 # start from the next line
     }

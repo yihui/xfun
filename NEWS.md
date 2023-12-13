@@ -6,6 +6,8 @@
 
 - `yaml_body()` gained the `...` argument to pass more arguments to `yaml_load()`.
 
+- `split_source()` gained a `merge_comments` argument to make it possible to merge consecutive lines of comments into the next code block.
+
 - `check_old_package()` has been vectorized, i.e., the arguments `name` and `version` can take vectors now.
 
 # CHANGES IN xfun VERSION 0.41

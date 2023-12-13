@@ -43,6 +43,9 @@ assert('split_source() puts lines of the same expression into a list element', {
   (split_source('1+1') %==% list('1+1'))
   (split_source(c('1+1+', '1')) %==% list(c('1+1+', '1')))
   (split_source(c('1+1+', '1', 'TRUE')) %==% list(c('1+1+', '1'), 'TRUE'))
+  x = c('# a', '# b', '1', '# c', 'if (T)', 'F')
+  (split_source(x) %==% c(as.list(x[1:4]), list(x[5:6])))
+  (split_source(x, merge_comments = TRUE) %==% list(x[1:3], x[4:6]))
 })
 
 assert('split_source() should signal an error for incomplete code', {
