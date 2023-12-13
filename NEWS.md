@@ -2,6 +2,8 @@
 
 - `isFALSE()` has been fully deprecated for R >= 3.5.0, and will be completely removed from this package in the future (<https://yihui.org/en/2023/02/xfun-isfalse/>).
 
+- `yaml_load()` gained an `envir` argument, which can be used to specify the environment to evaluate R expressions in YAML (i.e., expressions written after `!expr` or `!r`). This is not straightforward in the upstream **yaml** package (thanks, @viking, vubiostat/r-yaml#54).
+
 - `check_old_package()` has been vectorized, i.e., the arguments `name` and `version` can take vectors now.
 
 # CHANGES IN xfun VERSION 0.41

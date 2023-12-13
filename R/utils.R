@@ -333,3 +333,15 @@ func_name = function(which = 1) {
   x = sys.call(which)[[1]]
   deparse(x)[1]
 }
+
+# evaluate an expression with an error handler; originally this was for knitr to
+# output error location but can also be useful for other applications
+handle_error = function(
+  expr, handler, label = '', fun = getOption('xfun.handle_error.loc_fun')
+) {
+  withCallingHandlers(expr, error = function(e) {
+    loc = if (is.function(fun)) trimws(fun(label)) else ''
+    if (loc != '') loc = sprintf(' at lines %s', loc)
+    message(one_string(handler(e, loc)))
+  })
+}

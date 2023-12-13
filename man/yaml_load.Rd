@@ -4,12 +4,21 @@
 \alias{yaml_load}
 \title{Read YAML data}
 \usage{
-yaml_load(x, ..., use_yaml = loadable("yaml"))
+yaml_load(
+  x,
+  ...,
+  handlers = NULL,
+  envir = parent.frame(),
+  use_yaml = loadable("yaml")
+)
 }
 \arguments{
 \item{x}{A character vector of YAML data.}
 
-\item{...}{Arguments to be passed to \code{\link[yaml:yaml.load]{yaml::yaml.load()}}.}
+\item{..., handlers}{Arguments to be passed to \code{\link[yaml:yaml.load]{yaml::yaml.load()}}.}
+
+\item{envir}{The environment in which R expressions in YAML are evaluated. To
+disable the evaluation, use \code{envir = FALSE}.}
 
 \item{use_yaml}{Whether to use the \pkg{yaml} package.}
 }
@@ -21,6 +30,11 @@ If the \pkg{yaml} package is installed, use \code{\link[yaml:yaml.load]{yaml::ya
 data. If not, use a simple parser instead, which only supports a limited
 number of data types (see \dQuote{Examples}). In particular, it does not
 support values that span across multiple lines (such as multi-line text).
+}
+\note{
+R expressions in YAML will be returned as \link{expression}s when they are
+not evaluated. This is different with \code{\link[yaml:yaml.load]{yaml::yaml.load()}}, which returns
+character strings for expressions.
 }
 \examples{
 # test the simple parser without using the yaml package
