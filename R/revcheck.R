@@ -759,7 +759,7 @@ cloud_check = function(pkgs = NULL, ...) {
       fs = list.files(file.path('revdep/cloud.noindex', job), full.names = TRUE)
       # only keep results from broken packages
       unlink(fs[!basename(fs) %in% c(res, paste0(res, '.tar.gz'))], recursive = TRUE)
-      broken <<- unique(c(res, broken))
+      broken = unique(c(res, broken))
     }
   }
   if (length(broken)) {
