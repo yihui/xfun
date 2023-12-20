@@ -169,7 +169,7 @@ broken_packages = function(reinstall = TRUE) {
 
 # remove (binary) packages that were built with a previous major-minor version of R
 check_built = function(dir = '.', dry_run = TRUE) {
-  ext = if (xfun::is_macos()) 'tgz' else if (xfun::is_windows()) 'zip' else 'tar.gz'
+  ext = if (is_macos()) 'tgz' else if (is_windows()) 'zip' else 'tar.gz'
   r =  paste0('_[-.0-9]+[.]', ext, '$')
   pkgs = list.files(dir, r, full.names = TRUE)
   meta = file.path(dir, 'PACKAGES')

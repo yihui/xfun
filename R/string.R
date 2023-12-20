@@ -246,7 +246,7 @@ pair_chars = function(x = read_utf8(file), file, chars = c('\U201c', '\U201d')) 
   x2 = x
   regmatches(x, k) = m
   if (is_file) {
-    if (!identical(x, x2)) xfun::write_utf8(x, file)
+    if (!identical(x, x2)) write_utf8(x, file)
     invisible(x)
   } else x
 }
