@@ -4,7 +4,11 @@
 \alias{split_source}
 \title{Split source lines into complete expressions}
 \usage{
-split_source(x, merge_comments = FALSE, skip = NULL)
+split_source(
+  x,
+  merge_comments = FALSE,
+  skip = getOption("xfun.split_source.skip")
+)
 }
 \arguments{
 \item{x}{A character vector of R source code.}

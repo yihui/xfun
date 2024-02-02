@@ -161,7 +161,7 @@ split_lines = function(x) {
 #' @examples
 #' xfun::split_source(c('if (TRUE) {', '1 + 1', '}', 'print(1:5)'))
 #' xfun::split_source(c('print(1:5)', '#--#', 'if (TRUE) {', '1 + 1', '}'), skip = '#--#')
-split_source = function(x, merge_comments = FALSE, skip = NULL) {
+split_source = function(x, merge_comments = FALSE, skip = getOption('xfun.split_source.skip')) {
   if ((n <- length(x)) < 1) return(list(x))
   if (!is.character(skip) || length(skip) != 1) skip = NULL
   i = i1 = i2 = 1
