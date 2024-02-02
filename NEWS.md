@@ -8,6 +8,8 @@
 
 - `split_source()` gained a `merge_comments` argument to make it possible to merge consecutive lines of comments into the next code block.
 
+- `split_source()` gained a `skip` argument to skip the rest of the code when the skip token is found.
+
 - `check_old_package()` has been vectorized, i.e., the arguments `name` and `version` can take vectors now.
 
 # CHANGES IN xfun VERSION 0.41

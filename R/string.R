@@ -153,17 +153,27 @@ split_lines = function(x) {
 #' @param merge_comments Whether to merge consecutive lines of comments as a
 #'   single expression to be combined with the next non-comment expression (if
 #'   any).
+#' @param skip A token to skip the rest of code. When provided as a character
+#'   string, the split will stop at the this token.
 #' @return A list of character vectors, and each vector contains a complete R
 #'   expression.
 #' @export
-#' @examples xfun::split_source(c('if (TRUE) {', '1 + 1', '}', 'print(1:5)'))
-split_source = function(x, merge_comments = FALSE) {
+#' @examples
+#' xfun::split_source(c('if (TRUE) {', '1 + 1', '}', 'print(1:5)'))
+#' xfun::split_source(c('print(1:5)', '#--#', 'if (TRUE) {', '1 + 1', '}'), skip = '#--#')
+split_source = function(x, merge_comments = FALSE, skip = NULL) {
   if ((n <- length(x)) < 1) return(list(x))
+  if (!is.character(skip) || length(skip) != 1) skip = NULL
   i = i1 = i2 = 1
   res = list()
   while (i2 <= n) {
     piece = x[i1:i2]
     if ((!merge_comments || (!all(grepl('^#', piece)) || i2 == n)) && valid_syntax(piece)) {
+      # check if the skip token is found
+      if (!is.null(skip) && !is.na(i3 <- match(skip, piece))) {
+        if (i3 > 1) res[[i]] = x[i1 + 1:i3 - 1]
+        return(res)
+      }
       res[[i]] = piece; i = i + 1
       i1 = i2 + 1 # start from the next line
     }

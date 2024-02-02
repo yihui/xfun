@@ -4,7 +4,7 @@
 \alias{split_source}
 \title{Split source lines into complete expressions}
 \usage{
-split_source(x, merge_comments = FALSE)
+split_source(x, merge_comments = FALSE, skip = NULL)
 }
 \arguments{
 \item{x}{A character vector of R source code.}
@@ -12,6 +12,9 @@ split_source(x, merge_comments = FALSE)
 \item{merge_comments}{Whether to merge consecutive lines of comments as a
 single expression to be combined with the next non-comment expression (if
 any).}
+
+\item{skip}{A token to skip the rest of code. When provided as a character
+string, the split will stop at the this token.}
 }
 \value{
 A list of character vectors, and each vector contains a complete R
@@ -23,4 +26,5 @@ and put them in a list.
 }
 \examples{
 xfun::split_source(c("if (TRUE) {", "1 + 1", "}", "print(1:5)"))
+xfun::split_source(c("print(1:5)", "#--#", "if (TRUE) {", "1 + 1", "}"), skip = "#--#")
 }
