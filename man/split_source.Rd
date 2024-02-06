@@ -22,7 +22,8 @@ string, the split will stop at the this token.}
 }
 \value{
 A list of character vectors, and each vector contains a complete R
-expression.
+expression, with an attribute \code{line_start} indicating the starting line
+number of the expression.
 }
 \description{
 Parse the lines of code one by one to find complete expressions in the code,

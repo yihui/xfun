@@ -156,7 +156,8 @@ split_lines = function(x) {
 #' @param skip A token to skip the rest of code. When provided as a character
 #'   string, the split will stop at the this token.
 #' @return A list of character vectors, and each vector contains a complete R
-#'   expression.
+#'   expression, with an attribute `line_start` indicating the starting line
+#'   number of the expression.
 #' @export
 #' @examples
 #' xfun::split_source(c('if (TRUE) {', '1 + 1', '}', 'print(1:5)'))
@@ -164,17 +165,20 @@ split_lines = function(x) {
 split_source = function(x, merge_comments = FALSE, skip = getOption('xfun.split_source.skip')) {
   if ((n <- length(x)) < 1) return(list(x))
   if (!is.character(skip) || length(skip) != 1) skip = NULL
-  i = i1 = i2 = 1
+  i1 = i2 = 1
   res = list()
+  add_source = function(x) {
+    res[[length(res) + 1]] <<- structure(x, line_start = i1)
+  }
   while (i2 <= n) {
     piece = x[i1:i2]
     if ((!merge_comments || (!all(grepl('^#', piece)) || i2 == n)) && valid_syntax(piece)) {
       # check if the skip token is found
       if (!is.null(skip) && !is.na(i3 <- match(skip, piece))) {
-        if (i3 > 1) res[[i]] = x[i1 + 1:i3 - 1]
+        if (i3 > 1) add_source(x[i1 + 1:i3 - 1])
         return(res)
       }
-      res[[i]] = piece; i = i + 1
+      add_source(piece)
       i1 = i2 + 1 # start from the next line
     }
     i2 = i2 + 1
