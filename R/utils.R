@@ -1,3 +1,6 @@
+`%|%` = function(x, y) if (length(x)) x else y
+`%||%` = function(x, y) if (is.null(x)) y else x
+
 stop2 = function(...) stop(..., call. = FALSE)
 
 warning2 = function(...) warning(..., call. = FALSE)
@@ -226,6 +229,7 @@ retry = function(fun, ..., .times = 3, .pause = 5) {
 }
 
 gsubi = function(...) gsub(..., ignore.case = TRUE)
+gsubf = function(...) gsub(..., fixed = TRUE)
 
 #' Turn the output of [str()] into a tree diagram
 #'

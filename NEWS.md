@@ -2,6 +2,8 @@
 
 - `isFALSE()` has been fully deprecated for R >= 3.5.0, and will be completely removed from this package in the future (<https://yihui.org/en/2023/02/xfun-isfalse/>).
 
+- Added a function `record()` to run R code and record the results, which is similar to `evaluate::evaluate()` but less sophisticated and technically simpler. One major difference is that `xfun::record()` records plots directly to files instead of saving them as display lists.
+
 - `yaml_load()` gained an `envir` argument, which can be used to specify the environment to evaluate R expressions in YAML (i.e., expressions written after `!expr` or `!r`). This is not straightforward in the upstream **yaml** package (thanks, @viking, vubiostat/r-yaml#54).
 
 - `yaml_body()` gained the `...` argument to pass more arguments to `yaml_load()`.

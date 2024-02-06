@@ -300,3 +300,14 @@ strip_html = function (x) {
   x = gsub('<[^>]+>', '', x)
   x
 }
+
+# escape special HTML characters
+escape_html = function (x) {
+  x = gsubf('&', '&amp;', x)
+  x = gsubf('<', '&lt;', x)
+  x = gsubf('>', '&gt;', x)
+  x = gsubf('"', '&quot;', x)
+  x
+}
+
+one_string = function(x, ...) paste(x, ..., collapse = '\n')
