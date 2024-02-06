@@ -13,7 +13,7 @@ Authors@R: c(
   person()
   )
 Description: Miscellaneous functions commonly used in other packages maintained by 'Yihui Xie'.
-Imports: stats, tools
+Imports: grDevices, stats, tools
 Suggests: 
     testit,
     parallel,

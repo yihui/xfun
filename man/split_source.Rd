@@ -7,6 +7,7 @@
 split_source(
   x,
   merge_comments = FALSE,
+  line_number = FALSE,
   skip = getOption("xfun.split_source.skip")
 )
 }
@@ -17,13 +18,16 @@ split_source(
 single expression to be combined with the next non-comment expression (if
 any).}
 
+\item{line_number}{Whether to store the starting line number of each
+expression in the returned value.}
+
 \item{skip}{A token to skip the rest of code. When provided as a character
 string, the split will stop at the this token.}
 }
 \value{
 A list of character vectors, and each vector contains a complete R
 expression, with an attribute \code{line_start} indicating the starting line
-number of the expression.
+number of the expression if the argument \code{line_number = TRUE}.
 }
 \description{
 Parse the lines of code one by one to find complete expressions in the code,

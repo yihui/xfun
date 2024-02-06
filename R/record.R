@@ -30,6 +30,7 @@
 #'   code), `record_output` (text output), `record_plot` (plot file paths),
 #'   `record_message` (messages), `record_warning` (warnings), and
 #'   `record_error` (errors, only when the argument `error = TRUE`).
+#' @import grDevices
 #' @export
 #' @examples
 #' code = c('# a message test', '1:2 + 1:3', 'par(mar = c(4, 4, 1, .2))', 'barplot(5:1, col = 2:6, horiz = TRUE)', 'head(iris)', "sunflowerplot(iris[, 3:4], seg.col = 'purple')", "if (TRUE) {\n  message('Hello, xfun::record()!')\n}", '# throw an error', "1 + 'a'")
