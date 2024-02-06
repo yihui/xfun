@@ -8,9 +8,7 @@
 
 - `yaml_body()` gained the `...` argument to pass more arguments to `yaml_load()`.
 
-- `split_source()` gained a `merge_comments` argument to make it possible to merge consecutive lines of comments into the next code block.
-
-- `split_source()` gained a `skip` argument to skip the rest of the code when the skip token is found.
+- `split_source()` gained a `merge_comments` argument to merge consecutive lines of comments into the next code block, a `line_number` argument to store the line number of each expression in the returned value, and a `skip` argument to skip the rest of the code when the skip token is found.
 
 - `check_old_package()` has been vectorized, i.e., the arguments `name` and `version` can take vectors now.
 

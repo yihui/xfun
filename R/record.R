@@ -153,7 +153,7 @@ record = function(
 
   handle = if (error) try_silent else identity
   # split code into individual expressions
-  codes = handle(split_source(code, TRUE))
+  codes = handle(split_source(code, merge_comments = TRUE, line_number = TRUE))
   # code may contain syntax errors
   if (is_error(codes)) {
     add_result(code, 'source'); add_result(attr(codes, 'condition')$message, 'error')

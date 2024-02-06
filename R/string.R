@@ -153,22 +153,26 @@ split_lines = function(x) {
 #' @param merge_comments Whether to merge consecutive lines of comments as a
 #'   single expression to be combined with the next non-comment expression (if
 #'   any).
+#' @param line_number Whether to store the starting line number of each
+#'   expression in the returned value.
 #' @param skip A token to skip the rest of code. When provided as a character
 #'   string, the split will stop at the this token.
 #' @return A list of character vectors, and each vector contains a complete R
 #'   expression, with an attribute `line_start` indicating the starting line
-#'   number of the expression.
+#'   number of the expression if the argument `line_number = TRUE`.
 #' @export
 #' @examples
 #' xfun::split_source(c('if (TRUE) {', '1 + 1', '}', 'print(1:5)'))
 #' xfun::split_source(c('print(1:5)', '#--#', 'if (TRUE) {', '1 + 1', '}'), skip = '#--#')
-split_source = function(x, merge_comments = FALSE, skip = getOption('xfun.split_source.skip')) {
+split_source = function(
+  x, merge_comments = FALSE, line_number = FALSE, skip = getOption('xfun.split_source.skip')
+) {
   if ((n <- length(x)) < 1) return(list(x))
   if (!is.character(skip) || length(skip) != 1) skip = NULL
   i1 = i2 = 1
   res = list()
   add_source = function(x) {
-    res[[length(res) + 1]] <<- structure(x, line_start = i1)
+    res[[length(res) + 1]] <<- if (line_number) structure(x, line_start = i1) else x
   }
   while (i2 <= n) {
     piece = x[i1:i2]
