@@ -111,7 +111,7 @@ get_option_comment = function(engine) {
 #' writeLines(csv_like)
 #' xfun::divide_chunk("r", csv_like)
 divide_chunk = function(engine, code) {
-  res = list(options = list(engine = engine), src = NULL, code = code)
+  res = list(options = NULL, src = NULL, code = code)
   # mask out empty blocks
   if (length(code) == 0) return(res)
 
@@ -157,7 +157,6 @@ divide_chunk = function(engine, code) {
     meta = csv_options(meta)
   }
 
-  meta[['engine']] = engine
   # normalize field name 'id' to 'label' if provided
   meta$label = unlist(meta[c('label', 'id')])[[1]]
   meta$id = NULL
