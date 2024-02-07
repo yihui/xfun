@@ -118,6 +118,33 @@ numbers_to_words = function(x, cap = FALSE, hyphen = TRUE, and = FALSE) {
 #' @rdname numbers_to_words
 n2w = numbers_to_words
 
+#' Evaluate an expression after forcing the decimal point to be a dot
+#'
+#' Sometimes it is necessary to use the dot character as the decimal separator.
+#' In R, this could be affected by two settings: the global option
+#' `options(OutDec)` and the `LC_NUMERIC` locale. This function sets the former
+#' to `.` and the latter to `C` before evaluating an expression, such as
+#' coercing a number to character.
+#' @param x An expression.
+#' @export
+#' @return The value of `x`.
+#' @examples
+#' opts = options(OutDec = ',')
+#' as.character(1.234)  # using ',' as the decimal separator
+#' print(1.234)  # same
+#' xfun::decimal_dot(as.character(1.234))  # using dot
+#' xfun::decimal_dot(print(1.234))  # using dot
+#' options(opts)
+decimal_dot = function(x) {
+  opts = options(OutDec = '.'); on.exit(options(opts), add = TRUE)
+  lcn = Sys.getlocale('LC_NUMERIC')
+  if (lcn != 'C') {
+    Sys.setlocale('LC_NUMERIC', 'C')
+    on.exit(Sys.setlocale('LC_NUMERIC', lcn), add = TRUE)
+  }
+  x
+}
+
 # create a URL query string from named parameters
 query_params = function(..., .list = list()) {
   x = if (missing(.list)) list(...) else .list
