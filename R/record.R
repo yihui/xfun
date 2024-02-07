@@ -67,6 +67,11 @@ record = function(
   dev_cur = dev.cur()
   dev_reset = function() if (dev_cur != 1 && dev_cur %in% dev.list()) dev.set(dev_cur)
 
+  # look for all possible ${dev.path}-%d.${dev.ext} files created by the device
+  get_plots = function() {
+    files = sprintf(dev.path, seq_along(list.files(dirname(dev.path))))
+    files[file_exists(files)]
+  }
   # open a graphics device
   dev_num = if (is.character(dev.path)) {
     if (!is.function(dev)) dev = tryCatch(match.fun(dev), error = function(e) {
@@ -78,6 +83,11 @@ record = function(
     # add extension
     dev.path = with_ext(paste0(dev.path, if (!grepl('/$', dev.path)) '-', '%d'), dev.ext)
     dir_create(dirname(dev.path))
+    # clean up existing plots before opening the device
+    if (any(i <- !file.remove(old_plots <- get_plots()))) stop(
+      'Failed to delete existing plot file(s): ',
+      paste("'", old_plots[i], "'", collapse = ', ')
+    )
     dev_open(dev, dev.path, dev.args)
   }
   dev_old = dev.list()  # keep track of current devices
@@ -91,27 +101,16 @@ record = function(
   # check if new plots are generated
   handle_plot = local({
     old_files = NULL  # previously existing plots
-    old_plot = NULL
+    old_plot = recordPlot()
     function(last = FALSE) {
       # if dev.list() has changed, no longer record graphics, except for the last plot
       if (!last) {
         if (!(length(dev_num) && identical(dev.list(), dev_old))) return()
         dev.set(dev_num)
       }
-      # look for all possible Rplots-%d.ext files created by the device
-      files = sprintf(dev.path, seq_along(list.files(dirname(dev.path))))
-      files = files[file_exists(files)]
-
-      # clean up existing plots on the first call
-      if (is.null(old_files)) {
-        if (any(i <- !file.remove(files))) stop(
-          'Unable to delete existing plot file(s): ',
-          paste("'", files[i], "'", collapse = ', ')
-        )
-        old_files <<- character()
-        old_plot <<- recordPlot()
-        return()
-      }
+      files = get_plots()
+      # on Windows, an empty plot file is created upon opening a device
+      files = files[file.size(files) > 0]
 
       if (!last) {
         new_plot = recordPlot()
@@ -172,7 +171,6 @@ record = function(
   handle_w = handle_message('warning')
   handle_e = handle_message('error')
 
-  handle_plot()
   n = length(codes)
   for (i in seq_len(n)) {
     add_result(code <- codes[[i]], 'source')
