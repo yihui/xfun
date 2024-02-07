@@ -294,7 +294,7 @@ make_title = function(x) {
 #' @return The `print()` method prints the results as plain text or HTML to the
 #'   console or displays the HTML page.
 print.xfun_record_results = function(
-    x, browse = interactive(), to = if (browse) 'html' else 'text', template = TRUE, ...
+  x, browse = interactive(), to = if (browse) 'html' else 'text', template = TRUE, ...
 ) {
   res = format(x, to, encode = browse, template = template, ...)
   if (browse && to == 'html') {
