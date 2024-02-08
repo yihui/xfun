@@ -29,6 +29,7 @@ Suggests:
     rhub,
     renv,
     curl,
+    xml2,
     jsonlite,
     magick,
     yaml,
