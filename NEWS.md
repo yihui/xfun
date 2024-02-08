@@ -1,3 +1,7 @@
+# CHANGES IN xfun VERSION 0.43
+
+- Added a function `upload_imgur()`, which was adapted from `knitr::imgur_upload()`. The latter will call the former in the future. `xfun::upload_imgur()` allows users to choose whether to use the system command `curl` or the R package **curl** to upload the image. It also has a new argument `include_xml` to specify whether the XML response needs to be included in the returned value.
+
 # CHANGES IN xfun VERSION 0.42
 
 - `isFALSE()` has been fully deprecated for R >= 3.5.0, and will be completely removed from this package in the future (<https://yihui.org/en/2023/02/xfun-isfalse/>).

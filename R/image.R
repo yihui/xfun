@@ -158,3 +158,77 @@ shrink_images = function(
   }
   if (tinify) tinify(files, identity)
 }
+
+#' Upload an image to imgur.com
+#'
+#' This function uses the \pkg{curl} package or the system command `curl`
+#' (whichever is available) to upload a image to <https://imgur.com>.
+#'
+#' One application is to upload local image files to Imgur when knitting a
+#' document with \pkg{knitr}: you can set the `knitr::opts_knit$set(upload.fun =
+#' xfun::upload_imgur`, so the output document does not need local image files
+#' any more, and it is ready to be published online.
+#' @param file Path to the image file to be uploaded.
+#' @param key Client ID for Imgur. It can be set via either the global option
+#'   `xfun.upload_imgur.key` or the environment variable
+#'   `R_XFUN_UPLOAD_IMGUR_KEY` (see [xfun::env_option()]). If neither is set,
+#'   this uses a client ID registered by Yihui Xie.
+#' @param use_curl Whether to use the R package \pkg{curl} to upload the image.
+#'   If `FALSE`, the system command `curl` will be used.
+#' @param include_xml Whether to include the XML response in the returned value.
+#' @return A character string of the link to the image. If `include_xml = TRUE`,
+#'   this string carries an attribute named `XML`, which is the XML response
+#'   from Imgur (it will be parsed by \pkg{xml2} if available). See Imgur API in
+#'   the references.
+#' @author Yihui Xie, adapted from the \pkg{imguR} package by Aaron Statham
+#' @note Please register your own Imgur application to get your client ID; you
+#'   can certainly use mine, but this ID is in the public domain so everyone has
+#'   access to all images associated to it.
+#' @references A demo: <https://yihui.org/knitr/demo/upload/>
+#' @export
+#' @examples \dontrun{
+#' f = tempfile(fileext = '.png')
+#' png(f); plot(rnorm(100), main = R.version.string); dev.off()
+#'
+#' res = imgur_upload(f, include_xml = TRUE)
+#' res  # link to original URL of the image
+#' attr(res, 'XML')  # all information
+#' if (interactive()) browseURL(res)
+#'
+#' # to use your own key
+#' options(xfun.upload_imgur.key = 'your imgur key')
+#' }
+upload_imgur = function(
+  file, key = env_option('xfun.upload_imgur.key', '9f3460e67f308f6'),
+  use_curl = loadable('curl'), include_xml = FALSE
+) {
+  if (!is.character(key)) stop('The Imgur API Key must be a character string!')
+  api = 'https://api.imgur.com/3/image.xml'
+  hdr = paste('Authorization: Client-ID', key)
+  if (use_curl) {
+    h = curl::new_handle(httpheader = hdr)
+    curl::handle_setform(h, image = curl::form_file(file))
+    res = curl::curl_fetch_memory(api, h)$content
+  } else {
+    file = path.expand(file)
+    res = system2(
+      'curl', shQuote(c('-H', hdr, '-F', paste0('image=@', file), '-s', api)),
+      stdout = TRUE
+    )
+    res = one_string(res)
+    if (res == '') stop('Failed to upload ', file)
+  }
+  if (loadable('xml2')) {
+    res = xml2::as_list(xml2::read_xml(res))
+    link = res[[1]]$link[[1]]
+  } else {
+    if (is.raw(res)) res = rawToChar(res)
+    link = grep_sub('.*<link>([^<]+)</link>.*', '\\1', res)
+  }
+  if (length(link) != 1) stop(
+    'Failed to upload ', file, sprintf(' (reason: %s)', if (is.character(res)) {
+      grep_sub('.*<error>([^<]+)</error>.*', '\\1', res)
+    } else res[[1]]$error[[1]])
+  )
+  if (include_xml) structure(link, XML = res) else link
+}
