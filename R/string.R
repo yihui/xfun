@@ -140,7 +140,7 @@ decimal_dot = function(x) {
   lcn = Sys.getlocale('LC_NUMERIC')
   if (lcn != 'C') {
     Sys.setlocale('LC_NUMERIC', 'C')
-    on.exit(Sys.setlocale('LC_NUMERIC', lcn), add = TRUE)
+    on.exit(suppressWarnings(Sys.setlocale('LC_NUMERIC', lcn)), add = TRUE)
   }
   x
 }
