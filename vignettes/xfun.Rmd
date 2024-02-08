@@ -4,15 +4,19 @@ subtitle: A Collection of Miscellaneous Functions
 author: "Yihui Xie"
 date: "`r Sys.Date()`"
 slug: xfun
-githubEditURL: https://github.com/yihui/xfun/edit/master/vignettes/xfun.Rmd
+githubEditURL: https://github.com/yihui/xfun/edit/main/vignettes/xfun.Rmd
 output:
-  knitr:::html_vignette:
-    toc: yes
-vignette: >
-  %\VignetteIndexEntry{An Introduction to xfun}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+  markdown::html_format:
+    meta:
+      css: ["@default", "@prism-xcode"]
+    options:
+      toc: true
 ---
+
+<!--
+%\VignetteIndexEntry{An Introduction to xfun}
+%\VignetteEngine{knitr::knitr}
+-->
 
 ```{r setup, include=FALSE}
 library(xfun)
