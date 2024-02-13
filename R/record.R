@@ -178,7 +178,7 @@ record = function(
     if (length(expr) == 0) next
     # verbose = 1: always print the last value; verbose = 2: print all values
     if (verbose == 2 || (verbose == 1 && i == n)) {
-      expr = parse_only(paste0('(', code, ')'))
+      expr = parse_only(c('(', code, ')'))
     }
     # TODO: replace capture.output() with a custom version of sink() +
     # withVisible() so we can support a custom printing function like knit_print()
