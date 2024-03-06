@@ -116,8 +116,11 @@ pkg_require = function(pkgs, which = length(sys.calls()) - 1) {
   )
 }
 
+# update all packages in libraries that are writable by the current user
 pkg_update = function(...) {
-  update.packages(ask = FALSE, checkBuilt = TRUE, ...)
+  libs = .libPaths()
+  libs = libs[file.access(libs, 2) >= 0]
+  for (l in libs) update.packages(l, ask = FALSE, checkBuilt = TRUE, ...)
 }
 
 # allow users to specify a custom install.packages() function via the global
