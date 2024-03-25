@@ -107,6 +107,51 @@ escape_math = function(x, token = '') {
   x
 }
 
+#' Create a fenced block in Markdown
+#'
+#' Wrap content with fence delimiters such as backticks (code blocks) or colons
+#' (fenced Div). Optionally the fenced block can have attributes.
+#' @param x A character vector of the block content.
+#' @param attrs A vector of block attributes.
+#' @param fence The fence string, e.g., `:::` or ```` ``` ````. This will be
+#'   generated from the `char` argument by default.
+#' @param char The fence character to be used to generate the fence string by
+#'   default.
+#' @return `fenced_block()` returns a character vector that contains both the
+#'   fences and content.
+#' @export
+#' @examples
+#' # code block with class 'r' and ID 'foo'
+#' xfun::fenced_block('1+1', c('.r', '#foo'))
+#' # fenced Div
+#' xfun::fenced_block('This is a **Div**.', char = ':')
+fenced_block = function(x, attrs = NULL, fence = make_fence(x, char), char = '`') {
+  c('', paste0(fence, block_attr(attrs)), x, fence)
+}
+
+#' @return `make_fence()` returns a character string. If the block content
+#'   contains `N` fence characters (e.g., backticks), use `N + 1` characters as
+#'   the fence.
+#' @rdname fenced_block
+#' @export
+#' @examples
+#' # three backticks by default
+#' xfun::make_fence('1+1')
+#' # needs five backticks for the fences because content has four
+#' xfun::make_fence(c('````r', '1+1', '````'))
+make_fence = function(x, char = '`') {
+  f = strrep(char, 3)
+  while (any(grepl(f, x, fixed = TRUE))) f = paste0(f, char)
+  f
+}
+
+# concatenate block attributes for fenced blocks
+block_attr = function(attrs) {
+  a = paste(attrs, collapse = ' ')
+  if (grepl('[ .]', a)) a = paste0(' {', a, '}')
+  a
+}
+
 #' Embed a file, multiple files, or directory on an HTML page
 #'
 #' For a file, first encode it into base64 data (a character string). Then

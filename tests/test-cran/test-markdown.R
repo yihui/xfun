@@ -71,3 +71,22 @@ assert('protect_math() puts inline math expressions in backticks', {
   (protect_math('hi $$\alpha$$ and $$ \alpha$$') %==% 'hi `$$\alpha$$` and $$ \alpha$$')
 })
 
+
+assert('block_attr(x) turns a character vector into Pandoc attributes', {
+  (block_attr(NULL) %==% '')
+  (block_attr('.a') %==% ' {.a}')
+  (block_attr('.a b="11"') %==% ' {.a b="11"}')
+  (block_attr(c('.a', 'b="11"')) %==% ' {.a b="11"}')
+})
+
+assert('make_fence() uses the right number of fence characters', {
+  (make_fence('1+1') %==% '```')
+  (make_fence(c('1+1', '`````')) %==% '``````')
+  (make_fence(':::') %==% '```')
+  (make_fence(':::', ':') %==% '::::')
+})
+
+assert('fenced_block() wraps content inside fences', {
+  (fenced_block('1+1') %==% c('', '```', '1+1', '```'))
+  (fenced_block('1+1', c('.lang', '#id', 'foo="BAR"')) %==% c('', '``` {.lang #id foo="BAR"}', '1+1', '```'))
+})
