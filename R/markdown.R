@@ -148,7 +148,7 @@ make_fence = function(x, char = '`') {
 # concatenate block attributes for fenced blocks
 block_attr = function(attrs) {
   a = paste(attrs, collapse = ' ')
-  if (grepl('[ .]', a)) a = paste0(' {', a, '}')
+  if (grepl('[ .=]', a)) a = paste0(' {', a, '}')
   a
 }
 
