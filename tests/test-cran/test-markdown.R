@@ -88,5 +88,6 @@ assert('make_fence() uses the right number of fence characters', {
 
 assert('fenced_block() wraps content inside fences', {
   (fenced_block('1+1') %==% c('', '```', '1+1', '```'))
+  (fenced_block('<i>info</i>', '=html') %==% c('', '``` {=html}', '<i>info</i>', '```'))
   (fenced_block('1+1', c('.lang', '#id', 'foo="BAR"')) %==% c('', '``` {.lang #id foo="BAR"}', '1+1', '```'))
 })
