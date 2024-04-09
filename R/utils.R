@@ -345,7 +345,6 @@ handle_error = function(
 ) {
   withCallingHandlers(expr, error = function(e) {
     loc = if (is.function(fun)) trimws(fun(label)) else ''
-    if (loc != '') loc = sprintf(' at lines %s', loc)
     message(one_string(handler(e, loc)))
   })
 }
