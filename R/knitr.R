@@ -15,10 +15,13 @@ csv_options = function(x) {
   x = one_string(x)
   res = handle_error(
     eval(parse_only(paste('alist(', quote_label(x), ')'))),
-    function(e, loc) c(
-      sprintf('Invalid syntax for chunk options%s:\n', loc), x,
-      '\nPlease see documentation at https://yihui.org/knitr/options/.\n'
-    )
+    function(e, loc) {
+      if (loc != '') loc = paste(' at lines', loc)
+      c(
+        sprintf('Invalid syntax for chunk options%s:\n', loc), x,
+        '\nPlease see documentation at https://yihui.org/knitr/options/.\n'
+      )
+    }
   )
   idx = which(names(res) == '')  # which option is not named?
   # remove empty options

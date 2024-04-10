@@ -40,6 +40,7 @@ yaml_load = function(
       m = regmatches(s, regexec(r, s, perl = TRUE))[[1]]
       if (length(m) < 3) return()
       m = as.integer(m[-1])  # c(row, col)
+      if (loc != '') loc = paste(' at lines', loc)
       c(
         sprintf('Failed to parse YAML%s:', loc), '',
         append(x, paste0(strrep(' ', m[2]), '^~~~~~'), m[1]), ''
