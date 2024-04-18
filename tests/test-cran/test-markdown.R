@@ -37,6 +37,10 @@ assert('prose_index() works', {
   x = c('a', '```', 'b', '``', 'c')
   (has_warning(prose_index(x)))
   (prose_index(x) %==% seq_along(x))
+
+  # recognize ``` ``text`` ```
+  x = c('a', '``` md', 'b', '```', '``` ``text`` ```')
+  (prose_index(x) %==% c(1L, 5L))
 })
 
 

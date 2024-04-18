@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.44
 
+- Fixed an edge case in `prose_index()`, in which inline code was incorrectly recognized as a code block fence.
 
 # CHANGES IN xfun VERSION 0.43
 

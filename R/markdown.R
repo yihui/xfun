@@ -13,7 +13,9 @@
 #' prose_index(c('a', '````', '```r', '1+1', '```', '````', 'c'))
 prose_index = function(x, warn = TRUE) {
   idx = NULL; r = '^(\\s*```+).*'; s = ''
-  for (i in setdiff(grep(r, x), grep('-->\\s*$', x))) {
+  # shouldn't match ``` ``text``` ```, which is inline code, not code block
+  i1 = grepl(r, x); i2 = !grepl('^\\s*```+\\s+`', x); i3 = !grepl('-->\\s*$', x)
+  for (i in which(i1 & i2 & i3)) {
     if (s == '') {
       s = gsub(r, '\\1', x[i]); idx = c(idx, i); next
     }
