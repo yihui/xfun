@@ -2,41 +2,32 @@ library(testit)
 
 assert('prose_index() works', {
   x = c('a', '```', 'b', '```', 'c')
-  out = c(1L, 5L)
-  (prose_index(x) %==% out)
+  (prose_index(x) %==% c(1L, 5L))
 
   x = c('a', '````', '```r', '1+1', '```', '````', 'c')
-  out = c(1L, 7L)
-  (prose_index(x) %==% out)
+  (prose_index(x) %==% c(1L, 7L))
 
   x = c('a', '``', 'b', '``', 'c')
-  out = seq_along(x)
-  (prose_index(x) %==% out)
+  (prose_index(x) %==% seq_along(x))
 
   # a character vector of length zero
-  x = character()
-  out = integer()
-  (prose_index(x) %==% out)
+  (prose_index(character()) %==% integer())
 
   # one backbrick
   x = c('`', 'a', '`')
-  out = seq_along(x)
-  (prose_index(x) %==% out)
+  (prose_index(x) %==% seq_along(x))
 
   # two backbrick
   x = c('``', 'a', '``')
-  out = seq_along(x)
-  (prose_index(x) %==% out)
+  (prose_index(x) %==% seq_along(x))
 
   # no code fences
   x = c('a', 'b')
-  out = c(1L, 2L)
-  (prose_index(x) %==% out)
+  (prose_index(x) %==% seq_along(x))
 
   # two code fences
   x = c('```', 'b', '```', '```', 'd', '```')
-  out = integer()
-  (prose_index(x) %==% out)
+  (prose_index(x) %==% integer())
 
   # code fences commented out
   x = c('```', 'b', '```', '<!--```', 'd', '```-->')
@@ -44,9 +35,8 @@ assert('prose_index() works', {
 
   # if the code fences are not balanced
   x = c('a', '```', 'b', '``', 'c')
-  out = seq_along(x)
   (has_warning(prose_index(x)))
-  (prose_index(x) %==% out)
+  (prose_index(x) %==% seq_along(x))
 })
 
 
