@@ -21,25 +21,22 @@ append_unique(text, con, sort = function(x) base::sort(unique(x)))
 \item{error}{Whether to signal an error when non-UTF8 characters are detected
 (if \code{FALSE}, only a warning message is issued).}
 
-\item{text}{A character vector (will be converted to UTF-8 via
-\code{\link[=enc2utf8]{enc2utf8()}}).}
+\item{text}{A character vector (will be converted to UTF-8 via \code{\link[=enc2utf8]{enc2utf8()}}).}
 
-\item{...}{Other arguments passed to \code{\link[=writeLines]{writeLines()}} (except
-\code{useBytes}, which is \code{TRUE} in \code{write_utf8()}).}
+\item{...}{Other arguments passed to \code{\link[=writeLines]{writeLines()}} (except \code{useBytes}, which
+is \code{TRUE} in \code{write_utf8()}).}
 
 \item{sort}{Logical (\code{FALSE} means not to sort the content) or a
 function to sort the content; \code{TRUE} is equivalent to
 \code{base::sort}.}
 }
 \description{
-Read or write files, assuming they are encoded in UTF-8. \code{read_utf8()}
-is roughly \code{readLines(encoding = 'UTF-8')} (a warning will be issued if
-non-UTF8 lines are found), and \code{write_utf8()} calls
-\code{writeLines(enc2utf8(text), useBytes = TRUE)}.
+Read or write files, assuming they are encoded in UTF-8. \code{read_utf8()} is
+roughly \code{readLines(encoding = 'UTF-8')} (a warning will be issued if non-UTF8
+lines are found), and \code{write_utf8()} calls \code{writeLines(enc2utf8(text), useBytes = TRUE)}.
 }
 \details{
-The function \code{append_utf8()} appends UTF-8 content to a file or
-connection based on \code{read_utf8()} and \code{write_utf8()}, and
-optionally sort the content. The function \code{append_unique()} appends
-unique lines to a file or connection.
+The function \code{append_utf8()} appends UTF-8 content to a file or connection
+based on \code{read_utf8()} and \code{write_utf8()}, and optionally sort the content.
+The function \code{append_unique()} appends unique lines to a file or connection.
 }

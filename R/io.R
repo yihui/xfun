@@ -1,21 +1,19 @@
 #' Read / write files encoded in UTF-8
 #'
-#' Read or write files, assuming they are encoded in UTF-8. `read_utf8()`
-#' is roughly `readLines(encoding = 'UTF-8')` (a warning will be issued if
-#' non-UTF8 lines are found), and `write_utf8()` calls
-#' `writeLines(enc2utf8(text), useBytes = TRUE)`.
+#' Read or write files, assuming they are encoded in UTF-8. `read_utf8()` is
+#' roughly `readLines(encoding = 'UTF-8')` (a warning will be issued if non-UTF8
+#' lines are found), and `write_utf8()` calls `writeLines(enc2utf8(text),
+#' useBytes = TRUE)`.
 #'
-#' The function `append_utf8()` appends UTF-8 content to a file or
-#' connection based on `read_utf8()` and `write_utf8()`, and
-#' optionally sort the content. The function `append_unique()` appends
-#' unique lines to a file or connection.
+#' The function `append_utf8()` appends UTF-8 content to a file or connection
+#' based on `read_utf8()` and `write_utf8()`, and optionally sort the content.
+#' The function `append_unique()` appends unique lines to a file or connection.
 #' @param con A connection or a file path.
 #' @param error Whether to signal an error when non-UTF8 characters are detected
 #'   (if `FALSE`, only a warning message is issued).
-#' @param text A character vector (will be converted to UTF-8 via
-#'   [enc2utf8()]).
-#' @param ... Other arguments passed to [writeLines()] (except
-#'   `useBytes`, which is `TRUE` in `write_utf8()`).
+#' @param text A character vector (will be converted to UTF-8 via [enc2utf8()]).
+#' @param ... Other arguments passed to [writeLines()] (except `useBytes`, which
+#'   is `TRUE` in `write_utf8()`).
 #' @export
 read_utf8 = function(con, error = FALSE) {
   # users may have set options(encoding = 'UTF-8'), which usually won't help but
