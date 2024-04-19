@@ -41,6 +41,10 @@ assert('prose_index() works', {
   # recognize ``` ``text`` ```
   x = c('a', '``` md', 'b', '```', '``` ``text`` ```')
   (prose_index(x) %==% c(1L, 5L))
+
+  # <pre> should also be treated as code blocks
+  x = c('<pre><code>```', '```', '```', '</code></pre>')
+  (prose_index(x) %==% integer())
 })
 
 

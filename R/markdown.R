@@ -12,6 +12,12 @@
 #' prose_index(c('a', '```', 'b', '```', 'c'))
 #' prose_index(c('a', '````', '```r', '1+1', '```', '````', 'c'))
 prose_index = function(x, warn = TRUE) {
+  # if raw HTML <pre></pre> exists, it should be treated as code block
+  if (any(grepl('^<pre>', x))) {
+    fence = make_fence(x)
+    i = grep('^<pre>|</pre>$', x)
+    x[i] = paste(fence, x[i])
+  }
   idx = NULL; r = '^(\\s*```+).*'; s = ''
   # shouldn't match ``` ``text``` ```, which is inline code, not code block
   i1 = grepl(r, x); i2 = !grepl('^\\s*```+\\s+`', x); i3 = !grepl('-->\\s*$', x)
