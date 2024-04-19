@@ -30,6 +30,10 @@ is \code{TRUE} in \code{write_utf8()}).}
 function to sort the content; \code{TRUE} is equivalent to
 \code{base::sort}.}
 }
+\value{
+\code{read_utf8()} returns a character vector of the file content;
+\code{write_utf8()} returns the \code{con} argument (invisibly).
+}
 \description{
 Read or write files, assuming they are encoded in UTF-8. \code{read_utf8()} is
 roughly \code{readLines(encoding = 'UTF-8')} (a warning will be issued if non-UTF8

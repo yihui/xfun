@@ -14,6 +14,8 @@
 #' @param text A character vector (will be converted to UTF-8 via [enc2utf8()]).
 #' @param ... Other arguments passed to [writeLines()] (except `useBytes`, which
 #'   is `TRUE` in `write_utf8()`).
+#' @return `read_utf8()` returns a character vector of the file content;
+#'   `write_utf8()` returns the `con` argument (invisibly).
 #' @export
 read_utf8 = function(con, error = FALSE) {
   # users may have set options(encoding = 'UTF-8'), which usually won't help but
@@ -42,6 +44,7 @@ write_utf8 = function(text, con, ...) {
     opts = options(encoding = 'native.enc'); on.exit(options(opts), add = TRUE)
     writeLines(enc2utf8(text), con, ..., useBytes = TRUE)
   }
+  invisible(con)
 }
 
 #' @param sort Logical (`FALSE` means not to sort the content) or a
