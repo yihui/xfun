@@ -12,7 +12,7 @@ yaml_body(x, ...)
 \item{...}{Arguments to be passed to \code{yaml_load()}.}
 }
 \value{
-A list of components \code{yaml} and \code{body}.
+A list of components \code{yaml} (if YAML metadata exists) and \code{body}.
 }
 \description{
 Split a document into the YAML metadata (which starts with \verb{---} in the
