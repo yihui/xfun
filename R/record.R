@@ -131,9 +131,10 @@ record = function(
       # indices of plots in results
       i = which(vapply(res, inherits, logical(1), 'record_plot'))
       N = length(i)
-      # the last plot should always be appended the last plot block
+      # the last plot should always be appended to the last plot block
       if (last) {
-        add_result(plots, 'plot', i[N], FALSE)
+        # N = 0 means the code didn't produce any plots
+        if (N == 0) file.remove(plots) else add_result(plots, 'plot', i[N], FALSE)
         return()
       }
 
@@ -144,7 +145,7 @@ record = function(
       if (N > 1) {
         add_result(plots[1], 'plot', i[N - 1], FALSE)
         if (n > 1) add_result(plots[2:n], 'plot', i[N], FALSE)
-      } else {
+      } else if (N == 1) {
         # if there exists only one plot block, add plots to that block
         add_result(plots, 'plot', i[N], FALSE)
       }
