@@ -160,8 +160,8 @@ make_fence = function(x, char = '`') {
 # concatenate block attributes for fenced blocks
 block_attr = function(attrs) {
   a = paste(attrs, collapse = ' ')
-  if (grepl('[ .=]', a)) a = paste0(' {', a, '}')
-  a
+  if (grepl('[ .=]', a)) a = paste0('{', a, '}')
+  if (a == '') a else paste0(' ', a)
 }
 
 #' Embed a file, multiple files, or directory on an HTML page
