@@ -121,5 +121,5 @@ compute()  # returns 1:10 immediately
 compute()  # fast again
 compute(rerun = TRUE)  # one second to rerun
 compute()
-file.remove(f)
+unlink(paste0(f, "_*.rds"))
 }

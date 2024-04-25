@@ -97,7 +97,7 @@
 #' compute()  # fast again
 #' compute(rerun = TRUE)  # one second to rerun
 #' compute()
-#' file.remove(f)
+#' unlink(paste0(f, '_*.rds'))
 cache_rds = function(
   expr = {}, rerun = FALSE, file = 'cache.rds', dir = 'cache/',
   hash = NULL, clean = getOption('xfun.cache_rds.clean', TRUE), ...
@@ -111,10 +111,8 @@ cache_rds = function(
   path = paste0(dir, file)
   if (!grepl(r <- '([.]rds)$', path)) path = paste0(path, '.rds')
   code = deparse(substitute(expr))
-  md5  = md5_obj(code)
   if (identical(hash, 'auto')) hash = global_vars(code, parent.frame(2))
-  if (is.list(hash)) md5 = md5_obj(c(md5, md5_obj(hash)))
-  path = sub(r, paste0('_', md5, '\\1'), path)
+  path = sub(r, paste0('_', md5(c(hash, code)), '\\1'), path)
   if (rerun) unlink(path)
   if (clean) clean_cache(path)
   if (file_exists(path)) readRDS(path) else {
@@ -125,10 +123,34 @@ cache_rds = function(
   }
 }
 
-# write an object to a file and return the md5 sum
-md5_obj = function(x) {
+#' Calculate the MD5 checksums of R objects
+#'
+#' [Serialize][serialize()] an object to a temporary file, calculate the
+#' checksum via [tools::md5sum()], and delete the file.
+#' @param ... Any number of R objects.
+#' @return A character vector of the checksums of objects passed to `md5()`. If
+#'   the arguments are named, the results will also be named.
+#' @export
+#' @examples
+#' x1 = 1; x2 = 1:10; x3 = seq(1, 10); x4 = iris; x5 = paste
+#' (m = xfun::md5(x1, x2, x3, x4, x5))
+#' stopifnot(m[2] == m[3])  # x2 and x3 should be identical
+#'
+#' xfun::md5(x1 = x1, x2 = x2)  # named arguments
+md5 = function(...) {
+  obj = list(...)
+  res = unlist(lapply(obj, md5_one))
+  names(res) = names(obj)
+  res
+}
+
+md5_one = function(x) {
+  # we have wished for years that tools::md5sum() could just accept raw bytes
+  # (HenrikBengtsson/Wishlist-for-R#21; I've also asked an R core member in
+  # person in 2019) so we don't have to use the ugly tmp file hack below
   f = tempfile(); on.exit(unlink(f), add = TRUE)
-  if (is.character(x)) writeLines(x, f) else saveRDS(x, f)
+  s = serialize(x, NULL, xdr = FALSE)
+  writeBin(tail(s, -14), f)  # the first 14 bytes contain version info, etc
   unname(tools::md5sum(f))
 }
 
@@ -200,7 +222,7 @@ download_cache = local({
     getOption('xfun.cache.dir', tools::R_user_dir('xfun', 'cache'))
   }
   c_file = function(url, type) {
-    file.path(c_dir(), sprintf('%s_%s_%s.rds', pre, type, md5_obj(url)))
+    file.path(c_dir(), sprintf('%s_%s_%s.rds', pre, type, md5(url)))
   }
   read = function(url, type) {
     if (length(f <- c_file(url, type)) && file.exists(f)) readRDS(f)
