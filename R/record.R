@@ -100,6 +100,8 @@ record = function(
 
   # check if new plots are generated
   handle_plot = local({
+    # don't record plots if no device was opened
+    if (length(dev_num) == 0) return(function(...) {})
     old_files = NULL  # previously existing plots
     old_plot = recordPlot()
     function(last = FALSE) {
