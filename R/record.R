@@ -6,11 +6,10 @@
 #' @param dev A graphics device. It can be a function name, a function, or a
 #'   character string that can be evaluated to a function to open a graphics
 #'   device.
-#' @param dev.path A base file path for plots (by default, a temporary path
-#'   under the current working directory). Actual plot filenames will be this
-#'   base path plus incremental suffixes. For example, if `dev.path = "foo"`,
-#'   the plot files will be `foo-1.png`, `foo-2.png`, and so on. If `dev.path`
-#'   is not character (e.g., `FALSE`), plots will not be recorded.
+#' @param dev.path A base file path for plots. Actual plot filenames will be
+#'   this base path plus incremental suffixes. For example, if `dev.path =
+#'   "foo"`, the plot files will be `foo-1.png`, `foo-2.png`, and so on. If
+#'   `dev.path` is not character (e.g., `FALSE`), plots will not be recorded.
 #' @param dev.ext The file extension for plot files. By default, it will be
 #'   inferred from the first argument of the device function if possible.
 #' @param dev.args Extra arguments to be passed to the device. The default
@@ -35,7 +34,7 @@
 #' @import grDevices
 #' @export
 #' @examples
-#' code = c('# a message test', '1:2 + 1:3', 'par(mar = c(4, 4, 1, .2))', 'barplot(5:1, col = 2:6, horiz = TRUE)', 'head(iris)', "sunflowerplot(iris[, 3:4], seg.col = 'purple')", "if (TRUE) {\n  message('Hello, xfun::record()!')\n}", '# throw an error', "1 + 'a'")
+#' code = c('# a warning test', '1:2 + 1:3', 'par(mar = c(4, 4, 1, .2))', 'barplot(5:1, col = 2:6, horiz = TRUE)', 'head(iris)', "sunflowerplot(iris[, 3:4], seg.col = 'purple')", "if (TRUE) {\n  message('Hello, xfun::record()!')\n}", '# throw an error', "1 + 'a'")
 #' res = xfun::record(code, dev.args = list(width = 9, height = 6.75), error = TRUE)
 #' xfun::tree(res)
 #' format(res)
@@ -43,7 +42,7 @@
 #' plots = Filter(function(x) inherits(x, 'record_plot'), res)
 #' file.remove(unlist(plots))
 record = function(
-  code = NULL, dev = 'png', dev.path = tempfile('record-', '.'),
+  code = NULL, dev = 'png', dev.path = 'xfun-record',
   dev.ext = dev_ext(dev), dev.args = list(), error = FALSE, cache = list(),
   verbose = getOption('xfun.record.verbose', 0), envir = parent.frame()
 ) {

@@ -9,7 +9,7 @@
 record(
   code = NULL,
   dev = "png",
-  dev.path = tempfile("record-", "."),
+  dev.path = "xfun-record",
   dev.ext = dev_ext(dev),
   dev.args = list(),
   error = FALSE,
@@ -35,11 +35,9 @@ record(
 character string that can be evaluated to a function to open a graphics
 device.}
 
-\item{dev.path}{A base file path for plots (by default, a temporary path
-under the current working directory). Actual plot filenames will be this
-base path plus incremental suffixes. For example, if \code{dev.path = "foo"},
-the plot files will be \verb{foo-1.png}, \verb{foo-2.png}, and so on. If \code{dev.path}
-is not character (e.g., \code{FALSE}), plots will not be recorded.}
+\item{dev.path}{A base file path for plots. Actual plot filenames will be
+this base path plus incremental suffixes. For example, if \code{dev.path = "foo"}, the plot files will be \verb{foo-1.png}, \verb{foo-2.png}, and so on. If
+\code{dev.path} is not character (e.g., \code{FALSE}), plots will not be recorded.}
 
 \item{dev.ext}{The file extension for plot files. By default, it will be
 inferred from the first argument of the device function if possible.}
@@ -96,7 +94,7 @@ Run R code and capture various types of output, including text output, plots,
 messages, warnings, and errors.
 }
 \examples{
-code = c("# a message test", "1:2 + 1:3", "par(mar = c(4, 4, 1, .2))",
+code = c("# a warning test", "1:2 + 1:3", "par(mar = c(4, 4, 1, .2))",
     "barplot(5:1, col = 2:6, horiz = TRUE)", "head(iris)",
     "sunflowerplot(iris[, 3:4], seg.col = 'purple')",
     "if (TRUE) {\n  message('Hello, xfun::record()!')\n}",
