@@ -348,3 +348,6 @@ handle_error = function(
     message(one_string(handler(e, loc)))
   })
 }
+
+# a shorthand for rm(list =, envir =)
+rm_vars = function(x, envir, ...) rm(list = x, envir = envir, ...)

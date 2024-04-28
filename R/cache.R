@@ -1,3 +1,225 @@
+#' Cache the execution of an expression in memory or on disk
+#'
+#' Caching is based on the assumption that if the input does not change, the
+#' output will not change. After an expression is executed for the first time,
+#' its result will be saved (either in memory or on disk). The next run will be
+#' skipped and the previously saved result will be loaded directly if all
+#' external inputs of the expression remain the same, otherwise the cache will
+#' be invalidated and the expression will be re-executed.
+#'
+#' Arguments supported in `...` include:
+#'
+#' - `vars`: Names of local variables (which are created inside the expression).
+#' By default, local variables are automatically detected from the expression
+#' via [codetools::findLocalsList()]. Locally created variables are cached along
+#' with the value of the expression.
+#'
+#' - `hash` and `extra`: R objects to be used to determine if cache should be
+#' loaded or invalidated. If (the MD5 hash of) the objects is not changed, the
+#' cache is loaded, otherwise the cache is invalidated and rebuilt. By default,
+#' `hash` is a list of values of global variables in the expression (i.e.,
+#' variables created outside the expression). Global variables are automatically
+#' detected by [codetools::findGlobals()]. You can provide a vector of names to
+#' override the automatic detection if you want some specific global variables
+#' to affect caching, or the automatic detection is not reliable. You can also
+#' provide additional information via the `extra` argument. For example, if the
+#' expression reads an external file `foo.csv`, and you want the cache to be
+#' invalidated after the file is modified, you may use `extra =
+#' file.mtime("foo.csv")`.
+#'
+#' - `keep`: By default, only one copy of the cache corresponding to an `id`
+#' under `path` is kept, and all other copies for this `id` is automaitcally
+#' purged. If `TRUE`, all copies of the cache are kept. If `FALSE`, all copies
+#' are removed, which means the cache is *always* invalidated, and can be useful
+#' to force re-executing the expression.
+#'
+#' - `rw`: A list of functions to read/write the cache files. The list is of the
+#' form `list(load = function(file) {}, save = function(x, file) {})`. By
+#' default, [readRDS()] and [saveRDS()] are used. This argument can also take a
+#' character string to use some built-in read/write methods. Currently available
+#' methods include `rds` (the default), `raw` (using [serialize()] and
+#' [unserialize()]), and `qs` (using [qs::qread()] and [qs::qsave()]). The `rds`
+#' and `raw` methods only use base R functions (the `rds` method generates
+#' smaller files because it uses compression, but is often slower than the `raw`
+#' method, which does not use compression). The `qs` method requires the
+#' \pkg{qs} package, which can be much faster than base R methods and also
+#' supports compression.
+#' @param expr An R expression to be cached.
+#' @param path The path to save the cache. The special value `":memory:"` means
+#'   in-memory caching. If it is intended to be a directory path, please make
+#'   sure to add a trailing slash.
+#' @param id A stable and unique string identifier for the expression to be used
+#'   to identify a unique copy of cache for the current expression from all
+#'   cache files (or in-memory elements). If not provided, an MD5 digest of the
+#'   [deparse]d expression will be used, which means if the expression does not
+#'   change (changes in comments or white spaces do not matter), the `id` will
+#'   remain the same. This may not be a good default is two identical
+#'   expressions are cached under the same `path`, because they could overwrite
+#'   each other's cache when one expression's cache is invalidated, which may or
+#'   may not be what you want. If you do not want that to happen, you need to
+#'   manually provide an `id`.
+#' @param ... More arguments to control the behavior of caching (see
+#'   \sQuote{Details}).
+#' @return If the cache is found, the cached value of the expression will be
+#'   loaded and returned (other local variables will also be loaded into the
+#'   current environment as a side-effect). If cache does not exist, the
+#'   expression is executed and its value is returned.
+#' @export
+#' @examples
+#' # the first run takes about 1 second
+#' y1 = xfun::cache_exec({
+#'   x = rnorm(1e5)
+#'   Sys.sleep(1)
+#'   x
+#' }, path = ':memory:', id = 'sim-norm')
+#'
+#' # the second run takes almost no time
+#' y2 = xfun::cache_exec({
+#'   # comments won't affect caching
+#'   x = rnorm(1e5)
+#'   Sys.sleep(1)
+#'   x
+#' }, path = ':memory:', id = 'sim-norm')
+#'
+#' # y1, y2, and x should be identical
+#' stopifnot(identical(y1, y2), identical(y1, x))
+cache_exec = function(expr, path = 'cache/', id = NULL, ...) {
+  use_cache = FALSE
+  ret = cache_code(
+    substitute(expr), parent.frame(), use_cache <- TRUE,
+    list(path = path, id = id, ...)
+  )
+  if (use_cache) ret else expr
+}
+
+# a dictionary containing names and hashes of global variables
+.cache_dict = new.env(parent = emptyenv())
+
+# an in-memory database containing results from previous run, values of local
+# variables, and their hashes, of the form environment(*__id__* = list(results,
+# values, hashes))
+.cache_db = new.env(parent = emptyenv())
+
+cache_code = function(
+  code, envir = parent.frame(), found = NULL, config = list(
+    path = NULL, vars = NULL, hash = NULL, extra = NULL, keep = NULL, id = NULL,
+    rw = NULL
+  )
+) {
+  dict = .cache_dict
+  if (!is.character(path <- config$path)) {
+    # when caching is not enabled, we should clean up hashes for local variables
+    # to make sure the next cached chunk will get the up-to-date hash
+    vars = intersect(config$vars %||% find_locals(code), ls_all(dict))
+    rm_vars(vars, dict)
+    return()
+  }
+
+  # functions to read/write cache files
+  if (is.null(rw <- config$rw)) rw = 'rds'
+  if (is.character(rw)) rw = cache_methods[[rw]]
+
+  hash = config$hash %||% find_globals(code, envir)
+  # get the values of hash variables (unless hash is I(character()))
+  if (is.character(hash) && !inherits(hash, 'AsIs')) {
+    # if a variable exists in the hash dictionary, use its hash (32 chars) in
+    # the dict instead of its actual value, because the value may be large and
+    # slow to serialize or compute md5 checksum
+    hash = lapply(hash, function(x) dict[[x]] %||% get(x, envir))
+  }
+  # "normalized" code that doesn't rely on comments or white spaces
+  code2 = deparse(if (is.character(code)) parse_only(code) else code)
+  hash = md5_one(c(hash, config$extra, list(code2)))
+
+  mem_cache = path == ':memory:'  # in-memory or disk cache
+
+  # by default, the ID is a checksum of the code, which may not be a good idea
+  # (e.g., two identical code fragments could be executed one after another
+  # but they should not share the same cache); for litedown, id is chunk label
+  if (is.null(id <- config$id)) id = md5_one(code2)
+  id = paste0(path, if (mem_cache) '__', id, if (mem_cache) '__')
+
+  # try to retrieve cache from memory (the dictionary) or disk
+  cached = if (mem_cache) {
+    db = .cache_db
+    id_names = function(x) {
+      x = ls_all(db)
+      x[startsWith(x, id) & nchar(x) == nchar(id) + 32]
+    }
+    hits = id_names(db)
+    # clean up all cache for this id, i.e., remove :memory:__id__hash
+    if (base::isFALSE(config$keep)) rm_vars(hits, db)
+    id = paste0(id, hash)
+    id %in% ls_all(db)
+  } else {
+    db = list.files(id, full.names = TRUE)
+    hits = grepl('^[0-9a-z]{32}$', basename(db))
+    if (base::isFALSE(config$keep)) file.remove(db[hits])
+    id = file.path(id, hash)
+    file_exists(id)
+  }
+  # return now if cache is found
+  if (cached) {
+    # I could implement lazy-loading here but I'm not sure if it's worth it
+    ret = if (mem_cache) db[[id]] else rw$load(id)
+    list2env(ret$hashes, dict)  # update the hash dictionary
+    list2env(ret$values, envir)  # copy cached objects into envir
+    found
+    return(ret$result)
+  }
+
+  # clean up other versions of cache before saving a new version
+  if (!isTRUE(config$keep)) {
+    if (mem_cache) rm_vars(hits, db) else file.remove(db[hits])
+  }
+  vars = config$vars %||% find_locals(code)
+  # inject an on.exit() call to the parent function to save its returned value;
+  # note that returnValue() requires R >= 3.2.0 released on 2015-04-16, which I
+  # hope is a reasonable requirement (anyone using R from a decade ago?)
+  exit_call(function() {
+    # we can't tell if returnValue() is from a successful call of a function or
+    # not, so we pass a default that is very unlikely to be the returned value
+    # on success; if we get this value, it's very likely that errors occurred
+    void_return = new.env()  # should be unlikely for two new.env() to be identical
+    res = returnValue(void_return)
+    if (identical(res, void_return)) return()
+    # save the checksums of objects to be used for a future run
+    v1 = ls_all(envir)
+    v2 = setdiff(vars, v1)
+    if (length(v2)) warning(
+      'Variable(s) not found in the environment: ', paste(v2, collapse = ', ')
+    )
+    hashes = as.list(do.call(md5, vals <- mget(vars, envir)))
+    ret = list(result = res, hashes = hashes, values = vals)
+    if (mem_cache) {
+      db[[id]] = ret
+    } else {
+      dir_create(dirname(id))
+      rw$save(ret, id)
+    }
+    list2env(hashes, dict)
+  })
+}
+
+# functions to load/save cache files
+cache_methods = list(
+  raw = list(
+    load = function(...) unserialize(read_bin(...)),
+    save = function(x, file, ...) {
+      s = serialize(x, NULL, xdr = FALSE, ...)
+      writeBin(s, file)
+    }
+  ),
+  rds = list(
+    load = function(...) readRDS(...),
+    save = function(x, file, ...) saveRDS(x, file, ...)
+  ),
+  qs = list(
+    load = function(...) qs::qread(...),
+    save = function(x, file, ...) qs::qsave(x, file, ...)
+  )
+)
+
 #' Cache the value of an R expression to an RDS file
 #'
 #' Save the value of an expression to a cache file (of the RDS format). Next
@@ -82,6 +304,8 @@
 #'   cache only stores the last value of the expression in `expr`.
 #' @return If the cache file does not exist, run the expression and save the
 #'   result to the file, otherwise read the cache file and return the value.
+#' @seealso [cache_exec()], which is more flexible (e.g., it supports in-memory
+#'   caching and different read/write methods for cache files).
 #' @export
 #' @examples
 #' f = tempfile()  # the cache file
@@ -177,19 +401,44 @@ clean_cache = function(path) {
   unlink(olds[(base == base[keep][1]) & !keep])
 }
 
-# analyze code and find out global variables
-find_globals = function(code) {
-  fun = eval(parse_only(c('function(){', code, '}')))
-  setdiff(codetools::findGlobals(fun), known_globals)
+# analyze code and find out global variables used from an environment
+find_globals = function(code, envir = parent.frame()) {
+  if (is.language(code)) {
+    fun = function() {}
+    body(fun) = code
+  } else {
+    fun = eval(parse_only(c('function(){', code, '}')), envir)
+  }
+  obj = codetools::findGlobals(fun)
+  intersect(obj, ls_all(envir, TRUE))
 }
 
-known_globals = c(
-  '{', '[', '(', ':', '<-', '=', '+', '-', '*', '/', '%%', '%/%', '%*%', '%o%', '%in%'
-)
+# ls() all objects in the envir and if recursive, all parent environments until
+# globalenv() or emptyenv()
+ls_all = function(envir, recursive = FALSE) {
+  x = ls(envir, all.names = TRUE)
+  if (!recursive) return(x)
+  while (TRUE) {
+    # in theory, we shouldn't stop at global env but should keep recursion, but
+    # in practice, objects in the parent environments of globalenv() (often
+    # package namespaces) are unlikely to change and won't affect cache
+    if (identical(envir, emptyenv()) || identical(envir, .GlobalEnv)) break
+    envir = parent.env(envir)
+    x = c(x, ls(envir, all.names = TRUE))
+  }
+  unique(x)
+}
+
+# find local variables in code (those getting assigned in the code)
+find_locals = function(code) {
+  code = if (is.language(code)) as.expression(code) else parse_only(code)
+  codetools::findLocalsList(code)
+}
 
 # return a list of values of global variables in code
-global_vars = function(code, env) {
-  if (length(vars <- find_globals(code)) > 0) mget(vars, env)
+global_vars = function(code, envir) {
+  if (length(vars <- find_globals(code, envir)) > 0)
+    mget(vars, envir, inherits = TRUE)
 }
 
 #' Download a file from a URL and cache it on disk
@@ -233,7 +482,7 @@ download_cache = local({
     getOption('xfun.cache.dir', tools::R_user_dir('xfun', 'cache'))
   }
   c_file = function(url, type) {
-    file.path(c_dir(), sprintf('%s_%s_%s.rds', pre, type, md5(url)))
+    file.path(c_dir(), sprintf('%s_%s_%s.rds', pre, type, md5_one(url)))
   }
   read = function(url, type) {
     if (length(f <- c_file(url, type)) && file.exists(f)) readRDS(f)
