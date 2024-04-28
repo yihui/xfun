@@ -13,6 +13,7 @@ record(
   dev.ext = dev_ext(dev),
   dev.args = list(),
   error = FALSE,
+  cache = list(),
   verbose = getOption("xfun.record.verbose", 0),
   envir = parent.frame()
 )
@@ -50,6 +51,9 @@ function, it will be dropped.}
 \item{error}{Whether to record errors. If \code{TRUE}, errors will not stop the
 execution and error messages will be recorded. If \code{FALSE}, errors will be
 thrown normally.}
+
+\item{cache}{A list of options for caching. See the \code{path}, \code{id}, and \code{...}
+arguments of \code{\link[=cache_exec]{cache_exec()}}.}
 
 \item{verbose}{\code{2} means to always print the value of each expression in the
 code, no matter if the value is \code{\link[=invisible]{invisible()}} or not; \code{1} means to always

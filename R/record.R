@@ -20,6 +20,8 @@
 #' @param error Whether to record errors. If `TRUE`, errors will not stop the
 #'   execution and error messages will be recorded. If `FALSE`, errors will be
 #'   thrown normally.
+#' @param cache A list of options for caching. See the `path`, `id`, and `...`
+#'   arguments of [cache_exec()].
 #' @param verbose `2` means to always print the value of each expression in the
 #'   code, no matter if the value is [invisible()] or not; `1` means to always
 #'   print the value of the last expression; `0` means no special handling
@@ -41,13 +43,19 @@
 #' plots = Filter(function(x) inherits(x, 'record_plot'), res)
 #' file.remove(unlist(plots))
 record = function(
-    code = NULL, dev = 'png', dev.path = tempfile('record-', '.'),
-    dev.ext = dev_ext(dev), dev.args = list(), error = FALSE,
-    verbose = getOption('xfun.record.verbose', 0), envir = parent.frame()
+  code = NULL, dev = 'png', dev.path = tempfile('record-', '.'),
+  dev.ext = dev_ext(dev), dev.args = list(), error = FALSE, cache = list(),
+  verbose = getOption('xfun.record.verbose', 0), envir = parent.frame()
 ) {
   new_record = function(x = list()) structure(x, class = 'xfun_record_results')
   res = new_record()
   if (length(code) == 0) return(res)
+
+  # use cached results if cache exists
+  use_cache = FALSE
+  ret = cache_code(code, envir, use_cache <- TRUE, cache)
+  if (use_cache) return(ret)
+
   code = split_lines(code)
 
   add_result = function(x, type, pos = length(res), insert = TRUE) {
