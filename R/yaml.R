@@ -34,8 +34,8 @@ yaml_load = function(
 ) {
   if (use_yaml) return(handle_error(
     yaml::yaml.load(x, eval.expr = FALSE, handlers = yaml_handlers(handlers, envir), ...),
-    function(e, loc) {
-      s = e$message
+    function(loc) {
+      s = geterrmessage()
       r = 'line (\\d+), column (\\d+)'
       m = regmatches(s, regexec(r, s, perl = TRUE))[[1]]
       if (length(m) < 3) return()

@@ -15,7 +15,7 @@ csv_options = function(x) {
   x = one_string(x)
   res = handle_error(
     eval(parse_only(paste('alist(', quote_label(x), ')'))),
-    function(e, loc) {
+    function(loc) {
       if (loc != '') loc = paste(' at lines', loc)
       c(
         sprintf('Invalid syntax for chunk options%s:\n', loc), x,
