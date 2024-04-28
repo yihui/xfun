@@ -111,8 +111,10 @@ cache_rds = function(
   path = paste0(dir, file)
   if (!grepl(r <- '([.]rds)$', path)) path = paste0(path, '.rds')
   code = deparse(substitute(expr))
+  md5  = md5_obj(code)
   if (identical(hash, 'auto')) hash = global_vars(code, parent.frame(2))
-  path = sub(r, paste0('_', md5(c(hash, code)), '\\1'), path)
+  if (is.list(hash)) md5 = md5_obj(c(md5, md5_obj(hash)))
+  path = sub(r, paste0('_', md5, '\\1'), path)
   if (rerun) unlink(path)
   if (clean) clean_cache(path)
   if (file_exists(path)) readRDS(path) else {
@@ -122,6 +124,11 @@ cache_rds = function(
     obj
   }
 }
+
+# an old hash function for cache_rds() only
+md5_obj = function(x) md5_one(x, function(x, f) {
+  if (is.character(x)) writeLines(x, f) else saveRDS(x, f)
+})
 
 #' Calculate the MD5 checksums of R objects
 #'
@@ -144,14 +151,18 @@ md5 = function(...) {
   res
 }
 
-md5_one = function(x) {
+md5_one = function(x, write = serialize_bin) {
   # we have wished for years that tools::md5sum() could just accept raw bytes
   # (HenrikBengtsson/Wishlist-for-R#21; I've also asked an R core member in
   # person in 2019) so we don't have to use the ugly tmp file hack below
   f = tempfile(); on.exit(unlink(f), add = TRUE)
+  write(x, f)
+  unname(tools::md5sum(f))
+}
+
+serialize_bin = function(x, f) {
   s = serialize(x, NULL, xdr = FALSE)
   writeBin(tail(s, -14), f)  # the first 14 bytes contain version info, etc
-  unname(tools::md5sum(f))
 }
 
 # clean up old cache files (those with the same base names as the new cache
