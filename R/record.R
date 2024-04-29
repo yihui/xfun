@@ -218,8 +218,9 @@ record = function(
     # print value (via record_print()) if visible
     if (!is_error(out) && out$visible) {
       out = handle_eval(record_print(out$value))
-      if (length(out) && !is_error(out))
-        add_result(out, if (inherits(out, 'record_asis')) 'asis' else 'output')
+      if (length(out) && !is_error(out)) add_result(
+        out, (grep_sub('^record_([a-z]+)$', '\\1', class(out)) %|% 'output')[1]
+      )
     }
     handle_plot()
   }
@@ -261,8 +262,9 @@ merge_record = function(x) {
 #' @param x The value to be printed.
 #' @param ... Other arguments to be passed to `record_print()` methods.
 #' @return A `record_print()` method should return a character vector. The
-#'   returned value may have a special class `record_asis`, which will be stored
-#'   in the `record()` output. All other classes will be discarded.
+#'   original classes of the vector will be discarded, and the vector will be
+#'   treated as console output. If it should be another type of output, wrap the
+#'   vector in [record_class()] and specify a class name.
 #' @export
 record_print = function(x, ...) {
   UseMethod('record_print')
@@ -274,6 +276,12 @@ record_print.default = function(x, ...) {
   # the default print method is just print()/show()
   capture.output(if (isS4(x)) methods::show(x, ...) else print(x, ...))
 }
+
+#' @param class A class name, e.g., `asis`, `message`, `plot` (for the `plot`
+#'   class, `x` should be a vector of file paths).
+#' @rdname record_print
+#' @export
+record_class = function(x, class) structure(x, class = paste0('record_', class))
 
 dev_open = function(dev, file, args) {
   m = names(formals(dev))

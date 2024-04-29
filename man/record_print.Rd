@@ -3,21 +3,28 @@
 \name{record_print}
 \alias{record_print}
 \alias{record_print.default}
+\alias{record_class}
 \title{Print methods for \code{record()}}
 \usage{
 record_print(x, ...)
 
 \method{record_print}{default}(x, ...)
+
+record_class(x, class)
 }
 \arguments{
 \item{x}{The value to be printed.}
 
 \item{...}{Other arguments to be passed to \code{record_print()} methods.}
+
+\item{class}{A class name, e.g., \code{asis}, \code{message}, \code{plot} (for the \code{plot}
+class, \code{x} should be a vector of file paths).}
 }
 \value{
 A \code{record_print()} method should return a character vector. The
-returned value may have a special class \code{record_asis}, which will be stored
-in the \code{record()} output. All other classes will be discarded.
+original classes of the vector will be discarded, and the vector will be
+treated as console output. If it should be another type of output, wrap the
+vector in \code{\link[=record_class]{record_class()}} and specify a class name.
 }
 \description{
 An S3 generic function to be called to print visible values in code when the
