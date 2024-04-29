@@ -3,12 +3,15 @@
 \name{record_print}
 \alias{record_print}
 \alias{record_print.default}
+\alias{record_print.knitr_kable}
 \alias{record_class}
 \title{Print methods for \code{record()}}
 \usage{
 record_print(x, ...)
 
 \method{record_print}{default}(x, ...)
+
+\method{record_print}{knitr_kable}(x, ...)
 
 record_class(x, class)
 }
@@ -30,6 +33,7 @@ vector in \code{\link[=record_class]{record_class()}} and specify a class name.
 An S3 generic function to be called to print visible values in code when the
 code is recorded by \code{\link[=record]{record()}}. It is similar to \code{\link[knitr:knit_print]{knitr::knit_print()}}. By
 default, it captures the normal \code{\link[=print]{print()}} output and returns the result as a
-character vector. Users and package authors can define other S3 methods to
-extend this function.
+character vector. The \code{knitr_kable} method is for printing \code{\link[knitr:kable]{knitr::kable()}}
+output. Users and package authors can define other S3 methods to extend this
+function.
 }

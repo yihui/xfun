@@ -257,8 +257,9 @@ merge_record = function(x) {
 #' An S3 generic function to be called to print visible values in code when the
 #' code is recorded by [record()]. It is similar to [knitr::knit_print()]. By
 #' default, it captures the normal [print()] output and returns the result as a
-#' character vector. Users and package authors can define other S3 methods to
-#' extend this function.
+#' character vector. The `knitr_kable` method is for printing [knitr::kable()]
+#' output. Users and package authors can define other S3 methods to extend this
+#' function.
 #' @param x The value to be printed.
 #' @param ... Other arguments to be passed to `record_print()` methods.
 #' @return A `record_print()` method should return a character vector. The
@@ -275,6 +276,14 @@ record_print = function(x, ...) {
 record_print.default = function(x, ...) {
   # the default print method is just print()/show()
   capture.output(if (isS4(x)) methods::show(x, ...) else print(x, ...))
+}
+
+#' @rdname record_print
+#' @export
+record_print.knitr_kable = function(x, ...) {
+  if ((fmt <- attr(x, 'format')) %in% c('html', 'latex'))
+    x = fenced_block(x, paste0('=', fmt))
+  record_class(c(x, ''), 'asis')
 }
 
 #' @param class A class name, e.g., `asis`, `message`, `plot` (for the `plot`
