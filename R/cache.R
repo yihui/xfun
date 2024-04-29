@@ -407,7 +407,7 @@ find_globals = function(code, envir = parent.frame()) {
     fun = function() {}
     body(fun) = code
   } else {
-    fun = eval(parse_only(c('function(){', code, '}')), envir)
+    fun = eval(parse_only(c('function(){', code, '}')), baseenv())
   }
   obj = codetools::findGlobals(fun)
   intersect(obj, ls_all(envir, TRUE))
