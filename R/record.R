@@ -47,8 +47,8 @@ record = function(
   dev.args = list(), message = TRUE, warning = TRUE, error = NA, cache = list(),
   verbose = getOption('xfun.record.verbose', 0), envir = parent.frame()
 ) {
-  new_record = function(x = list()) structure(x, class = 'xfun_record_results')
-  res = new_record()
+  new_result = function(x = list()) structure(x, class = 'xfun_record_results')
+  res = new_result()
   if (length(code) == 0) return(res)
 
   # use cached results if cache exists
@@ -61,7 +61,7 @@ record = function(
   add_result = function(x, type, pos = length(res), insert = TRUE) {
     # insert a whole element or append to an existing element in res
     if (!insert) x = c(res[[pos]], x)
-    el = structure(x, class = paste0('record_', type))
+    el = record_new(x, type)
     N = length(res)
     if (insert) {
       if (N == pos) res[[N + 1]] <<- el else res <<- append(res, el, pos)
@@ -168,7 +168,7 @@ record = function(
   # code may contain syntax errors
   if (is_error(codes)) {
     add_result(code, 'source'); add_result(attr(codes, 'condition')$message, 'error')
-    return(new_record(res))
+    return(new_result(res))
   }
 
   handle_message = function(type, add = TRUE) {
@@ -219,7 +219,7 @@ record = function(
     if (!is_error(out) && out$visible) {
       out = handle_eval(record_print(out$value))
       if (length(out) && !is_error(out)) add_result(
-        out, (grep_sub('^record_([a-z]+)$', '\\1', class(out)) %|% 'output')[1]
+        out, (intersect(.record_classes, class(out)) %|% 'output')[1]
       )
     }
     handle_plot()
@@ -232,7 +232,7 @@ record = function(
   res = Filter(length, res)
   res = merge_record(res)
 
-  new_record(res)
+  new_result(res)
 }
 
 # merge neighbor elements of the same class
@@ -260,12 +260,13 @@ merge_record = function(x) {
 #' character vector. The `knitr_kable` method is for printing [knitr::kable()]
 #' output. Users and package authors can define other S3 methods to extend this
 #' function.
-#' @param x The value to be printed.
+#' @param x For `record_print()`, the value to be printed. For `record_new()`, a
+#'   character vector to be included in the printed results.
 #' @param ... Other arguments to be passed to `record_print()` methods.
 #' @return A `record_print()` method should return a character vector. The
 #'   original classes of the vector will be discarded, and the vector will be
 #'   treated as console output. If it should be another type of output, wrap the
-#'   vector in [record_class()] and specify a class name.
+#'   vector in [record_new()] and specify a class name.
 #' @export
 record_print = function(x, ...) {
   UseMethod('record_print')
@@ -283,14 +284,17 @@ record_print.default = function(x, ...) {
 record_print.knitr_kable = function(x, ...) {
   if ((fmt <- attr(x, 'format')) %in% c('html', 'latex'))
     x = fenced_block(x, paste0('=', fmt))
-  record_class(c(x, ''), 'asis')
+  record_new(c(x, ''), 'asis')
 }
 
-#' @param class A class name, e.g., `asis`, `message`, `plot` (for the `plot`
-#'   class, `x` should be a vector of file paths).
 #' @rdname record_print
 #' @export
-record_class = function(x, class) structure(x, class = paste0('record_', class))
+record_new = function(x, class) structure(x, class = paste0('record_', class))
+
+# all possible classes for record() results at the moment
+.record_classes = paste0('record_', c(
+  'source', 'output', 'message', 'warning', 'error', 'plot', 'asis'
+))
 
 dev_open = function(dev, file, args) {
   m = names(formals(dev))

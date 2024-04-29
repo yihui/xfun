@@ -4,7 +4,7 @@
 \alias{record_print}
 \alias{record_print.default}
 \alias{record_print.knitr_kable}
-\alias{record_class}
+\alias{record_new}
 \title{Print methods for \code{record()}}
 \usage{
 record_print(x, ...)
@@ -13,21 +13,19 @@ record_print(x, ...)
 
 \method{record_print}{knitr_kable}(x, ...)
 
-record_class(x, class)
+record_new(x, class)
 }
 \arguments{
-\item{x}{The value to be printed.}
+\item{x}{For \code{record_print()}, the value to be printed. For \code{record_new()}, a
+character vector to be included in the printed results.}
 
 \item{...}{Other arguments to be passed to \code{record_print()} methods.}
-
-\item{class}{A class name, e.g., \code{asis}, \code{message}, \code{plot} (for the \code{plot}
-class, \code{x} should be a vector of file paths).}
 }
 \value{
 A \code{record_print()} method should return a character vector. The
 original classes of the vector will be discarded, and the vector will be
 treated as console output. If it should be another type of output, wrap the
-vector in \code{\link[=record_class]{record_class()}} and specify a class name.
+vector in \code{\link[=record_new]{record_new()}} and specify a class name.
 }
 \description{
 An S3 generic function to be called to print visible values in code when the
