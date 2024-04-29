@@ -18,6 +18,7 @@ Suggests:
     testit,
     parallel,
     codetools,
+    methods,
     rstudioapi,
     tinytex (>= 0.30),
     mime,
