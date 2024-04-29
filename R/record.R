@@ -183,6 +183,27 @@ record = function(
   handle_w = handle_message('warning', warning)
   handle_e = handle_message('error', error)
 
+  # don't use withCallingHandlers() if message/warning/error are all NA
+  handle_eval = function(expr) {
+    handle(if (is.na(message) && is.na(warning) && is.na(error)) expr else {
+      withCallingHandlers(
+        expr, message = handle_m, warning = handle_w, error = handle_e
+      )
+    })
+  }
+  # a simplified version of capture.output()
+  handle_output = function(expr) {
+    out = NULL
+    con = textConnection('out', 'w', local = TRUE)
+    on.exit(close(con))
+    sink(con); on.exit(sink(), add = TRUE)
+    expr  # lazy evaluation
+    on.exit()  # if no error occurred, clear up previous on-exit calls
+    sink()
+    close(con)
+    if (length(out)) add_result(out, 'output')
+    expr
+  }
   n = length(codes)
   for (i in seq_len(n)) {
     add_result(code <- codes[[i]], 'source')
@@ -192,13 +213,14 @@ record = function(
     if (verbose == 2 || (verbose == 1 && i == n)) {
       expr = parse_only(c('(', code, ')'))
     }
-    # TODO: replace capture.output() with a custom version of sink() +
-    # withVisible() so we can support a custom printing function like knit_print()
-    out = handle(withCallingHandlers(
-      capture.output(eval(expr, envir)),
-      message = handle_m, warning = handle_w, error = handle_e
-    ))
-    if (length(out) && !is_error(out)) add_result(out, 'output')
+    # evaluate the code and capture output
+    out = handle_output(handle_eval(withVisible(eval(expr, envir))))
+    # print value (via record_print()) if visible
+    if (!is_error(out) && out$visible) {
+      out = handle_eval(record_print(out$value))
+      if (length(out) && !is_error(out))
+        add_result(out, if (inherits(out, 'record_asis')) 'asis' else 'output')
+    }
     handle_plot()
   }
   # shut off the device to write out the last plot if there exists one
@@ -227,6 +249,30 @@ merge_record = function(x) {
   }
   if (length(k)) x = x[-k]
   x
+}
+
+#' Print methods for `record()`
+#'
+#' An S3 generic function to be called to print visible values in code when the
+#' code is recorded by [record()]. It is similar to [knitr::knit_print()]. By
+#' default, it captures the normal [print()] output and returns the result as a
+#' character vector. Users and package authors can define other S3 methods to
+#' extend this function.
+#' @param x The value to be printed.
+#' @param ... Other arguments to be passed to `record_print()` methods.
+#' @return A `record_print()` method should return a character vector. The
+#'   returned value may have a special class `record_asis`, which will be stored
+#'   in the `record()` output. All other classes will be discarded.
+#' @export
+record_print = function(x, ...) {
+  UseMethod('record_print')
+}
+
+#' @rdname record_print
+#' @export
+record_print.default = function(x, ...) {
+  # the default print method is just print()/show()
+  capture.output(if (isS4(x)) methods::show(x, ...) else print(x, ...))
 }
 
 dev_open = function(dev, file, args) {

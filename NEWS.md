@@ -8,6 +8,8 @@
 
 - Changed the default value of the argument `error` of `record()` from `FALSE` to `NA`. Now `FALSE` means to suppress error messages, and `NA` means to throw errors normally. This is for consistency with the `message` and `warning` arguments.
 
+- Added an S3 generic function `record_print()`, which is similar to `knitr::knit_print()` but for the purpose of printing visible values in `record()`.
+
 - Exported the internal function `md5()` to calculate the MD5 checksums of R objects. The function is essentially a workaround for `tools::md5sum()` (see HenrikBengtsson/Wishlist-for-R#21).
 
 - `write_utf8()` returns the `con` argument (typically a file path) now. Previously, it returns `NULL`.
