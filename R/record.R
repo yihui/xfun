@@ -205,21 +205,26 @@ record = function(
 
   # remove empty blocks
   res = Filter(length, res)
-  # merge neighbor elements of the same class
-  if (length(res) > 1) {
-    k = NULL
-    for (i in seq_along(res)) {
-      if (i == 1) next
-      r1 = res[[i - 1]]; c1 = class(r1); r2 = res[[i]]; c2 = class(r2)
-      if (!identical(c1, c2)) next
-      res[[i]] = c(r1, r2)
-      attributes(res[[i]]) = attributes(r1)
-      k = c(k, i - 1)
-    }
-    if (length(k)) res = res[-k]
-  }
+  res = merge_record(res)
 
   new_record(res)
+}
+
+# merge neighbor elements of the same class
+merge_record = function(x) {
+  n = length(x)
+  if (n <= 1) return(x)
+  k = NULL
+  for (i in 2:n) {
+    r1 = x[[i - 1]]; c1 = class(r1); r2 = x[[i]]; c2 = class(r2)
+    if (!identical(c1, c2)) next
+    # concatenate messages to a single string (consider message(appendLF = FALSE))
+    x[[i]] = if ('record_message' %in% c1) paste(c(r1, r2), collapse = '') else c(r1, r2)
+    attributes(x[[i]]) = attributes(r1)
+    k = c(k, i - 1)
+  }
+  if (length(k)) x = x[-k]
+  x
 }
 
 dev_open = function(dev, file, args) {
