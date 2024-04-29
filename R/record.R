@@ -16,9 +16,10 @@
 #'   arguments are `list(units = 'in', onefile = FALSE, width = 7, height = 7,
 #'   res = 96)`. If any of these arguments is not present in the device
 #'   function, it will be dropped.
-#' @param error Whether to record errors. If `TRUE`, errors will not stop the
-#'   execution and error messages will be recorded. If `FALSE`, errors will be
-#'   thrown normally.
+#' @param message,warning,error If `TRUE`, record and store messages / warnings
+#'   / errors in the output. If `FALSE`, suppress them. If `NA`, do not process
+#'   them (messages will be emitted to the console, and errors will halt the
+#'   execution).
 #' @param cache A list of options for caching. See the `path`, `id`, and `...`
 #'   arguments of [cache_exec()].
 #' @param verbose `2` means to always print the value of each expression in the
@@ -42,8 +43,8 @@
 #' plots = Filter(function(x) inherits(x, 'record_plot'), res)
 #' file.remove(unlist(plots))
 record = function(
-  code = NULL, dev = 'png', dev.path = 'xfun-record',
-  dev.ext = dev_ext(dev), dev.args = list(), error = FALSE, cache = list(),
+  code = NULL, dev = 'png', dev.path = 'xfun-record', dev.ext = dev_ext(dev),
+  dev.args = list(), message = TRUE, warning = TRUE, error = NA, cache = list(),
   verbose = getOption('xfun.record.verbose', 0), envir = parent.frame()
 ) {
   new_record = function(x = list()) structure(x, class = 'xfun_record_results')
@@ -161,7 +162,7 @@ record = function(
     }
   })
 
-  handle = if (error) try_silent else identity
+  handle = if (is.na(error)) identity else try_silent
   # split code into individual expressions
   codes = handle(split_source(code, merge_comments = TRUE, line_number = TRUE))
   # code may contain syntax errors
@@ -170,16 +171,17 @@ record = function(
     return(new_record(res))
   }
 
-  handle_message = function(type) {
+  handle_message = function(type, add = TRUE) {
     mf = sub('^(.)', 'muffle\\U\\1', type, perl = TRUE)
     function(e) {
-      add_result(e$message, type)
+      if (is.na(add)) return()
+      if (isTRUE(add)) add_result(e$message, type)
       if (type %in% c('message', 'warning')) invokeRestart(mf)
     }
   }
-  handle_m = handle_message('message')
-  handle_w = handle_message('warning')
-  handle_e = handle_message('error')
+  handle_m = handle_message('message', message)
+  handle_w = handle_message('warning', warning)
+  handle_e = handle_message('error', error)
 
   n = length(codes)
   for (i in seq_len(n)) {

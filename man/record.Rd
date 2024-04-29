@@ -12,7 +12,9 @@ record(
   dev.path = "xfun-record",
   dev.ext = dev_ext(dev),
   dev.args = list(),
-  error = FALSE,
+  message = TRUE,
+  warning = TRUE,
+  error = NA,
   cache = list(),
   verbose = getOption("xfun.record.verbose", 0),
   envir = parent.frame()
@@ -46,9 +48,10 @@ inferred from the first argument of the device function if possible.}
 arguments are \code{list(units = 'in', onefile = FALSE, width = 7, height = 7, res = 96)}. If any of these arguments is not present in the device
 function, it will be dropped.}
 
-\item{error}{Whether to record errors. If \code{TRUE}, errors will not stop the
-execution and error messages will be recorded. If \code{FALSE}, errors will be
-thrown normally.}
+\item{message, warning, error}{If \code{TRUE}, record and store messages / warnings
+/ errors in the output. If \code{FALSE}, suppress them. If \code{NA}, do not process
+them (messages will be emitted to the console, and errors will halt the
+execution).}
 
 \item{cache}{A list of options for caching. See the \code{path}, \code{id}, and \code{...}
 arguments of \code{\link[=cache_exec]{cache_exec()}}.}
