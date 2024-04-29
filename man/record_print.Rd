@@ -20,6 +20,9 @@ record_new(x, class)
 character vector to be included in the printed results.}
 
 \item{...}{Other arguments to be passed to \code{record_print()} methods.}
+
+\item{class}{A class name. Possible values are:
+\Sexpr{paste(xfun:::.record_cls, collapse = ', ')}.}
 }
 \value{
 A \code{record_print()} method should return a character vector. The

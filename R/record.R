@@ -287,14 +287,15 @@ record_print.knitr_kable = function(x, ...) {
   record_new(c(x, ''), 'asis')
 }
 
+#' @param class A class name. Possible values are:
+#'   \Sexpr{paste(xfun:::.record_cls, collapse = ', ')}.
 #' @rdname record_print
 #' @export
 record_new = function(x, class) structure(x, class = paste0('record_', class))
 
 # all possible classes for record() results at the moment
-.record_classes = paste0('record_', c(
-  'source', 'output', 'message', 'warning', 'error', 'plot', 'asis'
-))
+.record_cls = c('source', 'output', 'message', 'warning', 'error', 'plot', 'asis')
+.record_classes = paste0('record_', .record_cls)
 
 dev_open = function(dev, file, args) {
   m = names(formals(dev))
