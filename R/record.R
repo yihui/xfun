@@ -63,7 +63,7 @@ record = function(
     if (is.null(type) && !inherits(x, .record_classes)) type = 'output'
     # insert a whole element or append to an existing element in res
     if (!insert) x = c(res[[pos]], x)
-    el = if (is.null(type)) x else record_new(x, type)
+    el = if (is.null(type)) x else new_record(x, type)
     N = length(res)
     if (insert) {
       if (N == pos) res[[N + 1]] <<- el else res <<- append(res, el, pos)
@@ -262,7 +262,7 @@ merge_record = function(x) {
 #' character vector. The `knitr_kable` method is for printing [knitr::kable()]
 #' output. Users and package authors can define other S3 methods to extend this
 #' function.
-#' @param x For `record_print()`, the value to be printed. For `record_new()`, a
+#' @param x For `record_print()`, the value to be printed. For `new_record()`, a
 #'   character vector to be included in the printed results.
 #' @param ... Other arguments to be passed to `record_print()` methods.
 #' @return A `record_print()` method should return a character vector or a list
@@ -287,14 +287,14 @@ record_print.default = function(x, ...) {
 record_print.knitr_kable = function(x, ...) {
   if ((fmt <- attr(x, 'format')) %in% c('html', 'latex'))
     x = fenced_block(x, paste0('=', fmt))
-  record_new(c(x, ''), 'asis')
+  new_record(c(x, ''), 'asis')
 }
 
 #' @param class A class name. Possible values are:
 #'   \Sexpr{paste(xfun:::.record_cls, collapse = ', ')}.
 #' @rdname record_print
 #' @export
-record_new = function(x, class) structure(x, class = paste0('record_', class))
+new_record = function(x, class) structure(x, class = paste0('record_', class))
 
 # all possible classes for record() results at the moment
 .record_cls = c('source', 'output', 'message', 'warning', 'error', 'plot', 'asis')

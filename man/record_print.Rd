@@ -4,7 +4,7 @@
 \alias{record_print}
 \alias{record_print.default}
 \alias{record_print.knitr_kable}
-\alias{record_new}
+\alias{new_record}
 \title{Print methods for \code{record()}}
 \usage{
 record_print(x, ...)
@@ -13,10 +13,10 @@ record_print(x, ...)
 
 \method{record_print}{knitr_kable}(x, ...)
 
-record_new(x, class)
+new_record(x, class)
 }
 \arguments{
-\item{x}{For \code{record_print()}, the value to be printed. For \code{record_new()}, a
+\item{x}{For \code{record_print()}, the value to be printed. For \code{new_record()}, a
 character vector to be included in the printed results.}
 
 \item{...}{Other arguments to be passed to \code{record_print()} methods.}
@@ -25,10 +25,11 @@ character vector to be included in the printed results.}
 \Sexpr{paste(xfun:::.record_cls, collapse = ', ')}.}
 }
 \value{
-A \code{record_print()} method should return a character vector. The
-original classes of the vector will be discarded, and the vector will be
-treated as console output. If it should be another type of output, wrap the
-vector in \code{\link[=record_new]{record_new()}} and specify a class name.
+A \code{record_print()} method should return a character vector or a list
+of character vectors. The original classes of the vector will be discarded,
+and the vector will be treated as console output by default (i.e.,
+\code{new_record(class = "output")}). If it should be another type of output,
+wrap the vector in \code{\link[=new_record]{new_record()}} and specify a class name.
 }
 \description{
 An S3 generic function to be called to print visible values in code when the
