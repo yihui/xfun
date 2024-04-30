@@ -58,10 +58,12 @@ record = function(
 
   code = split_lines(code)
 
-  add_result = function(x, type, pos = length(res), insert = TRUE) {
+  add_result = function(x, type = NULL, pos = length(res), insert = TRUE) {
+    # default type is output
+    if (is.null(type) && !inherits(x, .record_classes)) type = 'output'
     # insert a whole element or append to an existing element in res
     if (!insert) x = c(res[[pos]], x)
-    el = record_new(x, type)
+    el = if (is.null(type)) x else record_new(x, type)
     N = length(res)
     if (insert) {
       if (N == pos) res[[N + 1]] <<- el else res <<- append(res, el, pos)
@@ -218,9 +220,9 @@ record = function(
     # print value (via record_print()) if visible
     if (!is_error(out) && out$visible) {
       out = handle_eval(record_print(out$value))
-      if (length(out) && !is_error(out)) add_result(
-        out, (intersect(.record_classes, class(out)) %|% 'output')[1]
-      )
+      if (length(out) && !is_error(out)) {
+        if (is.list(out)) lapply(out, add_result) else add_result(out)
+      }
     }
     handle_plot()
   }
@@ -263,10 +265,11 @@ merge_record = function(x) {
 #' @param x For `record_print()`, the value to be printed. For `record_new()`, a
 #'   character vector to be included in the printed results.
 #' @param ... Other arguments to be passed to `record_print()` methods.
-#' @return A `record_print()` method should return a character vector. The
-#'   original classes of the vector will be discarded, and the vector will be
-#'   treated as console output. If it should be another type of output, wrap the
-#'   vector in [record_new()] and specify a class name.
+#' @return A `record_print()` method should return a character vector or a list
+#'   of character vectors. The original classes of the vector will be discarded,
+#'   and the vector will be treated as console output by default (i.e.,
+#'   `new_record(class = "output")`). If it should be another type of output,
+#'   wrap the vector in [new_record()] and specify a class name.
 #' @export
 record_print = function(x, ...) {
   UseMethod('record_print')
