@@ -1,5 +1,5 @@
 `%|%` = function(x, y) if (length(x)) x else y
-`%||%` = function(x, y) if (is.null(x)) y else x
+if (getRversion() < '4.4.0') `%||%` = function(x, y) if (is.null(x)) y else x
 
 stop2 = function(...) stop(..., call. = FALSE)
 
