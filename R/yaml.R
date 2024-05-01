@@ -118,19 +118,27 @@ yaml_handlers = function(h, envir) {
 #' @param x A character vector of the document content.
 #' @param ... Arguments to be passed to `yaml_load()`.
 #' @export
-#' @return A list of components `yaml` (if YAML metadata exists) and `body`.
+#' @return A list of components `yaml` (the parsed YAML data), `lines` (starting
+#'   and ending line numbers of YAML), and `body` (a character vector of the
+#'   body text). If YAML metadata does not exist in the document, the components
+#'   `yaml` and `lines` will be missing.
 #' @examples
 #' xfun::yaml_body(c('---', 'title: Hello', 'output: markdown::html_document', '---', '', 'Content.'))
 yaml_body = function(x, ...) {
-  i = grep('^---\\s*$', x)
   n = length(x)
-  res = if (n < 2 || length(i) < 2 || (i[1] > 1 && !all(is_blank(x[seq(i[1] - 1)])))) {
+  res = if (length(i <- locate_yaml(x)) == 0) {
     list(body = x)
   } else list(
-    yaml = x[i[1]:i[2]], body = c(rep('', i[2]), tail(x, n - i[2]))
+    yaml = x[i[1]:i[2]], body = c(rep('', i[2]), tail(x, n - i[2])), lines = i
   )
   if ((n <- length(res$yaml)) >= 2) {
     res['yaml'] = list(yaml_load(res$yaml[-c(1, n)], ...))
   }
   res
+}
+
+# find lines of YAML
+locate_yaml = function(x) {
+  i = grep('^---\\s*$', x)
+  if (length(i) > 1 && all(is_blank(x[seq_len(i[1] - 1)]))) i[1:2]
 }

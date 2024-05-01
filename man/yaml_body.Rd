@@ -12,7 +12,10 @@ yaml_body(x, ...)
 \item{...}{Arguments to be passed to \code{yaml_load()}.}
 }
 \value{
-A list of components \code{yaml} (if YAML metadata exists) and \code{body}.
+A list of components \code{yaml} (the parsed YAML data), \code{lines} (starting
+and ending line numbers of YAML), and \code{body} (a character vector of the
+body text). If YAML metadata does not exist in the document, the components
+\code{yaml} and \code{lines} will be missing.
 }
 \description{
 Split a document into the YAML metadata (which starts with \verb{---} in the

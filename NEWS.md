@@ -14,6 +14,8 @@
 
 - `write_utf8()` returns the `con` argument (typically a file path) now. Previously, it returns `NULL`.
 
+- The returned value of `yaml_body()` contains a new element `lines` in the list indicating the line numbers of YAML metadata if exists.
+
 - Fixed an edge case in `prose_index()`, in which inline code was incorrectly recognized as a code block fence.
 
 # CHANGES IN xfun VERSION 0.43
