@@ -1,3 +1,39 @@
+#' Create a local web application
+#'
+#' An experimental function to create a local web application based on R's
+#' internal `httpd` server (which is primarily for running R's dynamic help
+#' system).
+#' @param name The app name (a character string, and each app should have a
+#'   unique name).
+#' @param handler A function that takes the HTTP request information (the first
+#'   argument is the requested path) and returns a response.
+#' @param open Whether to open the app, or a function to open the app URL.
+#' @param ports A vector of ports to try for starting the server.
+#' @return The app URL of the form `http://127.0.0.1:port/custom/name/`.
+#' @note This function is not based on base R's public API, and is possible to
+#'   break in the future, which is also why the documentation here is terse.
+#'   Please avoid creating public-facing web apps with it. You may consider
+#'   packages like \pkg{httpuv} and \pkg{Rserve} for production web apps.
+#' @export
+new_app = function(name, handler, open = interactive(), ports = 4321 + 1:10) {
+  if (is.null(getOption('help.ports'))) {
+    options(help.ports = ports); on.exit(help.ports = NULL)
+  }
+  port = tools::startDynamicHelp(NA)
+  url  = sprintf('http://127.0.0.1:%d/custom/%s/', port, name)
+  h = function(path, ...) {
+    path = sub(paste0('^/custom/', name, '/'), '', path)
+    if (path == '') path = '.'
+    handler(path, ...)
+  }
+  # to anyone who sees the dirty assign() here, please close your eyes and walk
+  # away as quickly as possible; thanks!
+  assign(name, h, envir = getFromNamespace('.httpd.handlers.env', 'tools'))
+  if (isTRUE(open)) open = getOption('viewer', getOption('browser'))
+  if (is.function(open)) open(url)
+  invisible(url)
+}
+
 #' Get data from a REST API
 #'
 #' Read data from a REST API and optionally with an authorization token in the
