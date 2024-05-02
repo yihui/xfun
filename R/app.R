@@ -21,10 +21,11 @@ new_app = function(name, handler, open = interactive(), ports = 4321 + 1:10) {
   }
   port = tools::startDynamicHelp(NA)
   url  = sprintf('http://127.0.0.1:%d/custom/%s/', port, name)
+  wd = getwd()  # always run handler under the original working directory
   h = function(path, ...) {
     path = sub(paste0('^/custom/', name, '/'), '', path)
     if (path == '') path = '.'
-    handler(path, ...)
+    in_dir(wd, handler(path, ...))
   }
   # to anyone who sees the dirty assign() here, please close your eyes and walk
   # away as quickly as possible; thanks!
