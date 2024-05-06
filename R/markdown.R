@@ -238,3 +238,55 @@ zip = function(name, ...) {
   if (utils::zip(name, ...) != 0) stop('Failed to create the zip archive ', name)
   invisible(0)
 }
+
+#' Generate a Markdown pipe table
+#'
+#' A minimal Markdown table generator using the pipe `|` as column separators.
+#' @param x A 2-dimensional object (e.g., a matrix or data frame).
+#' @param digits The number of decimal places to be passed to [round()]. It can
+#'   be a integer vector of the same length as the number of columns in `x` to
+#'   round columns separately.
+#' @param caption A table caption. If provided, the caption will be placed in a
+#'   fenced Div with the class `tab-caption`, and the whole table will be placed
+#'   in a fenced Div with the class `table`.
+#' @param na A character string to represent `NA` values.
+#' @param newline A character string to substitute `\n` in `x` (because pipe
+#'   tables do not support line breaks in cells).
+#' @return A character vector.
+#' @seealso [knitr::kable()] (which supports more features)
+#' @export
+#' @examples
+#' xfun::md_table(head(iris))
+#' xfun::md_table(head(iris), caption = 'An old dataset.')
+md_table = function(x, digits = NULL, caption = NULL, na = '', newline = ' ') {
+  if (length(d <- dim(x)) != 2)
+    stop('xfun::md_table() only supports 2-dimensional objects.')
+  if (d[2] == 0) return(character())
+  if (is.null(digits))
+    digits = getOption('xfun.md_table.digits', min(getOption('digits'), 3))
+  digits = rep(digits, d[2])  # recycle for all columns
+  num = logical(d[2])  # numeric columns
+  for (j in seq_len(d[2])) if (is.numeric(x[, j])) {
+    num[j] = TRUE
+    x[, j] = round(x[, j], digits[j])
+  }
+  rn = rownames(x)
+  cn = colnames(x) %||% rep(' ', d[2])  # table header
+  is_na = is.na(x)
+  x = format(x)
+  if (any(is_na)) x[is_na] = na
+  # ignore empty and automatic row names
+  if (!is.null(rn) && length(setdiff(rn, seq_len(d[1]))) > 0) {
+    x = cbind(' ' = rn, x)
+    cn = c(' ', cn)
+    num = c(FALSE, num)
+  }
+  x = rbind(cn, ifelse(num, '--:', '---'), x)
+  res = do.call(function(...) paste(..., sep = '|'), as.data.frame(x))
+  res = gsub('\n', newline, res, fixed = TRUE)
+  res = paste0('|', res, '|')
+  if (length(caption)) {
+    res = fenced_div(c(fenced_div(caption, '.tab-caption'), '', res), '.table')
+  }
+  res
+}
