@@ -16,6 +16,8 @@ record(
   warning = TRUE,
   error = NA,
   cache = list(),
+  print = record_print,
+  print.args = list(),
   verbose = getOption("xfun.record.verbose", 0),
   envir = parent.frame()
 )
@@ -55,6 +57,16 @@ execution).}
 
 \item{cache}{A list of options for caching. See the \code{path}, \code{id}, and \code{...}
 arguments of \code{\link[=cache_exec]{cache_exec()}}.}
+
+\item{print}{A (typically S3) function that takes the value of an expression
+in the code as input and returns output. The default is \code{\link[=record_print]{record_print()}}.}
+
+\item{print.args}{A list of arguments for the \code{print} function. By default,
+the whole list is not passed directly to the function, but only an element
+in the list with a name identical to the first class name of the returned
+value of the expression, e.g., \code{list(data.frame = list(digits = 3), matrix = list())}. This makes it possible to apply different print arguments to
+objects of different classes. If the whole list is intended to be passed to
+the print function directly, wrap the list in \code{\link[=I]{I()}}.}
 
 \item{verbose}{\code{2} means to always print the value of each expression in the
 code, no matter if the value is \code{\link[=invisible]{invisible()}} or not; \code{1} means to always

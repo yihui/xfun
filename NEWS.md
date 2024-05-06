@@ -10,6 +10,8 @@
 
 - Added an S3 generic function `record_print()`, which is similar to `knitr::knit_print()` but for the purpose of printing visible values in `record()`.
 
+- The `record()` funciton gained new arguments `print` and `print.args` to support custom printing functions and arguments.
+
 - Added a function `md_table()`, which is a minimal Markdown table generator.
 
 - Exported the internal function `md5()` to calculate the MD5 checksums of R objects. The function is essentially a workaround for `tools::md5sum()` (see HenrikBengtsson/Wishlist-for-R#21).

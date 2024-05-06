@@ -22,6 +22,15 @@
 #'   execution).
 #' @param cache A list of options for caching. See the `path`, `id`, and `...`
 #'   arguments of [cache_exec()].
+#' @param print A (typically S3) function that takes the value of an expression
+#'   in the code as input and returns output. The default is [record_print()].
+#' @param print.args A list of arguments for the `print` function. By default,
+#'   the whole list is not passed directly to the function, but only an element
+#'   in the list with a name identical to the first class name of the returned
+#'   value of the expression, e.g., `list(data.frame = list(digits = 3), matrix
+#'   = list())`. This makes it possible to apply different print arguments to
+#'   objects of different classes. If the whole list is intended to be passed to
+#'   the print function directly, wrap the list in [I()].
 #' @param verbose `2` means to always print the value of each expression in the
 #'   code, no matter if the value is [invisible()] or not; `1` means to always
 #'   print the value of the last expression; `0` means no special handling
@@ -45,6 +54,7 @@
 record = function(
   code = NULL, dev = 'png', dev.path = 'xfun-record', dev.ext = dev_ext(dev),
   dev.args = list(), message = TRUE, warning = TRUE, error = NA, cache = list(),
+  print = record_print, print.args = list(),
   verbose = getOption('xfun.record.verbose', 0), envir = parent.frame()
 ) {
   new_result = function(x = list()) structure(x, class = 'xfun_record_results')
@@ -219,7 +229,10 @@ record = function(
     out = handle_output(handle_eval(withVisible(eval(expr, envir))))
     # print value (via record_print()) if visible
     if (!is_error(out) && out$visible) {
-      out = handle_eval(record_print(out$value))
+      p_args = print.args
+      # index print args by first class of out unless args are wrapped in I()
+      if (!inherits(print.args, 'AsIs')) p_args = p_args[[class(out)[1]]]
+      out = handle_eval(do.call(print, c(list(out$value), p_args)))
       if (length(out) && !is_error(out)) {
         if (is.list(out)) lapply(out, add_result) else add_result(out)
       }

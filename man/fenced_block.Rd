@@ -2,10 +2,13 @@
 % Please edit documentation in R/markdown.R
 \name{fenced_block}
 \alias{fenced_block}
+\alias{fenced_div}
 \alias{make_fence}
 \title{Create a fenced block in Markdown}
 \usage{
 fenced_block(x, attrs = NULL, fence = make_fence(x, char), char = "`")
+
+fenced_div(...)
 
 make_fence(x, char = "`")
 }
@@ -19,6 +22,8 @@ generated from the \code{char} argument by default.}
 
 \item{char}{The fence character to be used to generate the fence string by
 default.}
+
+\item{...}{Arguments to be passed to \code{fenced_block()}.}
 }
 \value{
 \code{fenced_block()} returns a character vector that contains both the
@@ -30,7 +35,8 @@ the fence.
 }
 \description{
 Wrap content with fence delimiters such as backticks (code blocks) or colons
-(fenced Div). Optionally the fenced block can have attributes.
+(fenced Div). Optionally the fenced block can have attributes. The function
+\code{fenced_div()} is a shorthand of \code{fenced_block(char = ':')}.
 }
 \examples{
 # code block with class 'r' and ID 'foo'
