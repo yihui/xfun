@@ -122,7 +122,8 @@ escape_math = function(x, token = '') {
 #' Create a fenced block in Markdown
 #'
 #' Wrap content with fence delimiters such as backticks (code blocks) or colons
-#' (fenced Div). Optionally the fenced block can have attributes.
+#' (fenced Div). Optionally the fenced block can have attributes. The function
+#' `fenced_div()` is a shorthand of `fenced_block(char = ':')`.
 #' @param x A character vector of the block content.
 #' @param attrs A vector of block attributes.
 #' @param fence The fence string, e.g., `:::` or ```` ``` ````. This will be
@@ -140,6 +141,11 @@ escape_math = function(x, token = '') {
 fenced_block = function(x, attrs = NULL, fence = make_fence(x, char), char = '`') {
   c('', paste0(fence, block_attr(attrs)), x, fence)
 }
+
+#' @param ... Arguments to be passed to `fenced_block()`.
+#' @rdname fenced_block
+#' @export
+fenced_div = function(...) fenced_block(..., char = ':')
 
 #' @return `make_fence()` returns a character string. If the block content
 #'   contains `N` fence characters (e.g., backticks), use `N + 1` characters as

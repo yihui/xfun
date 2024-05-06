@@ -12,6 +12,8 @@
 
 - Exported the internal function `md5()` to calculate the MD5 checksums of R objects. The function is essentially a workaround for `tools::md5sum()` (see HenrikBengtsson/Wishlist-for-R#21).
 
+- Added a shorthand `fenced_div()` for `fenced_block(char = ':')`.
+
 - `write_utf8()` returns the `con` argument (typically a file path) now. Previously, it returns `NULL`.
 
 - Added an experimental function `new_app()` to create a local web application.
