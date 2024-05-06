@@ -198,7 +198,7 @@ record = function(
     out = NULL
     con = textConnection('out', 'w', local = TRUE)
     on.exit(close(con))
-    sink(con); on.exit(sink(), add = TRUE)
+    sink(con); on.exit(sink(), add = TRUE, after = FALSE)
     expr  # lazy evaluation
     on.exit()  # if no error occurred, clear up previous on-exit calls
     sink()
