@@ -29,3 +29,14 @@ is_linux = function() unname(Sys.info()['sysname'] == 'Linux')
 #' @rdname os
 #' @export
 is_arm64 = function() Sys.info()[['machine']] %in% c('arm64', 'aarch64')
+
+# open a file (optionally in an editor) or directory
+open_path = function(x, edit = !dir_exists(x), ...) {
+  if (edit) {
+    tryCatch(rstudioapi::navigateToFile(x, ...), error = function(e) file.edit(x))
+  } else {
+    if (is_windows()) shell.exec(x) else {
+      system2(if (is_macos()) 'open' else 'xdg-open', shQuote(x))
+    }
+  }
+}
