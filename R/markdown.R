@@ -245,7 +245,8 @@ zip = function(name, ...) {
 #' @param x A 2-dimensional object (e.g., a matrix or data frame).
 #' @param digits The number of decimal places to be passed to [round()]. It can
 #'   be a integer vector of the same length as the number of columns in `x` to
-#'   round columns separately.
+#'   round columns separately. The default is `3` and can be changed via the
+#'   global option `xfun.md_table.digits`.
 #' @param caption A table caption. If provided, the caption will be placed in a
 #'   fenced Div with the class `tab-caption`, and the whole table will be placed
 #'   in a fenced Div with the class `table`.
