@@ -229,9 +229,10 @@ record = function(
     out = handle_output(handle_eval(withVisible(eval(expr, envir))))
     # print value (via record_print()) if visible
     if (!is_error(out) && out$visible) {
+      if (is.null(print)) print = record_print
       p_args = print.args
       # index print args by first class of out unless args are wrapped in I()
-      if (!inherits(print.args, 'AsIs')) p_args = p_args[[class(out)[1]]]
+      if (!inherits(p_args, 'AsIs')) p_args = p_args[[class(out$value)[1]]]
       out = handle_eval(do.call(print, c(list(out$value), p_args)))
       if (length(out) && !is_error(out)) {
         if (is.list(out)) lapply(out, add_result) else add_result(out)
