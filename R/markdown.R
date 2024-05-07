@@ -282,7 +282,7 @@ md_table = function(x, digits = NULL, na = '', newline = ' ', limit = 0) {
     l1 = limit[1]
     if (l1 > 0 && l1 < d[1]) {
       n1 = round(l1/2); n2 = l1 - n1
-      x = rbind(head(x, n1), '...', tail(x, n2))
+      x = rbind(head(x, n1), '&vellip;', tail(x, n2))
     }
     # subset columns
     if (length(limit) >= 2 && (l2 <- limit[2]) > 0 && l2 < d[2]) {
