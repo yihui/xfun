@@ -253,13 +253,18 @@ zip = function(name, ...) {
 #' @param na A character string to represent `NA` values.
 #' @param newline A character string to substitute `\n` in `x` (because pipe
 #'   tables do not support line breaks in cells).
+#' @param limit The maximum number of rows to show in the table. If it is
+#'   smaller than the number of rows, the data in the middle will be omitted. If
+#'   it is of length 2, the second number will be used to limit the number of
+#'   columns. The default can be set via the global option
+#'   `xfun.md_table.limit`. Zero and negative values are ignored.
 #' @return A character vector.
 #' @seealso [knitr::kable()] (which supports more features)
 #' @export
 #' @examples
 #' xfun::md_table(head(iris))
 #' xfun::md_table(head(iris), caption = 'An old dataset.')
-md_table = function(x, digits = NULL, caption = NULL, na = '', newline = ' ') {
+md_table = function(x, digits = NULL, caption = NULL, na = '', newline = ' ', limit = 0) {
   if (length(d <- dim(x)) != 2)
     stop('xfun::md_table() only supports 2-dimensional objects.')
   if (d[2] == 0) return(character())
@@ -271,13 +276,34 @@ md_table = function(x, digits = NULL, caption = NULL, na = '', newline = ' ') {
     num[j] = TRUE
     x[, j] = round(x[, j], digits[j])
   }
+  is_na = is.na(x)
+  x = as.matrix(format(x))
+  if (any(is_na)) x[is_na] = na
+  # get first and last limit/2 rows/cols in N rows/cols
+  if (length(limit <- limit %||% getOption('xfun.md_table.limit'))) {
+    # subset rows
+    l1 = limit[1]
+    if (l1 > 0 && l1 < d[1]) {
+      n1 = round(l1/2); n2 = l1 - n1
+      x = rbind(head(x, n1), '...', tail(x, n2))
+    }
+    # subset columns
+    if (length(limit) >= 2 && (l2 <- limit[2]) > 0 && l2 < d[2]) {
+      n1 = round(l2/2); n2 = l2 - n1
+      x = cbind(
+        x[, seq_len(n1), drop = FALSE],
+        `...` = '...',
+        x[, d[2] - seq_len(n2) + 1, drop = FALSE]
+      )
+      num = c(head(num, n1), FALSE, tail(num, n2))
+    }
+    d = dim(x)
+    if (d[2] == 0) return(character())
+  }
   rn = rownames(x)
   cn = colnames(x) %||% rep(' ', d[2])  # table header
-  is_na = is.na(x)
-  x = format(x)
-  if (any(is_na)) x[is_na] = na
-  # ignore empty and automatic row names
-  if (!is.null(rn) && length(setdiff(rn, seq_len(d[1]))) > 0) {
+  # ignore empty and automatic row names (integers)
+  if (!all(grepl('^[0-9]*$', rn))) {
     x = cbind(' ' = rn, x)
     cn = c(' ', cn)
     num = c(FALSE, num)

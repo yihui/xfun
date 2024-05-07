@@ -4,14 +4,15 @@
 \alias{md_table}
 \title{Generate a Markdown pipe table}
 \usage{
-md_table(x, digits = NULL, caption = NULL, na = "", newline = " ")
+md_table(x, digits = NULL, caption = NULL, na = "", newline = " ", limit = 0)
 }
 \arguments{
 \item{x}{A 2-dimensional object (e.g., a matrix or data frame).}
 
 \item{digits}{The number of decimal places to be passed to \code{\link[=round]{round()}}. It can
 be a integer vector of the same length as the number of columns in \code{x} to
-round columns separately.}
+round columns separately. The default is \code{3} and can be changed via the
+global option \code{xfun.md_table.digits}.}
 
 \item{caption}{A table caption. If provided, the caption will be placed in a
 fenced Div with the class \code{tab-caption}, and the whole table will be placed
@@ -21,6 +22,12 @@ in a fenced Div with the class \code{table}.}
 
 \item{newline}{A character string to substitute \verb{\\n} in \code{x} (because pipe
 tables do not support line breaks in cells).}
+
+\item{limit}{The maximum number of rows to show in the table. If it is
+smaller than the number of rows, the data in the middle will be omitted. If
+it is of length 2, the second number will be used to limit the number of
+columns. The default can be set via the global option
+\code{xfun.md_table.limit}. Zero and negative values are ignored.}
 }
 \value{
 A character vector.
