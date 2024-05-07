@@ -17,7 +17,7 @@
 #' @export
 new_app = function(name, handler, open = interactive(), ports = 4321 + 1:10) {
   if (is.null(getOption('help.ports'))) {
-    options(help.ports = ports); on.exit(help.ports = NULL)
+    options(help.ports = ports); on.exit(options(help.ports = NULL))
   }
   port = tools::startDynamicHelp(NA)
   url  = sprintf('http://127.0.0.1:%d/custom/%s/', port, name)
