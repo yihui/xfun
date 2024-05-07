@@ -4,7 +4,7 @@
 \alias{md_table}
 \title{Generate a Markdown pipe table}
 \usage{
-md_table(x, digits = NULL, caption = NULL, na = "", newline = " ", limit = 0)
+md_table(x, digits = NULL, na = "", newline = " ", limit = 0)
 }
 \arguments{
 \item{x}{A 2-dimensional object (e.g., a matrix or data frame).}
@@ -13,10 +13,6 @@ md_table(x, digits = NULL, caption = NULL, na = "", newline = " ", limit = 0)
 be a integer vector of the same length as the number of columns in \code{x} to
 round columns separately. The default is \code{3} and can be changed via the
 global option \code{xfun.md_table.digits}.}
-
-\item{caption}{A table caption. If provided, the caption will be placed in a
-fenced Div with the class \code{tab-caption}, and the whole table will be placed
-in a fenced Div with the class \code{table}.}
 
 \item{na}{A character string to represent \code{NA} values.}
 

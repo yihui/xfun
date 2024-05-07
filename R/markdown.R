@@ -247,9 +247,6 @@ zip = function(name, ...) {
 #'   be a integer vector of the same length as the number of columns in `x` to
 #'   round columns separately. The default is `3` and can be changed via the
 #'   global option `xfun.md_table.digits`.
-#' @param caption A table caption. If provided, the caption will be placed in a
-#'   fenced Div with the class `tab-caption`, and the whole table will be placed
-#'   in a fenced Div with the class `table`.
 #' @param na A character string to represent `NA` values.
 #' @param newline A character string to substitute `\n` in `x` (because pipe
 #'   tables do not support line breaks in cells).
@@ -264,7 +261,7 @@ zip = function(name, ...) {
 #' @examples
 #' xfun::md_table(head(iris))
 #' xfun::md_table(head(iris), caption = 'An old dataset.')
-md_table = function(x, digits = NULL, caption = NULL, na = '', newline = ' ', limit = 0) {
+md_table = function(x, digits = NULL, na = '', newline = ' ', limit = 0) {
   if (length(d <- dim(x)) != 2)
     stop('xfun::md_table() only supports 2-dimensional objects.')
   if (d[2] == 0) return(character())
@@ -314,9 +311,5 @@ md_table = function(x, digits = NULL, caption = NULL, na = '', newline = ' ', li
   dim(x) = d
   res = do.call(function(...) paste(..., sep = '|'), as.data.frame(x))
   res = gsub('\n', newline, res, fixed = TRUE)
-  res = paste0('|', res, '|')
-  if (length(caption)) {
-    res = fenced_div(c(fenced_div(caption, '.tab-caption'), '', res), '.table')
-  }
-  res
+  paste0('|', res, '|')
 }
