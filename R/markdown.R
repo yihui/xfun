@@ -282,6 +282,9 @@ md_table = function(x, digits = NULL, caption = NULL, na = '', newline = ' ') {
     num = c(FALSE, num)
   }
   x = rbind(cn, ifelse(num, '--:', '---'), x)
+  d = dim(x)
+  x = gsub('|', '&#124;', x, fixed = TRUE)
+  dim(x) = d
   res = do.call(function(...) paste(..., sep = '|'), as.data.frame(x))
   res = gsub('\n', newline, res, fixed = TRUE)
   res = paste0('|', res, '|')
