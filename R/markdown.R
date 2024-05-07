@@ -260,7 +260,7 @@ zip = function(name, ...) {
 #' @export
 #' @examples
 #' xfun::md_table(head(iris))
-#' xfun::md_table(head(iris), caption = 'An old dataset.')
+#' xfun::md_table(mtcars, limit = c(10, 6))
 md_table = function(x, digits = NULL, na = '', newline = ' ', limit = 0) {
   if (length(d <- dim(x)) != 2)
     stop('xfun::md_table() only supports 2-dimensional objects.')

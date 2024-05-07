@@ -33,7 +33,7 @@ A minimal Markdown table generator using the pipe \code{|} as column separators.
 }
 \examples{
 xfun::md_table(head(iris))
-xfun::md_table(head(iris), caption = "An old dataset.")
+xfun::md_table(mtcars, limit = c(10, 6))
 }
 \seealso{
 \code{\link[knitr:kable]{knitr::kable()}} (which supports more features)
