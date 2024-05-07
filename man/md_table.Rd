@@ -2,34 +2,37 @@
 % Please edit documentation in R/markdown.R
 \name{md_table}
 \alias{md_table}
-\title{Generate a Markdown pipe table}
+\title{Generate a simple Markdown pipe table}
 \usage{
-md_table(x, digits = NULL, na = "", newline = " ", limit = 0)
+md_table(x, digits = NULL, na = NULL, newline = NULL, limit = NULL)
 }
 \arguments{
 \item{x}{A 2-dimensional object (e.g., a matrix or data frame).}
 
 \item{digits}{The number of decimal places to be passed to \code{\link[=round]{round()}}. It can
 be a integer vector of the same length as the number of columns in \code{x} to
-round columns separately. The default is \code{3} and can be changed via the
-global option \code{xfun.md_table.digits}.}
+round columns separately. The default is \code{3}.}
 
-\item{na}{A character string to represent \code{NA} values.}
+\item{na}{A character string to represent \code{NA} values. The default is an
+empty string.}
 
 \item{newline}{A character string to substitute \verb{\\n} in \code{x} (because pipe
-tables do not support line breaks in cells).}
+tables do not support line breaks in cells). The default is a space.}
 
 \item{limit}{The maximum number of rows to show in the table. If it is
 smaller than the number of rows, the data in the middle will be omitted. If
 it is of length 2, the second number will be used to limit the number of
-columns. The default can be set via the global option
-\code{xfun.md_table.limit}. Zero and negative values are ignored.}
+columns. Zero and negative values are ignored.}
 }
 \value{
 A character vector.
 }
 \description{
 A minimal Markdown table generator using the pipe \code{|} as column separators.
+}
+\details{
+The default argument values can be set via global options with the prefix
+\code{xfun.md_table.}, e.g., \verb{options(xfun.md_table.digits 2, xfun.md_table.na = 'n/a')}.
 }
 \examples{
 xfun::md_table(head(iris))

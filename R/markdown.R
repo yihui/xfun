@@ -239,29 +239,32 @@ zip = function(name, ...) {
   invisible(0)
 }
 
-#' Generate a Markdown pipe table
+#' Generate a simple Markdown pipe table
 #'
 #' A minimal Markdown table generator using the pipe `|` as column separators.
+#'
+#' The default argument values can be set via global options with the prefix
+#' `xfun.md_table.`, e.g., `options(xfun.md_table.digits 2, xfun.md_table.na =
+#' 'n/a')`.
 #' @param x A 2-dimensional object (e.g., a matrix or data frame).
 #' @param digits The number of decimal places to be passed to [round()]. It can
 #'   be a integer vector of the same length as the number of columns in `x` to
-#'   round columns separately. The default is `3` and can be changed via the
-#'   global option `xfun.md_table.digits`.
-#' @param na A character string to represent `NA` values.
+#'   round columns separately. The default is `3`.
+#' @param na A character string to represent `NA` values. The default is an
+#'   empty string.
 #' @param newline A character string to substitute `\n` in `x` (because pipe
-#'   tables do not support line breaks in cells).
+#'   tables do not support line breaks in cells). The default is a space.
 #' @param limit The maximum number of rows to show in the table. If it is
 #'   smaller than the number of rows, the data in the middle will be omitted. If
 #'   it is of length 2, the second number will be used to limit the number of
-#'   columns. The default can be set via the global option
-#'   `xfun.md_table.limit`. Zero and negative values are ignored.
+#'   columns. Zero and negative values are ignored.
 #' @return A character vector.
 #' @seealso [knitr::kable()] (which supports more features)
 #' @export
 #' @examples
 #' xfun::md_table(head(iris))
 #' xfun::md_table(mtcars, limit = c(10, 6))
-md_table = function(x, digits = NULL, na = '', newline = ' ', limit = 0) {
+md_table = function(x, digits = NULL, na = NULL, newline = NULL, limit = NULL) {
   if (length(d <- dim(x)) != 2)
     stop('xfun::md_table() only supports 2-dimensional objects.')
   if (d[2] == 0) return(character())
@@ -275,7 +278,7 @@ md_table = function(x, digits = NULL, na = '', newline = ' ', limit = 0) {
   }
   is_na = is.na(x)
   x = as.matrix(format(x))
-  if (any(is_na)) x[is_na] = na
+  if (any(is_na)) x[is_na] = na %||% getOption('xfun.md_table.na', '')
   # get first and last limit/2 rows/cols in N rows/cols
   if (length(limit <- limit %||% getOption('xfun.md_table.limit'))) {
     # subset rows
@@ -310,6 +313,6 @@ md_table = function(x, digits = NULL, na = '', newline = ' ', limit = 0) {
   x = gsub('|', '&#124;', x, fixed = TRUE)
   dim(x) = d
   res = do.call(function(...) paste(..., sep = '|'), as.data.frame(x))
-  res = gsub('\n', newline, res, fixed = TRUE)
+  res = gsub('\n', newline %||% getOption('xfun.md_table.newline', ' '), res, fixed = TRUE)
   paste0('|', res, '|')
 }
