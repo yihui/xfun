@@ -295,14 +295,6 @@ record_print.default = function(x, ...) {
   capture.output(if (isS4(x)) methods::show(x, ...) else print(x, ...))
 }
 
-#' @rdname record_print
-#' @export
-record_print.knitr_kable = function(x, ...) {
-  if ((fmt <- attr(x, 'format')) %in% c('html', 'latex'))
-    x = fenced_block(x, paste0('=', fmt))
-  new_record(c(x, ''), 'asis')
-}
-
 #' @param class A class name. Possible values are:
 #'   \Sexpr{paste(xfun:::.record_cls, collapse = ', ')}.
 #' @rdname record_print
