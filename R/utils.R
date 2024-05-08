@@ -343,14 +343,16 @@ func_name = function(which = 1) {
 handle_error = function(
   expr, handler, label = '', fun = getOption('xfun.handle_error.loc_fun')
 ) {
-  opts = options(error = function() {
+  on.exit(if (!ok) {
     loc = if (is.function(fun)) trimws(fun(label)) else ''
     # TODO: remove this workaround after knitr 1.47
     m = if (length(formals(handler)) == 1) handler(loc) else handler(list(message = ''), loc)
     message(one_string(m))
   })
-  on.exit(options(opts))
-  expr
+  ok = FALSE
+  res = expr
+  ok = TRUE
+  res
 }
 
 # a shorthand for rm(list =, envir =)
