@@ -61,8 +61,8 @@
 #' @param ... More arguments to control the behavior of caching (see
 #'   \sQuote{Details}).
 #' @return If the cache is found, the cached value of the expression will be
-#'   loaded and returned (other local variables will also be loaded into the
-#'   current environment as a side-effect). If cache does not exist, the
+#'   loaded and returned (other local variables will also be lazy-loaded into
+#'   the current environment as a side-effect). If cache does not exist, the
 #'   expression is executed and its value is returned.
 #' @export
 #' @examples
@@ -153,7 +153,7 @@ cache_code = function(
     id %in% ls_all(db)
   } else {
     db = list.files(id, full.names = TRUE)
-    hits = grepl('^[0-9a-z]{32}$', basename(db))
+    hits = grepl('^[0-9a-z]{32}([.][0-9]+)?$', basename(db))
     if (base::isFALSE(config$keep)) file.remove(db[hits])
     id = file.path(id, hash)
     file_exists(id)
@@ -163,7 +163,10 @@ cache_code = function(
     # I could implement lazy-loading here but I'm not sure if it's worth it
     ret = if (mem_cache) db[[id]] else rw$load(id)
     list2env(ret$hashes, dict)  # update the hash dictionary
-    list2env(ret$values, envir)  # copy cached objects into envir
+    # lazy-load cached objects into envir
+    .mapply(function(name, file) {
+      delayedAssign(name, if (mem_cache) ret$values[[name]] else rw$load(file), assign.env = envir)
+    }, list(names(ret$hashes), sprintf('%s.%d', id, seq_along(ret$hashes))), NULL)
     found
     return(ret$result)
   }
@@ -190,12 +193,16 @@ cache_code = function(
       'Variable(s) not found in the environment: ', paste(v2, collapse = ', ')
     )
     hashes = as.list(do.call(md5, vals <- mget(vars, envir)))
-    ret = list(result = res, hashes = hashes, values = vals)
+    ret = list(result = res, hashes = hashes)
     if (mem_cache) {
+      ret$values = vals
       db[[id]] = ret
     } else {
       dir_create(dirname(id))
-      rw$save(ret, id)
+      rw$save(ret, id)  # result and variable hashes are saved to the main file
+      # variable values are saved in separate files of the form HASH.i; the i-th
+      # file is for the i-th variable
+      .mapply(rw$save, list(vals, sprintf('%s.%d', id, seq_along(vals))), NULL)
     }
     list2env(hashes, dict)
   })

@@ -29,8 +29,8 @@ manually provide an \code{id}.}
 }
 \value{
 If the cache is found, the cached value of the expression will be
-loaded and returned (other local variables will also be loaded into the
-current environment as a side-effect). If cache does not exist, the
+loaded and returned (other local variables will also be lazy-loaded into
+the current environment as a side-effect). If cache does not exist, the
 expression is executed and its value is returned.
 }
 \description{
