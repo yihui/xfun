@@ -350,9 +350,9 @@ handle_error = function(
     message(one_string(m))
   })
   ok = FALSE
-  res = expr
+  expr  # evaluate now
   ok = TRUE
-  res
+  expr  # won't be evaluated again
 }
 
 # a shorthand for rm(list =, envir =)
