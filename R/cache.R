@@ -118,6 +118,9 @@ cache_code = function(
   # functions to read/write cache files
   if (is.null(rw <- config$rw)) rw = 'rds'
   if (is.character(rw)) rw = cache_methods[[rw]]
+  if (!is.character(rw$name) || length(rw$name) != 1) stop(
+    'The cache method must have a name (as a character string).'
+  )
 
   hash = config$hash %||% find_globals(code, envir)
   # get the values of hash variables (unless hash is I(character()))
@@ -153,9 +156,9 @@ cache_code = function(
     id %in% ls_all(db)
   } else {
     db = list.files(id, full.names = TRUE)
-    hits = grepl('^[0-9a-z]{32}([.][0-9]+)?$', basename(db))
+    hits = grepl('^[0-9a-z]{32}[.][[:alnum:]]+([.][0-9]+)?$', basename(db))
     if (base::isFALSE(config$keep)) file.remove(db[hits])
-    id = file.path(id, hash)
+    id = file.path(id, paste0(hash, '.', rw$name))
     file_exists(id)
   }
   # return now if cache is found
@@ -211,6 +214,7 @@ cache_code = function(
 # functions to load/save cache files
 cache_methods = list(
   raw = list(
+    name = 'raw',
     load = function(...) unserialize(read_bin(...)),
     save = function(x, file, ...) {
       s = serialize(x, NULL, xdr = FALSE, ...)
@@ -218,10 +222,12 @@ cache_methods = list(
     }
   ),
   rds = list(
+    name = 'rds',
     load = function(...) readRDS(...),
     save = function(x, file, ...) saveRDS(x, file, ...)
   ),
   qs = list(
+    name = 'qs',
     load = function(...) qs::qread(...),
     save = function(x, file, ...) qs::qsave(x, file, ...)
   )
