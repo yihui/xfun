@@ -142,6 +142,7 @@ cache_code = function(
   if (is.null(id <- config$id)) id = md5_one(code2)
   id = paste0(path, if (mem_cache) '__', id, if (mem_cache) '__')
 
+  file_pattern = function(x) sprintf('^[0-9a-z]{32}[.]%s([.][0-9]+)?$', x)
   # try to retrieve cache from memory (the dictionary) or disk
   cached = if (mem_cache) {
     db = .cache_db
@@ -156,7 +157,7 @@ cache_code = function(
     id %in% ls_all(db)
   } else {
     db = list.files(id, full.names = TRUE)
-    hits = grepl('^[0-9a-z]{32}[.][[:alnum:]]+([.][0-9]+)?$', basename(db))
+    hits = grepl(file_pattern('[[:alnum:]]+'), basename(db))
     if (base::isFALSE(config$keep)) file.remove(db[hits])
     id = file.path(id, paste0(hash, '.', rw$name))
     file_exists(id)
@@ -176,7 +177,11 @@ cache_code = function(
 
   # clean up other versions of cache before saving a new version
   if (!isTRUE(config$keep)) {
-    if (mem_cache) rm_vars(hits, db) else file.remove(db[hits])
+    if (mem_cache) rm_vars(hits, db) else {
+      # clean cache for the current method only; don't touch other methods' cache
+      hits = grepl(file_pattern(rw$name), basename(db))
+      file.remove(db[hits])
+    }
   }
   vars = config$vars %||% find_locals(code)
   # inject an on.exit() call to the parent function to save its returned value;
