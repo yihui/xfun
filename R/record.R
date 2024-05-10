@@ -358,7 +358,7 @@ format.xfun_record_results = function(
       paste0(
         sprintf(
           '<pre class="%s"><code>',
-          if (cls == 'source') paste0('language-r" data-start="', attr(z, 'line_start')) else cls
+          if (cls == 'source') paste0('language-r" data-start="', attr(z, 'lines')[1]) else cls
         ),
         escape_html(one_string(z)), '</code></pre>'
       )

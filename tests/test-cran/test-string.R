@@ -48,8 +48,8 @@ assert('split_source() puts lines of the same expression into a list element', {
   (split_source(x, merge_comments = TRUE) %==% list(x[1:3], x[4:6]))
   x = c(x, '1+1')
   (split_source(x, TRUE, line_number = TRUE)[2:3] %==% list(
-    structure(x[4:6], line_start = 4),
-    structure(x[7], line_start = 7)
+    structure(x[4:6], lines = c(4L, 6L)),
+    structure(x[7], lines = c(7L, 7L))
   ))
 })
 

@@ -180,39 +180,30 @@ split_lines = function(x) {
 #' @param merge_comments Whether to merge consecutive lines of comments as a
 #'   single expression to be combined with the next non-comment expression (if
 #'   any).
-#' @param line_number Whether to store the starting line number of each
-#'   expression in the returned value.
-#' @param skip A token to skip the rest of code. When provided as a character
-#'   string, the split will stop at the this token.
+#' @param line_number Whether to store the line numbers of each expression in
+#'   the returned value.
 #' @return A list of character vectors, and each vector contains a complete R
-#'   expression, with an attribute `line_start` indicating the starting line
-#'   number of the expression if the argument `line_number = TRUE`.
+#'   expression, with an attribute `lines` indicating the starting and ending
+#'   line numbers of the expression if the argument `line_number = TRUE`.
 #' @export
 #' @examples
-#' xfun::split_source(c('if (TRUE) {', '1 + 1', '}', 'print(1:5)'))
-#' xfun::split_source(c('print(1:5)', '#--#', 'if (TRUE) {', '1 + 1', '}'), skip = '#--#')
-split_source = function(
-  x, merge_comments = FALSE, line_number = FALSE, skip = getOption('xfun.split_source.skip')
-) {
+#' code = c('# comment 1', '# comment 2', 'if (TRUE) {', '1 + 1', '}', 'print(1:5)')
+#' xfun::split_source(code)
+#' xfun::split_source(code, merge_comments = TRUE)
+split_source = function(x, merge_comments = FALSE, line_number = FALSE) {
   if ((n <- length(x)) < 1) return(list(x))
-  if (!is.character(skip) || length(skip) != 1) skip = NULL
-  i1 = i2 = 1
+  i1 = i2 = 1L
   res = list()
   add_source = function(x) {
-    res[[length(res) + 1]] <<- if (line_number) structure(x, line_start = i1) else x
+    res[[length(res) + 1]] <<- if (line_number) structure(x, lines = c(i1, i2)) else x
   }
   while (i2 <= n) {
     piece = x[i1:i2]
     if ((!merge_comments || (!all(grepl('^#', piece)) || i2 == n)) && valid_syntax(piece)) {
-      # check if the skip token is found
-      if (!is.null(skip) && !is.na(i3 <- match(skip, piece))) {
-        if (i3 > 1) add_source(x[i1 + 1:i3 - 1])
-        return(res)
-      }
       add_source(piece)
-      i1 = i2 + 1 # start from the next line
+      i1 = i2 + 1L # start from the next line
     }
-    i2 = i2 + 1
+    i2 = i2 + 1L
   }
   if (i1 <= n) parse(text = piece)  # must be an error there
   res

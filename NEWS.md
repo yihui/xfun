@@ -24,6 +24,10 @@
 
 - The returned value of `yaml_body()` contains a new element `lines` in the list indicating the line numbers of YAML metadata if exists.
 
+- Removed the `skip` argument from `split_source()`.
+
+- For `split_source(line_number = TRUE)`, the attribute name for line numbers in the returned value was changed from `line_start` (a single starting line number) to `lines` (both the starting and ending numbers).
+
 - Fixed an edge case in `prose_index()`, in which inline code was incorrectly recognized as a code block fence.
 
 # CHANGES IN xfun VERSION 0.43
