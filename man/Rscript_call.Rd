@@ -10,7 +10,7 @@ Rscript_call(
   options = NULL,
   ...,
   wait = TRUE,
-  fail = sprintf("Failed to run '\%s' in a new R session.", deparse(substitute(fun))[1])
+  fail = sprintf("Failed to run '\%s' in a new R session", deparse(substitute(fun))[1])
 )
 }
 \arguments{
@@ -19,21 +19,26 @@ to a function.}
 
 \item{args}{A list of argument values.}
 
-\item{options}{A character vector of options to passed to
-\code{\link[=Rscript]{Rscript()}}, e.g., \code{"--vanilla"}.}
+\item{options}{A character vector of options to passed to \code{\link[=Rscript]{Rscript()}}, e.g.,
+\code{"--vanilla"}.}
 
 \item{..., wait}{Arguments to be passed to \code{\link[=system2]{system2()}}.}
 
 \item{fail}{The desired error message when an error occurred in calling the
-function.}
+function. If the actual error message during running the function is
+available, it will be appended to this message.}
 }
 \value{
-The returned value of the function in the new R session.
+If \code{wait = TRUE}, the returned value of the function in the new R
+session. If \code{wait = FALSE}, three file paths will be returned: the first
+one stores \code{fun} and \code{args} (as a list), the second one is supposed to
+store the returned value of the function, and the third one stores the
+possible error message.
 }
 \description{
 Save the argument values of a function in a temporary RDS file, open a new R
-session via \code{\link[=Rscript]{Rscript()}}, read the argument values, call the
-function, and read the returned value back to the current R session.
+session via \code{\link[=Rscript]{Rscript()}}, read the argument values, call the function, and
+read the returned value back to the current R session.
 }
 \examples{
 factorial(10)

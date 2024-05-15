@@ -63,18 +63,23 @@ Rcmd = function(args, ...) {
 #' Call a function in a new R session via `Rscript()`
 #'
 #' Save the argument values of a function in a temporary RDS file, open a new R
-#' session via [Rscript()], read the argument values, call the
-#' function, and read the returned value back to the current R session.
+#' session via [Rscript()], read the argument values, call the function, and
+#' read the returned value back to the current R session.
 #' @param fun A function, or a character string that can be parsed and evaluated
 #'   to a function.
 #' @param args A list of argument values.
-#' @param options A character vector of options to passed to
-#'   [Rscript()], e.g., `"--vanilla"`.
+#' @param options A character vector of options to passed to [Rscript()], e.g.,
+#'   `"--vanilla"`.
 #' @param ...,wait Arguments to be passed to [system2()].
 #' @param fail The desired error message when an error occurred in calling the
-#'   function.
+#'   function. If the actual error message during running the function is
+#'   available, it will be appended to this message.
 #' @export
-#' @return The returned value of the function in the new R session.
+#' @return If `wait = TRUE`, the returned value of the function in the new R
+#'   session. If `wait = FALSE`, three file paths will be returned: the first
+#'   one stores `fun` and `args` (as a list), the second one is supposed to
+#'   store the returned value of the function, and the third one stores the
+#'   possible error message.
 #' @examples factorial(10)
 #' # should return the same value
 #' xfun::Rscript_call('factorial', list(10))
@@ -86,16 +91,19 @@ Rcmd = function(args, ...) {
 #' xfun::Rscript_call(factorial, list(10), options = c("--vanilla"))
 Rscript_call = function(
   fun, args = list(), options = NULL, ..., wait = TRUE,
-  fail = sprintf("Failed to run '%s' in a new R session.", deparse(substitute(fun))[1])
+  fail = sprintf("Failed to run '%s' in a new R session", deparse(substitute(fun))[1])
 ) {
-  f = replicate(2, tempfile(fileext = '.rds'))
-  on.exit(unlink(if (wait) f else f[2]), add = TRUE)
+  f = replicate(3, tempfile(fileext = '.rds'))
+  on.exit(if (wait) unlink(f), add = TRUE)
   saveRDS(list(fun, args), f[1])
-  Rscript(
-    c(options, shQuote(c(pkg_file('scripts', 'call-fun.R'), f)))
-    ,..., wait = wait
+  res = Rscript(
+    c(options, shQuote(c(pkg_file('scripts', 'call-fun.R'), f))), ..., wait = wait
   )
-  if (wait) if (file_exists(f[2])) readRDS(f[2]) else stop(fail, call. = FALSE)
+  if (wait) {
+    if (res == 0) readRDS(f[2]) else stop(
+      fail, if (file_exists(f[3])) c(': ', readRDS(f[3])) else '.', call. = FALSE
+    )
+  } else f
 }
 
 # call a function in a background process

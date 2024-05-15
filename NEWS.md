@@ -2,6 +2,8 @@
 
 - For `record()` with `verbose = 1` or `2`, invisible `NULL` is no longer printed.
 
+- `Rscript_call()` will show the actual error message (if an error occurred) during calling the function in a new R session.
+
 # CHANGES IN xfun VERSION 0.44
 
 - Added a function `cache_exec()` to cache the execution of an expression either in memory or on disk. It is much more general and flexible than `cache_rds()`. For example, it supports custom reading/writing methods for cache files, and can load locally created variables in the expression while loading cache.
