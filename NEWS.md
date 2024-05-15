@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.45
 
+- For `record()` with `verbose = 1` or `2`, invisible `NULL` is no longer printed.
 
 # CHANGES IN xfun VERSION 0.44
 

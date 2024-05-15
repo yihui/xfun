@@ -221,12 +221,13 @@ record = function(
     add_result(code <- codes[[i]], 'source')
     expr = parse_only(code)
     if (length(expr) == 0) next
-    # verbose = 1: always print the last value; verbose = 2: print all values
-    if (verbose == 2 || (verbose == 1 && i == n)) {
-      expr = parse_only(c('(', code, ')'))
-    }
     # evaluate the code and capture output
     out = handle_output(handle_eval(withVisible(eval(expr, envir))))
+    # verbose = 1: always print the last value; verbose = 2: print all values
+    if (verbose == 2 || (verbose == 1 && i == n)) {
+      # make invisible values visible unless they are NULL (which is often not useful)
+      if (!is_error(out) && !out$visible && !is.null(out$value)) out$visible = TRUE
+    }
     # print value (via record_print()) if visible
     if (!is_error(out) && out$visible) {
       if (is.null(print)) print = record_print
