@@ -296,8 +296,7 @@ record_print.default = function(x, ...) {
   capture.output(if (isS4(x)) methods::show(x, ...) else print(x, ...))
 }
 
-#' @param class A class name. Possible values are:
-#'   \Sexpr{paste(xfun:::.record_cls, collapse = ', ')}.
+#' @param class A class name. Possible values are `xfun:::.record_cls`.
 #' @rdname record_print
 #' @export
 new_record = function(x, class) structure(x, class = paste0('record_', class))
