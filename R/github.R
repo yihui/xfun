@@ -1,6 +1,6 @@
-#' Get the tags of Github releases of a repository
+#' Get the tags of GitHub releases of a repository
 #'
-#' Use the Github API ([github_api()]) to obtain the tags of the
+#' Use the GitHub API ([github_api()]) to obtain the tags of the
 #' releases.
 #' @param repo The repository name of the form `user/repo`, e.g.,
 #'   `"yihui/xfun"`.
@@ -60,7 +60,7 @@ github_releases2 = function(repo, tag = '', pattern = '[^"&]+') {
 }
 
 #' @details `github_api()` is a wrapper function based on
-#'   `rest_api_raw()` to obtain data from the Github API:
+#'   `rest_api_raw()` to obtain data from the GitHub API:
 #'   <https://docs.github.com/en/rest>. You can provide a personal access
 #'   token (PAT) via the `token` argument, or via one of the environment
 #'   variables \var{GITHUB_PAT}, \var{GITHUB_TOKEN}, \var{GH_TOKEN}. A PAT
@@ -78,7 +78,7 @@ github_api = function(
   names(token) = 'token'
   error = TRUE
   on.exit(if (error && token == '') message(
-    'You may need to save a Github personal access token in one of the ',
+    'You may need to save a GitHub personal access token in one of the ',
     'environment variables: ', paste(envs, collapse = ', ')
   ))
   res = rest_api_raw('https://api.github.com', endpoint, token, params, headers)
@@ -109,7 +109,7 @@ git_test_branch = function() {
 }
 
 gh = function(...) {
-  if (Sys.which('gh') == '') stop('Github CLI not found: https://cli.github.com')
+  if (Sys.which('gh') == '') stop('GitHub CLI not found: https://cli.github.com')
   system2('gh', ...)
 }
 

@@ -387,21 +387,21 @@ check_deps = function(x, db = available.packages(), which = 'all') {
 #' dependencies is large, they will be split into batches and pushed to crandalf
 #' one by one.
 #'
-#' Due to the time limit of a single job on Github Actions (6 hours), you will
+#' Due to the time limit of a single job on GitHub Actions (6 hours), you will
 #' have to split the large number of reverse dependencies into batches and check
-#' them sequentially on Github (at most 5 jobs in parallel). The function
+#' them sequentially on GitHub (at most 5 jobs in parallel). The function
 #' `crandalf_check()` does this automatically when necessary. It requires
 #' the \command{git} command to be available.
 #'
-#' The function `crandalf_results()` fetches check results from Github
+#' The function `crandalf_results()` fetches check results from GitHub
 #' after all checks are completed, merge the results, and show a full summary of
-#' check results. It requires `gh` (Github CLI:
+#' check results. It requires `gh` (GitHub CLI:
 #' <https://cli.github.com/manual/>) to be installed and you also need to
-#' authenticate with your Github account beforehand.
+#' authenticate with your GitHub account beforehand.
 #' @param pkg The package name of which the reverse dependencies are to be
 #'   checked.
 #' @param size The number of reverse dependencies to be checked in each job.
-#' @param jobs The number of jobs to run in Github Actions (by default, all jobs
+#' @param jobs The number of jobs to run in GitHub Actions (by default, all jobs
 #'   are submitted, but you can choose to submit the first few jobs).
 #' @param which The type of dependencies (see [rev_check()]).
 #' @export
@@ -421,7 +421,7 @@ crandalf_check = function(pkg, size = 400, jobs = Inf, which = 'all') {
     git('push')
     message(
       'Please create a pull request from the branch ', b,
-      ' on Github and re-run xfun::crandalf_check("', pkg, '").'
+      ' on GitHub and re-run xfun::crandalf_check("', pkg, '").'
     )
     return(invisible())
   }
@@ -435,9 +435,9 @@ crandalf_check = function(pkg, size = 400, jobs = Inf, which = 'all') {
       git('push')
     } else if (Sys.which('gh') != '') {
       gh(c('workflow', 'run', 'rev-check.yaml', '--ref', b))
-      message('Triggering rev-check.yaml job against ', b, ' branch in crandalf repo on Github.')
+      message('Triggering rev-check.yaml job against ', b, ' branch in crandalf repo on GitHub.')
     } else {
-      message('Remember to re-run the last job for the package ', pkg, ' on Github.')
+      message('Remember to re-run the last job for the package ', pkg, ' on GitHub.')
     }
     return(invisible())
   }
@@ -460,15 +460,15 @@ crandalf_check = function(pkg, size = 400, jobs = Inf, which = 'all') {
   }
 }
 
-#' @param repo The crandalf repo on Github (of the form `user/repo` such as
+#' @param repo The crandalf repo on GitHub (of the form `user/repo` such as
 #'   `"yihui/crandalf"`). Usually you do not need to specify it, unless you
 #'   are not calling this function inside the crandalf project, because
 #'   \command{gh} should be able to figure out the repo automatically.
 #' @param limit The maximum of records for \command{gh run list} to retrieve.
 #'   You only need a larger number if the check results are very early in the
-#'   Github Action history.
+#'   GitHub Action history.
 #' @param wait Number of seconds to wait if not all jobs have been completed on
-#'   Github. By default, this function checks the status every 5 minutes until
+#'   GitHub. By default, this function checks the status every 5 minutes until
 #'   all jobs are completed. Set `wait` to 0 to disable waiting (and throw
 #'   an error immediately when any jobs are not completed).
 #' @rdname crandalf_check
@@ -476,10 +476,10 @@ crandalf_check = function(pkg, size = 400, jobs = Inf, which = 'all') {
 crandalf_results = function(pkg, repo = NA, limit = 200, wait = 5 * 60) {
   res = crandalf_jobs(pkg, repo, limit)
   if (NROW(res) == 0) {
-    stop('Did not find check results for ', pkg, ' from Github Actions.')
+    stop('Did not find check results for ', pkg, ' from GitHub Actions.')
   }
   if (any(res[, 1] != 'completed')) {
-    if (wait <= 0) stop('Please wait till all jobs have been completed on Github Actions.')
+    if (wait <= 0) stop('Please wait till all jobs have been completed on GitHub Actions.')
     status = NULL
     repeat {
       res = crandalf_jobs(pkg, repo, limit)
@@ -499,7 +499,7 @@ crandalf_results = function(pkg, repo = NA, limit = 200, wait = 5 * 60) {
   res = res[i, , drop = FALSE]
   res = res[res[, 2] == 'failure', , drop = FALSE]
   if (NROW(res) == 0) {
-    stop('Did not find any failed results on Github Actions.')
+    stop('Did not find any failed results on GitHub Actions.')
   }
   for (i in seq_len(nrow(res))) {
     message('Downloading check results (', i, '/', nrow(res), ')')

@@ -2,7 +2,7 @@
 % Please edit documentation in R/github.R
 \name{github_releases}
 \alias{github_releases}
-\title{Get the tags of Github releases of a repository}
+\title{Get the tags of GitHub releases of a repository}
 \usage{
 github_releases(
   repo,
@@ -27,7 +27,7 @@ returned.}
 A character vector of (GIT) tags.
 }
 \description{
-Use the Github API (\code{\link[=github_api]{github_api()}}) to obtain the tags of the
+Use the GitHub API (\code{\link[=github_api]{github_api()}}) to obtain the tags of the
 releases.
 }
 \examples{\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}

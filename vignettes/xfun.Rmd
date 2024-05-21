@@ -24,7 +24,7 @@ library(xfun)
 
 After writing about 20 R packages, I found I had accumulated several utility functions that I used across different packages, so I decided to extract them into a separate package. Previously I had been using the evil triple-colon `:::` to access these internal utility functions. Now with **xfun**, these functions have been exported, and more importantly, documented. It should be better to use them under the sun instead of in the dark.
 
-This page shows examples of a subset of functions in this package. For a full list of functions, see the help page `help(package = 'xfun')`. The source package is available on Github: https://github.com/yihui/xfun.
+This page shows examples of a subset of functions in this package. For a full list of functions, see the help page `help(package = 'xfun')`. The source package is available on GitHub: https://github.com/yihui/xfun.
 
 ## No more partial matching for lists!
 

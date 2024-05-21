@@ -217,7 +217,7 @@ try_error = function(expr) {
 #' @param .pause The number of seconds to wait before the next attempt.
 #' @export
 #' @examplesIf interactive()
-#' # read the Github releases info of the repo yihui/xfun
+#' # read the GitHub releases info of the repo yihui/xfun
 #' xfun::retry(xfun::github_releases, 'yihui/xfun')
 retry = function(fun, ..., .times = 3, .pause = 5) {
   for (i in seq_len(.times)) {

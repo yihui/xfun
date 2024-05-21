@@ -58,7 +58,7 @@ method. If you need to use other HTTP methods (such as \samp{POST}), you have
 to use other packages such as \pkg{curl} and \pkg{httr}.
 
 \code{github_api()} is a wrapper function based on
-\code{rest_api_raw()} to obtain data from the Github API:
+\code{rest_api_raw()} to obtain data from the GitHub API:
 \url{https://docs.github.com/en/rest}. You can provide a personal access
 token (PAT) via the \code{token} argument, or via one of the environment
 variables \var{GITHUB_PAT}, \var{GITHUB_TOKEN}, \var{GH_TOKEN}. A PAT
@@ -76,7 +76,7 @@ xfun::rest_api("https://httpbin.org", "/headers", "OPEN SESAME!")
 # with query parameters
 xfun::rest_api("https://httpbin.org", "/response-headers", params = list(foo = "bar"))
 
-# get the rate limit info from Github
+# get the rate limit info from GitHub
 xfun::github_api("/rate_limit")
 \dontshow{\}) # examplesIf}
 }
