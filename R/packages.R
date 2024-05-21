@@ -286,7 +286,7 @@ install_github = function(...) remotes::install_github(...)
 
 # Remove packages not installed from CRAN
 reinstall_from_cran = function(dry_run = TRUE, skip_github = TRUE) {
-  r = paste(c('Repository', if (skip_github) 'GitHubRepo'), collapse = '|')
+  r = paste(c('Repository', if (skip_github) 'GithubRepo'), collapse = '|')
   r = paste0('^(', r, '): ')
   for (lib in .libPaths()) {
     pkgs = .packages(TRUE, lib)
