@@ -15,22 +15,22 @@ checked.}
 
 \item{size}{The number of reverse dependencies to be checked in each job.}
 
-\item{jobs}{The number of jobs to run in Github Actions (by default, all jobs
+\item{jobs}{The number of jobs to run in GitHub Actions (by default, all jobs
 are submitted, but you can choose to submit the first few jobs).}
 
 \item{which}{The type of dependencies (see \code{\link[=rev_check]{rev_check()}}).}
 
-\item{repo}{The crandalf repo on Github (of the form \code{user/repo} such as
+\item{repo}{The crandalf repo on GitHub (of the form \code{user/repo} such as
 \code{"yihui/crandalf"}). Usually you do not need to specify it, unless you
 are not calling this function inside the crandalf project, because
 \command{gh} should be able to figure out the repo automatically.}
 
 \item{limit}{The maximum of records for \command{gh run list} to retrieve.
 You only need a larger number if the check results are very early in the
-Github Action history.}
+GitHub Action history.}
 
 \item{wait}{Number of seconds to wait if not all jobs have been completed on
-Github. By default, this function checks the status every 5 minutes until
+GitHub. By default, this function checks the status every 5 minutes until
 all jobs are completed. Set \code{wait} to 0 to disable waiting (and throw
 an error immediately when any jobs are not completed).}
 }
@@ -41,15 +41,15 @@ dependencies is large, they will be split into batches and pushed to crandalf
 one by one.
 }
 \details{
-Due to the time limit of a single job on Github Actions (6 hours), you will
+Due to the time limit of a single job on GitHub Actions (6 hours), you will
 have to split the large number of reverse dependencies into batches and check
-them sequentially on Github (at most 5 jobs in parallel). The function
+them sequentially on GitHub (at most 5 jobs in parallel). The function
 \code{crandalf_check()} does this automatically when necessary. It requires
 the \command{git} command to be available.
 
-The function \code{crandalf_results()} fetches check results from Github
+The function \code{crandalf_results()} fetches check results from GitHub
 after all checks are completed, merge the results, and show a full summary of
-check results. It requires \code{gh} (Github CLI:
+check results. It requires \code{gh} (GitHub CLI:
 \url{https://cli.github.com/manual/}) to be installed and you also need to
-authenticate with your Github account beforehand.
+authenticate with your GitHub account beforehand.
 }

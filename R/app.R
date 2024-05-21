@@ -64,7 +64,7 @@ new_app = function(name, handler, open = interactive(), ports = 4321 + 1:10) {
 #' # with query parameters
 #' xfun::rest_api('https://httpbin.org', '/response-headers', params = list(foo = 'bar'))
 #'
-#' # get the rate limit info from Github
+#' # get the rate limit info from GitHub
 #' xfun::github_api('/rate_limit')
 rest_api = function(...) {
   res = rest_api_raw(...)

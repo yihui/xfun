@@ -16,7 +16,7 @@
 
 - Added an S3 generic function `record_print()`, which is similar to `knitr::knit_print()` but for the purpose of printing visible values in `record()`.
 
-- The `record()` funciton gained new arguments `print` and `print.args` to support custom printing functions and arguments.
+- The `record()` function gained new arguments `print` and `print.args` to support custom printing functions and arguments.
 
 - Added a function `md_table()`, which is a minimal Markdown table generator.
 

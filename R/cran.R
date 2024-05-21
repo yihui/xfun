@@ -29,7 +29,7 @@ cran_updatable = function(days = 90, maintainer = 'Yihui Xie') {
     sum(d > Sys.Date() - 180) < 6 && d[1] < Sys.Date() - days
   }))
   if (length(pkgs <- names(which(flag))) == 0) return(pkgs)
-  # look into DESCRIPTION in Github repos and see if new version has been pushed
+  # look into DESCRIPTION in GitHub repos and see if new version has been pushed
   info = tools::CRAN_package_db()
   info = info[info$Package %in% pkgs, , drop = FALSE]
   pkgs = info$Package
