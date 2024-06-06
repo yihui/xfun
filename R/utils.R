@@ -345,8 +345,7 @@ handle_error = function(
 ) {
   on.exit(if (!ok) {
     loc = if (is.function(fun)) trimws(fun(label)) else ''
-    # TODO: remove this workaround after knitr 1.47
-    m = if (length(formals(handler)) == 1) handler(loc) else handler(list(message = ''), loc)
+    m = handler(loc)
     message(one_string(m))
   })
   ok = FALSE

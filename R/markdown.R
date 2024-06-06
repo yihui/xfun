@@ -140,8 +140,6 @@ escape_math = function(x, token = '') {
 #' xfun::fenced_block('This is a **Div**.', char = ':')
 fenced_block = function(x, attrs = NULL, fence = make_fence(x, char), char = '`') {
   a = block_attr(attrs)
-  # TODO: remove this hack after knitr 1.47
-  if (char == '`' && check_old_package('knitr', '1.46')) a = sub('^ ', '', a)
   c('', paste0(fence, a), x, fence)
 }
 
