@@ -221,7 +221,7 @@ split_source = function(x, merge_comments = FALSE, line_number = FALSE) {
 #' xfun::valid_syntax('1+')
 #' xfun::valid_syntax(c('if(T){1+1}', 'else {2+2}'), silent = FALSE)
 valid_syntax = function(code, silent = TRUE) {
-  !inherits(try(parse_only(code), silent = silent), 'try-error')
+  !inherits(try(suppressWarnings(parse_only(code)), silent = silent), 'try-error')
 }
 
 #' Bump version numbers
