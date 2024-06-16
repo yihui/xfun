@@ -8,9 +8,11 @@ githubEditURL: https://github.com/yihui/xfun/edit/main/vignettes/xfun.Rmd
 output:
   markdown::html_format:
     meta:
-      css: ["@default", "@prism-xcode"]
+      css: ["@default", "@npm/@xiee/utils/css/article.css", "@prism-xcode"]
+      js: ["@npm/@xiee/utils/js/sidenotes.js"]
     options:
       toc: true
+      number_sections: true
 ---
 
 <!--
