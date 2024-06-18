@@ -60,7 +60,7 @@ provide additional information via the \code{extra} argument. For example, if th
 expression reads an external file \code{foo.csv}, and you want the cache to be
 invalidated after the file is modified, you may use \code{extra = file.mtime("foo.csv")}.
 \item \code{keep}: By default, only one copy of the cache corresponding to an \code{id}
-under \code{path} is kept, and all other copies for this \code{id} is automaitcally
+under \code{path} is kept, and all other copies for this \code{id} is automatically
 purged. If \code{TRUE}, all copies of the cache are kept. If \code{FALSE}, all copies
 are removed, which means the cache is \emph{always} invalidated, and can be useful
 to force re-executing the expression.

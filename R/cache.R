@@ -28,7 +28,7 @@
 #' file.mtime("foo.csv")`.
 #'
 #' - `keep`: By default, only one copy of the cache corresponding to an `id`
-#' under `path` is kept, and all other copies for this `id` is automaitcally
+#' under `path` is kept, and all other copies for this `id` is automatically
 #' purged. If `TRUE`, all copies of the cache are kept. If `FALSE`, all copies
 #' are removed, which means the cache is *always* invalidated, and can be useful
 #' to force re-executing the expression.

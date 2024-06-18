@@ -321,7 +321,7 @@ is_web_path = function(x) {
 #' xfun::from_root('data', 'mtcars.csv')
 #' }
 from_root = function(..., root = proj_root(), error = TRUE) {
-  if (is.null(root)) stop('Cannot determin the root directory of the current project.')
+  if (is.null(root)) stop('Cannot determine the root directory of the current project.')
   p = file.path(root, ..., fsep = '/')
   relative_path(p, error = error)
 }
@@ -377,7 +377,7 @@ magic_path = function(
     if ((n2 <- length(fs)) == 1) return(fs)
     if (n2 > 1) {
       msg = c(
-        'Found more than one path containg the input path "', f, '":\n\n',
+        'Found more than one path containing the input path "', f, '":\n\n',
         paste('*', fs, collapse = '\n')
       )
       if (error) stop(msg)
