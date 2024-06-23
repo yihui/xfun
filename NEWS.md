@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.46
 
+- `md_table()` should add a vertical ellipsis to row names when rows are truncated by the `limit` argument.
 
 # CHANGES IN xfun VERSION 0.45
 
