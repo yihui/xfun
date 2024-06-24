@@ -19,7 +19,7 @@ new_app = function(name, handler, open = interactive(), ports = 4321 + 1:10) {
   if (is.null(getOption('help.ports'))) {
     options(help.ports = ports); on.exit(options(help.ports = NULL))
   }
-  port = tools::startDynamicHelp(NA)
+  port = suppressMessages(tools::startDynamicHelp(NA))
   url  = sprintf('http://127.0.0.1:%d/custom/%s/', port, name)
   wd = getwd()  # always run handler under the original working directory
   h = function(path, ...) {
