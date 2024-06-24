@@ -308,7 +308,9 @@ md_table = function(x, digits = NULL, na = NULL, newline = NULL, limit = NULL) {
     if (d[2] == 0) return(character())
   }
   cn = colnames(x) %||% rep(' ', d[2])  # table header
-  x = rbind(cn, ifelse(num, '--:', '---'), x)
+  a = ifelse(num, '--:', '---')  # alignment
+  a[cn == '...'] = ':-:'
+  x = rbind(cn, a, x)
   d = dim(x)
   x = gsub('|', '&#124;', x, fixed = TRUE)
   dim(x) = d
