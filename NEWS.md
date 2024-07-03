@@ -2,6 +2,8 @@
 
 - `md_table()` should add a vertical ellipsis to row names when rows are truncated by the `limit` argument.
 
+- `session_info()` recognizes Positron now (thanks, @chuxinyuan, #89).
+
 # CHANGES IN xfun VERSION 0.45
 
 - For `record()` with `verbose = 1` or `2`, invisible `NULL` is no longer printed.
