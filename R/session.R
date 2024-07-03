@@ -35,7 +35,7 @@ session_info = function(packages = NULL, dependencies = TRUE) {
   } else if (Sys.getenv("RSTUDIO") == "1") {
     res$running = paste0(res$running, ', RStudio ', rstudioapi::getVersion())
   } else {
-    res$running = paste0(res$running, ', Rgui')
+    res$running = paste0(res$running, ', ', .Platform$GUI)
   }
 
   tweak_info = function(obj, extra = NULL) {
