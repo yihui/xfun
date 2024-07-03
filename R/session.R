@@ -30,8 +30,12 @@
 session_info = function(packages = NULL, dependencies = TRUE) {
   res = sessionInfo()
   res$matprod = res$BLAS = res$LAPACK = NULL
-  if (loadable('rstudioapi') && rstudioapi::isAvailable()) {
+  if (Sys.getenv("POSITRON") == "1") {
+    res$running = paste0(res$running, ', Positron ', Sys.getenv("POSITRON_VERSION"))
+  } else if (Sys.getenv("RSTUDIO") == "1") {
     res$running = paste0(res$running, ', RStudio ', rstudioapi::getVersion())
+  } else {
+    res$running = paste0(res$running, ', Rgui')
   }
 
   tweak_info = function(obj, extra = NULL) {
