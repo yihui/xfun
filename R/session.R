@@ -32,7 +32,7 @@ session_info = function(packages = NULL, dependencies = TRUE) {
   res$matprod = res$BLAS = res$LAPACK = NULL
   res$running = paste(c(res$running, if (Sys.getenv('POSITRON') == '1') {
     c(', Positron ', Sys.getenv('POSITRON_VERSION'))
-  } else if (Sys.getenv('RSTUDIO') == '1') {
+  } else if (loadable('rstudioapi') && rstudioapi::isAvailable()) {
     c(', RStudio ', rstudioapi::getVersion())
   }), collapse = '')
 
