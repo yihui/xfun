@@ -359,3 +359,59 @@ msg_cat = function(...) {
     cat(x)
   }, muffleMessage = function() invisible(NULL))
 }
+
+#' Save objects to files and lazy-load them
+#'
+#' The function [lazy_save()] saves objects to files with incremental integer
+#' names (e.g., the first object is saved to `1.rds`, and the second object is
+#' saved to `2.rds`, etc.). The function [lazy_load()] lazy-load objects from
+#' files saved via [lazy_save()], i.e., a file will not be read until the object
+#' is used.
+#' @param list A character vector of object names. This list will be written to
+#'   an index file with `0` as the base name (e.g., `0.rds`).
+#' @param path The path to write files to / read files from.
+#' @param method The file save/load method. It can be a string (e.g., `rds`,
+#'   `raw`, or `qs`) or a list. See the `rw` argument of [cache_exec()]. By
+#'   default, it is automatically detected by checking the existence of the
+#'   index file (e.g., `0.rds`, `0.raw`, or `0.qs`).
+#' @param envir The environment to [get] or [assign] objects.
+#' @return [lazy_save()] returns invisible `NULL`; [lazy_load()] returns the
+#'   object names invisibly.
+#' @seealso [delayedAssign()]
+#' @export
+lazy_save = function(list = NULL, path = './', method = 'auto', envir = parent.frame()) {
+  m = io_method(method, path)
+  idx = lazy_idx(path, m$name)
+  m$save(list, idx)
+  for (i in seq_along(list)) {
+    v = get(list[[i]], envir, inherits = FALSE)
+    m$save(v, sprintf('%s%d.%s', path, i, m$name))
+  }
+}
+
+#' @rdname lazy_save
+#' @export
+lazy_load = function(path = './', method = 'auto', envir = parent.frame()) {
+  m = io_method(method, path)
+  idx = lazy_idx(path, m$name)
+  vars = m$load(idx)
+  .mapply(function(path, name) {
+    delayedAssign(name, m$load(path), assign.env = envir)
+  }, list(sprintf('%s%d.%s', path, seq_along(vars), m$name), vars), NULL)
+  invisible(vars)
+}
+
+# use 0.ext as the index file to store the object names
+lazy_idx = function(path, ext) paste0(path, '0.', ext)
+
+io_method = function(method, path) {
+  if (is.character(method)) {
+    if (method == 'auto') {
+      for (m in io_methods) if (file_exists(objs_idx(path, m$name))) {
+        method = m$name; break
+      }
+    }
+    if (method == 'auto') method = 'rds'
+  }
+  if (is.list(method)) method else io_methods[[method]]
+}

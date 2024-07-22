@@ -34,16 +34,16 @@
 #' to force re-executing the expression.
 #'
 #' - `rw`: A list of functions to read/write the cache files. The list is of the
-#' form `list(load = function(file) {}, save = function(x, file) {})`. By
-#' default, [readRDS()] and [saveRDS()] are used. This argument can also take a
-#' character string to use some built-in read/write methods. Currently available
-#' methods include `rds` (the default), `raw` (using [serialize()] and
-#' [unserialize()]), and `qs` (using [qs::qread()] and [qs::qsave()]). The `rds`
-#' and `raw` methods only use base R functions (the `rds` method generates
-#' smaller files because it uses compression, but is often slower than the `raw`
-#' method, which does not use compression). The `qs` method requires the
-#' \pkg{qs} package, which can be much faster than base R methods and also
-#' supports compression.
+#' form `list(name = 'xxx', load = function(file) {}, save = function(x, file)
+#' {})`. By default, [readRDS()] and [saveRDS()] are used. This argument can
+#' also take a character string to use some built-in read/write methods.
+#' Currently available methods include `rds` (the default), `raw` (using
+#' [serialize()] and [unserialize()]), and `qs` (using [qs::qread()] and
+#' [qs::qsave()]). The `rds` and `raw` methods only use base R functions (the
+#' `rds` method generates smaller files because it uses compression, but is
+#' often slower than the `raw` method, which does not use compression). The `qs`
+#' method requires the \pkg{qs} package, which can be much faster than base R
+#' methods and also supports compression.
 #' @param expr An R expression to be cached.
 #' @param path The path to save the cache. The special value `":memory:"` means
 #'   in-memory caching. If it is intended to be a directory path, please make
@@ -117,7 +117,7 @@ cache_code = function(
 
   # functions to read/write cache files
   if (is.null(rw <- config$rw)) rw = 'rds'
-  if (is.character(rw)) rw = cache_methods[[rw]]
+  if (is.character(rw)) rw = io_methods[[rw]]
   if (!is.character(rw$name) || length(rw$name) != 1) stop(
     'The cache method must have a name (as a character string).'
   )
@@ -217,7 +217,7 @@ cache_code = function(
 }
 
 # functions to load/save cache files
-cache_methods = list(
+io_methods = list(
   raw = list(
     name = 'raw',
     load = function(...) unserialize(read_bin(...)),

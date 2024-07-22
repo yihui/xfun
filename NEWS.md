@@ -1,3 +1,7 @@
+# CHANGES IN xfun VERSION 0.47
+
+- Added functions `lazy_save()` and `lazy_load()` to save objects to files and lazy-load them.
+
 # CHANGES IN xfun VERSION 0.46
 
 - `md_table()` should add a vertical ellipsis to row names when rows are truncated by the `limit` argument.

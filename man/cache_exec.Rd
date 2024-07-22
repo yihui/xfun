@@ -65,16 +65,15 @@ purged. If \code{TRUE}, all copies of the cache are kept. If \code{FALSE}, all c
 are removed, which means the cache is \emph{always} invalidated, and can be useful
 to force re-executing the expression.
 \item \code{rw}: A list of functions to read/write the cache files. The list is of the
-form \code{list(load = function(file) {}, save = function(x, file) {})}. By
-default, \code{\link[=readRDS]{readRDS()}} and \code{\link[=saveRDS]{saveRDS()}} are used. This argument can also take a
-character string to use some built-in read/write methods. Currently available
-methods include \code{rds} (the default), \code{raw} (using \code{\link[=serialize]{serialize()}} and
-\code{\link[=unserialize]{unserialize()}}), and \code{qs} (using \code{\link[qs:qread]{qs::qread()}} and \code{\link[qs:qsave]{qs::qsave()}}). The \code{rds}
-and \code{raw} methods only use base R functions (the \code{rds} method generates
-smaller files because it uses compression, but is often slower than the \code{raw}
-method, which does not use compression). The \code{qs} method requires the
-\pkg{qs} package, which can be much faster than base R methods and also
-supports compression.
+form \code{list(name = 'xxx', load = function(file) {}, save = function(x, file) {})}. By default, \code{\link[=readRDS]{readRDS()}} and \code{\link[=saveRDS]{saveRDS()}} are used. This argument can
+also take a character string to use some built-in read/write methods.
+Currently available methods include \code{rds} (the default), \code{raw} (using
+\code{\link[=serialize]{serialize()}} and \code{\link[=unserialize]{unserialize()}}), and \code{qs} (using \code{\link[qs:qread]{qs::qread()}} and
+\code{\link[qs:qsave]{qs::qsave()}}). The \code{rds} and \code{raw} methods only use base R functions (the
+\code{rds} method generates smaller files because it uses compression, but is
+often slower than the \code{raw} method, which does not use compression). The \code{qs}
+method requires the \pkg{qs} package, which can be much faster than base R
+methods and also supports compression.
 }
 }
 \examples{
