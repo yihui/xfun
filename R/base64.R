@@ -93,7 +93,7 @@ guess_type = function(x, use_mime = loadable('mime')) {
   if (any(i <- is.na(res))) {
     warning(
       'Cannot determine the MIME type(s) of ', paste(x[i], collapse = ', '),
-      '. You may try to install the "mime" package or report an issue to ',
+      '. You may install.packages("mime") or report an issue to ',
       packageDescription('xfun')$BugReports, '.'
     )
     res[i] = 'application/octet-stream'
