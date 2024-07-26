@@ -33,7 +33,7 @@ session_info = function(packages = NULL, dependencies = TRUE) {
   res$running = paste(c(res$running, if (Sys.getenv('POSITRON') == '1') {
     c(', Positron ', Sys.getenv('POSITRON_VERSION'))
   } else if (loadable('rstudioapi') && rstudioapi::isAvailable()) {
-    c(', RStudio ', rstudioapi::getVersion())
+    c(', RStudio ', as.character(rstudioapi::getVersion()))
   }), collapse = '')
 
   tweak_info = function(obj, extra = NULL) {
