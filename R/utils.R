@@ -356,3 +356,8 @@ handle_error = function(
 
 # a shorthand for rm(list =, envir =)
 rm_vars = function(x, envir, ...) rm(list = x, envir = envir, ...)
+
+# for R < 3.3.x
+if (!exists('startsWith', baseenv(), inherits = TRUE)) startsWith = function(x, s) {
+  substring(x, 1, nchar(s)) == s
+}
