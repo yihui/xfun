@@ -365,3 +365,7 @@ if (!exists('endsWith', baseenv(), inherits = TRUE)) endsWith = function(x, s) {
   n = nchar(x)
   substring(x, n - nchar(s) + 1, n) == s
 }
+if (!exists('trimws', baseenv(), inherits = TRUE)) trimws = function(x, which = 'both') {
+  r = c(both = '^\\s+|\\s+$', right = '\\s+$', left = '^\\s+')[which]
+  gsub(r, '', x)
+}
