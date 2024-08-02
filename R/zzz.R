@@ -8,6 +8,7 @@ if (!has_fun('endsWith')) endsWith = function(x, s) {
   n = nchar(x)
   substring(x, n - nchar(s) + 1, n) == s
 }
+if (!has_fun('anyNA')) anyNA = function(x) any(is.na(x))
 if (!exists('trimws', baseenv(), inherits = FALSE)) trimws = function(x, which = 'both') {
   r = c(both = '^\\s+|\\s+$', right = '\\s+$', left = '^\\s+')[which]
   gsub(r, '', x)
