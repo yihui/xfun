@@ -358,17 +358,17 @@ handle_error = function(
 rm_vars = function(x, envir, ...) rm(list = x, envir = envir, ...)
 
 # for R < 3.3.x
-if (!exists('startsWith', baseenv(), inherits = TRUE)) startsWith = function(x, s) {
+if (!exists('startsWith', baseenv(), inherits = FALSE)) startsWith = function(x, s) {
   substring(x, 1, nchar(s)) == s
 }
-if (!exists('endsWith', baseenv(), inherits = TRUE)) endsWith = function(x, s) {
+if (!exists('endsWith', baseenv(), inherits = FALSE)) endsWith = function(x, s) {
   n = nchar(x)
   substring(x, n - nchar(s) + 1, n) == s
 }
-if (!exists('trimws', baseenv(), inherits = TRUE)) trimws = function(x, which = 'both') {
+if (!exists('trimws', baseenv(), inherits = FALSE)) trimws = function(x, which = 'both') {
   r = c(both = '^\\s+|\\s+$', right = '\\s+$', left = '^\\s+')[which]
   gsub(r, '', x)
 }
-if (!exists('file.size', baseenv(), inherits = TRUE)) file.size = function(...) {
+if (!exists('file.size', baseenv(), inherits = FALSE)) file.size = function(...) {
   file.info(...)$size
 }
