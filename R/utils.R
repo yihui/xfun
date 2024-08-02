@@ -369,3 +369,6 @@ if (!exists('trimws', baseenv(), inherits = TRUE)) trimws = function(x, which = 
   r = c(both = '^\\s+|\\s+$', right = '\\s+$', left = '^\\s+')[which]
   gsub(r, '', x)
 }
+if (!exists('file.size', baseenv(), inherits = TRUE)) file.size = function(...) {
+  file.info(...)$size
+}
