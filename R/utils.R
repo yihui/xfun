@@ -361,3 +361,7 @@ rm_vars = function(x, envir, ...) rm(list = x, envir = envir, ...)
 if (!exists('startsWith', baseenv(), inherits = TRUE)) startsWith = function(x, s) {
   substring(x, 1, nchar(s)) == s
 }
+if (!exists('endsWith', baseenv(), inherits = TRUE)) endsWith = function(x, s) {
+  n = nchar(x)
+  substring(x, n - nchar(s) + 1, n) == s
+}
