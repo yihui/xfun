@@ -407,7 +407,7 @@ lazy_idx = function(path, ext) paste0(path, '0.', ext)
 io_method = function(method, path) {
   if (is.character(method)) {
     if (method == 'auto') {
-      for (m in io_methods) if (file_exists(objs_idx(path, m$name))) {
+      for (m in io_methods) if (file_exists(lazy_idx(path, m$name))) {
         method = m$name; break
       }
     }
