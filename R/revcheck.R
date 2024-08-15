@@ -722,7 +722,7 @@ cloud_check = function(pkgs = NULL, ...) {
   tgz = pkg_build()  # tarball
   pkg = gsub('_.*$', '', tgz)
   if (length(pkgs) == 0) pkgs = setdiff(get_fun('cran_revdeps')(pkg, bioc = TRUE), pkg)
-  N = 9000  # max is 10000 packages per batch job
+  N = 200  # max is 10000 packages per batch job
   jobs = broken = NULL
   rver = format(getRversion())
   check = function(...) {
