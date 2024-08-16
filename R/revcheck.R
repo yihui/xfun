@@ -718,9 +718,9 @@ find_missing_latex = function() {
 
 # run revdepcheck::cloud_check()
 cloud_check = function(pkgs = NULL, batch_size = 200) {
-  call_fun = function(name, ...) {
-    obj = getFromNamespace(name, 'revdepcheck')
-    if (is.function(obj)) obj(...) else obj
+  call_fun = function(name, ..., verbose = FALSE) {
+    fun = getFromNamespace(name, 'revdepcheck')
+    if (verbose) fun(...) else suppressMessages(fun(...))
   }
   tgz = pkg_build()  # tarball
   pkg = gsub('_.*$', '', tgz)
@@ -753,12 +753,12 @@ cloud_check = function(pkgs = NULL, batch_size = 200) {
   # if there are more than N revdeps, check the first N of them at one time
   while (length(pkgs) > 0) check()
   for (job in jobs) {
-    call_fun('cloud_status', job, update_interval = 300)
+    call_fun('cloud_status', job, update_interval = 300, verbose = TRUE)
   }
   for (job in jobs) {
     if (length(res <- call_fun('cloud_broken', job))) {
       call_fun('cloud_report', job)
-      for (p in res) print(call_fun('cloud_details', job, revdep = p))
+      for (p in res) print(call_fun('cloud_details', job, revdep = p, verbose = TRUE))
       fs = list.files(file.path('revdep/cloud.noindex', job), full.names = TRUE)
       # only keep results from broken packages
       unlink(fs[!basename(fs) %in% c(res, paste0(res, '.tar.gz'))], recursive = TRUE)
