@@ -725,6 +725,7 @@ cloud_check = function(pkgs = NULL, batch_size = 200) {
   tgz = pkg_build()  # tarball
   pkg = gsub('_.*$', '', tgz)
   if (length(pkgs) == 0) pkgs = setdiff(call_fun('cran_revdeps', pkg, bioc = TRUE), pkg)
+  N = length(pkgs)
   jobs = broken = NULL
   rver = format(getRversion())
   check = function() {
@@ -749,9 +750,12 @@ cloud_check = function(pkgs = NULL, batch_size = 200) {
       }
     ))
     pkgs <<- tail(pkgs, -batch_size)
+    message(N - length(pkgs), '... ', appendLF = FALSE)
   }
-  # if there are more than N revdeps, check the first N of them at one time
+  # if there are more than batch_size revdeps, submit one batch at one time
+  message('Checking ', N, ' packages: ', appendLF = FALSE)
   while (length(pkgs) > 0) check()
+  message('All jobs submitted.')
   for (job in jobs) {
     call_fun('cloud_status', job, update_interval = 300, verbose = TRUE)
   }
