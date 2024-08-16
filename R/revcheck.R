@@ -752,6 +752,9 @@ cloud_check = function(pkgs = NULL, ..., batch_size = 200) {
   for (job in jobs) {
     assign('job_name', job, envir = get_fun('cloud_data'))
     get_fun('cloud_status')(update_interval = 60)
+  }
+  for (job in jobs) {
+    assign('job_name', job, envir = get_fun('cloud_data'))
     if (length(res <- get_fun('cloud_broken')())) {
       get_fun('cloud_report')()
       for (p in res) print(get_fun('cloud_details')(revdep = p))
