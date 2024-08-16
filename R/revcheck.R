@@ -718,17 +718,20 @@ find_missing_latex = function() {
 
 # run revdepcheck::cloud_check()
 cloud_check = function(pkgs = NULL, ..., batch_size = 200) {
-  get_fun = function(name) getFromNamespace(name, 'revdepcheck')
+  call_fun = function(name, ...) {
+    obj = getFromNamespace(name, 'revdepcheck')
+    if (is.function(obj)) obj(...) else obj
+  }
   tgz = pkg_build()  # tarball
   pkg = gsub('_.*$', '', tgz)
-  if (length(pkgs) == 0) pkgs = setdiff(get_fun('cran_revdeps')(pkg, bioc = TRUE), pkg)
+  if (length(pkgs) == 0) pkgs = setdiff(call_fun('cran_revdeps', pkg, bioc = TRUE), pkg)
   jobs = broken = NULL
   rver = format(getRversion())
   check = function(...) {
     # make sure to check at least 2 packages
     if (length(pkgs) == 1) pkgs = c(pkgs, if (length(broken)) broken[1] else pkgs)
     try_check = function(...) {
-      get_fun('cloud_check')(tarball = tgz, r_version = rver, revdep_packages = head(pkgs, batch_size), ...)
+      call_fun('cloud_check', tarball = tgz, r_version = rver, revdep_packages = head(pkgs, batch_size), ...)
     }
     jobs <<- c(jobs, tryCatch(
       try_check(...),
@@ -750,14 +753,14 @@ cloud_check = function(pkgs = NULL, ..., batch_size = 200) {
   # if there are more than N revdeps, check the first N of them at one time
   while (length(pkgs) > 0) check(...)
   for (job in jobs) {
-    assign('job_name', job, envir = get_fun('cloud_data'))
-    get_fun('cloud_status')(update_interval = 60)
+    assign('job_name', job, envir = call_fun('cloud_data'))
+    call_fun('cloud_status', update_interval = 300)
   }
   for (job in jobs) {
-    assign('job_name', job, envir = get_fun('cloud_data'))
-    if (length(res <- get_fun('cloud_broken')())) {
-      get_fun('cloud_report')()
-      for (p in res) print(get_fun('cloud_details')(revdep = p))
+    assign('job_name', job, envir = call_fun('cloud_data'))
+    if (length(res <- call_fun('cloud_broken'))) {
+      call_fun('cloud_report')
+      for (p in res) print(call_fun('cloud_details', revdep = p))
       fs = list.files(file.path('revdep/cloud.noindex', job), full.names = TRUE)
       # only keep results from broken packages
       unlink(fs[!basename(fs) %in% c(res, paste0(res, '.tar.gz'))], recursive = TRUE)
