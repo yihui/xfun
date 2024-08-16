@@ -770,7 +770,7 @@ cloud_check = function(pkgs = NULL, batch_size = 200) {
     }
   }
   if (length(broken)) {
-    stop('Package(s) broken: ', paste(broken, collapse = ' '))
+    stop('Package(s) broken: ', paste(broken, collapse = ' '), call. = FALSE)
   } else {
     message('All reverse dependencies are good!')
   }
