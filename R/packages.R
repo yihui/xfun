@@ -344,7 +344,15 @@ news2md = function(package, ..., output = 'NEWS.md', category = TRUE) {
 #' @export
 #' @examplesIf interactive()
 #' xfun::base_pkgs()
-base_pkgs = function() rownames(installed.packages(.Library, priority = 'base'))
+base_pkgs = function() {
+  if (getRversion() >= "4.4.0") {
+    return(tools::standard_package_names()[["base"]])
+  }
+  c(
+    "base", "compiler", "datasets", "graphics", "grDevices", "grid", "methods",
+    "parallel", "splines", "stats", "stats4", "tcltk", "tools", "utils"
+  )
+}
 
 # update one package (from source by default)
 pkg_update_one = function(pkg, type = 'source') {
