@@ -338,13 +338,17 @@ news2md = function(package, ..., output = 'NEWS.md', category = TRUE) {
 
 #' Get base R package names
 #'
-#' Return names of packages from [installed.packages()] of which the
-#' priority is `"base"`.
+#' Return base R package names.
 #' @return A character vector of base R package names.
 #' @export
-#' @examplesIf interactive()
+#' @examples
 #' xfun::base_pkgs()
-base_pkgs = function() rownames(installed.packages(.Library, priority = 'base'))
+base_pkgs = function() {
+  if (is.function(f <- asNamespace('tools')$standard_package_names)) f()[['base']] else c(
+    'base', 'compiler', 'datasets', 'graphics', 'grDevices', 'grid', 'methods',
+    'parallel', 'splines', 'stats', 'stats4', 'tcltk', 'tools', 'utils'
+  )
+}
 
 # update one package (from source by default)
 pkg_update_one = function(pkg, type = 'source') {

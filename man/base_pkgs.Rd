@@ -10,10 +10,8 @@ base_pkgs()
 A character vector of base R package names.
 }
 \description{
-Return names of packages from \code{\link[=installed.packages]{installed.packages()}} of which the
-priority is \code{"base"}.
+Return base R package names.
 }
-\examples{\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\examples{
 xfun::base_pkgs()
-\dontshow{\}) # examplesIf}
 }

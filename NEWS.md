@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.48
 
+- `base_pkgs()` is faster now: it calls `tools::standard_package_names()` if the function exists (R >= 4.4.0), otherwise it just returns a constant vector of base package names (thanks, @arnaudgallou, #91).
 
 # CHANGES IN xfun VERSION 0.47
 
