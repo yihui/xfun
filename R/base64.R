@@ -105,6 +105,7 @@ guess_type = function(x, use_mime = loadable('mime')) {
 mimemap = c(
   css = 'text/css', csv = 'text/csv', gif = 'image/gif', jpeg = 'image/jpeg',
   jpg = 'image/jpeg', js = 'application/javascript', png = 'image/png',
-  svg = 'image/svg+xml', ttf = 'application/font-sfnt',
+  r = 'text/plain', rmd = 'text/x-markdown', svg = 'image/svg+xml',
+  ttf = 'application/font-sfnt',
   woff = 'application/font-woff', woff2 = 'application/octet-stream'
 )
