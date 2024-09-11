@@ -79,7 +79,7 @@ yaml_value = function(x, envir = parent.frame()) {
   if (grepl('^true|false$', v)) return(as.logical(x))
   if (grepl(r <- '^\\s*\\[(.*)\\]\\s*$', v)) {
     v = gsub(r, '\\1', v)
-    if (is_blank(v)) return(list())
+    if (is_blank(v)) return()
     v = unname(unlist(read.csv(text = v, header = FALSE)))
     if (is.numeric(v)) return(v)
     v = gsub('^ ', '', v)  # [a, b] -> ["a", " b"] -> ["a", "b"]
