@@ -368,14 +368,20 @@ cache_rds = function(
 }
 
 # an old hash function for cache_rds() only
-md5_obj = function(x) md5_one(x, function(x, f) {
+md5_obj = function(x) {
+  f = tempfile(); on.exit(unlink(f), add = TRUE)
   if (is.character(x)) writeLines(x, f) else saveRDS(x, f)
-})
+  unname(tools::md5sum(f))
+}
 
 #' Calculate the MD5 checksums of R objects
 #'
-#' [Serialize][serialize()] an object to a temporary file, calculate the
-#' checksum via [tools::md5sum()], and delete the file.
+#' [Serialize][serialize()] an object and calculate the checksum via
+#' [tools::md5sum()]. If `tools::md5sum()` does not have the argument `bytes`,
+#' the object will be first serialized to a temporary file, which will be
+#' deleted after the checksum is calculated, otherwise the raw bytes of the
+#' object will be passed to the `bytes` argument directly (which will be
+#' faster than writing to a temporary file).
 #' @param ... Any number of R objects.
 #' @return A character vector of the checksums of objects passed to `md5()`. If
 #'   the arguments are named, the results will also be named.
@@ -393,18 +399,17 @@ md5 = function(...) {
   res
 }
 
-md5_one = function(x, write = serialize_bin) {
-  # we have wished for years that tools::md5sum() could just accept raw bytes
-  # (HenrikBengtsson/Wishlist-for-R#21; I've also asked an R core member in
-  # person in 2019) so we don't have to use the ugly tmp file hack below
-  f = tempfile(); on.exit(unlink(f), add = TRUE)
-  write(x, f)
-  unname(tools::md5sum(f))
-}
-
-serialize_bin = function(x, f) {
+md5_one = function(x) {
+  # no need to write to a file if md5sum() has the 'bytes' arg (R > 4.4.1)
+  m = tools::md5sum
+  if ('bytes' %in% names(formals(m))) f = NULL else {
+    f = tempfile(); on.exit(unlink(f), add = TRUE)
+  }
   s = serialize(x, NULL, xdr = FALSE)
-  writeBin(tail(s, -14), f)  # the first 14 bytes contain version info, etc
+  s = tail(s, -14)  # the first 14 bytes contain version info, etc
+  if (is.null(f)) m(bytes = s) else {
+    writeBin(s, f); unname(m(f))
+  }
 }
 
 # clean up old cache files (those with the same base names as the new cache

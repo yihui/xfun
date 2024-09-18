@@ -14,8 +14,12 @@ A character vector of the checksums of objects passed to \code{md5()}. If
 the arguments are named, the results will also be named.
 }
 \description{
-\link[=serialize]{Serialize} an object to a temporary file, calculate the
-checksum via \code{\link[tools:md5sum]{tools::md5sum()}}, and delete the file.
+\link[=serialize]{Serialize} an object and calculate the checksum via
+\code{\link[tools:md5sum]{tools::md5sum()}}. If \code{tools::md5sum()} does not have the argument \code{bytes},
+the object will be first serialized to a temporary file, which will be
+deleted after the checksum is calculated, otherwise the raw bytes of the
+object will be passed to the \code{bytes} argument directly (which will be
+faster than writing to a temporary file).
 }
 \examples{
 x1 = 1
