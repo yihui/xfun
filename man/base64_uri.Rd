@@ -4,7 +4,7 @@
 \alias{base64_uri}
 \title{Generate the Data URI for a file}
 \usage{
-base64_uri(x, type = mime::guess_type(x))
+base64_uri(x, type = mime_type(x))
 }
 \arguments{
 \item{x}{A file path.}

@@ -223,7 +223,7 @@ gsub_files = function(files, ...) {
 gsub_dir = function(..., dir = '.', recursive = TRUE, ext = NULL, mimetype = '.*') {
   files = list.files(dir, full.names = TRUE, recursive = recursive)
   if (length(ext)) files = files[file_ext(files) %in% ext]
-  if (mimetype != '.*') files = files[grep(mimetype, mime::guess_type(files))]
+  if (mimetype != '.*') files = files[grep(mimetype, mime_type(files))]
   gsub_files(files, ...)
 }
 

@@ -501,11 +501,8 @@ global_vars = function(code, envir) {
 #' xfun::download_cache$purge()
 download_cache = local({
   pre = 'url'  # file prefix
-  c_dir = function() {
-    getOption('xfun.cache.dir', tools::R_user_dir('xfun', 'cache'))
-  }
   c_file = function(url, type) {
-    file.path(c_dir(), sprintf('%s_%s_%s.rds', pre, type, md5_one(url)))
+    file.path(cache_dir(), sprintf('%s_%s_%s.rds', pre, type, md5_one(url)))
   }
   read = function(url, type) {
     if (length(f <- c_file(url, type)) && file.exists(f)) readRDS(f)
@@ -517,7 +514,7 @@ download_cache = local({
     }
   }
   list_cache = function() {
-    d = c_dir()
+    d = cache_dir()
     list.files(d, sprintf('^%s_.+[.]rds$', pre), full.names = TRUE)
   }
   list(
@@ -560,8 +557,12 @@ download_cache = local({
       i = file.remove(f)
       message(sprintf(
         "Purged %d cache file(s) from '%s' (%s)",
-        sum(i), c_dir(), format_bytes(sum(s[i]))
+        sum(i), cache_dir(), format_bytes(sum(s[i]))
       ))
     }
   )
 })
+
+cache_dir = function() {
+  getOption('xfun.cache.dir', tools::R_user_dir('xfun', 'cache'))
+}

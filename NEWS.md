@@ -2,6 +2,8 @@
 
 - `base_pkgs()` is faster now: it calls `tools::standard_package_names()` if the function exists (R >= 4.4.0), otherwise it just returns a constant vector of base package names (thanks, @arnaudgallou, #91).
 
+- Added a function `mime_type()` to obtain the MIME types of files via `mime::guess_type()` if **mime** is installed, otherwise it will call a system command (e.g., `file --mime-type`) to obtain the types.
+
 # CHANGES IN xfun VERSION 0.47
 
 - Added functions `lazy_save()` and `lazy_load()` to save objects to files and lazy-load them.

@@ -81,27 +81,69 @@ base64_encode_r = function(x) {
 #' logo = xfun:::R_logo()
 #' img = htmltools::img(src = xfun::base64_uri(logo), alt = 'R logo')
 #' if (interactive()) htmltools::browsable(img)
-base64_uri = function(x, type = mime::guess_type(x)) {
-  if (missing(type)) type = guess_type(x)
+base64_uri = function(x, type = mime_type(x)) {
   paste0("data:", type, ";base64,", base64_encode(x))
 }
 
-# a limited version of mime::guess_type()
-guess_type = function(x, use_mime = loadable('mime')) {
+#' Get the MIME types of files
+#'
+#' If the \pkg{mime} package is installed, call [mime::guess_type()], otherwise
+#' use .NET's `MimeMapping` class on Windows or the system command `file
+#' --mime-type` on *nix to obtain the MIME type of a file.
+#' @param x A vector of file paths.
+#' @param use_mime Whether to use the \pkg{mime} package.
+#' @param empty The MIME type for files without extensions (e.g., `Makefile`).
+#'   If `NA`, the type will be obtained from system command. This argument is
+#'   used only for `use_mime = FALSE`.
+#' @return A character vector of MIME types.
+#' @note When querying the MIME type via the system command, the result will be
+#'   cached to `xfun:::cache_dir()`. This will make future queries much faster,
+#'   since running the command in real time can be a little slow.
+#' @export
+#' @examplesIf tolower(Sys.getenv('CI')) == 'true'
+#' f = list.files(R.home('doc'), full.names = TRUE)
+#' mime_type(f)
+#' mime_type(f, FALSE)  # don't use mime
+#' mime_type(f, FALSE, NA)  # run command for files without extension
+mime_type = function(x, use_mime = loadable('mime'), empty = 'text/plain') {
   if (use_mime) return(mime::guess_type(x))
-  res = mimemap[tolower(file_ext(x))]
-  if (any(i <- is.na(res))) {
-    warning(
-      'Cannot determine the MIME type(s) of ', paste(x[i], collapse = ', '),
-      '. You may install.packages("mime") or report an issue to ',
-      packageDescription('xfun')$BugReports, '.'
-    )
-    res[i] = 'application/octet-stream'
+  ext = tolower(file_ext(x))
+  res = character(n <- length(x))
+  # try to read from cache since running command in real time can be slow
+  p = file.path(cache_dir(), 'mime.rds')
+  db = mimemap
+  for (i in seq_len(n)) {
+    e = ext[i]
+    # use full path for files without extension like Makefile and DESCRIPTION
+    if (e == '') m = empty else if (is.na(m <- db[e])) {
+      if (file_exists(p)) db = readRDS(p)
+      m = db[e]
+    }
+    if (is.na(m)) {
+      m = .mime_type(x[i])
+      if (e != '') {
+        db[e] = m; if (dir_create(dirname(p))) saveRDS(db, p)
+      }
+    }
+    res[i] = m
   }
-  unname(res)
+  res
 }
 
-# a comprehensive version is mime::mimemap (can extend it upon user request)
+# get the MIME type from system via `powershell` or `file`
+.mime_type = function(x) {
+  if (!file.exists(x <- path.expand(x))) stop("The file '", x, "' does not exist.")
+  if (is_windows()) {
+    cmd = 'powershell'
+    arg = c('-ExecutionPolicy', 'Bypass', '-File', shQuote(pkg_file('scripts', 'mime-type.ps1')))
+  } else {
+    cmd = 'file'
+    arg = c('--mime-type', '-b')
+  }
+  system2(cmd, c(arg, shQuote(x)), stdout = TRUE)[1]
+}
+
+# a comprehensive version is mime::mimemap
 mimemap = c(
   css = 'text/css', csv = 'text/csv', gif = 'image/gif', jpeg = 'image/jpeg',
   jpg = 'image/jpeg', js = 'application/javascript', png = 'image/png',
