@@ -4,4 +4,6 @@ param (
   [string]$filePath
 )
 
-Write-Host [System.Web.MimeMapping]::GetMimeMapping($filePath)
+Add-Type -AssemblyName "System.Web"
+$mimeType = [System.Web.MimeMapping]::GetMimeMapping($filePath)
+Write-Host $mimeType
