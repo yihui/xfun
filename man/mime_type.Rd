@@ -20,7 +20,10 @@ A character vector of MIME types.
 }
 \description{
 If the \pkg{mime} package is installed, call \code{\link[mime:guess_type]{mime::guess_type()}}, otherwise
-use .NET's \code{MimeMapping} class on Windows or the system command \code{file --mime-type} on *nix to obtain the MIME type of a file.
+use the system command \code{file --mime-type} to obtain the MIME type of a file.
+Typically, the \code{file} command exists on *nix. On Windows, the command should
+exist if Cygwin or Rtools is installed. If it is not found, .NET's
+\code{MimeMapping} class will be used instead (which requires the .NET framework).
 }
 \note{
 When querying the MIME type via the system command, the result will be

@@ -88,8 +88,10 @@ base64_uri = function(x, type = mime_type(x)) {
 #' Get the MIME types of files
 #'
 #' If the \pkg{mime} package is installed, call [mime::guess_type()], otherwise
-#' use .NET's `MimeMapping` class on Windows or the system command `file
-#' --mime-type` on *nix to obtain the MIME type of a file.
+#' use the system command `file --mime-type` to obtain the MIME type of a file.
+#' Typically, the `file` command exists on *nix. On Windows, the command should
+#' exist if Cygwin or Rtools is installed. If it is not found, .NET's
+#' `MimeMapping` class will be used instead (which requires the .NET framework).
 #' @param x A vector of file paths.
 #' @param use_mime Whether to use the \pkg{mime} package.
 #' @param empty The MIME type for files without extensions (e.g., `Makefile`).
@@ -133,12 +135,12 @@ mime_type = function(x, use_mime = loadable('mime'), empty = 'text/plain') {
 # get the MIME type from system via `powershell` or `file`
 .mime_type = function(x) {
   if (!file.exists(x <- path.expand(x))) stop("The file '", x, "' does not exist.")
-  if (is_windows()) {
+  cmd = 'file'
+  arg = c('--mime-type', '-b')
+  if (Sys.which(cmd) == '') {
+    if (!is_windows()) stop("The 'file' command is not found")
     cmd = 'powershell'
     arg = c('-ExecutionPolicy', 'Bypass', '-File', shQuote(pkg_file('scripts', 'mime-type.ps1')))
-  } else {
-    cmd = 'file'
-    arg = c('--mime-type', '-b')
   }
   system2(cmd, c(arg, shQuote(x)), stdout = TRUE)[1]
 }
