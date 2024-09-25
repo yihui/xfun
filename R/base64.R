@@ -123,9 +123,11 @@ mime_type = function(x, use_mime = loadable('mime'), empty = 'text/plain') {
     }
     if (is.na(m)) {
       m = .mime_type(x[i])
-      if (e != '') {
-        db[e] = m; if (dir_create(dirname(p))) saveRDS(db, p)
-      }
+      if (grepl('^[a-zA-Z]+/[-a-zA-Z0-9.+]+$', m)) {
+        if (e != '') {
+          db[e] = m; if (dir_create(dirname(p))) saveRDS(db, p)
+        }
+      } else warning("'", m, "' does not appear to be a valid MIME type for '", x[i], "'")
     }
     res[i] = m
   }
