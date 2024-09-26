@@ -116,13 +116,13 @@ mime_type = function(x, use_mime = loadable('mime'), empty = 'text/plain') {
   db = mimemap
   for (i in seq_len(n)) {
     e = ext[i]
-    # use full path for files without extension like Makefile and DESCRIPTION
-    if (e == '') m = empty else if (is.na(m <- db[e])) {
+    m = if (e == '') empty else .mime_type(x[i], e)
+    if (is.na(m) && is.na(m <- db[e])) {
       if (file_exists(p)) db = readRDS(p)
       m = db[e]
     }
     if (is.na(m)) {
-      m = .mime_type(x[i])
+      m = .mime_cmd(x[i])
       if (grepl('^[a-zA-Z]+/[-a-zA-Z0-9.+]+$', m)) {
         if (e != '') {
           db[e] = m; if (dir_create(dirname(p))) saveRDS(db, p)
@@ -134,8 +134,17 @@ mime_type = function(x, use_mime = loadable('mime'), empty = 'text/plain') {
   res
 }
 
-# get the MIME type from system via `powershell` or `file`
-.mime_type = function(x) {
+# try to get the MIME type from tools:::mime_type()
+.mime_type = function(x, ext = file_ext(x)) {
+  if (ext != '' && is.function(f <- asNamespace('tools')$mime_type)) {
+    m = f(x, ext)
+    if (m != 'text/plain') return(m)
+  }
+  NA
+}
+
+# MIME type from command line `powershell` or `file`
+.mime_cmd = function(x) {
   if (!file.exists(x <- path.expand(x))) stop("The file '", x, "' does not exist.")
   cmd = 'file'
   arg = c('--mime-type', '-b')
@@ -150,8 +159,7 @@ mime_type = function(x, use_mime = loadable('mime'), empty = 'text/plain') {
 # a comprehensive version is mime::mimemap
 mimemap = c(
   css = 'text/css', csv = 'text/csv', gif = 'image/gif', jpeg = 'image/jpeg',
-  jpg = 'image/jpeg', js = 'application/javascript', png = 'image/png',
+  jpg = 'image/jpeg', js = 'text/javascript', png = 'image/png',
   r = 'text/plain', rmd = 'text/x-markdown', svg = 'image/svg+xml',
-  ttf = 'application/font-sfnt',
-  woff = 'application/font-woff', woff2 = 'application/octet-stream'
+  ttf = 'font/ttf', woff = 'font/woff', woff2 = 'font/woff2'
 )
