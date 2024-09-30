@@ -20,10 +20,6 @@ Encode the file in the base64 encoding, and add the media type. The data URI
 can be used to embed data in HTML documents, e.g., in the \code{src} attribute of
 the \verb{<img />} tag.
 }
-\note{
-This function requires the \pkg{mime} package to determine the MIME
-type of the file except for a few common MIME types.
-}
 \examples{
 logo = xfun:::R_logo()
 img = htmltools::img(src = xfun::base64_uri(logo), alt = "R logo")

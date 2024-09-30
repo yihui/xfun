@@ -74,8 +74,6 @@ base64_encode_r = function(x) {
 #' @param type The MIME type of the file, e.g., `"image/png"` for a PNG image
 #'   file.
 #' @return A string of the form `data:<media type>;base64,<data>`.
-#' @note This function requires the \pkg{mime} package to determine the MIME
-#'   type of the file except for a few common MIME types.
 #' @export
 #' @examples
 #' logo = xfun:::R_logo()
