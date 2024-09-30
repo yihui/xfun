@@ -2,7 +2,9 @@
 
 - `base_pkgs()` is faster now: it calls `tools::standard_package_names()` if the function exists (R >= 4.4.0), otherwise it just returns a constant vector of base package names (thanks, @arnaudgallou, #91).
 
-- Added a function `mime_type()` to obtain the MIME types of files via `mime::guess_type()` if **mime** is installed, otherwise it will call a system command (e.g., `file --mime-type`) to obtain the types.
+- Added a function `mime_type()` to obtain the MIME types of files via `mime::guess_type()` if **mime** is installed, otherwise it will call `tools:::mime_type()`, and fall back to using a system command (e.g., `file --mime-type`) to obtain the types.
+
+- `new_app()` will use `utils::browseURL()` to open the app if `options('viewer')` is not configured (thanks, @AlbertLei, yihui/litedown#29).
 
 # CHANGES IN xfun VERSION 0.47
 

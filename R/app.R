@@ -30,7 +30,7 @@ new_app = function(name, handler, open = interactive(), ports = 4321 + 1:10) {
   # to anyone who sees the dirty assign() here, please close your eyes and walk
   # away as quickly as possible; thanks!
   assign(name, h, envir = getFromNamespace('.httpd.handlers.env', 'tools'))
-  if (isTRUE(open)) open = getOption('viewer', getOption('browser'))
+  if (isTRUE(open)) open = getOption('viewer', browseURL)
   if (is.function(open)) open(url)
   invisible(url)
 }
