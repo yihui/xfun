@@ -306,6 +306,12 @@ record_print.default = function(x, ...) {
   capture.output(if (isS4(x)) methods::show(x, ...) else print(x, ...))
 }
 
+#' @rdname record_print
+#' @export
+record_print.record_asis = function(x, ...) {
+  x
+}
+
 #' @param class A class name. Possible values are `xfun:::.record_cls`.
 #' @rdname record_print
 #' @export
@@ -351,14 +357,14 @@ format.xfun_record_results = function(
 ) {
   if (to[1] == 'text') {
     res = unlist(lapply(x, function(z) {
-      if (!inherits(z, 'record_source')) z = paste('#>', z)
+      if (!inherits(z, c('record_source', 'record_asis'))) z = paste('#>', z)
       gsub('\n*$', '\n', one_string(z))
     }))
     return(raw_string(res))
   }
   res = unlist(lapply(x, function(z) {
     cls = sub('^record_', '', class(z))
-    if (cls == 'plot') {
+    if (cls == 'asis') z else if (cls == 'plot') {
       sprintf(
         '<p class="%s"><img src="%s" alt="A plot recorded by xfun::record()" /></p>',
         cls, if (encode) vapply(z, base64_uri, '') else URLencode(z)

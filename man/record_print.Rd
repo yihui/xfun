@@ -3,12 +3,15 @@
 \name{record_print}
 \alias{record_print}
 \alias{record_print.default}
+\alias{record_print.record_asis}
 \alias{new_record}
 \title{Print methods for \code{record()}}
 \usage{
 record_print(x, ...)
 
 \method{record_print}{default}(x, ...)
+
+\method{record_print}{record_asis}(x, ...)
 
 new_record(x, class)
 }

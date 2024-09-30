@@ -6,6 +6,8 @@
 
 - `new_app()` will use `utils::browseURL()` to open the app if `options('viewer')` is not configured (thanks, @AlbertLei, yihui/litedown#29).
 
+- Added a method `record_print.record_asis()` to return the object as is.
+
 # CHANGES IN xfun VERSION 0.47
 
 - Added functions `lazy_save()` and `lazy_load()` to save objects to files and lazy-load them.
