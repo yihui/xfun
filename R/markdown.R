@@ -196,9 +196,7 @@ block_attr = function(attrs) {
 #' @note Windows users may need to install Rtools to obtain the \command{zip}
 #'   command to use `embed_dir()` and `embed_files()`.
 #'
-#'   These functions require R packages \pkg{mime} and \pkg{htmltools}. If you
-#'   have installed the \pkg{rmarkdown} package, these packages should be
-#'   available, otherwise you need to install them separately.
+#'   These functions require the R package and \pkg{htmltools}.
 #'
 #'   Currently Internet Explorer does not support downloading embedded files
 #'   (<https://caniuse.com/#feat=download>). Chrome has a 2MB limit on the
@@ -211,7 +209,7 @@ block_attr = function(attrs) {
 #' link
 #' if (interactive()) htmltools::browsable(link)
 embed_file = function(path, name = basename(path), text = paste('Download', name), ...) {
-  pkg_require(c('mime', 'htmltools'))
+  pkg_require('htmltools')
   h = base64_uri(path)
   htmltools::a(text, href = h, download = name, ...)
 }

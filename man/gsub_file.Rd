@@ -35,8 +35,7 @@ replaced).}
 \item{ext}{A vector of filename extensions (without the leading periods).}
 
 \item{mimetype}{A regular expression to filter files based on their MIME
-types, e.g., \code{'^text/'} for plain text files. This requires the
-\pkg{mime} package.}
+types, e.g., \code{'^text/'} for plain text files.}
 }
 \description{
 These functions provide the "file" version of \code{\link[=gsub]{gsub()}}, i.e.,

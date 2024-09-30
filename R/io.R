@@ -190,8 +190,7 @@ sort_file = function(..., fun = sort) {
 #' @param recursive Whether to find files recursively under a directory.
 #' @param ext A vector of filename extensions (without the leading periods).
 #' @param mimetype A regular expression to filter files based on their MIME
-#'   types, e.g., `'^text/'` for plain text files. This requires the
-#'   \pkg{mime} package.
+#'   types, e.g., `'^text/'` for plain text files.
 #' @note These functions perform in-place replacement, i.e., the files will be
 #'   overwritten. Make sure you backup your files in advance, or use version
 #'   control!
