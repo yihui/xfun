@@ -196,8 +196,7 @@ block_attr = function(attrs) {
 #'   command to use `embed_dir()` and `embed_files()`.
 #'
 #'   Currently Internet Explorer does not support downloading embedded files
-#'   (<https://caniuse.com/#feat=download>). Chrome has a 2MB limit on the file
-#'   size.
+#'   (<https://caniuse.com/download>). Chrome has a 2MB limit on the file size.
 #' @return An HTML tag \samp{<a>} with the appropriate attributes.
 #' @export
 #' @examples
