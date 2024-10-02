@@ -148,8 +148,13 @@ mime_type = function(x, use_mime = loadable('mime'), empty = 'text/plain') {
     cmd = 'file'
     arg = c('--mime-type', '-b')
   } else {
+    # IT said "thou shall not include .ps1 in source package", so I use .txt;
+    # then Windoz said "thou shall not execute .txt", so I copy .txt to .ps1;
+    # How much of our life has been wasted on making these idiots happy...
+    ps1 = tempfile(fileext = '.ps1'); on.exit(unlink(ps1), add = TRUE)
+    file.copy(pkg_file('scripts', 'mime-type.txt'), ps1)
     cmd = 'powershell'
-    arg = c('-ExecutionPolicy', 'Bypass', '-File', shQuote(pkg_file('scripts', 'mime-type.txt')))
+    arg = c('-ExecutionPolicy', 'Bypass', '-File', shQuote(ps1))
   }
   if (Sys.which(cmd) == '') stop("The '", cmd, "' command is not found")
   system2(cmd, c(arg, shQuote(x)), stdout = TRUE)[1]
