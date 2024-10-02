@@ -6,6 +6,8 @@
 
 - Added a function `mime_type()` to obtain the MIME types of files via `mime::guess_type()` if **mime** is installed, otherwise it will call `tools:::mime_type()`, and fall back to using a system command (e.g., `file --mime-type`) to obtain the types.
 
+- Added a function `file_rename()` to deal with `file.rename()` failures by calling `file.copy()` (thanks, @Giqles @katrinabrock, rstudio/bookdown#804).
+
 - `new_app()` will use `utils::browseURL()` to open the app if `options('viewer')` is not configured (thanks, @AlbertLei, yihui/litedown#29).
 
 - Added a method `record_print.record_asis()` to return the object as is.

@@ -478,6 +478,32 @@ print.xfun_rename_seq = function(x, ...) {
   print(tab)
 }
 
+#' Rename files and directories
+#'
+#' First try [file.rename()]. If it fails (e.g., renaming a file from one volume
+#' to another on disk is likely to fail), try [file.copy()] instead, and clean
+#' up the original files if the copy succeeds.
+#' @param from,to Original and target paths, respectively.
+#' @return A logical vector (`TRUE` for success and `FALSE` for failure).
+#' @export
+file_rename = function(from, to) {
+  for (d in dirname(to)) dir_create(d)  # make sure target directories exist
+
+  res = suppressWarnings(file.rename(from, to))
+
+  for (i in which(!res)) {
+    f1 = from[i]; f2 = to[i]
+    if (dir_exists(f1)) {
+      if (res[i] <- dir_create(f2) && all(file.copy(
+        list.files(f1, full.names = TRUE, all.files = TRUE), f2, recursive =  TRUE
+      ))) unlink(f1, recursive = TRUE)
+    } else {
+      if (res[i] <- file.copy(f1, f2, overwrite = TRUE)) file.remove(f1)
+    }
+  }
+  res
+}
+
 # return path to R's svg logo if it exists, otherwise return the jpg logo; or
 # specify a regex to match the logo path, e.g., ext = 'jpg$'
 R_logo = function(ext = NULL, all = FALSE) {
