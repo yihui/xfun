@@ -142,15 +142,16 @@ mime_type = function(x, use_mime = loadable('mime'), empty = 'text/plain') {
 }
 
 # MIME type from command line `powershell` or `file`
-.mime_cmd = function(x) {
+.mime_cmd = function(x, use_file = !is_windows() || Sys.which('file') != '') {
   if (!file.exists(x <- path.expand(x))) stop("The file '", x, "' does not exist.")
-  cmd = 'file'
-  arg = c('--mime-type', '-b')
-  if (Sys.which(cmd) == '') {
-    if (!is_windows()) stop("The 'file' command is not found")
+  if (use_file) {
+    cmd = 'file'
+    arg = c('--mime-type', '-b')
+  } else {
     cmd = 'powershell'
     arg = c('-ExecutionPolicy', 'Bypass', '-File', shQuote(pkg_file('scripts', 'mime-type.txt')))
   }
+  if (Sys.which(cmd) == '') stop("The '", cmd, "' command is not found")
   system2(cmd, c(arg, shQuote(x)), stdout = TRUE)[1]
 }
 
