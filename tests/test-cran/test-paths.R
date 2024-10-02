@@ -78,7 +78,7 @@ assert('del_empty_dir() correctly deletes empty dirs', {
 assert('mark_dirs add trailing / when necessary', {
   local({
     dir.create(tmp_dir <- tempfile())
-    tmp_dir_slash = paste0(tmp_dir, "/")
+    tmp_dir_slash = paste0(tmp_dir, '/')
     file.create(tmp_file <- tempfile(tmpdir = tmp_dir))
     (mark_dirs(c(tmp_dir, tmp_file)) %==% c(tmp_dir_slash, tmp_file))
     (mark_dirs(c(tmp_dir_slash, tmp_file)) %==% c(tmp_dir_slash, tmp_file))
@@ -86,26 +86,60 @@ assert('mark_dirs add trailing / when necessary', {
   })
 })
 
-assert("relative_path() works", {
-  (relative_path(c('foo/bar.txt', 'foo/baz.txt'), 'foo/') %==% c("bar.txt", "baz.txt"))
-  (relative_path('foo/bar.txt', 'foo') %==% "bar.txt")
+assert('relative_path() works', {
+  (relative_path(c('foo/bar.txt', 'foo/baz.txt'), 'foo/') %==% c('bar.txt', 'baz.txt'))
+  (relative_path('foo/bar.txt', 'foo') %==% 'bar.txt')
 })
 
-assert("proj_root() works", {
+assert('proj_root() works', {
   # detect .Rproj root
   dir.create(tmp_dir <- tempfile())
-  tmp_dir_slash <- paste0(tmp_dir, "/")
-  file.create(f1 <- file.path(tmp_dir, "test.Rproj"))
-  writeLines(c("Version: 1.2.3", "test: 321"), f1)
+  tmp_dir_slash <- paste0(tmp_dir, '/')
+  file.create(f1 <- file.path(tmp_dir, 'test.Rproj'))
+  writeLines(c('Version: 1.2.3', 'test: 321'), f1)
 
   (same_path(proj_root(tmp_dir), tmp_dir) %==% TRUE)
   unlink(f1)
 
   # detect package root
-  file.create(f2 <- file.path(tmp_dir, "DESCRIPTION"))
-  writeLines(c("Package: abc", "test: 321"), f2)
+  file.create(f2 <- file.path(tmp_dir, 'DESCRIPTION'))
+  writeLines(c('Package: abc', 'test: 321'), f2)
   dir.create(tmp_dir_child <- tempfile(tmpdir = tmp_dir))
 
   (same_path(proj_root(tmp_dir_child), tmp_dir) %==% TRUE)
+  unlink(tmp_dir, recursive = TRUE)
+})
+
+assert('file_rename() works', {
+  # work in temp dir
+  dir.create(tmp_dir <- tempfile())
+  owd = setwd(tmp_dir)
+
+  # empty dir is not moved but deleted
+  dir.create('dest')
+  dir.create('empty')
+  file_rename('empty', 'dest')
+  (dir.exists(c('empty', 'dest')) %==% c(FALSE, TRUE))
+
+  # files are moved correctly
+  dir.create('filled')
+  dummy_files = c('dummy1', 'dummy2')
+  file.create(file.path('filled', dummy_files))
+  file_rename('filled', 'dest1')
+  (dir.exists('filled') %==% FALSE)
+  (list.files('dest1') %==% dummy_files)
+
+  # rename multiple dirs
+  dir.create('dest2')
+  file_rename(c('dest1', 'dest2'), c('dest3', 'dest4'))
+  (dir.exists(sprintf('dest%d', 1:4)) %==% c(FALSE, FALSE, TRUE, TRUE))
+
+  # rename files
+  file_rename(file.path('dest3', dummy_files), dummy_files)
+  (length(list.files('dest3'))  %==% 0L)
+  (file.exists(dummy_files) %==% c(TRUE, TRUE))
+
+  # remove temp dir
+  setwd(owd)
   unlink(tmp_dir, recursive = TRUE)
 })
