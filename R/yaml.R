@@ -123,7 +123,7 @@ yaml_handlers = function(h, envir) {
 #'   body text). If YAML metadata does not exist in the document, the components
 #'   `yaml` and `lines` will be missing.
 #' @examples
-#' xfun::yaml_body(c('---', 'title: Hello', 'output: markdown::html_document', '---', '', 'Content.'))
+#' xfun::yaml_body(c('---', 'title: Hello', 'output: litedown::html_format', '---', '', 'Content.'))
 yaml_body = function(x, ...) {
   n = length(x)
   res = if (length(i <- locate_yaml(x)) == 0) {

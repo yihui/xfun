@@ -22,6 +22,6 @@ Split a document into the YAML metadata (which starts with \verb{---} in the
 beginning of the document) and the body. The YAML metadata will be parsed.
 }
 \examples{
-xfun::yaml_body(c("---", "title: Hello", "output: markdown::html_document", "---",
+xfun::yaml_body(c("---", "title: Hello", "output: litedown::html_format", "---",
     "", "Content."))
 }

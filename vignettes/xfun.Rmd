@@ -2,14 +2,14 @@
 title: An Introduction to xfun
 subtitle: A Collection of Miscellaneous Functions
 author: "Yihui Xie"
-date: "`r Sys.Date()`"
+date: "`{r} Sys.Date()`"
 slug: xfun
 githubEditURL: https://github.com/yihui/xfun/edit/main/vignettes/xfun.Rmd
 output:
-  markdown::html_format:
+  litedown::html_format:
     meta:
-      css: ["@default", "@npm/@xiee/utils/css/article.css", "@prism-xcode"]
-      js: ["@npm/@xiee/utils/js/sidenotes.js"]
+      css: ["@default", "@article"]
+      js: ["@sidenotes"]
     options:
       toc: true
       number_sections: true
@@ -17,7 +17,7 @@ output:
 
 <!--
 %\VignetteIndexEntry{An Introduction to xfun}
-%\VignetteEngine{knitr::knitr}
+%\VignetteEngine{litedown::vignette}
 -->
 
 ```{r setup, include=FALSE}
@@ -286,6 +286,6 @@ Since I have never been fully satisfied by the output of `sessionInfo()`, I twea
 You can choose to print out the versions of only the packages you specify, e.g.,
 
 ```{r}
-xfun::session_info(c('xfun', 'rmarkdown', 'knitr', 'tinytex'), dependencies = FALSE)
+xfun::session_info(c('xfun', 'litedown', 'tinytex'), dependencies = FALSE)
 ```
 

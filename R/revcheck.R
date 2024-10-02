@@ -640,12 +640,10 @@ compare_Rcheck = function(status_only = TRUE, output = '00check_diffs.md') {
     )
   }
   if (length(res) == 0) return()
+  res = c('---', 'title: xfun::rev_check() results', '---', '')
   xfun::write_utf8(res, output)
-  if (!loadable('markdown')) return(output)
-  markdown::mark_html(
-    text = res,
-    output = html_file <- with_ext(output, 'html')
-  )
+  if (!loadable('litedown')) return(output)
+  html_file = litedown::mark(output, text = res)
   if (!getOption('xfun.rev_check.keep_md', FALSE)) unlink(output)
   html_file
 }
