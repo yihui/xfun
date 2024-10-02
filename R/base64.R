@@ -149,7 +149,7 @@ mime_type = function(x, use_mime = loadable('mime'), empty = 'text/plain') {
   if (Sys.which(cmd) == '') {
     if (!is_windows()) stop("The 'file' command is not found")
     cmd = 'powershell'
-    arg = c('-ExecutionPolicy', 'Bypass', '-File', shQuote(pkg_file('scripts', 'mime-type.ps1')))
+    arg = c('-ExecutionPolicy', 'Bypass', '-File', shQuote(pkg_file('scripts', 'mime-type.txt')))
   }
   system2(cmd, c(arg, shQuote(x)), stdout = TRUE)[1]
 }
