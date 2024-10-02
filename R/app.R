@@ -31,9 +31,7 @@ new_app = function(name, handler, open = interactive(), ports = 4321 + 1:10) {
   # away as quickly as possible; thanks!
   assign(name, h, envir = getFromNamespace('.httpd.handlers.env', 'tools'))
   if (isTRUE(open)) open = getOption('viewer', browseURL)
-  if (is.function(open)) {
-    open(url); message('App started at ', url)
-  }
+  if (is.function(open)) open(url)
   invisible(url)
 }
 
