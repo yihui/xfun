@@ -16,14 +16,13 @@ embed_files(path, name = with_ext(basename(path[1]), ".zip"), ...)
 \item{path}{Path to the file(s) or directory.}
 
 \item{name}{The default filename to use when downloading the file. Note that
-for \code{embed_dir()}, only the base name (of the zip filename) will be
-used.}
+for \code{embed_dir()}, only the base name (of the zip filename) will be used.}
 
 \item{text}{The text for the hyperlink.}
 
 \item{...}{For \code{embed_file()}, additional arguments to be passed to
-\code{htmltools::a()} (e.g., \code{class = 'foo'}). For \code{embed_dir()}
-and \code{embed_files()}, arguments passed to \code{embed_file()}.}
+\code{\link[=html_tag]{html_tag()}} (e.g., \code{class = 'foo'}). For \code{embed_dir()} and
+\code{embed_files()}, arguments passed to \code{embed_file()}.}
 }
 \value{
 An HTML tag \samp{<a>} with the appropriate attributes.
@@ -34,8 +33,8 @@ generate a hyperlink of the form \samp{<a href="base64 data"
 download="filename">Download filename</a>}. The file can be downloaded when
 the link is clicked in modern web browsers. For a directory, it will be
 compressed as a zip archive first, and the zip file is passed to
-\code{embed_file()}. For multiple files, they are also compressed to a zip
-file first.
+\code{embed_file()}. For multiple files, they are also compressed to a zip file
+first.
 }
 \details{
 These functions can be called in R code chunks in R Markdown documents with
@@ -47,15 +46,13 @@ browser. A common use case is to embed data files for readers to download.
 Windows users may need to install Rtools to obtain the \command{zip}
 command to use \code{embed_dir()} and \code{embed_files()}.
 
-These functions require the R package and \pkg{htmltools}.
-
 Currently Internet Explorer does not support downloading embedded files
-(\url{https://caniuse.com/#feat=download}). Chrome has a 2MB limit on the
-file size.
+(\url{https://caniuse.com/#feat=download}). Chrome has a 2MB limit on the file
+size.
 }
 \examples{
 logo = xfun:::R_logo()
 link = xfun::embed_file(logo, text = "Download R logo")
 link
-if (interactive()) htmltools::browsable(link)
+if (interactive()) xfun::html_view(link)
 }

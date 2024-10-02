@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.48
 
+- Added utilities for HTML tags: `html_tag()`, `html_escape()`, `html_escape()`, and `html_view()`. Removed the soft dependency on the **htmltools** package accordingly.
+
 - `base_pkgs()` is faster now: it calls `tools::standard_package_names()` if the function exists (R >= 4.4.0), otherwise it just returns a constant vector of base package names (thanks, @arnaudgallou, #91).
 
 - Added a function `mime_type()` to obtain the MIME types of files via `mime::guess_type()` if **mime** is installed, otherwise it will call `tools:::mime_type()`, and fall back to using a system command (e.g., `file --mime-type`) to obtain the types.

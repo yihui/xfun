@@ -22,6 +22,6 @@ the \verb{<img />} tag.
 }
 \examples{
 logo = xfun:::R_logo()
-img = htmltools::img(src = xfun::base64_uri(logo), alt = "R logo")
-if (interactive()) htmltools::browsable(img)
+img = xfun::html_tag("img", src = xfun::base64_uri(logo), alt = "R logo")
+if (interactive()) xfun::html_view(img)
 }

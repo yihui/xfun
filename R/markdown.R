@@ -178,8 +178,8 @@ block_attr = function(attrs) {
 #' download="filename">Download filename</a>}. The file can be downloaded when
 #' the link is clicked in modern web browsers. For a directory, it will be
 #' compressed as a zip archive first, and the zip file is passed to
-#' `embed_file()`. For multiple files, they are also compressed to a zip
-#' file first.
+#' `embed_file()`. For multiple files, they are also compressed to a zip file
+#' first.
 #'
 #' These functions can be called in R code chunks in R Markdown documents with
 #' HTML output formats. You may embed an arbitrary file or directory in the HTML
@@ -187,31 +187,27 @@ block_attr = function(attrs) {
 #' browser. A common use case is to embed data files for readers to download.
 #' @param path Path to the file(s) or directory.
 #' @param name The default filename to use when downloading the file. Note that
-#'   for `embed_dir()`, only the base name (of the zip filename) will be
-#'   used.
+#'   for `embed_dir()`, only the base name (of the zip filename) will be used.
 #' @param text The text for the hyperlink.
 #' @param ... For `embed_file()`, additional arguments to be passed to
-#'   `htmltools::a()` (e.g., `class = 'foo'`). For `embed_dir()`
-#'   and `embed_files()`, arguments passed to `embed_file()`.
+#'   [html_tag()] (e.g., `class = 'foo'`). For `embed_dir()` and
+#'   `embed_files()`, arguments passed to `embed_file()`.
 #' @note Windows users may need to install Rtools to obtain the \command{zip}
 #'   command to use `embed_dir()` and `embed_files()`.
 #'
-#'   These functions require the R package and \pkg{htmltools}.
-#'
 #'   Currently Internet Explorer does not support downloading embedded files
-#'   (<https://caniuse.com/#feat=download>). Chrome has a 2MB limit on the
-#'   file size.
+#'   (<https://caniuse.com/#feat=download>). Chrome has a 2MB limit on the file
+#'   size.
 #' @return An HTML tag \samp{<a>} with the appropriate attributes.
 #' @export
 #' @examples
 #' logo = xfun:::R_logo()
 #' link = xfun::embed_file(logo, text = 'Download R logo')
 #' link
-#' if (interactive()) htmltools::browsable(link)
+#' if (interactive()) xfun::html_view(link)
 embed_file = function(path, name = basename(path), text = paste('Download', name), ...) {
-  pkg_require('htmltools')
   h = base64_uri(path)
-  htmltools::a(text, href = h, download = name, ...)
+  html_tag('a', text, href = h, download = name, ...)
 }
 
 #' @rdname embed_file

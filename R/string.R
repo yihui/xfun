@@ -317,18 +317,106 @@ alnum_id = function(x, exclude = '[^[:alnum:]]+') {
 #' @export
 #' @examples
 #' xfun::strip_html('<a href="#">Hello <!-- comment -->world!</a>')
-strip_html = function (x) {
+strip_html = function(x) {
   x = gsub('<!--.*?-->', '', x)
   x = gsub('<[^>]+>', '', x)
   x
 }
 
+# no need to close these tags
+.void_tags = c(
+  'area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input',
+  'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'
+)
+
+.html_class = c('xfun_html', 'html')
+
+#' Tools for HTML tags
+#'
+#' Given a tag name, generate an HTML tag with optional attributes and content.
+#' [html_tag()] can be viewed as a simplified version of `htmltools::tags`,
+#' [html_value()] adds classes on the value so that it will be treated as raw
+#' HTML (not escaped by `html_tag()`), [html_escape()] escapes special
+#' characters in HTML, and `html_view()` launches a browser or viewer to view
+#' the HTML content.
+#' @param .name The tag name.
+#' @param .content The content between opening and closing tags. Ignored for
+#'   void tags such as `<img>`. Special characters such as `&`, `<`, and `>`
+#'   will be escaped unless the value was generated from [html_value()]. The
+#'   content can be either a character vector or a list. If it is a list, it may
+#'   contain both normal text and HTML content.
+#' @param .attrs A named list of attributes.
+#' @param ... For `html_tag()`, named arguments as an alternative way to provide
+#'   attributes. For `html_view()`, other arguments to be passed to [new_app()].
+#' @return A character string.
+#' @export
+#' @examples
+#' xfun::html_tag('a', '<R Project>', href = 'https://www.r-project.org', target = '_blank')
+#' xfun::html_tag('br')
+#' xfun::html_tag('a', xfun::html_tag('strong', 'R Project'), href = '#')
+#' xfun::html_tag('a', list('<text>', xfun::html_tag('b', 'R Project')), href = '#')
+html_tag = function(.name, .content = NULL, .attrs = NULL, ...) {
+  if (is.null(.attrs)) .attrs = list(...)
+  if (length(.attrs) && (is.null(nm <- names(.attrs)) || any(nm == '')))
+    stop('Tag attributes must be named values')
+  x1 = c('<', .name)
+  x2 = if (length(.attrs)) .mapply(function(a, v) {
+    if (is.null(v)) a else sprintf('%s="%s"', a, escape_html(v, TRUE))
+  }, list(nm, .attrs), list())
+  x2 = paste(unlist(x2), collapse = ' ')
+  x3 = if (.name %in% .void_tags) ' />' else {
+    c('>', html_content(.content), '</', .name, '>')
+  }
+  x = c(x1, if (x2 != '') c(' ', x2), x3)
+  x = paste(x, collapse = '')
+  html_value(x)
+}
+
+# recursively resolve HTML content if it's a list containing both HTML and regular text
+html_content = function(x) {
+  if (is.list(x)) unlist(lapply(x, html_content)) else {
+    if (length(x) && !inherits(x, .html_class)) x = html_escape(x)
+    x
+  }
+}
+
+#' @param x A character vector to be treated as raw HTML content for
+#'   `html_value()`, escaped for `html_escape()`, and viewed for `html_view()`.
+#' @rdname html_tag
+#' @export
+html_value = function(x) structure(x, class = .html_class)
+
+#' @param attr Whether to escape `\r` and `\n` (which should be escaped for tag
+#'   attributes).
+#' @rdname html_tag
+#' @export
+#' @examples
+#' xfun::html_escape('" quotes " & brackets < >')
+#' xfun::html_escape('" & < > \r \n', attr = TRUE)
+html_escape = function(x, attr = FALSE) escape_html(x, attr)
+
+#' @rdname html_tag
+#' @export
+html_view = function(x, ...) {
+  new_app('xfun-html', function(path, ...) {
+    if (dir_exists(path)) list(payload = if (path == '.') x else path) else {
+      list(file = normalizePath(path), `content-type` = mime_type(path))
+    }
+  }, ...)
+}
+
+# TODO: remove escape_html() in other packages and call html_escape() instead
 # escape special HTML characters
-escape_html = function (x) {
+escape_html = function(x, attr = FALSE) {
   x = gsubf('&', '&amp;', x)
   x = gsubf('<', '&lt;', x)
   x = gsubf('>', '&gt;', x)
   x = gsubf('"', '&quot;', x)
+  # for attributes, we still need to escape more characters
+  if (attr) {
+    x = gsubf('\r', '&#13;', x)
+    x = gsubf('\n', '&#10;', x)
+  }
   x
 }
 

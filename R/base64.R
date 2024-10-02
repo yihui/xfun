@@ -77,8 +77,8 @@ base64_encode_r = function(x) {
 #' @export
 #' @examples
 #' logo = xfun:::R_logo()
-#' img = htmltools::img(src = xfun::base64_uri(logo), alt = 'R logo')
-#' if (interactive()) htmltools::browsable(img)
+#' img = xfun::html_tag('img', src = xfun::base64_uri(logo), alt = "R logo")
+#' if (interactive()) xfun::html_view(img)
 base64_uri = function(x, type = mime_type(x)) {
   paste0("data:", type, ";base64,", base64_encode(x))
 }
