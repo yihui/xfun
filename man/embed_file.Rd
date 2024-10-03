@@ -46,8 +46,8 @@ browser. A common use case is to embed data files for readers to download.
 Windows users may need to install Rtools to obtain the \command{zip}
 command to use \code{embed_dir()} and \code{embed_files()}.
 
-Currently Internet Explorer does not support downloading embedded files
-(\url{https://caniuse.com/download}). Chrome has a 2MB limit on the file size.
+Internet Explorer does not support downloading embedded files. Chrome has a
+2MB limit on the file size.
 }
 \examples{
 logo = xfun:::R_logo()
