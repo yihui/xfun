@@ -1,3 +1,5 @@
+# CHANGES IN xfun VERSION 0.49
+
 # CHANGES IN xfun VERSION 0.48
 
 - Added utilities for HTML tags: `html_tag()`, `html_escape()`, `html_escape()`, and `html_view()`. Removed the soft dependency on the **htmltools** package accordingly.
