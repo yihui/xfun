@@ -4,7 +4,7 @@
 \alias{protect_math}
 \title{Protect math expressions in pairs of backticks in Markdown}
 \usage{
-protect_math(x, token = "")
+protect_math(x, token = "", use_block = FALSE)
 }
 \arguments{
 \item{x}{A character vector of text in Markdown.}
@@ -12,6 +12,12 @@ protect_math(x, token = "")
 \item{token}{A character string to wrap math expressions at both ends. This
 can be a unique token so that math expressions can be reliably identified
 and restored after the Markdown text is converted.}
+
+\item{use_block}{Whether to use code blocks (\verb{```md-math}) to protect
+\verb{$$ $$} expressions that span across multiple lines. This is necessary when
+a certain line in the math expression starts with a special character that
+can accidentally start a new element (e.g., a leading \code{+} may start a
+bullet list). Only code blocks can prevent this case.}
 }
 \value{
 A character vector with math expressions in backticks.

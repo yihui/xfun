@@ -68,6 +68,11 @@ prose_index = function(x, warn = TRUE) {
 #' @param token A character string to wrap math expressions at both ends. This
 #'   can be a unique token so that math expressions can be reliably identified
 #'   and restored after the Markdown text is converted.
+#' @param use_block Whether to use code blocks (```` ```md-math ````) to protect
+#'   `$$ $$` expressions that span across multiple lines. This is necessary when
+#'   a certain line in the math expression starts with a special character that
+#'   can accidentally start a new element (e.g., a leading `+` may start a
+#'   bullet list). Only code blocks can prevent this case.
 #' @return A character vector with math expressions in backticks.
 #' @note If you are using Pandoc or the \pkg{rmarkdown} package, there is no
 #'   need to use this function, because Pandoc's Markdown can recognize math
@@ -77,13 +82,13 @@ prose_index = function(x, warn = TRUE) {
 #' protect_math(c('hi $a+b$', 'hello $$\\alpha$$', 'no math here: $x is $10 dollars'))
 #' protect_math(c('hi $$', '\\begin{equation}', 'x + y = z', '\\end{equation}'))
 #' protect_math('$a+b$', '===')
-protect_math = function(x, token = '') {
+protect_math = function(x, token = '', use_block = FALSE) {
   i = prose_index(x)
-  if (length(i)) x[i] = escape_math(x[i], token)
+  if (length(i)) x[i] = escape_math(x[i], token, use_block)
   x
 }
 
-escape_math = function(x, token = '') {
+escape_math = function(x, token = '', use_block = FALSE) {
   # replace $x$ with `\(x\)` (protect inline math in <code></code>)
   m = gregexpr('(?<=^|[\\s])[$](?! )[^$]+?(?<! )[$](?![$0123456789])', x, perl = TRUE)
   regmatches(x, m) = lapply(regmatches(x, m), function(z) {
@@ -105,8 +110,12 @@ escape_math = function(x, token = '') {
   # we assume that $$ can only appear once on one line
   i = vapply(gregexpr('[$]', x), length, integer(1)) == 2
   if (any(i)) {
-    x[i] = gsub('^(\\s*)([$][$][^ ]+)', paste0('\\1`', token, '\\2'), x[i], perl = TRUE)
-    x[i] = gsub('([^ ][$][$])$', paste0('\\1', token, '`'), x[i], perl = TRUE)
+    r1 = sprintf('\\1%s\\2', if (use_block) {
+      paste(c('```{.md-math', if (token != '') c(' .', token), '}\n\\1'), collapse = '')
+    } else paste0('`', token))
+    x[i] = gsub('^(\\s*)([$][$][^ ]+)', r1, x[i], perl = TRUE)
+    r2 = if (use_block) '\\1\\2\n\\1```' else paste0('\\1\\2', token, '`')
+    x[i] = gsub('^(\\s*)(.*?[^ ][$][$])$', r2, x[i], perl = TRUE)
   }
   # equation environments (\begin and \end must match)
   i1 = grep('^\\\\begin\\{[^}]+\\}$', x)

@@ -67,6 +67,11 @@ assert('protect_math() puts inline math expressions in backticks', {
   (protect_math('hi $$\alpha $$') %==% 'hi $$\alpha $$')
   (protect_math('hi $$ \alpha$$') %==% 'hi $$ \alpha$$')
   (protect_math('hi $$\alpha$$ and $$ \alpha$$') %==% 'hi `$$\alpha$$` and $$ \alpha$$')
+  (protect_math(c('$$a', 'b$$')) %==% c('`$$a', 'b$$`'))
+  (protect_math(c('$$a', 'b$$'), 'asdf') %==% c('`asdf$$a', 'b$$asdf`'))
+  (protect_math(c('$$a', 'b$$'), use_block = TRUE) %==% c('```{.md-math}\n$$a', 'b$$\n```'))
+  (protect_math(c('$$a', 'b$$'), 'asdf', use_block = TRUE) %==% c('```{.md-math .asdf}\n$$a', 'b$$\n```'))
+  (protect_math(c('  $$a', '  b$$'), use_block = TRUE) %==% c('  ```{.md-math}\n  $$a', '  b$$\n  ```'))
 })
 
 
