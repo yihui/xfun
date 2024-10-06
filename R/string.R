@@ -386,8 +386,8 @@ html_content = function(x) {
 #' @export
 html_value = function(x) structure(x, class = .html_class)
 
-#' @param attr Whether to escape `\r` and `\n` (which should be escaped for tag
-#'   attributes).
+#' @param attr Whether to escape `"`, `\r`, and `\n` (which should be escaped
+#'   for tag attributes).
 #' @rdname html_tag
 #' @export
 #' @examples
@@ -411,9 +411,9 @@ escape_html = function(x, attr = FALSE) {
   x = gsubf('&', '&amp;', x)
   x = gsubf('<', '&lt;', x)
   x = gsubf('>', '&gt;', x)
-  x = gsubf('"', '&quot;', x)
   # for attributes, we still need to escape more characters
   if (attr) {
+    x = gsubf('"', '&quot;', x)
     x = gsubf('\r', '&#13;', x)
     x = gsubf('\n', '&#10;', x)
   }
