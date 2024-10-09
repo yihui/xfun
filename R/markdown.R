@@ -157,6 +157,9 @@ fenced_block = function(x, attrs = NULL, fence = make_fence(x, char), char = '`'
 #' @export
 fenced_div = function(...) fenced_block(..., char = ':')
 
+#' @param start The number of characters to start searching `x` with. If the
+#'   string of this number of characters is found, add one more character, and
+#'   repeat the search.
 #' @return `make_fence()` returns a character string. If the block content
 #'   contains `N` fence characters (e.g., backticks), use `N + 1` characters as
 #'   the fence.
@@ -167,8 +170,8 @@ fenced_div = function(...) fenced_block(..., char = ':')
 #' xfun::make_fence('1+1')
 #' # needs five backticks for the fences because content has four
 #' xfun::make_fence(c('````r', '1+1', '````'))
-make_fence = function(x, char = '`') {
-  f = strrep(char, 3)
+make_fence = function(x, char = '`', start = 3) {
+  f = strrep(char, start)
   while (any(grepl(f, x, fixed = TRUE))) f = paste0(f, char)
   f
 }

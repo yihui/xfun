@@ -32,8 +32,8 @@ attributes. For \code{html_view()}, other arguments to be passed to \code{\link[
 \item{x}{A character vector to be treated as raw HTML content for
 \code{html_value()}, escaped for \code{html_escape()}, and viewed for \code{html_view()}.}
 
-\item{attr}{Whether to escape \verb{\\r} and \verb{\\n} (which should be escaped for tag
-attributes).}
+\item{attr}{Whether to escape \verb{"}, \verb{\\r}, and \verb{\\n} (which should be escaped
+for tag attributes).}
 }
 \value{
 A character string.

@@ -4,6 +4,8 @@
 
 - `html_escape()` will not escape double quotes (i.e., convert `"`" to `&quot;`) by default, and the conversion will be done only for `html_escape(attr = TRUE)`.
 
+- Added an argument `start` to `make_fence()`.
+
 # CHANGES IN xfun VERSION 0.48
 
 - Added utilities for HTML tags: `html_tag()`, `html_escape()`, `html_escape()`, and `html_view()`. Removed the soft dependency on the **htmltools** package accordingly.

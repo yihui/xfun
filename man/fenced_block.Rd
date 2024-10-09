@@ -10,7 +10,7 @@ fenced_block(x, attrs = NULL, fence = make_fence(x, char), char = "`")
 
 fenced_div(...)
 
-make_fence(x, char = "`")
+make_fence(x, char = "`", start = 3)
 }
 \arguments{
 \item{x}{A character vector of the block content.}
@@ -24,6 +24,10 @@ generated from the \code{char} argument by default.}
 default.}
 
 \item{...}{Arguments to be passed to \code{fenced_block()}.}
+
+\item{start}{The number of characters to start searching \code{x} with. If the
+string of this number of characters is found, add one more character, and
+repeat the search.}
 }
 \value{
 \code{fenced_block()} returns a character vector that contains both the
