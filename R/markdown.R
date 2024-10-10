@@ -90,7 +90,7 @@ protect_math = function(x, token = '', use_block = FALSE) {
 
 escape_math = function(x, token = '', use_block = FALSE) {
   # replace $x$ with `\(x\)` (protect inline math in <code></code>)
-  m = gregexpr('(?<=^|[\\s])[$](?! )[^$]+?(?<! )[$](?![$0123456789])', x, perl = TRUE)
+  m = gregexpr('(?<=^|[\\s])[$](?![ `])[^$]+?(?<![ `])[$](?![$0123456789])', x, perl = TRUE)
   regmatches(x, m) = lapply(regmatches(x, m), function(z) {
     if (length(z) == 0) return(z)
     z = sub('^[$]', paste0('`', token, '\\\\('), z)

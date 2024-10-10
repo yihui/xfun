@@ -2,6 +2,8 @@
 
 - Added an argument `use_block = FALSE` to `protect_math()`. When `use_block = TRUE`, a `$$ $$` expression that spans across multiple lines will be protected in a code block.
 
+- `protect_math()` will ignore `$ $` if there are backticks after the opening `$` or before the closing `$`, e.g., ``$`this is not math`$``.
+
 - `html_escape()` will not escape double quotes (i.e., convert `"`" to `&quot;`) by default, and the conversion will be done only for `html_escape(attr = TRUE)`.
 
 - Added an argument `start` to `make_fence()`.
