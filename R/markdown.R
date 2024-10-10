@@ -56,10 +56,11 @@ prose_index = function(x, warn = TRUE) {
 #'
 #' Expressions in pairs of dollar signs or double dollar signs are treated as
 #' math, if there are no spaces after the starting dollar sign, or before the
-#' ending dollar sign. There should be spaces before the starting dollar sign,
-#' unless the math expression starts from the very beginning of a line. For a
-#' pair of single dollar signs, the ending dollar sign should not be followed by
-#' a number. With these assumptions, there should not be too many false
+#' ending dollar sign. There should be a space or `(` before the starting dollar
+#' sign, unless the math expression starts from the very beginning of a line.
+#' For a pair of single dollar signs, the ending dollar sign should not be
+#' followed by a number, and the inner math expression should not be wrapped in
+#' backticks. With these assumptions, there should not be too many false
 #' positives when detecing math expressions.
 #'
 #' Besides, LaTeX environments (\verb{\begin{*}} and \verb{\end{*}}) are also
@@ -90,7 +91,7 @@ protect_math = function(x, token = '', use_block = FALSE) {
 
 escape_math = function(x, token = '', use_block = FALSE) {
   # replace $x$ with `\(x\)` (protect inline math in <code></code>)
-  m = gregexpr('(?<=^|[\\s])[$](?![ `])[^$]+?(?<![ `])[$](?![$0123456789])', x, perl = TRUE)
+  m = gregexpr('(?<=^|[\\s(])[$](?![ `])[^$]+?(?<![ `])[$](?![$0123456789])', x, perl = TRUE)
   regmatches(x, m) = lapply(regmatches(x, m), function(z) {
     if (length(z) == 0) return(z)
     z = sub('^[$]', paste0('`', token, '\\\\('), z)
@@ -98,7 +99,7 @@ escape_math = function(x, token = '', use_block = FALSE) {
     z
   })
   # replace $$x$$ with `$$x$$` (protect display math)
-  m = gregexpr('(?<=^|[\\s])[$][$](?! )[^$]+?(?<! )[$][$]', x, perl = TRUE)
+  m = gregexpr('(?<=^|[\\s(])[$][$](?! )[^$]+?(?<! )[$][$]', x, perl = TRUE)
   regmatches(x, m) = lapply(regmatches(x, m), function(z) {
     if (length(z) == 0) return(z)
     paste0('`', token, z, token, '`')

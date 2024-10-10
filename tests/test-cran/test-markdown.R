@@ -51,6 +51,10 @@ assert('prose_index() works', {
 assert('protect_math() puts inline math expressions in backticks', {
   (protect_math('$x$') %==% '`\\(x\\)`')
   (protect_math('$x$', '===') %==% '`===\\(x\\)===`')
+  (protect_math('($x$)') %==% '(`\\(x\\)`)')
+  (protect_math(' $x$') %==% ' `\\(x\\)`')
+  (protect_math('.$x$') %==% '.$x$')
+  (protect_math('$`x`$') %==% '$`x`$')
   (protect_math('hi $x$ a') %==% 'hi `\\(x\\)` a')
   (protect_math('$ a $') %==% '$ a $')
   (protect_math(' $a$') %==% ' `\\(a\\)`')
@@ -63,6 +67,9 @@ assert('protect_math() puts inline math expressions in backticks', {
 
   (protect_math('$$a$$') %==% '`$$a$$`')
   (protect_math('$$a$') %==% '$$a$')
+  (protect_math('($$a$$)') %==% '(`$$a$$`)')
+  (protect_math(' $$a$$') %==% ' `$$a$$`')
+  (protect_math('.$$a$$') %==% '.$$a$$')
   (protect_math('hi $$\alpha$$') %==% 'hi `$$\alpha$$`')
   (protect_math('hi $$\alpha $$') %==% 'hi $$\alpha $$')
   (protect_math('hi $$ \alpha$$') %==% 'hi $$ \alpha$$')

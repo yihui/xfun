@@ -32,10 +32,11 @@ math expressions in Markdown (by heuristics), and wrap them in backticks.
 \details{
 Expressions in pairs of dollar signs or double dollar signs are treated as
 math, if there are no spaces after the starting dollar sign, or before the
-ending dollar sign. There should be spaces before the starting dollar sign,
-unless the math expression starts from the very beginning of a line. For a
-pair of single dollar signs, the ending dollar sign should not be followed by
-a number. With these assumptions, there should not be too many false
+ending dollar sign. There should be a space or \code{(} before the starting dollar
+sign, unless the math expression starts from the very beginning of a line.
+For a pair of single dollar signs, the ending dollar sign should not be
+followed by a number, and the inner math expression should not be wrapped in
+backticks. With these assumptions, there should not be too many false
 positives when detecing math expressions.
 
 Besides, LaTeX environments (\verb{\begin{*}} and \verb{\end{*}}) are also

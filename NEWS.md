@@ -4,6 +4,8 @@
 
 - `protect_math()` will ignore `$ $` if there are backticks after the opening `$` or before the closing `$`, e.g., ``$`this is not math`$``.
 
+- `protect_math()` allows for parentheses `()` around math expressions now, e.g., `($x$)` was previously not recognized but is recognized now (thanks, @AlbertLei, yihui/litedown#34).
+
 - `html_escape()` will not escape double quotes (i.e., convert `"`" to `&quot;`) by default, and the conversion will be done only for `html_escape(attr = TRUE)`.
 
 - Added an argument `start` to `make_fence()`.
