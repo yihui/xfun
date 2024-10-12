@@ -4,14 +4,14 @@
 \alias{read_all}
 \title{Read all text files and concatenate their content}
 \usage{
-read_all(files, before = function(f) NULL, after = function(f) NULL)
+read_all(files, before = function(f, x) NULL, after = function(f, x) NULL)
 }
 \arguments{
 \item{files}{A vector of file paths.}
 
-\item{before, after}{A function that takes one file path as the input and
-returns values to be added before or after the content of the file.
-Alternatively, they can be constant values to be added.}
+\item{before, after}{A function that takes one file path and its content as
+the input and returns values to be added before or after the content of the
+file. Alternatively, they can be constant values to be added.}
 }
 \value{
 A character vector.

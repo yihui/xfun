@@ -8,6 +8,8 @@
 
 - `html_escape()` will not escape double quotes (i.e., convert `"`" to `&quot;`) by default, and the conversion will be done only for `html_escape(attr = TRUE)`.
 
+- The arguments `before` and `after` of `read_all()` can take functions of two arguments now, with the second argument being the content of each file.
+
 - Added an argument `start` to `make_fence()`.
 
 # CHANGES IN xfun VERSION 0.48
