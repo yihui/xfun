@@ -12,6 +12,20 @@
 #' prose_index(c('a', '```', 'b', '```', 'c'))
 #' prose_index(c('a', '````', '```r', '1+1', '```', '````', 'c'))
 prose_index = function(x, warn = TRUE) {
+  xi = seq_along(x); n = length(idx <- code_lines_regex(x))
+  if (n == 0) return(xi)
+  if (n %% 2 != 0) {
+    if (warn) warning('Code fences are not balanced')
+    # treat all lines as prose
+    return(xi)
+  }
+  idx2 = matrix(idx, nrow = 2)
+  idx2 = unlist(mapply(seq, idx2[1, ], idx2[2, ], SIMPLIFY = FALSE))
+  xi[-idx2]
+}
+
+# find starting and ending lines of code blocks via regex (may not be accurate)
+code_lines_regex = function(x) {
   idx = NULL
   # if raw HTML <pre></pre> exists, it should be treated as code block
   inside_pre = if (length(p1 <- grep('^\\s*<pre>', x))) {
@@ -34,16 +48,17 @@ prose_index = function(x, warn = TRUE) {
       idx = c(idx, i); s = ''
     }
   }
-  xi = seq_along(x); n = length(idx)
-  if (n == 0) return(xi)
-  if (n %% 2 != 0) {
-    if (warn) warning('Code fences are not balanced')
-    # treat all lines as prose
-    return(xi)
-  }
-  idx2 = matrix(idx, nrow = 2)
-  idx2 = unlist(mapply(seq, idx2[1, ], idx2[2, ], SIMPLIFY = FALSE))
-  xi[-idx2]
+  idx
+}
+
+# find lines via commonmark (accurate but gregexpr()/substring() are slow)
+code_lines_cmark = function(x) {
+  xml = commonmark::markdown_xml(x, sourcepos = TRUE)
+  r = '(?<=<code_block sourcepos=")(\\d+):\\d+-(\\d+):\\d+(?=")'
+  m = gregexpr(r, xml, perl = TRUE)[[1]]
+  if (all(m < 0)) return()
+  s = attr(m, 'capture.start'); l = attr(m, 'capture.length')
+  as.integer(substring(xml, s, s + l - 1))
 }
 
 #' Protect math expressions in pairs of backticks in Markdown
