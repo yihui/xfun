@@ -327,7 +327,9 @@ dev_open = function(dev, file, args) {
   for (i in names(a)) {
     if (i %in% m && is.null(args[[i]])) args[[i]] = a[[i]]
   }
+  n = length(dev.list())
   do.call(dev, c(list(file), args))
+  if (length(dev.list()) <= n) stop('Failed to open device for recording plots.')
   dev.control('enable')
   dev.cur()
 }
