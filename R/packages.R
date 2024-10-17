@@ -349,12 +349,3 @@ base_pkgs = function() {
     'parallel', 'splines', 'stats', 'stats4', 'tcltk', 'tools', 'utils'
   )
 }
-
-# update one package (from source by default)
-pkg_update_one = function(pkg, type = 'source') {
-  opts = options(repos = c(CRAN = 'https://cran.r-project.org'))
-  on.exit(options(opts), add = TRUE)
-  if (is.null(pkgs <- old.packages(type = type)) || !pkg %in% rownames(pkgs)) return()
-  install.packages(pkg, pkgs[pkg, 'LibPath'], type = type, INSTALL_opts = '--no-staged-install')
-  NULL
-}
