@@ -241,9 +241,12 @@ record = function(
     if (!is_error(out) && out$visible) {
       if (is.null(print)) print = record_print
       p_args = print.args
+      val = out$value
       # index print args by first class of out unless args are wrapped in I()
-      if (!inherits(p_args, 'AsIs')) p_args = p_args[[class(out$value)[1]]]
-      out = handle_eval(do.call(print, c(list(out$value), p_args)))
+      if (!inherits(p_args, 'AsIs')) p_args = p_args[[class(val)[1]]]
+      out = handle_eval(if (length(p_args) == 0) print(val) else do.call(
+        print, c(list(val), p_args), quote = inherits(val, c('name', 'call'))
+      ))
       if (length(out) && !is_error(out)) {
         if (is.list(out)) lapply(out, add_result) else add_result(out)
       }

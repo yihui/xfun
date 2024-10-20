@@ -6,6 +6,8 @@
 
 - `protect_math()` allows for parentheses `()` around math expressions now, e.g., `($x$)` was previously not recognized but is recognized now (thanks, @AlbertLei, yihui/litedown#34).
 
+- `record()` works with `quote()` now (thanks, @ben-schwen, yihui/litedown#38).
+
 - `html_escape()` will not escape double quotes (i.e., convert `"`" to `&quot;`) by default, and the conversion will be done only for `html_escape(attr = TRUE)`.
 
 - The arguments `before` and `after` of `read_all()` can take functions of two arguments now, with the second argument being the content of each file.
