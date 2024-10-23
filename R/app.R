@@ -29,11 +29,18 @@ new_app = function(name, handler, open = interactive(), ports = 4321 + 1:10) {
   }
   # to anyone who sees the dirty assign() here, please close your eyes and walk
   # away as quickly as possible; thanks!
-  assign(name, h, envir = getFromNamespace('.httpd.handlers.env', 'tools'))
+  assign(name, h, envir = app_env())
   if (isTRUE(open)) open = getOption('viewer', browseURL)
   if (is.function(open)) open(url)
   invisible(url)
 }
+
+# remove apps registered in the app environment
+stop_app = function(name = ls(app_env(), all.names = TRUE)) {
+  rm(list = name, envir = app_env())
+}
+
+app_env = function() getFromNamespace('.httpd.handlers.env', 'tools')
 
 #' Get data from a REST API
 #'
