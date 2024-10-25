@@ -411,6 +411,8 @@ escape_html = function(x, attr = FALSE) {
   x = gsubf('&', '&amp;', x)
   x = gsubf('<', '&lt;', x)
   x = gsubf('>', '&gt;', x)
+  # TODO: remove this after knitr 1.49
+  if (check_old_package('knitr', '1.48.6')) x = gsubf('"', '&quot;', x)
   # for attributes, we still need to escape more characters
   if (attr) {
     x = gsubf('"', '&quot;', x)
