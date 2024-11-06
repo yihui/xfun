@@ -22,7 +22,7 @@ Suggests:
     rstudioapi,
     tinytex (>= 0.30),
     mime,
-    litedown,
+    litedown (>= 0.4),
     commonmark,
     knitr (>= 1.47),
     remotes,
@@ -43,4 +43,3 @@ Encoding: UTF-8
 RoxygenNote: 7.3.2
 VignetteBuilder: litedown
 Roxygen: list(markdown = TRUE)
-Remotes: yihui/litedown

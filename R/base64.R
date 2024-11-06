@@ -167,6 +167,3 @@ mimemap = c(
   r = 'text/plain', rmd = 'text/x-markdown', svg = 'image/svg+xml',
   ttf = 'font/ttf', woff = 'font/woff', woff2 = 'font/woff2'
 )
-
-# TODO: remove this after new release of litedown
-guess_type = function(x) mime_type(x)
