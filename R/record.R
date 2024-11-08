@@ -380,7 +380,7 @@ format.xfun_record_results = function(
           '<pre class="%s"><code>',
           if (cls == 'source') paste0('language-r" data-start="', attr(z, 'lines')[1]) else cls
         ),
-        escape_html(one_string(z)), '</code></pre>'
+        html_escape(one_string(z)), '</code></pre>'
       )
     }
   }))
@@ -397,7 +397,7 @@ make_title = function(x) {
   if (length(x) == 0) return('')
   x = gsub('^#+\\s*', '', x[1])  # remove possible comment chars
   x = gsub('\\s*[.]*$', '... | ', x)  # add ... to the end
-  escape_html(x)
+  html_escape(x)
 }
 
 #' @param x An object returned by `record()`.

@@ -361,7 +361,7 @@ html_tag = function(.name, .content = NULL, .attrs = NULL, ...) {
     stop('Tag attributes must be named values')
   x1 = c('<', .name)
   x2 = if (length(.attrs)) .mapply(function(a, v) {
-    if (is.null(v)) a else sprintf('%s="%s"', a, escape_html(v, TRUE))
+    if (is.null(v)) a else sprintf('%s="%s"', a, html_escape(v, TRUE))
   }, list(nm, .attrs), list())
   x2 = paste(unlist(x2), collapse = ' ')
   x3 = if (.name %in% .void_tags) ' />' else {
@@ -393,21 +393,7 @@ html_value = function(x) structure(x, class = .html_class)
 #' @examples
 #' xfun::html_escape('" quotes " & brackets < >')
 #' xfun::html_escape('" & < > \r \n', attr = TRUE)
-html_escape = function(x, attr = FALSE) escape_html(x, attr)
-
-#' @rdname html_tag
-#' @export
-html_view = function(x, ...) {
-  new_app('xfun-html', function(path, ...) {
-    if (dir_exists(path)) list(payload = if (path == '.') x else path) else {
-      list(file = normalizePath(path), `content-type` = mime_type(path))
-    }
-  }, ...)
-}
-
-# TODO: remove escape_html() in other packages and call html_escape() instead
-# escape special HTML characters
-escape_html = function(x, attr = FALSE) {
+html_escape = function(x, attr = FALSE) {
   x = gsubf('&', '&amp;', x)
   x = gsubf('<', '&lt;', x)
   x = gsubf('>', '&gt;', x)
@@ -418,6 +404,16 @@ escape_html = function(x, attr = FALSE) {
     x = gsubf('\n', '&#10;', x)
   }
   x
+}
+
+#' @rdname html_tag
+#' @export
+html_view = function(x, ...) {
+  new_app('xfun-html', function(path, ...) {
+    if (dir_exists(path)) list(payload = if (path == '.') x else path) else {
+      list(file = normalizePath(path), `content-type` = mime_type(path))
+    }
+  }, ...)
 }
 
 one_string = function(x, ...) paste(x, ..., collapse = '\n')
