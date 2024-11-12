@@ -118,6 +118,48 @@ numbers_to_words = function(x, cap = FALSE, hyphen = TRUE, and = FALSE) {
 #' @rdname numbers_to_words
 n2w = numbers_to_words
 
+#' Join multiple words into a single string
+#'
+#' If `words` is of length 2, the first word and second word are joined by the
+#' `and` string; if `and` is blank, `sep` is used. When the length is greater
+#' than 2, `sep` is used to separate all words, and the `and` string is
+#' prepended to the last word.
+#' @param words A character vector.
+#' @param sep Separator to be inserted between words.
+#' @param and Character string to be prepended to the last word.
+#' @param before,after A character string to be added before/after each word.
+#' @param oxford_comma Whether to insert the separator between the last two
+#'   elements in the list.
+#' @return A character string marked by [raw_string()].
+#' @export
+#' @examples join_words('a'); join_words(c('a', 'b'))
+#' join_words(c('a', 'b', 'c'))
+#' join_words(c('a', 'b', 'c'), sep = ' / ', and = '')
+#' join_words(c('a', 'b', 'c'), and = '')
+#' join_words(c('a', 'b', 'c'), before = '"', after = '"')
+#' join_words(c('a', 'b', 'c'), before = '"', after = '"', oxford_comma = FALSE)
+join_words = function(
+  words, sep = ', ', and = ' and ', before = '', after = before, oxford_comma = TRUE
+) {
+  n = length(words)
+  if (n > 0) {
+    words = paste0(before, words, after)
+    if (n == 2) {
+      words = paste(words, collapse = if (is_blank(and)) sep else and)
+    } else if (n > 2) {
+      if (oxford_comma && grepl('^ ', and) && grepl(' $', sep)) and = gsub('^ ', '', and)
+      words[n] = paste0(and, words[n])
+      # combine the last two words directly without the comma
+      if (!oxford_comma) {
+        words[n - 1] = paste0(words[n - 1:0], collapse = '')
+        words = words[-n]
+      }
+      words = paste(words, collapse = sep)
+    }
+  }
+  raw_string(words)
+}
+
 #' Evaluate an expression after forcing the decimal point to be a dot
 #'
 #' Sometimes it is necessary to use the dot character as the decimal separator.

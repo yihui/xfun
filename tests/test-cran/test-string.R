@@ -27,6 +27,21 @@ assert('n2w converts numbers to words', {
   (has_error(n2w(1e15)))
 })
 
+assert('join_words() joins multiple words into a single string', {
+  jw = function(...) unclass(join_words(...))
+  (jw(NULL) %==% character())
+  (jw(c('a')) %==% 'a')
+  (jw(c('a', 'b')) %==% 'a and b')
+  (jw(c('a', 'b'), and = "") %==% 'a, b')
+  (jw(c('a', 'b', 'c')) %==% 'a, b, and c')
+  (jw(c('a', 'b', 'c'), and = '') %==% 'a, b, c')
+  (jw(c('a', 'b', 'c'), ' / ', '') %==% 'a / b / c')
+  (jw(c('a', 'b', 'c'), before = '"') %==% '"a", "b", and "c"')
+  (jw(c('a', 'b', 'c'), before = '``', after = "''") %==% "``a'', ``b'', and ``c''")
+  (jw(c('a', 'b', 'c'), before = '``', after = "''", oxford_comma = FALSE) %==% "``a'', ``b'' and ``c''")
+  rm(list = 'jw')
+})
+
 assert('split_lines() splits a character vector into lines', {
   (split_lines('a') %==% 'a')
   (split_lines('') %==% '')
