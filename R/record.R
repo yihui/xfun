@@ -24,6 +24,8 @@
 #'   arguments of [cache_exec()].
 #' @param print A (typically S3) function that takes the value of an expression
 #'   in the code as input and returns output. The default is [record_print()].
+#'   If a non-function value (e.g., `NA`) is passed to this argument, [print()]
+#'   (or [show()] for S4 objects) will be used.
 #' @param print.args A list of arguments for the `print` function. By default,
 #'   the whole list is not passed directly to the function, but only an element
 #'   in the list with a name identical to the first class name of the returned
@@ -240,6 +242,7 @@ record = function(
     # print value (via record_print()) if visible
     if (!is_error(out) && out$visible) {
       if (is.null(print)) print = record_print
+      if (!is.function(print)) print = record_print.default
       p_args = print.args
       val = out$value
       # index print args by first class of out unless args are wrapped in I()
