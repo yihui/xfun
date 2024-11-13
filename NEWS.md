@@ -4,6 +4,8 @@
 
 - Similarly, moved `knitr::write_bib()` into this package as `xfun::pkg_bib()`.
 
+- Moved the internal function `str_wrap()` from **knitr** and exported it as `xfun::str_wrap()`.
+
 # CHANGES IN xfun VERSION 0.49
 
 - Added an argument `use_block = FALSE` to `protect_math()`. When `use_block = TRUE`, a `$$ $$` expression that spans across multiple lines will be protected in a code block.

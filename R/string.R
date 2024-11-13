@@ -194,6 +194,24 @@ query_params = function(..., .list = list()) {
   if (x != '') paste0('?', x) else x
 }
 
+#' Wrap character vectors
+#'
+#' A wrapper function to make [strwrap()] return a character vector of the same
+#' length as the input vector; each element of the output vector is a string
+#' formed by concatenating wrapped strings by `\n`.
+#' @param ... Arguments passed to [strwrap()].
+#' @return A character vector.
+#' @export
+#' @examples
+#' x = sample(c(letters, ' '), 200, TRUE, c(rep(.5/26, 26), .5))
+#' x = rep(paste(x, collapse = ''), 2)
+#' strwrap(x, width = 30)
+#' xfun::str_wrap(x, width = 30)  # same length as x
+str_wrap = function(...) {
+  res = strwrap(..., simplify = FALSE)
+  unlist(lapply(res, one_string))
+}
+
 #' Split a character vector by line breaks
 #'
 #' Call `unlist(strsplit(x, '\n'))` on the character vector `x` and
