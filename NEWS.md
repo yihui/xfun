@@ -2,6 +2,8 @@
 
 - Moved `knitr::combine_words()` into this package as `xfun::join_words()`. The former has become a simple wrapper of the latter.
 
+- Similarly, moved `knitr::write_bib()` into this package as `xfun::pkg_bib()`.
+
 # CHANGES IN xfun VERSION 0.49
 
 - Added an argument `use_block = FALSE` to `protect_math()`. When `use_block = TRUE`, a `$$ $$` expression that spans across multiple lines will be protected in a code block.
