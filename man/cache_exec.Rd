@@ -46,17 +46,17 @@ Arguments supported in \code{...} include:
 \itemize{
 \item \code{vars}: Names of local variables (which are created inside the expression).
 By default, local variables are automatically detected from the expression
-via \code{\link[codetools:codetools]{codetools::findLocalsList()}}. Locally created variables are cached along
-with the value of the expression.
+via \code{\link[=find_locals]{find_locals()}}. Locally created variables are cached along with the
+value of the expression.
 \item \code{hash} and \code{extra}: R objects to be used to determine if cache should be
 loaded or invalidated. If (the MD5 hash of) the objects is not changed, the
 cache is loaded, otherwise the cache is invalidated and rebuilt. By default,
 \code{hash} is a list of values of global variables in the expression (i.e.,
 variables created outside the expression). Global variables are automatically
-detected by \code{\link[codetools:findGlobals]{codetools::findGlobals()}}. You can provide a vector of names to
-override the automatic detection if you want some specific global variables
-to affect caching, or the automatic detection is not reliable. You can also
-provide additional information via the \code{extra} argument. For example, if the
+detected by \code{\link[=find_globals]{find_globals()}}. You can provide a vector of names to override
+the automatic detection if you want some specific global variables to affect
+caching, or the automatic detection is not reliable. You can also provide
+additional information via the \code{extra} argument. For example, if the
 expression reads an external file \code{foo.csv}, and you want the cache to be
 invalidated after the file is modified, you may use \code{extra = file.mtime("foo.csv")}.
 \item \code{keep}: By default, only one copy of the cache corresponding to an \code{id}

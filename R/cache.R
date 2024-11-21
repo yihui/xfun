@@ -11,18 +11,18 @@
 #'
 #' - `vars`: Names of local variables (which are created inside the expression).
 #' By default, local variables are automatically detected from the expression
-#' via [codetools::findLocalsList()]. Locally created variables are cached along
-#' with the value of the expression.
+#' via [find_locals()]. Locally created variables are cached along with the
+#' value of the expression.
 #'
 #' - `hash` and `extra`: R objects to be used to determine if cache should be
 #' loaded or invalidated. If (the MD5 hash of) the objects is not changed, the
 #' cache is loaded, otherwise the cache is invalidated and rebuilt. By default,
 #' `hash` is a list of values of global variables in the expression (i.e.,
 #' variables created outside the expression). Global variables are automatically
-#' detected by [codetools::findGlobals()]. You can provide a vector of names to
-#' override the automatic detection if you want some specific global variables
-#' to affect caching, or the automatic detection is not reliable. You can also
-#' provide additional information via the `extra` argument. For example, if the
+#' detected by [find_globals()]. You can provide a vector of names to override
+#' the automatic detection if you want some specific global variables to affect
+#' caching, or the automatic detection is not reliable. You can also provide
+#' additional information via the `extra` argument. For example, if the
 #' expression reads an external file `foo.csv`, and you want the cache to be
 #' invalidated after the file is modified, you may use `extra =
 #' file.mtime("foo.csv")`.
