@@ -333,7 +333,7 @@ md_table = function(x, digits = NULL, na = NULL, newline = NULL, limit = NULL) {
   a[cn == '...'] = ':-:'
   x = rbind(cn, a, x)
   d = dim(x)
-  x = gsub('|', '&#124;', x, fixed = TRUE)
+  x = gsub('|', '\\|', x, fixed = TRUE)
   dim(x) = d
   res = do.call(function(...) paste(..., sep = '|'), as.data.frame(x))
   res = gsub('\n', newline %||% getOption('xfun.md_table.newline', ' '), res, fixed = TRUE)

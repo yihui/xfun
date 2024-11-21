@@ -10,6 +10,8 @@
 
 - Exported the internal `find_globals()` and `find_locals()` functions.
 
+- `md_table()` escapes `|` in the table to `\|` instead of `&#124;` now.
+
 # CHANGES IN xfun VERSION 0.49
 
 - Added an argument `use_block = FALSE` to `protect_math()`. When `use_block = TRUE`, a `$$ $$` expression that spans across multiple lines will be protected in a code block.
