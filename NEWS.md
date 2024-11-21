@@ -8,6 +8,8 @@
 
 - Moved the internal function `str_wrap()` from **knitr** and exported it as `xfun::str_wrap()`.
 
+- Exported the internal `find_globals()` and `find_locals()` functions.
+
 # CHANGES IN xfun VERSION 0.49
 
 - Added an argument `use_block = FALSE` to `protect_math()`. When `use_block = TRUE`, a `$$ $$` expression that spans across multiple lines will be protected in a code block.

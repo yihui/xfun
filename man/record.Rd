@@ -60,8 +60,8 @@ arguments of \code{\link[=cache_exec]{cache_exec()}}.}
 
 \item{print}{A (typically S3) function that takes the value of an expression
 in the code as input and returns output. The default is \code{\link[=record_print]{record_print()}}.
-If a non-function value is passed to this argument, \code{\link[=print]{print()}} (or \code{\link[=show]{show()}}
-for S4 objects) will be used.}
+If a non-function value (e.g., \code{NA}) is passed to this argument, \code{\link[=print]{print()}}
+(or \code{\link[=show]{show()}} for S4 objects) will be used.}
 
 \item{print.args}{A list of arguments for the \code{print} function. By default,
 the whole list is not passed directly to the function, but only an element

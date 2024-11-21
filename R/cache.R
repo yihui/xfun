@@ -424,7 +424,29 @@ clean_cache = function(path) {
   unlink(olds[(base == base[keep][1]) & !keep])
 }
 
-# analyze code and find out global variables used from an environment
+#' Find global/local variables in R code
+#'
+#' Use [codetools::findGlobals()] and [codetools::findLocalsList()] to find
+#' global and local variables in a piece of code. Global variables are defined
+#' outside the code, and local variables are created inside the code.
+#' @param code Either a character vector of R source code, or an R expression.
+#' @param envir The global environment in which global variables are to be
+#'   found.
+#' @return A character vector of the variable names.
+#' @note Due to the flexibility of creating and getting variables in R, these
+#'   functions are not guaranteed to find all possible variables in the code
+#'   (e.g., when the code is hidden behind `eval()`).
+#' @export
+#' @examples
+#' x = 2
+#' xfun::find_globals('y = x + 1')
+#' xfun::find_globals("y = get('x') + 1")  # x is not recognized
+#' xfun::find_globals('y = zzz + 1')  # zzz doesn't exist
+#'
+#' xfun::find_locals('y = x + 1')
+#' xfun::find_locals("assign('y', x + 1)")  # it works
+#' xfun::find_locals("assign('y', x + 1, new.env())")  # still smart
+#' xfun::find_locals("eval(parse(text = 'y = x + 1'))")  # no way
 find_globals = function(code, envir = parent.frame()) {
   if (is.language(code)) {
     fun = function() {}
@@ -452,7 +474,8 @@ ls_all = function(envir, recursive = FALSE) {
   unique(x)
 }
 
-# find local variables in code (those getting assigned in the code)
+#' @rdname find_globals
+#' @export
 find_locals = function(code) {
   code = if (is.language(code)) as.expression(code) else parse_only(code)
   codetools::findLocalsList(code)
