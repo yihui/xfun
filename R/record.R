@@ -327,11 +327,13 @@ new_record = function(x, class) structure(x, class = paste0('record_', class))
 .record_cls = c('source', 'output', 'message', 'warning', 'error', 'plot', 'asis')
 .record_classes = paste0('record_', .record_cls)
 
+# default device arguments
+dev_args = list(units = 'in', onefile = FALSE, width = 8, height = 8, res = 84)
+
 dev_open = function(dev, file, args) {
   m = names(formals(dev))
-  a = list(units = 'in', onefile = FALSE, width = 8, height = 8, res = 84)
-  for (i in names(a)) {
-    if (i %in% m && is.null(args[[i]])) args[[i]] = a[[i]]
+  for (i in names(dev_args)) {
+    if (i %in% m && is.null(args[[i]])) args[[i]] = dev_args[[i]]
   }
   n = length(dev.list())
   do.call(dev, c(list(file), args))
