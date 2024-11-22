@@ -169,3 +169,14 @@ divide_chunk = function(engine, code) {
 
   list(options = meta, src = src, code = code)
 }
+
+# change chunk option `tag=value` to `tag = value`, i.e., add spaces around =
+chunk_spaces = function(dir = '.', pattern = '[.]Rmd$') {
+  for (f in list.files(dir, pattern, full.names = TRUE, recursive = TRUE))
+    process_file(f, function(x) {
+      i = grep('^\\s*(> )*(#[|] |```+\\s*\\{)', x)
+      x[i] = gsub('(?<! )=', ' =', x[i], perl = TRUE)
+      x[i] = gsub('=(?! )', '= ', x[i], perl = TRUE)
+      x
+    })
+}
