@@ -16,7 +16,8 @@ find_locals(code)
 found.}
 }
 \value{
-A character vector of the variable names.
+A character vector of the variable names. If the source code contains
+syntax errors, an empty character vector will be returned.
 }
 \description{
 Use \code{\link[codetools:findGlobals]{codetools::findGlobals()}} and \code{\link[codetools:codetools]{codetools::findLocalsList()}} to find

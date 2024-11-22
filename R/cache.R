@@ -432,7 +432,8 @@ clean_cache = function(path) {
 #' @param code Either a character vector of R source code, or an R expression.
 #' @param envir The global environment in which global variables are to be
 #'   found.
-#' @return A character vector of the variable names.
+#' @return A character vector of the variable names. If the source code contains
+#'   syntax errors, an empty character vector will be returned.
 #' @note Due to the flexibility of creating and getting variables in R, these
 #'   functions are not guaranteed to find all possible variables in the code
 #'   (e.g., when the code is hidden behind `eval()`).
@@ -448,11 +449,11 @@ clean_cache = function(path) {
 #' xfun::find_locals("assign('y', x + 1, new.env())")  # still smart
 #' xfun::find_locals("eval(parse(text = 'y = x + 1'))")  # no way
 find_globals = function(code, envir = parent.frame()) {
+  fun = function() {}
   if (is.language(code)) {
-    fun = function() {}
     body(fun) = code
   } else {
-    fun = eval(parse_only(c('function(){', code, '}')), baseenv())
+    fun = eval(parse2(c('function(){', code, '}'), fun), baseenv())
   }
   obj = codetools::findGlobals(fun)
   intersect(obj, ls_all(envir, TRUE))
@@ -477,8 +478,13 @@ ls_all = function(envir, recursive = FALSE) {
 #' @rdname find_globals
 #' @export
 find_locals = function(code) {
-  code = if (is.language(code)) as.expression(code) else parse_only(code)
+  code = if (is.language(code)) as.expression(code) else parse2(code)
   codetools::findLocalsList(code)
+}
+
+# if code cannot be parsed, return an empty expression
+parse2 = function(code, fallback = expression()) {
+  tryCatch(parse_only(code), error = function(e) fallback)
 }
 
 # return a list of values of global variables in code
