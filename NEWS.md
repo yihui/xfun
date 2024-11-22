@@ -12,6 +12,24 @@
 
 - `md_table()` escapes `|` in the table to `\|` instead of `&#124;` now.
 
+- `divide_chunk()` no longer requires every line of chunk options to be commented out when the engine uses a pair of comment delimiters (such as `/*` and `*/` for CSS) instead of a single comment character. It suffices to use the opening delimiter at the beginning and closing delimiter at the end, e.g.,
+
+  ````md
+  ```{css}
+  /*| echo=FALSE,
+      label='foo' */
+  ```
+  ````
+  
+  Previously, every line must be commented out like:
+  
+  ````md
+  ```{css}
+  /*| echo=FALSE, */
+  /*| label='foo' */
+  ```
+  ````
+
 # CHANGES IN xfun VERSION 0.49
 
 - Added an argument `use_block = FALSE` to `protect_math()`. When `use_block = TRUE`, a `$$ $$` expression that spans across multiple lines will be protected in a code block.

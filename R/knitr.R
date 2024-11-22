@@ -124,31 +124,28 @@ divide_chunk = function(engine, code) {
 
   # check for option comments
   i1 = startsWith(code, s1)
-  i2 = endsWith(trimws(code, 'right'), s2)
   # if "commentChar| " is not found, try "#| " instead
-  if (!i1[1] && !identical(s1, '#|')) {
+  if (!i1[1] && s1 != '#|') {
     s1 = '#| '; s2 = ''
-    i1 = startsWith(code, s1); i2 = TRUE
+    i1 = startsWith(code, s1)
   }
-  m = i1 & i2
+  # must have at least one matched line at the beginning
+  if (!i1[[1]]) return(res)
 
-  # has to have at least one matched line at the beginning
-  if (!m[[1]]) return(res)
+  # end of the pipe comment block
+  n2 = if (s2 == '') {
+    i2 = TRUE
+    which.min(i1) - 1
+  } else {
+    i2 = endsWith(trimws(code, 'right'), s2)
+    if (i2[1]) which.min(i2) - 1 else which.max(i2)
+  }
 
   # divide into yaml and code
-  if (all(m)) {
-    src = code
-    code = NULL
-  } else {
-    src = head(code, which.min(m) - 1)
-    code = tail(code, -length(src))
-  }
-
-  # trim right
-  if (any(i2)) src = trimws(src, 'right')
+  i = 1:n2; src = code[i]; code = code[-i]
 
   # extract meta from comments, then parse it
-  meta = substr(src, nchar(s1) + 1, nchar(src) - nchar(s2))
+  meta = substr(src, nchar(s1) * i1[i] + 1, nchar(src) - nchar(s2) * i2[i])
   # see if the metadata looks like YAML or CSV
   if (grepl('^[^ :]+:($|\\s)', meta[1])) {
     meta = yaml_load(meta, envir = FALSE)
