@@ -135,7 +135,7 @@ divide_chunk = function(engine, code) {
   # end of the pipe comment block
   n2 = if (s2 == '') {
     i2 = TRUE
-    which.min(i1) - 1
+    if (all(i1)) length(code) else which.min(i1) - 1  # which.min() finds first FALSE
   } else {
     i2 = endsWith(trimws(code, 'right'), s2)
     if (i2[1]) which.min(i2) - 1 else which.max(i2)
