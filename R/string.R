@@ -12,6 +12,15 @@
 #' xfun::is_blank(c('', ' ', 'abc'))
 is_blank = function(x) grepl('^\\s*$', x)
 
+# remote blank elements from both ends
+strip_blank = function(x) {
+  if (!(N <- length(x))) return(x)
+  r = rle(is_blank(x))
+  l = r$lengths; v = r$values; n = length(v)
+  i = c(if (v[1]) seq_len(l[1]), if (n > 1 && v[n]) N - seq_len(l[n]) + 1)
+  if (length(i)) x[-i] else x
+}
+
 #' Convert numbers to English words
 #'
 #' This can be helpful when writing reports with \pkg{knitr}/\pkg{rmarkdown} if
