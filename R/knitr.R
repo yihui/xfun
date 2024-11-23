@@ -145,7 +145,9 @@ divide_chunk = function(engine, code) {
   i = 1:n2; src = code[i]; code = code[-i]
 
   # extract meta from comments, then parse it
-  meta = substr(src, nchar(s1) * i1[i] + 1, nchar(src) - nchar(s2) * i2[i])
+  c1 = nchar(s1) * i1[i] + 1
+  c2 = nchar(src) - if (s2 == '') 0 else nchar(s2) * i2[i]
+  meta = substr(src, c1, c2)
   # see if the metadata looks like YAML or CSV
   if (grepl('^[^ :]+:($|\\s)', meta[1])) {
     meta = yaml_load(meta, envir = FALSE)
