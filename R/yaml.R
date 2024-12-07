@@ -114,17 +114,18 @@ yaml_handlers = function(h, envir) {
 #' Partition the YAML metadata and the body in a document
 #'
 #' Split a document into the YAML metadata (which starts with `---` in the
-#' beginning of the document) and the body. The YAML metadata will be parsed.
+#' beginning of the document) and the body.
 #' @param x A character vector of the document content.
 #' @param ... Arguments to be passed to `yaml_load()`.
+#' @param parse Whether to parse the YAML data.
 #' @export
-#' @return A list of components `yaml` (the parsed YAML data), `lines` (starting
-#'   and ending line numbers of YAML), and `body` (a character vector of the
-#'   body text). If YAML metadata does not exist in the document, the components
+#' @return A list of components `yaml` (the YAML data), `lines` (starting and
+#'   ending line numbers of YAML), and `body` (a character vector of the body
+#'   text). If YAML metadata does not exist in the document, the components
 #'   `yaml` and `lines` will be missing.
 #' @examples
 #' xfun::yaml_body(c('---', 'title: Hello', 'output: litedown::html_format', '---', '', 'Content.'))
-yaml_body = function(x, ...) {
+yaml_body = function(x, ..., parse = TRUE) {
   n = length(x)
   res = if (length(i <- locate_yaml(x)) == 0) {
     list(body = x)
@@ -132,7 +133,8 @@ yaml_body = function(x, ...) {
     yaml = x[i[1]:i[2]], body = c(rep('', i[2]), tail(x, n - i[2])), lines = i
   )
   if ((n <- length(res$yaml)) >= 2) {
-    res['yaml'] = list(yaml_load(res$yaml[-c(1, n)], ...))
+    res$yaml = res$yaml[-c(1, n)]
+    if (parse) res['yaml'] = list(yaml_load(res$yaml, ...))
   }
   res
 }
