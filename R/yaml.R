@@ -49,7 +49,7 @@ yaml_load = function(
   ))
   # the below simple parser is quite limited
   res = list()
-  r = '^(\\s*)([^\\s]+?):($|\\s+.*)'
+  r = '^(\\s*)([^[:blank:]]+?):($|\\s+.*)'
   x = split_lines(x)
   x = x[grep(r, x)]
   x = x[grep('^\\s*#', x, invert = TRUE)]  # comments
