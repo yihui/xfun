@@ -49,14 +49,13 @@ yaml_load = function(
   ))
   # the below simple parser is quite limited
   res = list()
-  r = '^(\\s*)([^[:blank:]]+?):($|\\s+.*)'
+  r = '^(\\s*)([^ ]+?):($|\\s+.*)'
   x = split_lines(x)
   x = x[grep(r, x)]
   x = x[grep('^\\s*#', x, invert = TRUE)]  # comments
   if (length(x) == 0) return(res)
   lvl = gsub(r, '\\1', x)  # indentation level
-  lvl = gsub('\t', ' ', lvl) # turn tabs into spaces
-  lvl = guess_indent_length(lvl)
+  lvl = indent_level(lvl)
   key = gsub(r, '\\2', x)
   val = gsub('^\\s*|\\s*$', '', gsub(r, '\\3', x))
   keys = NULL
@@ -74,13 +73,11 @@ yaml_load = function(
 }
 
 
-guess_indent_length = function(x) {
-  x = nchar(x)
-  y = min(setdiff(x, 0))
-  if(!all((x %% y) == 0))
-    stop('Irregular indentation in YAML header')
-  x / y
+indent_level = function(x) {
+  N = nchar(x); n = N[N > 0]
+  if (length(n) == 0) N else ceiling(N / min(n))
 }
+
 
 # only support logical, numeric, character values (both scalar and [] arrays),
 # and R expressions starting with !r/!expr
