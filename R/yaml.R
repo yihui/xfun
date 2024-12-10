@@ -49,17 +49,18 @@ yaml_load = function(
   ))
   # the below simple parser is quite limited
   res = list()
-  r = '^( *)([^ ]+?):($|\\s+.*)'
+  r = '^(\\s*)(.+?):($|\\s+.*)'
   x = split_lines(x)
   x = x[grep(r, x)]
   x = x[grep('^\\s*#', x, invert = TRUE)]  # comments
   if (length(x) == 0) return(res)
   lvl = gsub(r, '\\1', x)  # indentation level
+  lvl = indent_level(lvl)
   key = gsub(r, '\\2', x)
   val = gsub('^\\s*|\\s*$', '', gsub(r, '\\3', x))
   keys = NULL
   for (i in seq_along(x)) {
-    keys = c(head(keys, nchar(lvl[i])/2), key[i])
+    keys = c(head(keys, lvl[i]), key[i])
     v = if (is_blank(val[i])) list() else yaml_value(val[i], envir)
     # special treatment of NULL (to preserve a key with a null value)
     if (is.null(v)) {
@@ -69,6 +70,11 @@ yaml_load = function(
     } else res[[keys]] = v
   }
   res
+}
+
+indent_level = function(x) {
+  N = nchar(x); n = N[N > 0]
+  if (length(n) == 0) N else ceiling(N / min(n))
 }
 
 # only support logical, numeric, character values (both scalar and [] arrays),

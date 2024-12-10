@@ -12,6 +12,8 @@
 
 - `md_table()` escapes `|` in the table to `\|` instead of `&#124;` now.
 
+- `yaml_load(use_yaml = FALSE)` allows for indenting sub-fields by any number of spaces now (thanks, @J-Moravec, #95). Previously, one level of indentation must use exactly 2 spaces.
+
 - `divide_chunk()` no longer requires every line of chunk options to be commented out when the engine uses a pair of comment delimiters (such as `/*` and `*/` for CSS) instead of a single comment character. It suffices to use the opening delimiter at the beginning and closing delimiter at the end, e.g.,
 
   ````md
