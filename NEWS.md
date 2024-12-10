@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.50
 
+- The function `isFALSE()` has been removed from this package. The deprecation notice was given two years ago: https://yihui.org/en/2023/02/xfun-isfalse/
+
 - The `print` argument of `record()` can accept non-function values now, in which case `print()` (or `show()` for S4 objects) will be used as the print function.
 
 - Moved `knitr::combine_words()` into this package as `xfun::join_words()`. The former has become a simple wrapper of the latter.

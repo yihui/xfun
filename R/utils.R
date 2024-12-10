@@ -130,41 +130,6 @@ in_dir = function(dir, expr) {
   expr
 }
 
-#' Test if an object is `FALSE`
-#'
-#' For R versions lower than 3.5.0, this function is a simple abbreviation of
-#' `identical(x, FALSE)`. For higher R versions, this function calls
-#' `base::isFALSE()`.
-#' @param x An R object.
-#' @note This function will be deprecated in the future. We recommend that you
-#'   use [base::isFALSE()] instead. If you have to support R versions lower
-#'   than 3.5.0, you may use `identical(x, FALSE)`, but please note that it is
-#'   not equivalent to `base::isFALSE()`.
-#' @export
-#' @keywords internal
-isFALSE = function(x) {
-  pkgs = tools::dependsOnPkgs('xfun', dependencies = 'all', recursive = FALSE)
-  pkgs = intersect(pkgs, sys.packages())
-  vers = sapply(pkgs, function(p) as.character(packageVersion(p)))
-  if ('isFALSE' %in% ls(baseenv())) stop(
-    'The function xfun::isFALSE() has been deprecated. Please ',
-    if (length(vers)) {
-      c('update the possibly outdated package(s): ', paste(pkgs, vers, sep = ' ', collapse = ', '), '. ')
-    } else {
-      'consider using base::isFALSE(x) or identical(x, FALSE) instead. '
-    },
-    'You may see https://yihui.org/en/2023/02/xfun-isfalse/ for more info.'
-  )
-  identical(x, FALSE)
-}
-
-# try to get the names of packages for all functions on the call stack
-sys.packages = function() {
-  unique(unlist(lapply(seq_along(sys.calls()), function(i) {
-    environment(sys.function(i))$.packageName
-  })))
-}
-
 #' Parse R code and do not keep the source
 #'
 #' An abbreviation of `parse(keep.source = FALSE)`.
