@@ -49,7 +49,7 @@ yaml_load = function(
   ))
   # the below simple parser is quite limited
   res = list()
-  r = '^(\\s*)([^ ]+?):($|\\s+.*)'
+  r = '^(\\s*)(.+?):($|\\s+.*)'
   x = split_lines(x)
   x = x[grep(r, x)]
   x = x[grep('^\\s*#', x, invert = TRUE)]  # comments
@@ -72,12 +72,10 @@ yaml_load = function(
   res
 }
 
-
 indent_level = function(x) {
   N = nchar(x); n = N[N > 0]
   if (length(n) == 0) N else ceiling(N / min(n))
 }
-
 
 # only support logical, numeric, character values (both scalar and [] arrays),
 # and R expressions starting with !r/!expr
