@@ -22,7 +22,13 @@ record(
   envir = parent.frame()
 )
 
-\method{format}{xfun_record_results}(x, to = c("text", "html"), encode = FALSE, template = FALSE, ...)
+\method{format}{xfun_record_results}(
+  x,
+  to = c("text", "markdown", "html"),
+  encode = FALSE,
+  template = FALSE,
+  ...
+)
 
 \method{print}{xfun_record_results}(
   x,
@@ -79,7 +85,7 @@ print the value of the last expression; \code{0} means no special handling
 
 \item{x}{An object returned by \code{record()}.}
 
-\item{to}{The output format (text or html).}
+\item{to}{The output format (text, markdown, or html).}
 
 \item{encode}{For HTML output, whether to base64 encode plots.}
 

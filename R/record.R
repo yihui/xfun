@@ -351,7 +351,7 @@ dev_ext = function(dev) {
 
 is_error = function(x) inherits(x, 'try-error')
 
-#' @param to The output format (text or html).
+#' @param to The output format (text, markdown, or html).
 #' @param encode For HTML output, whether to base64 encode plots.
 #' @param template For HTML output, whether to embed the formatted results in an
 #'   HTML template. Alternatively, this argument can take a file path, i.e.,
@@ -363,12 +363,33 @@ is_error = function(x) inherits(x, 'try-error')
 #' @return The `format()` method returns a character vector of plain-text output
 #'   or HTML code for displaying the results.
 format.xfun_record_results = function(
-    x, to = c('text', 'html'), encode = FALSE, template = FALSE, ...
+    x, to = c('text', 'markdown', 'html'), encode = FALSE, template = FALSE, ...
 ) {
-  if (to[1] == 'text') {
+  alt = 'A plot recorded by xfun::record()'
+  if (to[1] != 'html') {
+    is_md = to[1] == 'markdown'
     res = unlist(lapply(x, function(z) {
-      if (!inherits(z, c('record_source', 'record_asis'))) z = paste('#>', z)
-      gsub('\n*$', '\n', one_string(z))
+      if (length(z) == 0) return()
+      cls_all = sub('^record_', '', class(z)); cls = cls_all[1]
+      if (cls != 'asis') {
+        if (is_md && cls == 'plot') {
+          z = sprintf('![%s](<%s>)', alt, z)
+        } else {
+          z = gsub('^(\\s*\n)+|\n\\s*$', '', one_string(z))  # trim blank lines
+          if (cls != 'source') z = paste('#>', split_lines(z))
+          if (is_md) {
+            cls_all = if (any(c('message', 'warning', 'error') %in% cls_all)) {
+              c('plain', cls_all)
+            } else if (cls == 'source') {
+              replace(cls_all, cls_all == 'source', 'r')
+            } else setdiff(cls_all, 'output')
+            z = fenced_block(z, sprintf('.%s', cls_all))
+          }
+        }
+      }
+      z = one_string(z)
+      if (!is_md) z = gsub('\n*$', '\n', z)
+      z
     }))
     return(raw_string(res))
   }
@@ -376,8 +397,8 @@ format.xfun_record_results = function(
     cls = sub('^record_', '', class(z))
     if (cls == 'asis') z else if (cls == 'plot') {
       sprintf(
-        '<p class="%s"><img src="%s" alt="A plot recorded by xfun::record()" /></p>',
-        cls, if (encode) vapply(z, base64_uri, '') else URLencode(z)
+        '<p class="%s"><img src="%s" alt="%s" /></p>',
+        cls, if (encode) vapply(z, base64_uri, '') else URLencode(z), alt
       )
     } else {
       paste0(
