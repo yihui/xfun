@@ -1,9 +1,7 @@
 #' Read YAML data
 #'
 #' If the \pkg{yaml} package is installed, use [yaml::yaml.load()] to read the
-#' data. If not, use a simple parser instead, which only supports a limited
-#' number of data types (see \dQuote{Examples}). In particular, it does not
-#' support values that span across multiple lines (such as multi-line text).
+#' data. If not, use the simple parser [taml_load()] instead.
 #' @param x A character vector of YAML data.
 #' @param ...,handlers Arguments to be passed to [yaml::yaml.load()].
 #' @param envir The environment in which R expressions in YAML are evaluated. To
@@ -15,24 +13,12 @@
 #'   character strings for expressions.
 #' @export
 #' @examples
-#' # test the simple parser without using the yaml package
-#' read_yaml = function(...) xfun::yaml_load(..., use_yaml = FALSE)
-#' read_yaml('a: 1')
-#' read_yaml('a: 1\nb: "foo"\nc: null')
-#' read_yaml('a:\n  b: false\n  c: true\n  d: 1.234\ne: bar')
-#' read_yaml('a: !expr paste(1:10, collapse = ", ")')
-#' read_yaml('a: [1, 3, 4, 2]')
-#' read_yaml('a: [1, "abc", 4, 2]')
-#' read_yaml('a: ["foo", "bar"]')
-#' read_yaml('a: [true, false, true]')
-#' # the other form of array is not supported
-#' read_yaml('a:\n  - b\n  - c')
-#' # and you must use the yaml package
-#' if (loadable('yaml')) yaml_load('a:\n  - b\n  - c')
+#' yaml_load('a: 1')
+#' yaml_load('a: 1', use_yaml = FALSE)
 yaml_load = function(
   x, ..., handlers = NULL, envir = parent.frame(), use_yaml = loadable('yaml')
 ) {
-  if (use_yaml) return(handle_error(
+  if (!use_yaml) taml_load(x) else handle_error(
     yaml::yaml.load(x, eval.expr = FALSE, handlers = yaml_handlers(handlers, envir), ...),
     function(loc) {
       s = geterrmessage()
@@ -46,8 +32,32 @@ yaml_load = function(
         append(x, paste0(strrep(' ', m[2]), '^~~~~~'), m[1]), ''
       )
     }
-  ))
-  # the below simple parser is quite limited
+  )
+}
+
+#' A simple YAML parser
+#'
+#' TAML is a tiny subset of YAML. See
+#' <https://yihui.org/litedown/#sec:yaml-syntax> for its specifications.
+#' @param x For `taml_load()`, a character vector of the YAML content. For
+#'   `taml_file()`, a file path.
+#' @inheritParams yaml_load
+#' @return A list.
+#' @export
+#' @examples
+#' taml_load('a: 1')
+#' taml_load('a: 1\nb: "foo"\nc: null')
+#' taml_load('a:\n  b: false\n  c: true\n  d: 1.234\ne: bar')
+#' taml_load('a: !expr paste(1:10, collapse = ", ")')
+#' taml_load('a: [1, 3, 4, 2]')
+#' taml_load('a: [1, "abc", 4, 2]')
+#' taml_load('a: ["foo", "bar"]')
+#' taml_load('a: [true, false, true]')
+#' # the other form of array is not supported
+#' taml_load('a:\n  - b\n  - c')
+#' # and you must use the yaml package
+#' if (loadable('yaml')) yaml_load('a:\n  - b\n  - c')
+taml_load = function(x, envir = parent.frame()) {
   res = list()
   r = '^(\\s*)(.+?):($|\\s+.*)'
   x = split_lines(x)
@@ -71,6 +81,10 @@ yaml_load = function(
   }
   res
 }
+
+#' @rdname taml_load
+#' @export
+taml_file = function(x) taml_load(read_utf8(x))
 
 indent_level = function(x) {
   N = nchar(x); n = N[N > 0]

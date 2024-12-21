@@ -41,7 +41,6 @@ output:
 if (loadable('yaml')) assert('yaml_load() works with the yaml package', {
   (yaml_load(yaml) %==% list(a = 1L, b = 1:3, c = TRUE, d = list(e = 2, f = NULL)))
   (yaml_load(yaml, envir = FALSE)[[c('d', 'e')]] %==% expression(1 + 1))
-  # this test won't work for yaml::yaml.load() but works for yaml_load()
   f = function() {
     foo = 1:10
     yaml_load('a: !expr head(foo, 4)')
@@ -49,29 +48,25 @@ if (loadable('yaml')) assert('yaml_load() works with the yaml package', {
   (f() %==% list(a = 1:4))
 })
 
-assert('yaml_load() works without the yaml package', {
-  (yaml_load(yaml, use_yaml = FALSE) %==% list(a = 1L, b = 1:3, c = TRUE, d = list(e = 2, f = NULL)))
-  (yaml_load(yaml, envir = FALSE, use_yaml = FALSE)[[c('d', 'e')]] %==% expression(1 + 1))
-  # this test won't work for yaml::yaml.load() but works for yaml_load()
+assert('taml_load() works', {
+  (taml_load(yaml) %==% list(a = 1L, b = 1:3, c = TRUE, d = list(e = 2, f = NULL)))
+  (taml_load(yaml, envir = FALSE)[[c('d', 'e')]] %==% expression(1 + 1))
   f = function() {
     foo = 1:10
-    yaml_load('a: !expr head(foo, 4)', use_yaml = FALSE)
+    taml_load('a: !expr head(foo, 4)')
   }
   (f() %==% list(a = 1:4))
 })
 
-
-assert('yaml_load() works with variable indent', {
-  (yaml_load(yaml_long_indent, use_yaml = FALSE) %==% list(a = 1L, b = 1:3, c = TRUE, d = list(e = 2, f = NULL)))
-  (yaml_load(yaml_long_indent, envir = FALSE, use_yaml = FALSE)[[c('d', 'e')]] %==% expression(1 + 1))
+assert('taml_load() works with variable indent', {
+  (taml_load(yaml_long_indent) %==% list(a = 1L, b = 1:3, c = TRUE, d = list(e = 2, f = NULL)))
+  (taml_load(yaml_long_indent, envir = FALSE)[[c('d', 'e')]] %==% expression(1 + 1))
 })
 
-
-assert('yaml_load() works with tabs indent', {
-  (yaml_load(yaml_tabs, use_yaml = FALSE) %==% list(a = 1L, b = 1:3, c = TRUE, d = list(e = 2, f = NULL)))
-  (yaml_load(yaml_tabs, envir = FALSE, use_yaml = FALSE)[[c('d', 'e')]] %==% expression(1 + 1))
+assert('taml_load() works with tabs indent', {
+  (taml_load(yaml_tabs) %==% list(a = 1L, b = 1:3, c = TRUE, d = list(e = 2, f = NULL)))
+  (taml_load(yaml_tabs, envir = FALSE)[[c('d', 'e')]] %==% expression(1 + 1))
 })
-
 
 assert('yaml_load() works with a complex output', {
   expected = list(

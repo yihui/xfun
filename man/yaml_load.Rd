@@ -27,9 +27,7 @@ An R object (typically a list).
 }
 \description{
 If the \pkg{yaml} package is installed, use \code{\link[yaml:yaml.load]{yaml::yaml.load()}} to read the
-data. If not, use a simple parser instead, which only supports a limited
-number of data types (see \dQuote{Examples}). In particular, it does not
-support values that span across multiple lines (such as multi-line text).
+data. If not, use the simple parser \code{\link[=taml_load]{taml_load()}} instead.
 }
 \note{
 R expressions in YAML will be returned as \link{expression}s when they are
@@ -37,18 +35,6 @@ not evaluated. This is different with \code{\link[yaml:yaml.load]{yaml::yaml.loa
 character strings for expressions.
 }
 \examples{
-# test the simple parser without using the yaml package
-read_yaml = function(...) xfun::yaml_load(..., use_yaml = FALSE)
-read_yaml("a: 1")
-read_yaml("a: 1\nb: \"foo\"\nc: null")
-read_yaml("a:\n  b: false\n  c: true\n  d: 1.234\ne: bar")
-read_yaml("a: !expr paste(1:10, collapse = \", \")")
-read_yaml("a: [1, 3, 4, 2]")
-read_yaml("a: [1, \"abc\", 4, 2]")
-read_yaml("a: [\"foo\", \"bar\"]")
-read_yaml("a: [true, false, true]")
-# the other form of array is not supported
-read_yaml("a:\n  - b\n  - c")
-# and you must use the yaml package
-if (loadable("yaml")) yaml_load("a:\n  - b\n  - c")
+yaml_load("a: 1")
+yaml_load("a: 1", use_yaml = FALSE)
 }
