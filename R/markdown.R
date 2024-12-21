@@ -339,3 +339,70 @@ md_table = function(x, digits = NULL, na = NULL, newline = NULL, limit = NULL) {
   res = gsub('\n', newline %||% getOption('xfun.md_table.newline', ' '), res, fixed = TRUE)
   paste0('|', res, '|')
 }
+
+#' Represent a (recursive) list with (nested) tabsets
+#'
+#' The tab titles are names of list members, and the tab content contains the
+#' values of list members. If a list member is also a list, it will be
+#' represented recursively with a child tabset.
+#' @param x A list.
+#' @param value A function to print the value of a list member. By default,
+#'   [str()] is used to print the structure of the value. You may also use
+#'   [dput()] to output the full value, but it may be slow when the size of the
+#'   value is too big.
+#' @return A character vector of Markdown that can be rendered to HTML with
+#'   [litedown::mark()].
+#' @export
+#' @examples
+#' xfun::tabset(iris)
+#' xfun::tabset(iris, dput)
+#' xfun::tabset(iris, print)
+#'
+#' # a deeply nested list
+#' plot(1:10)
+#' p = recordPlot()
+#' xfun::tabset(p)
+tabset = function(x, value = str) {
+  obj = paste(deparse(substitute(x)), collapse = ' ')
+  md_viewable(.tabset(x, value), meta = list(
+    css = c('@default', '@tabsets'), js = '@tabsets',
+    title = paste0('`xfun::tabset(', obj, ')`')
+  ))
+}
+
+.tabset = function(x, value) {
+  if (is.list(x)) {
+    idx = seq_along(x)
+    nms = names(x) %||% sprintf('[[%d]]', idx)
+    res = NULL
+    for (i in idx) {
+      con = paste0('  ', .tabset(unclass(x)[[i]], value))  # indent content
+      res = c(res, paste0('- `', nms[i], '`'), '', con)
+    }
+    # attach attributes to the last tab if necessary
+    if (is.list(att <- attributes(x))) {
+      att$names = NULL  # names have been displayed
+      if (length(att)) res = c(
+        res, '', '- `attr(*)`', '', paste0('  ', .tabset(att, value))
+      )
+    }
+    c('::: tabset', res, ':::')
+  } else {
+    c('```r', capture.output(value(x)), '```')
+  }
+}
+
+md_viewable = function(x, ...) {
+  structure(x, class = c('xfun_md_viewable', 'record_asis'), ...)
+}
+
+#' @export
+print.xfun_md_viewable = function(x, ...) {
+  if (loadable('litedown')) {
+    html = litedown::mark(text = c('---', '---', '', x), meta = attr(x, 'meta'), ...)
+    html_view(html)
+  } else {
+    warning("Cannot preview the result since the 'litedown' package is not available.")
+    raw_string(x)
+  }
+}

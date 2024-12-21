@@ -2,6 +2,8 @@
 
 - The function `isFALSE()` has been removed from this package. The deprecation notice was given two years ago: https://yihui.org/en/2023/02/xfun-isfalse/
 
+- Added a new function `tabset()` to represent a list with a tabset. The representation is similar to `str()`, but uses a visual form.
+
 - The `print` argument of `record()` can accept non-function values now, in which case `print()` (or `show()` for S4 objects) will be used as the print function.
 
 - The `record()` results can also be formatted to Markdown via `format(record(), to = 'markdown')`.
