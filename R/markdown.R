@@ -28,8 +28,8 @@ prose_index = function(x, warn = TRUE) {
 code_lines_regex = function(x) {
   idx = NULL
   # if raw HTML <pre></pre> exists, it should be treated as code block
-  inside_pre = if (length(p1 <- grep('^\\s*<pre>', x))) {
-    p2 = grep('</pre>\\s*$', x)
+  inside_pre = if (length(p1 <- grep('<pre>', x))) {
+    p2 = grep('</pre>', x)
     if (length(p1) == length(p2)) {
       idx = rbind(p1, p2)
       function(i) any(i > p1 & i < p2)
