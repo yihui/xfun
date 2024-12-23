@@ -35,19 +35,29 @@ yaml_load = function(
   )
 }
 
-#' A simple YAML parser
+#' A simple YAML reader and writer
 #'
 #' TAML is a tiny subset of YAML. See
 #' <https://yihui.org/litedown/#sec:yaml-syntax> for its specifications.
 #' @param x For `taml_load()`, a character vector of the YAML content. For
-#'   `taml_file()`, a file path.
+#'   `taml_save()`, a list to be converted to YAML.
+#' @param path A file path to read from or write to.
 #' @inheritParams yaml_load
-#' @return A list.
+#' @return `taml_load()` and `taml_file()` return a list; if `path = NULL`,
+#'   `taml_save()` returns a character vector, otherwise the vector is written
+#'   to the file specified by the `path`.
 #' @export
 #' @examples
-#' taml_load('a: 1')
-#' taml_load('a: 1\nb: "foo"\nc: null')
-#' taml_load('a:\n  b: false\n  c: true\n  d: 1.234\ne: bar')
+#' (res = taml_load('a: 1'))
+#' taml_save(res)
+#'
+#' (res = taml_load('a: 1\nb: "foo"\nc: null'))
+#' taml_save(res)
+#'
+#' (res = taml_load('a:\n  b: false\n  c: true\n  d: 1.234\ne: bar'))
+#' taml_save(res)
+#' taml_save(res, indent = '\t')
+#'
 #' taml_load('a: !expr paste(1:10, collapse = ", ")')
 #' taml_load('a: [1, 3, 4, 2]')
 #' taml_load('a: [1, "abc", 4, 2]')
@@ -84,7 +94,42 @@ taml_load = function(x, envir = parent.frame()) {
 
 #' @rdname taml_load
 #' @export
-taml_file = function(x) taml_load(read_utf8(x))
+taml_file = function(path) taml_load(read_utf8(path))
+
+#' @param indent A character string to indent sub-lists by one level.
+#' @rdname taml_load
+#' @export
+taml_save = function(x, path = NULL, indent = '  ') {
+  res = .taml_save(x, indent)
+  if (is.null(path)) raw_string(res) else write_utf8(res, path)
+}
+
+.taml_save = function(x, indent = '  ', level = 1) {
+  if (is.list(x)) {
+    nms = names(x)
+    if (is.null(nms)) {
+      str(x); stop('Lists must be named')
+    }
+    val = lapply(x, function(z) {
+      if (!is.list(z)) .taml_save(z) else {
+        .indent = strrep(indent, level)
+        one_string(c('', paste0(.indent, .taml_save(z, indent, level + 1))))
+      }
+    })
+    paste(nms, val, sep = ': ')
+  } else {
+    if (is.null(x)) return('null')
+    if (is.logical(x)) x = tolower(x) else if (is.expression(x)) {
+      x = unlist(lapply(x, deparse))
+      x = paste('!expr', paste(x, collapse = '\\n'))
+    } else if (is.numeric(x) || is.character(x)) {
+      if (!is.numeric(x)) x = paste0('"', x, '"')
+    } else {
+      str(x); stop("Unsupported data type ('", class(x)[1], "')")
+    }
+    if (length(x) == 1) x else paste0('[', paste(x, collapse = ', '), ']')
+  }
+}
 
 indent_level = function(x) {
   N = nchar(x); n = N[N > 0]

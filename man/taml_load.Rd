@@ -3,30 +3,46 @@
 \name{taml_load}
 \alias{taml_load}
 \alias{taml_file}
-\title{A simple YAML parser}
+\alias{taml_save}
+\title{A simple YAML reader and writer}
 \usage{
 taml_load(x, envir = parent.frame())
 
-taml_file(x)
+taml_file(path)
+
+taml_save(x, path = NULL, indent = "  ")
 }
 \arguments{
 \item{x}{For \code{taml_load()}, a character vector of the YAML content. For
-\code{taml_file()}, a file path.}
+\code{taml_save()}, a list to be converted to YAML.}
 
 \item{envir}{The environment in which R expressions in YAML are evaluated. To
 disable the evaluation, use \code{envir = FALSE}.}
+
+\item{path}{A file path to read from or write to.}
+
+\item{indent}{A character string to indent sub-lists by one level.}
 }
 \value{
-A list.
+\code{taml_load()} and \code{taml_file()} return a list; if \code{path = NULL},
+\code{taml_save()} returns a character vector, otherwise the vector is written
+to the file specified by the \code{path}.
 }
 \description{
 TAML is a tiny subset of YAML. See
 \url{https://yihui.org/litedown/#sec:yaml-syntax} for its specifications.
 }
 \examples{
-taml_load("a: 1")
-taml_load("a: 1\nb: \"foo\"\nc: null")
-taml_load("a:\n  b: false\n  c: true\n  d: 1.234\ne: bar")
+(res = taml_load("a: 1"))
+taml_save(res)
+
+(res = taml_load("a: 1\nb: \"foo\"\nc: null"))
+taml_save(res)
+
+(res = taml_load("a:\n  b: false\n  c: true\n  d: 1.234\ne: bar"))
+taml_save(res)
+taml_save(res, indent = "\t")
+
 taml_load("a: !expr paste(1:10, collapse = \", \")")
 taml_load("a: [1, 3, 4, 2]")
 taml_load("a: [1, \"abc\", 4, 2]")

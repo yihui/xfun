@@ -4,7 +4,7 @@
 
 - Added a new function `tabset()` to represent a list with a tabset. The representation is similar to `str()`, but uses a visual form.
 
-- Factored out the function `taml_load()` and exported it (TAML is a tiny subset of YAML).
+- Factored out the function `taml_load()` and exported it (TAML is a tiny subset of YAML). Also added a new function `taml_save()` to convert simple lists to YAML.
 
 - The `print` argument of `record()` can accept non-function values now, in which case `print()` (or `show()` for S4 objects) will be used as the print function.
 
