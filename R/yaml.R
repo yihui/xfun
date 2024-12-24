@@ -118,16 +118,17 @@ taml_save = function(x, path = NULL, indent = '  ') {
     })
     paste(nms, val, sep = ': ')
   } else {
+    asis = inherits(x, 'AsIs')
     if (is.null(x)) return('null')
     if (is.logical(x)) x = tolower(x) else if (is.expression(x)) {
       x = unlist(lapply(x, deparse))
       x = paste('!expr', paste(x, collapse = '\\n'))
     } else if (is.numeric(x) || is.character(x)) {
-      if (!is.numeric(x)) x = paste0('"', x, '"')
+      if (!is.numeric(x) && length(x)) x = paste0('"', x, '"')
     } else {
       str(x); stop("Unsupported data type ('", class(x)[1], "')")
     }
-    if (length(x) == 1) x else paste0('[', paste(x, collapse = ', '), ']')
+    if (length(x) == 1 && !asis) x else paste0('[', paste(x, collapse = ', '), ']')
   }
 }
 
