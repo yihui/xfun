@@ -126,11 +126,11 @@ pkg_update = function(...) {
 # allow users to specify a custom install.packages() function via the global
 # option xfun.install.packages
 pkg_install = function(pkgs, install = TRUE, ...) {
-  if (length(pkgs) == 0) return()
+  if (length(pkgs) == 0) return(invisible())
   # in case the CRAN repo is not set up
   repos = getOption('repos')
   if (length(repos) == 0 || identical(repos, c(CRAN = '@CRAN@'))) {
-    opts = options(repos = c(CRAN = 'https://cran.rstudio.com'))
+    opts = options(repos = c(CRAN = 'https://cloud.r-project.org'))
     on.exit(options(opts), add = TRUE)
   }
   if (length(pkgs) > 1)
@@ -142,7 +142,7 @@ pkg_install = function(pkgs, install = TRUE, ...) {
     }
   )
   if (identical(install, 'pak')) install = pak::pkg_install
-  retry(install, pkgs, ..., .pause = 0)
+  invisible(retry(install, pkgs, ..., .pause = 0))
 }
 
 #' Find out broken packages and reinstall them
@@ -201,6 +201,25 @@ pkg_build = function(dir = '.', opts = NULL) {
   pkg = sprintf('%s_%s.tar.gz', pv[1, 1], pv[1, 2])
   if (!file_exists(pkg)) stop('Failed to build the package ', pkg)
   pkg
+}
+
+# install dependencies given a package DESCRIPTION
+install_deps = function(dir = '.') {
+  d = read.dcf(file.path(dir, 'DESCRIPTION'))
+  d = d[1, intersect(colnames(d), c('Depends', 'Imports', 'Suggests', 'LinkingTo'))]
+  d = unlist(strsplit(d, ',\\s*'), use.names = FALSE)
+  d = gsub('\\(.*\\)', '', d)
+  d = gsub('^\\s+|\\s+$', '', d)
+  d = setdiff(d, c('R', base_pkgs()))
+  if (length(d)) {
+    db = available.packages()
+    d2 = NULL
+    for (p in intersect(d, rownames(db))) d2 = c(d2, tryCatch(
+      if (packageVersion(p) < db[p, 'Version']) p,
+      error = function(e) p
+    ))
+    pkg_install(d2)
+  }
 }
 
 #' An alias of `remotes::install_github()`
