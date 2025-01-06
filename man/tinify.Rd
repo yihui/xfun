@@ -66,10 +66,11 @@ You are recommended to set the API key in \file{.Rprofile} or
 you may either use \code{output = identity}, or set the value of the \code{history}
 argument in \file{.Rprofile} or \file{.Renviron}.
 }
-\examples{\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\examples{
+\dontrun{
 f = xfun:::R_logo("jpg$")
 xfun::tinify(f)  # remember to set the API key before trying this
-\dontshow{\}) # examplesIf}
+}
 }
 \references{
 Tinify API: \url{https://tinypng.com/developers}.

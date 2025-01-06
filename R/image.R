@@ -50,9 +50,11 @@ add_border = function(input, pixels = 1, color = 'black', output) {
 #'   more comprehensive implementation of the Tinify API, whereas
 #'   `xfun::tinify()` has only implemented the feature of shrinking images.
 #' @export
-#' @examplesIf interactive()
+#' @examples
+#' \dontrun{
 #' f = xfun:::R_logo('jpg$')
 #' xfun::tinify(f)  # remember to set the API key before trying this
+#' }
 tinify = function(
   input, output, quiet = FALSE, force = FALSE,
   key = env_option('xfun.tinify.key'),
