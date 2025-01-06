@@ -182,7 +182,7 @@ broken_packages = function(reinstall = TRUE) {
 #' @param install_opts The options for \command{R CMD INSTALL}.
 #' @export
 #' @return Invisible status from \command{R CMD INSTALL}.
-install_dir = function(pkg, build = TRUE, build_opts = NULL, install_opts = NULL) {
+install_dir = function(pkg = '.', build = TRUE, build_opts = NULL, install_opts = NULL) {
   if (build) {
     pkg = pkg_build(pkg, build_opts)
     on.exit(unlink(pkg), add = TRUE)

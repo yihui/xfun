@@ -4,7 +4,7 @@
 \alias{install_dir}
 \title{Install a source package from a directory}
 \usage{
-install_dir(pkg, build = TRUE, build_opts = NULL, install_opts = NULL)
+install_dir(pkg = ".", build = TRUE, build_opts = NULL, install_opts = NULL)
 }
 \arguments{
 \item{pkg}{The package source directory.}
