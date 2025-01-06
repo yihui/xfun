@@ -1,9 +1,9 @@
 library(testit)
 
-assert('attr() is strict', {
+assert('attr2() is strict', {
   z = structure(list(a = 1), foo = 2)
-  (attr(z, 'foo') %==% 2)
-  (attr(z, 'f') %==% NULL)
+  (attr2(z, 'foo') %==% 2)
+  (attr2(z, 'f') %==% NULL)
 })
 
 assert('in_dir() preserves the working directory', {
