@@ -1,3 +1,5 @@
+# CHANGES IN xfun VERSION 0.51
+
 # CHANGES IN xfun VERSION 0.50
 
 - The function `isFALSE()` has been removed from this package. The deprecation notice was given two years ago: https://yihui.org/en/2023/02/xfun-isfalse/
