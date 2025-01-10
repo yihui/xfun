@@ -375,14 +375,18 @@ format.xfun_record_results = function(
         if (is_md && cls == 'plot') {
           z = sprintf('![%s](<%s>)', alt, z)
         } else {
+          o = attr(z, 'opts'); a = o$attr
           z = gsub('^(\\s*\n)+|\n\\s*$', '', one_string(z))  # trim blank lines
-          if (cls != 'source') z = paste('#>', split_lines(z))
+          if (cls != 'source') z = paste0(o$comment %||% '#> ', split_lines(z))
           if (is_md) {
             cls_all = if (any(c('message', 'warning', 'error') %in% cls_all)) {
               c('plain', cls_all)
             } else if (cls == 'source') {
               replace(cls_all, cls_all == 'source', 'r')
-            } else setdiff(cls_all, 'output')
+            } else {
+              if (length(a)) a = c(sub('^[.]', '', a), 'plain')
+              setdiff(c(a, cls_all), 'output')
+            }
             z = fenced_block(z, sprintf('.%s', cls_all))
           }
         }
