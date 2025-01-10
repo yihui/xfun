@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.51
 
+- `tojson()` supports more types of data now, and will indent sub-elements for lists. See the help page [`?xfun::tojson`](https://git.yihui.org/xfun/manual.html#sec:man-tojson) for details.
+
 # CHANGES IN xfun VERSION 0.50
 
 - The function `isFALSE()` has been removed from this package. The deprecation notice was given two years ago: https://yihui.org/en/2023/02/xfun-isfalse/
