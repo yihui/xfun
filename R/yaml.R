@@ -101,7 +101,7 @@ taml_file = function(path) taml_load(read_utf8(path))
 #' @export
 taml_save = function(x, path = NULL, indent = '  ') {
   res = .taml_save(x, indent)
-  if (is.null(path)) raw_string(res) else write_utf8(res, path)
+  if (is.null(path)) raw_string(res, lang = '.yaml') else write_utf8(res, path)
 }
 
 .taml_save = function(x, indent = '  ', level = 1) {

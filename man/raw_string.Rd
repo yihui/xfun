@@ -5,7 +5,7 @@
 \alias{print.xfun_raw_string}
 \title{Print a character vector in its raw form}
 \usage{
-raw_string(x)
+raw_string(x, ...)
 
 \method{print}{xfun_raw_string}(x, ...)
 }

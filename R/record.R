@@ -391,7 +391,7 @@ format.xfun_record_results = function(
       if (!is_md) z = gsub('\n*$', '\n', z)
       z
     }))
-    return(raw_string(res))
+    return(raw_string(res, lang = if (is_md) '.md'))
   }
   res = unlist(lapply(x, function(z) {
     cls = sub('^record_', '', class(z))
@@ -415,7 +415,7 @@ format.xfun_record_results = function(
     res = sub('$body$', one_string(res), read_utf8(template), fixed = TRUE)
     if (length(x) > 0) res = sub('$title$', make_title(x[[1]]), res, fixed = TRUE)
   }
-  raw_string(res)
+  raw_string(res, lang = '.html')
 }
 
 # generate a title from the first line of a character vector
