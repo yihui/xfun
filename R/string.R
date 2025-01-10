@@ -398,7 +398,7 @@ strip_html = function(x) {
   'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'
 )
 
-.html_class = c('xfun_html', 'html')
+.html_class2 = c(.html_class <- c('xfun_html', 'html'), 'xfun_raw_string')
 
 #' Tools for HTML tags
 #'
@@ -453,7 +453,7 @@ html_content = function(x) {
 #'   `html_value()`, escaped for `html_escape()`, and viewed for `html_view()`.
 #' @rdname html_tag
 #' @export
-html_value = function(x) structure(x, class = .html_class)
+html_value = function(x) structure(x, class = .html_class2, lang = '.html')
 
 #' @param attr Whether to escape `"`, `\r`, and `\n` (which should be escaped
 #'   for tag attributes).
