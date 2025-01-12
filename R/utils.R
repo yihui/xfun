@@ -13,9 +13,9 @@ warning2 = function(...) warning(..., call. = FALSE)
 #' @examples
 #' z = structure(list(a = 1), foo = 2)
 #' base::attr(z, 'f')  # 2
-#' xfun::attr(z, 'f')  # NULL
-#' xfun::attr(z, 'foo')  # 2
-attr = function(...) base::attr(..., exact = TRUE)
+#' xfun::attr2(z, 'f')  # NULL
+#' xfun::attr2(z, 'foo')  # 2
+attr2 = function(...) base::attr(..., exact = TRUE)
 
 #' Set environment variables
 #'

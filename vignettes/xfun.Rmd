@@ -47,7 +47,7 @@ z3 = as_strict_list(z2)  # a strict list again
 z3$a  # NULL (strict matching) again!
 ```
 
-Similarly, the default partial matching in `attr()` can be annoying, too. The function `xfun::attr()` is simply a shorthand of `attr(..., exact = TRUE)`.
+Similarly, the default partial matching in `attr()` can be annoying, too. The function `xfun::attr2()` is simply a shorthand of `attr(..., exact = TRUE)`.
 
 I want it, or I do not want. There is no "I probably want".
 
