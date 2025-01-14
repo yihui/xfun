@@ -486,3 +486,11 @@ html_view = function(x, ...) {
 }
 
 one_string = function(x, ...) paste(x, ..., collapse = '\n')
+
+# en/decrypt a string via a character map (old and new must be 16 unique hex chars)
+.crypt = function(x, old, new) {
+  x2 = chartr(old, new, as.character(charToRaw(x)))
+  rawToChar(as.raw(strtoi(x2, 16L)))
+}
+encrypt = function(x, key) .crypt(x, '0123456789abcdef', key)
+decrypt = function(x, key) .crypt(x, key, '0123456789abcdef')

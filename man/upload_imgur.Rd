@@ -6,7 +6,7 @@
 \usage{
 upload_imgur(
   file,
-  key = env_option("xfun.upload_imgur.key", "9f3460e67f308f6"),
+  key = env_option("xfun.upload_imgur.key"),
   use_curl = loadable("curl"),
   include_xml = FALSE
 )
@@ -16,8 +16,8 @@ upload_imgur(
 
 \item{key}{Client ID for Imgur. It can be set via either the global option
 \code{xfun.upload_imgur.key} or the environment variable
-\code{R_XFUN_UPLOAD_IMGUR_KEY} (see \code{\link[=env_option]{env_option()}}). If neither is set,
-this uses a client ID registered by Yihui Xie.}
+\code{R_XFUN_UPLOAD_IMGUR_KEY} (see \code{\link[=env_option]{env_option()}}). If neither is set, this
+uses a client ID registered by Yihui Xie.}
 
 \item{use_curl}{Whether to use the R package \pkg{curl} to upload the image.
 If \code{FALSE}, the system command \code{curl} will be used.}
@@ -40,9 +40,10 @@ document with \pkg{knitr}: you can set the \verb{knitr::opts_knit$set(upload.fun
 any more, and it is ready to be published online.
 }
 \note{
-Please register your own Imgur application to get your client ID; you
-can certainly use mine, but this ID is in the public domain so everyone has
-access to all images associated to it.
+Please register your own Imgur application to get your client ID. You
+can certainly use mine, but this ID is in the public domain and it might
+reach Imgur's rate limit if too many people are using it in the same time
+period or someone is trying to upload too many images at once.
 }
 \examples{
 \dontrun{
