@@ -230,7 +230,7 @@ upload_imgur = function(
   if (length(link) != 1) stop(
     'Failed to upload ', file, sprintf(' (reason: %s)', if (is.character(res)) {
       grep_sub('.*<error>([^<]+)</error>.*', '\\1', res)
-    } else res[[1]]$error[[1]])
+    } else res[[c('data', 'error', 'message')]][[1]])
   )
   if (include_xml) structure(link, XML = res) else link
 }
