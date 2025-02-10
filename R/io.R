@@ -280,6 +280,7 @@ download_file = function(
     opts = options(timeout = 3600)  # one hour
     on.exit(options(opts), add = TRUE)
   }
+  dir_create(dirname(output))
   download = function(method = 'auto') suppressWarnings({
     # curl needs to add a -L option to follow redirects
     if (method == 'curl' && is.null(getOption('download.file.extra'))) {
