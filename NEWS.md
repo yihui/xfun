@@ -6,6 +6,8 @@
 
 - `upload_imgur()` shows the error message instead of the error code when it fails to upload the image, which is more informative.
 
+- `download_file()` returns the path of the file downloaded instead of the command status code now.
+
 # CHANGES IN xfun VERSION 0.50
 
 - The function `isFALSE()` has been removed from this package. The deprecation notice was given two years ago: https://yihui.org/en/2023/02/xfun-isfalse/
