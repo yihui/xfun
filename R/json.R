@@ -1,10 +1,10 @@
 #' A simple JSON serializer
 #'
 #' A JSON serializer that only works on a limited types of R data (`NULL`,
-#' lists, arrays, logical/character/numeric vectors). Other types of data will
-#' be coerced to character. A character string of the class `JS_LITERAL` is
-#' treated as raw JavaScript, so will not be quoted. The function
-#' `json_vector()` converts an atomic R vector to JSON.
+#' lists, arrays, logical/character/numeric/date/time vectors). Other types of
+#' data will be coerced to character. A character string of the class
+#' `JS_LITERAL` is treated as raw JavaScript, so will not be quoted. The
+#' function `json_vector()` converts an atomic R vector to JSON.
 #'
 #' Both `NULL` and `NA` are converted to `null`. Named lists are converted to
 #' objects of the form `{key1: value1, key2: value2, ...}`. Unnamed lists are
@@ -15,10 +15,9 @@
 #' will have each _column_ as an individual element. For matrices, the JSON
 #' array will have each row as an individual element, and names are discarded.
 #'
-#' All data types except numeric and logical values are coerced to character
-#' (e.g., factors). Dates and times are coerced to character using UTC as the
-#' timezone, and represented via the JavaScript expression `new Date(value)`
-#' (which is not standard JSON but practically more useful).
+#' Dates and times are coerced to character using UTC as the timezone, and
+#' represented via the JavaScript expression `new Date(value)` (which is not
+#' standard JSON but practically more useful).
 #' @param x An R object.
 #' @export
 #' @return A character string.

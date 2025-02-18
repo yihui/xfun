@@ -21,10 +21,10 @@ A character string.
 }
 \description{
 A JSON serializer that only works on a limited types of R data (\code{NULL},
-lists, arrays, logical/character/numeric vectors). Other types of data will
-be coerced to character. A character string of the class \code{JS_LITERAL} is
-treated as raw JavaScript, so will not be quoted. The function
-\code{json_vector()} converts an atomic R vector to JSON.
+lists, arrays, logical/character/numeric/date/time vectors). Other types of
+data will be coerced to character. A character string of the class
+\code{JS_LITERAL} is treated as raw JavaScript, so will not be quoted. The
+function \code{json_vector()} converts an atomic R vector to JSON.
 }
 \details{
 Both \code{NULL} and \code{NA} are converted to \code{null}. Named lists are converted to
@@ -36,10 +36,9 @@ to an array with each \emph{row} as an array element, whereas named data frames
 will have each \emph{column} as an individual element. For matrices, the JSON
 array will have each row as an individual element, and names are discarded.
 
-All data types except numeric and logical values are coerced to character
-(e.g., factors). Dates and times are coerced to character using UTC as the
-timezone, and represented via the JavaScript expression \verb{new Date(value)}
-(which is not standard JSON but practically more useful).
+Dates and times are coerced to character using UTC as the timezone, and
+represented via the JavaScript expression \verb{new Date(value)} (which is not
+standard JSON but practically more useful).
 }
 \examples{
 library(xfun)
