@@ -14,6 +14,11 @@
 #' to an array with each _row_ as an array element, whereas named data frames
 #' will have each _column_ as an individual element. For matrices, the JSON
 #' array will have each row as an individual element, and names are discarded.
+#'
+#' All data types except numeric and logical values are coerced to character
+#' (e.g., factors). Dates and times are coerced to character using UTC as the
+#' timezone, and represented via the JavaScript expression `new Date(value)`
+#' (which is not standard JSON but practically more useful).
 #' @param x An R object.
 #' @export
 #' @return A character string.
@@ -21,7 +26,7 @@
 #' @examples library(xfun)
 #' tojson(NULL); tojson(1:10); tojson(TRUE); tojson(FALSE)
 #' tojson(list(a = 1, b = list(c = 1:3, d = 'abc')))
-#' tojson(list(c('a', 'b'), 1:5, TRUE))
+#' tojson(list(c('a', 'b'), 1:5, TRUE, Sys.Date() + 1:3))
 #' tojson(head(iris))  # each column is in an element
 #' tojson(unname(head(iris)))  # each row is in an element
 #' tojson(matrix(1:12, 3))
@@ -29,7 +34,11 @@
 #' # literal JS code
 #' JS = function(x) structure(x, class = 'JS_LITERAL')
 #' tojson(list(a = 1:5, b = JS('function() {return true;}')))
-tojson = function(x) raw_string(.tojson(x), lang = '.json')
+tojson = function(x) {
+  if (inherits(x, 'json')) return(x)
+  res = structure(.tojson(x), class = 'json')
+  raw_string(res, lang = '.json')
+}
 
 .tojson = function(x, n = 1) {
   make_array = function(..., braces = c('[', ']')) {
@@ -61,12 +70,16 @@ tojson = function(x) raw_string(.tojson(x), lang = '.json')
 }
 
 json_atomic = function(x, to_array = NA) {
-    use_quote = !(is.numeric(x) || is.logical(x))
-    asis = inherits(x, 'AsIs')
-    if (is.factor(x)) x = as.character(x)
-    if (is.logical(x)) x = tolower(as.character(x))
-    if (is.na(to_array)) to_array = length(x) != 1 || asis
-    json_vector(x, to_array, use_quote)
+  use_quote = !(is.numeric(x) || is.logical(x))
+  asis = inherits(x, 'AsIs')
+  if (is.factor(x)) x = as.character(x)
+  if (is.logical(x)) x = tolower(as.character(x))
+  if (inherits(x, c('Date', 'POSIXct', 'POSIXt'))) {
+    x = sprintf('new Date("%s")', format(x, tz = 'UTC'))
+    use_quote = FALSE
+  }
+  if (is.na(to_array)) to_array = length(x) != 1 || asis
+  json_vector(x, to_array, use_quote)
 }
 
 #' @param to_array Whether to convert a vector to a JSON array (use `[]`).

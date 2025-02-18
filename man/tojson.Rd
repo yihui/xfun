@@ -35,6 +35,11 @@ note that unnamed data frames (i.e., without column names) will be converted
 to an array with each \emph{row} as an array element, whereas named data frames
 will have each \emph{column} as an individual element. For matrices, the JSON
 array will have each row as an individual element, and names are discarded.
+
+All data types except numeric and logical values are coerced to character
+(e.g., factors). Dates and times are coerced to character using UTC as the
+timezone, and represented via the JavaScript expression \verb{new Date(value)}
+(which is not standard JSON but practically more useful).
 }
 \examples{
 library(xfun)
@@ -43,7 +48,7 @@ tojson(1:10)
 tojson(TRUE)
 tojson(FALSE)
 tojson(list(a = 1, b = list(c = 1:3, d = "abc")))
-tojson(list(c("a", "b"), 1:5, TRUE))
+tojson(list(c("a", "b"), 1:5, TRUE, Sys.Date() + 1:3))
 tojson(head(iris))  # each column is in an element
 tojson(unname(head(iris)))  # each row is in an element
 tojson(matrix(1:12, 3))
