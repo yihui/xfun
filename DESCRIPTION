@@ -43,3 +43,4 @@ Encoding: UTF-8
 RoxygenNote: 7.3.2
 VignetteBuilder: litedown
 Roxygen: list(markdown = TRUE)
+Remotes: yihui/knitr
