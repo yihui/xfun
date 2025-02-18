@@ -431,10 +431,10 @@ html_tag = function(.name, .content = NULL, .attrs = NULL, ...) {
   x1 = c('<', .name)
   x2 = if (length(.attrs)) .mapply(function(a, v) {
     if (is.null(v)) a else sprintf('%s="%s"', a, html_escape(v, TRUE))
-  }, list(nm, .attrs), list())
+  }, list(nm, .attrs), NULL)
   x2 = paste(unlist(x2), collapse = ' ')
   x3 = if (.name %in% .void_tags) ' />' else {
-    c('>', html_content(.content), '</', .name, '>')
+    c('>', one_string(html_content(.content)), '</', .name, '>')
   }
   x = c(x1, if (x2 != '') c(' ', x2), x3)
   x = paste(x, collapse = '')
