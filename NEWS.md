@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.52
 
+- Fixed a bug in `taml_load()` that would convert character values in arrays to lowercase.
+
 # CHANGES IN xfun VERSION 0.51
 
 - `tojson()` supports more types of data now, and will indent sub-elements for lists. See the help page [`?xfun::tojson`](https://git.yihui.org/xfun/manual.html#sec:man-tojson) for details.

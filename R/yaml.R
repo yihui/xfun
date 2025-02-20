@@ -142,25 +142,28 @@ indent_level = function(x) {
 yaml_value = function(x, envir = parent.frame()) {
   v = tolower(x)
   if (v == 'null') return()
-  if (grepl('^true|false$', v)) return(as.logical(x))
+  if (yaml_bool(v)) return(as.logical(x))
   if (grepl(r <- '^\\s*\\[(.*)\\]\\s*$', v)) {
-    v = gsub(r, '\\1', v)
+    v = gsub(r, '\\1', x)
     if (is_blank(v)) return()
     v = unname(unlist(read.csv(text = v, header = FALSE)))
     if (is.numeric(v)) return(v)
     v = gsub('^ ', '', v)  # [a, b] -> ["a", " b"] -> ["a", "b"]
-    return(if (all(grepl('^true|false$', v))) as.logical(v) else v)
+    return(if (yaml_bool(v)) as.logical(v) else yaml_unquote(v))
   }
   if (grepl('^[0-9.e+-]', v)) {
     v = suppressWarnings(as.numeric(v))
     if (!is.na(v)) return(if ((v2 <- as.integer(v)) == v) v2 else v)
   }
-  x = gsub('^["\']|["\']$', '', x)  # remove optional quotes for strings
   if (grepl(r <- '^!(r|expr) (.+)$', x)) {
-    x = yaml_expr(gsub(r, '\\2', x), envir)
-  }
-  x
+    yaml_expr(gsub(r, '\\2', x), envir)
+  } else yaml_unquote(x)
 }
+
+# convert true/false/na to boolean
+yaml_bool = function(x) all(grepl('^true|false|na$', x))
+# remove optional quotes for strings
+yaml_unquote = function(x) gsub('^["\']|["\']$', '', x)
 
 yaml_expr = function(x, envir) {
   x = parse_only(x)
