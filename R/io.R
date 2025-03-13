@@ -325,6 +325,36 @@ url_accessible = function(x, use_curl = !capabilities('libcurl'), ...) {
   }
 }
 
+#' Get the final destination of a URL
+#'
+#' If a URL is redirected, query the new location via [curlGetHeaders()],
+#' otherwise return the original URL.
+#' @param x A character vector of URLs.
+#' @param force By default, the query is cached in the current R session. To
+#'   bypass the cache, use `force = TRUE`.
+#' @return The final destination(s). If the URL returns a status code greater
+#'   than or equal to 400, it will throw an error.
+#' @export
+#' @examples
+#' u = 'https://tinytex.yihui.org'  # redirected to https://yihui.org/tinytex/
+#' if (url_accessible(u)) url_destination(u)
+url_destination = function(x, force = FALSE) {
+  unlist(lapply(x, .url_destination, force))
+}
+
+.url_destination = local({
+  db = list()
+  function(x, force = FALSE) {
+    if (!force && is.character(db[[x]])) return(db[[x]])
+    h = curlGetHeaders(x)
+    u = grep_sub('^location:\\s+(.+?)[\r\n]*$', '\\1', h, ignore.case = TRUE)
+    db[[x]] <<- if (length(u)) tail(u, 1) else {
+      if ((s <- attr(h, 'status')) >= 400) stop('URL ', x, ' returned status code ', s)
+      x
+    }
+  }
+})
+
 #' Generate a message with `cat()`
 #'
 #' This function is similar to [message()], and the difference is

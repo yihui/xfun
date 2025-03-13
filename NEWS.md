@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.52
 
+- Added a new function `url_destination()` to get the destination of a redirected URL.
+
 - Fixed a bug in `taml_load()` that would convert character values in arrays to lowercase.
 
 - Added arguments `strict` and `...` to `divide_chunk()` (thanks, @cderv, yihui/knitr#2225).
