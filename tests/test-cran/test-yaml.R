@@ -56,6 +56,10 @@ assert('taml_load() works', {
     taml_load('a: !expr head(foo, 4)')
   }
   (f() %==% list(a = 1:4))
+  res = list(a = c('A', 'B', 'C D'))
+  (taml_load('a: [A, B, C D]') %==% res)
+  (taml_load('a: ["A", \'B\', "C D"]') %==% res)
+  (taml_load("a: ['A', 'B', 'C D']") %==% res)
 })
 
 assert('taml_load() works with variable indent', {

@@ -17,27 +17,25 @@ download_file(
 \item{output}{Path to the output file. By default, it is determined by
 \code{\link[=url_filename]{url_filename()}}.}
 
-\item{...}{Other arguments to be passed to \code{\link[=download.file]{download.file()}}
-(except \code{method}).}
+\item{...}{Other arguments to be passed to \code{\link[=download.file]{download.file()}} (except
+\code{method}).}
 
 \item{.error}{An error message to signal when the download fails.}
 }
 \value{
-The integer code \code{0} for success, or an error if none of the
-methods work.
+The \code{output} file path if the download succeeded, or an error if none
+of the download methods worked.
 }
 \description{
-Try all possible methods in \code{\link[=download.file]{download.file()}} (e.g.,
-\code{libcurl}, \code{curl}, \code{wget}, and \code{wininet}) and see if any
-method can succeed. The reason to enumerate all methods is that sometimes the
-default method does not work, e.g.,
-\url{https://stat.ethz.ch/pipermail/r-devel/2016-June/072852.html}.
+Try all possible methods in \code{\link[=download.file]{download.file()}} (e.g., \code{libcurl}, \code{curl},
+\code{wget}, and \code{wininet}) and see if any method can succeed. The reason to
+enumerate all methods is that sometimes the default method does not work,
+e.g., \url{https://stat.ethz.ch/pipermail/r-devel/2016-June/072852.html}.
 }
 \note{
-To allow downloading large files, the \code{timeout} option in
-\code{\link[=options]{options()}} will be temporarily set to one hour (3600 seconds)
-inside this function when this option has the default value of 60 seconds.
-If you want a different \code{timeout} value, you may set it via
-\code{options(timeout = N)}, where \code{N} is the number of seconds (not
-60).
+To allow downloading large files, the \code{timeout} option in \code{\link[=options]{options()}}
+will be temporarily set to one hour (3600 seconds) inside this function
+when this option has the default value of 60 seconds. If you want a
+different \code{timeout} value, you may set it via \code{options(timeout = N)}, where
+\code{N} is the number of seconds (not 60).
 }

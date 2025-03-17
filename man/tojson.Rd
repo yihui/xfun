@@ -21,9 +21,24 @@ A character string.
 }
 \description{
 A JSON serializer that only works on a limited types of R data (\code{NULL},
-lists, logical scalars, character/numeric vectors). A character string of the
-class \code{JS_EVAL} is treated as raw JavaScript, so will not be quoted. The
+lists, arrays, logical/character/numeric/date/time vectors). Other types of
+data will be coerced to character. A character string of the class
+\code{JS_LITERAL} is treated as raw JavaScript, so will not be quoted. The
 function \code{json_vector()} converts an atomic R vector to JSON.
+}
+\details{
+Both \code{NULL} and \code{NA} are converted to \code{null}. Named lists are converted to
+objects of the form \verb{\{key1: value1, key2: value2, ...\}}. Unnamed lists are
+converted to arrays of the form \verb{[[value1], [value2], ...]}. The same rules
+apply to data frames since technically they are also lists. However, please
+note that unnamed data frames (i.e., without column names) will be converted
+to an array with each \emph{row} as an array element, whereas named data frames
+will have each \emph{column} as an individual element. For matrices, the JSON
+array will have each row as an individual element, and names are discarded.
+
+Dates and times are coerced to character using UTC as the timezone, and
+represented via the JavaScript expression \verb{new Date(value)} (which is not
+standard JSON but practically more useful).
 }
 \examples{
 library(xfun)
@@ -31,12 +46,15 @@ tojson(NULL)
 tojson(1:10)
 tojson(TRUE)
 tojson(FALSE)
-cat(tojson(list(a = 1, b = list(c = 1:3, d = "abc"))))
-cat(tojson(list(c("a", "b"), 1:5, TRUE)))
+tojson(list(a = 1, b = list(c = 1:3, d = "abc")))
+tojson(list(c("a", "b"), 1:5, TRUE, Sys.Date() + 1:3))
+tojson(head(iris))  # each column is in an element
+tojson(unname(head(iris)))  # each row is in an element
+tojson(matrix(1:12, 3))
 
-# the class JS_EVAL is originally from htmlwidgets::JS()
-JS = function(x) structure(x, class = "JS_EVAL")
-cat(tojson(list(a = 1:5, b = JS("function() {return true;}"))))
+# literal JS code
+JS = function(x) structure(x, class = "JS_LITERAL")
+tojson(list(a = 1:5, b = JS("function() {return true;}")))
 }
 \seealso{
 The \pkg{jsonlite} package provides a full JSON serializer.

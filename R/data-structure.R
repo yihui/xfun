@@ -66,14 +66,15 @@ print.xfun_strict_list = function(x, ...) {
 #' characters in the raw form (especially when there are escape sequences).
 #' @param x For `raw_string()`, a character vector. For the print method,
 #'   the `raw_string()` object.
+#' @param ... Other attributes for `x`.
 #' @export
 #' @examples library(xfun)
 #' raw_string(head(LETTERS))
 #' raw_string(c('a "b"', 'hello\tworld!'))
-raw_string = function(x) {
+raw_string = function(x, ...) {
   if (is.null(x)) x = as.character(x)
   class(x) = c('xfun_raw_string', class(x))
-  x
+  structure(x, ...)
 }
 
 #' @param ... Other arguments (currently ignored).
@@ -82,4 +83,11 @@ raw_string = function(x) {
 print.xfun_raw_string = function(x, ...) {
   if (length(x)) cat(x, sep = '\n')
   invisible(x)
+}
+
+# provide default chunk options to litedown
+#' @export
+record_print.xfun_raw_string = function(x, ...) {
+  cls = intersect(c(class(x), 'record_output'), .record_classes)[1]
+  structure(x, class = cls, opts = list(comment = '', attr = attr(x, 'lang')))
 }

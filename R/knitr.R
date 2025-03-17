@@ -93,6 +93,11 @@ get_option_comment = function(engine) {
 #' @param engine The name of the language engine (to determine the appropriate
 #'   comment character).
 #' @param code A character vector (lines of code).
+#' @param strict If `FALSE`, allow chunk options to be written after `#|` even
+#'   if `#` is not the comment character of the engine (e.g., when `engine =
+#'   'js'`), otherwise throw an error if `#|` is detected but `#` is not the
+#'   comment character.
+#' @param ... Arguments to be passed to [yaml_load()].
 #' @return A list with the following items:
 #'
 #' - `options`: The parsed options (if there are any) as a list.
@@ -113,7 +118,7 @@ get_option_comment = function(engine) {
 #' csv_like = c("#| mine, echo = TRUE, fig.width = 8, foo = 'bar'", "1 + 1")
 #' writeLines(csv_like)
 #' xfun::divide_chunk("r", csv_like)
-divide_chunk = function(engine, code) {
+divide_chunk = function(engine, code, strict = FALSE, ...) {
   res = list(options = NULL, src = NULL, code = code)
   # mask out empty blocks
   if (length(code) == 0) return(res)
@@ -125,9 +130,13 @@ divide_chunk = function(engine, code) {
   # check for option comments
   i1 = startsWith(code, s1)
   # if "commentChar| " is not found, try "#| " instead
-  if (!i1[1] && s1 != '#|') {
+  if (!i1[1] && s1 != '#| ') {
+    i1 = startsWith(code, '#| ')
+    if (strict && i1[1]) stop2(
+      "The chunk options should start with '", s1, "' instead of '#| '",
+      if (s2 != '') c(", and end with '", s2, "'"), '.'
+    )
     s1 = '#| '; s2 = ''
-    i1 = startsWith(code, s1)
   }
   # must have at least one matched line at the beginning
   if (!i1[[1]]) return(res)
@@ -150,7 +159,7 @@ divide_chunk = function(engine, code) {
   meta = substr(src, c1, c2)
   # see if the metadata looks like YAML or CSV
   if (grepl('^[^ :]+:($|\\s)', meta[1])) {
-    meta = yaml_load(meta, envir = FALSE)
+    meta = yaml_load(meta, envir = FALSE, ...)
     if (!is.list(meta) || length(names(meta)) == 0) {
       warning('Invalid YAML option format in chunk: \n', one_string(meta), '\n')
       meta = list()

@@ -254,25 +254,23 @@ grep_sub = function(pattern, replacement, x, ...) {
 
 #' Try various methods to download a file
 #'
-#' Try all possible methods in [download.file()] (e.g.,
-#' `libcurl`, `curl`, `wget`, and `wininet`) and see if any
-#' method can succeed. The reason to enumerate all methods is that sometimes the
-#' default method does not work, e.g.,
-#' <https://stat.ethz.ch/pipermail/r-devel/2016-June/072852.html>.
+#' Try all possible methods in [download.file()] (e.g., `libcurl`, `curl`,
+#' `wget`, and `wininet`) and see if any method can succeed. The reason to
+#' enumerate all methods is that sometimes the default method does not work,
+#' e.g., <https://stat.ethz.ch/pipermail/r-devel/2016-June/072852.html>.
 #' @param url The URL of the file.
 #' @param output Path to the output file. By default, it is determined by
 #'   [url_filename()].
-#' @param ... Other arguments to be passed to [download.file()]
-#'   (except `method`).
+#' @param ... Other arguments to be passed to [download.file()] (except
+#'   `method`).
 #' @param .error An error message to signal when the download fails.
-#' @note To allow downloading large files, the `timeout` option in
-#'   [options()] will be temporarily set to one hour (3600 seconds)
-#'   inside this function when this option has the default value of 60 seconds.
-#'   If you want a different `timeout` value, you may set it via
-#'   `options(timeout = N)`, where `N` is the number of seconds (not
-#'   60).
-#' @return The integer code `0` for success, or an error if none of the
-#'   methods work.
+#' @note To allow downloading large files, the `timeout` option in [options()]
+#'   will be temporarily set to one hour (3600 seconds) inside this function
+#'   when this option has the default value of 60 seconds. If you want a
+#'   different `timeout` value, you may set it via `options(timeout = N)`, where
+#'   `N` is the number of seconds (not 60).
+#' @return The `output` file path if the download succeeded, or an error if none
+#'   of the download methods worked.
 #' @export
 download_file = function(
   url, output = url_filename(url), ...,
@@ -282,29 +280,22 @@ download_file = function(
     opts = options(timeout = 3600)  # one hour
     on.exit(options(opts), add = TRUE)
   }
+  dir_create(dirname(output))
   download = function(method = 'auto') suppressWarnings({
+    # curl needs to add a -L option to follow redirects
+    if (method == 'curl' && is.null(getOption('download.file.extra'))) {
+      opts2 = options(download.file.extra = c('-L', '--fail'))
+      on.exit(options(opts2), add = TRUE)
+    }
     tryCatch(download.file(url, output, ..., method = method), error = function(e) 1L)
   })
-  for (method in c(if (is_windows()) 'wininet', 'libcurl', 'auto')) {
-    if (download(method = method) == 0) return(0L)
+  for (method in c('libcurl', 'auto', if (is_windows()) 'wininet')) {
+    if (download(method) == 0) return(output)
   }
-
   # check for libcurl/curl/wget/lynx, call download.file with appropriate method
-  if (Sys.which('curl') != '') {
-    # curl needs to add a -L option to follow redirects
-    opts2 = if (is.null(getOption('download.file.extra')))
-      options(download.file.extra = c('-L', '--fail'))
-    res = download(method = 'curl')
-    options(opts2)
-    if (res == 0) return(res)
+  for (method in c('curl', 'wget', 'lynx')) {
+    if (Sys.which(method) != '' && download(method) == 0) return(output)
   }
-  if (Sys.which('wget') != '') {
-    if ((res <- download(method = 'wget')) == 0) return(res)
-  }
-  if (Sys.which('lynx') != '') {
-    if ((res <- download(method = 'lynx')) == 0) return(res)
-  }
-
   stop(.error)
 }
 
@@ -333,6 +324,36 @@ url_accessible = function(x, use_curl = !capabilities('libcurl'), ...) {
     try_status(attr(curlGetHeaders(x, ...), 'status'))
   }
 }
+
+#' Get the final destination of a URL
+#'
+#' If a URL is redirected, query the new location via [curlGetHeaders()],
+#' otherwise return the original URL.
+#' @param x A character vector of URLs.
+#' @param force By default, the query is cached in the current R session. To
+#'   bypass the cache, use `force = TRUE`.
+#' @return The final destination(s). If the URL returns a status code greater
+#'   than or equal to 400, it will throw an error.
+#' @export
+#' @examples
+#' u = 'https://tinytex.yihui.org'  # redirected to https://yihui.org/tinytex/
+#' if (url_accessible(u)) url_destination(u)
+url_destination = function(x, force = FALSE) {
+  unlist(lapply(x, .url_destination, force))
+}
+
+.url_destination = local({
+  db = list()
+  function(x, force = FALSE) {
+    if (!force && is.character(db[[x]])) return(db[[x]])
+    h = curlGetHeaders(x)
+    u = grep_sub('^location:\\s+(.+?)[\r\n]*$', '\\1', h, ignore.case = TRUE)
+    db[[x]] <<- if (length(u)) tail(u, 1) else {
+      if ((s <- attr(h, 'status')) >= 400) stop('URL ', x, ' returned status code ', s)
+      x
+    }
+  }
+})
 
 #' Generate a message with `cat()`
 #'

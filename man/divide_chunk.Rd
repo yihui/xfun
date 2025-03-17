@@ -4,13 +4,19 @@
 \alias{divide_chunk}
 \title{Divide chunk options from the code chunk body}
 \usage{
-divide_chunk(engine, code)
+divide_chunk(engine, code, strict = FALSE, ...)
 }
 \arguments{
 \item{engine}{The name of the language engine (to determine the appropriate
 comment character).}
 
 \item{code}{A character vector (lines of code).}
+
+\item{strict}{If \code{FALSE}, allow chunk options to be written after \verb{#|} even
+if \verb{#} is not the comment character of the engine (e.g., when \code{engine = 'js'}), otherwise throw an error if \verb{#|} is detected but \verb{#} is not the
+comment character.}
+
+\item{...}{Arguments to be passed to \code{\link[=yaml_load]{yaml_load()}}.}
 }
 \value{
 A list with the following items:

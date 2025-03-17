@@ -398,7 +398,7 @@ strip_html = function(x) {
   'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr'
 )
 
-.html_class = c('xfun_html', 'html')
+.html_class2 = c(.html_class <- c('xfun_html', 'html'), 'xfun_raw_string')
 
 #' Tools for HTML tags
 #'
@@ -431,10 +431,10 @@ html_tag = function(.name, .content = NULL, .attrs = NULL, ...) {
   x1 = c('<', .name)
   x2 = if (length(.attrs)) .mapply(function(a, v) {
     if (is.null(v)) a else sprintf('%s="%s"', a, html_escape(v, TRUE))
-  }, list(nm, .attrs), list())
+  }, list(nm, .attrs), NULL)
   x2 = paste(unlist(x2), collapse = ' ')
   x3 = if (.name %in% .void_tags) ' />' else {
-    c('>', html_content(.content), '</', .name, '>')
+    c('>', one_string(html_content(.content)), '</', .name, '>')
   }
   x = c(x1, if (x2 != '') c(' ', x2), x3)
   x = paste(x, collapse = '')
@@ -453,7 +453,7 @@ html_content = function(x) {
 #'   `html_value()`, escaped for `html_escape()`, and viewed for `html_view()`.
 #' @rdname html_tag
 #' @export
-html_value = function(x) structure(x, class = .html_class)
+html_value = function(x) structure(x, class = .html_class2, lang = '.html')
 
 #' @param attr Whether to escape `"`, `\r`, and `\n` (which should be escaped
 #'   for tag attributes).
@@ -486,3 +486,11 @@ html_view = function(x, ...) {
 }
 
 one_string = function(x, ...) paste(x, ..., collapse = '\n')
+
+# en/decrypt a string via a character map (old and new must be 16 unique hex chars)
+.crypt = function(x, old, new) {
+  x2 = chartr(old, new, as.character(charToRaw(x)))
+  rawToChar(as.raw(strtoi(x2, 16L)))
+}
+encrypt = function(x, key) .crypt(x, '0123456789abcdef', key)
+decrypt = function(x, key) .crypt(x, key, '0123456789abcdef')
