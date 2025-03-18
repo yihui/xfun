@@ -24,7 +24,7 @@ Suggests:
     mime,
     litedown (>= 0.4),
     commonmark,
-    knitr (>= 1.47),
+    knitr (>= 1.50),
     remotes,
     pak,
     rhub,

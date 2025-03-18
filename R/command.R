@@ -218,7 +218,7 @@ bg_process = function(
   # check the possible pid returned from system2()
   check_pid = function(res) {
     if (is.null(res)) return(res)
-    if (!is.null(attr(res, 'status'))) throw_error()
+    if (!is.null(attr2(res, 'status'))) throw_error()
     if (length(res) == 1 && grepl('^[0-9]+$', res)) return(res)
     throw_error()
   }

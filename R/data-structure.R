@@ -89,5 +89,5 @@ print.xfun_raw_string = function(x, ...) {
 #' @export
 record_print.xfun_raw_string = function(x, ...) {
   cls = intersect(c(class(x), 'record_output'), .record_classes)[1]
-  structure(x, class = cls, opts = list(comment = '', attr = attr(x, 'lang')))
+  structure(x, class = cls, opts = list(comment = '', attr = attr2(x, 'lang')))
 }

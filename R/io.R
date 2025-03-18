@@ -321,7 +321,7 @@ url_accessible = function(x, use_curl = !capabilities('libcurl'), ...) {
     try_status(curl::curl_fetch_memory(x, h)$status_code)
   } else {
     # use curlGetHeaders() instead
-    try_status(attr(curlGetHeaders(x, ...), 'status'))
+    try_status(attr2(curlGetHeaders(x, ...), 'status'))
   }
 }
 
@@ -349,7 +349,7 @@ url_destination = function(x, force = FALSE) {
     h = curlGetHeaders(x)
     u = grep_sub('^location:\\s+(.+?)[\r\n]*$', '\\1', h, ignore.case = TRUE)
     db[[x]] <<- if (length(u)) tail(u, 1) else {
-      if ((s <- attr(h, 'status')) >= 400) stop('URL ', x, ' returned status code ', s)
+      if ((s <- attr2(h, 'status')) >= 400) stop('URL ', x, ' returned status code ', s)
       x
     }
   }

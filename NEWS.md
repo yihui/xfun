@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.52
 
+- `xfun::attr()` is deprecated (to avoid masking `base::attr()`). Please use `xfun::attr2()` instead.
+
 - Added a new function `url_destination()` to get the destination of a redirected URL.
 
 - Fixed a bug in `taml_load()` that would convert character values in arrays to lowercase.
