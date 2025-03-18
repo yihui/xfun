@@ -4,6 +4,8 @@
 
 - Added a new function `url_destination()` to get the destination of a redirected URL.
 
+- Added a new function `rand_unit()` to generate pseudo-random numbers on `[0, 1)` based on a linear congruential generator.
+
 - Fixed a bug in `taml_load()` that would convert character values in arrays to lowercase.
 
 - Added arguments `strict` and `...` to `divide_chunk()` (thanks, @cderv, yihui/knitr#2225).
