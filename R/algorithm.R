@@ -32,4 +32,4 @@ rand_unit = local({
 })
 
 # n random integers from 1 to M
-rand_n = function(n, M) floor(rand_lcg(n) * M) + 1
+rand_n = function(n, M) floor(rand_unit(n) * M) + 1
