@@ -195,7 +195,7 @@ shrink_images = function(
 #'
 #' res = imgur_upload(f, include_xml = TRUE)
 #' res  # link to original URL of the image
-#' attr(res, 'XML')  # all information
+#' xfun::attr2(res, 'XML')  # all information
 #' if (interactive()) browseURL(res)
 #'
 #' # to use your own key

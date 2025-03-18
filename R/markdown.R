@@ -57,7 +57,7 @@ code_lines_cmark = function(x) {
   r = '(?<=<code_block sourcepos=")(\\d+):\\d+-(\\d+):\\d+(?=")'
   m = gregexpr(r, xml, perl = TRUE)[[1]]
   if (all(m < 0)) return()
-  s = attr(m, 'capture.start'); l = attr(m, 'capture.length')
+  s = attr2(m, 'capture.start'); l = attr2(m, 'capture.length')
   as.integer(substring(xml, s, s + l - 1))
 }
 
@@ -399,7 +399,7 @@ md_viewable = function(x, ...) {
 #' @export
 print.xfun_md_viewable = function(x, ...) {
   if (loadable('litedown')) {
-    html = litedown::mark(text = c('---', '---', '', x), meta = attr(x, 'meta'), ...)
+    html = litedown::mark(text = c('---', '---', '', x), meta = attr2(x, 'meta'), ...)
     html_view(html)
   } else {
     warning("Cannot preview the result since the 'litedown' package is not available.")

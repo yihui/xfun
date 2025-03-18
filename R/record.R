@@ -190,7 +190,7 @@ record = function(
   codes = handle(split_source(code, merge_comments = TRUE, line_number = TRUE))
   # code may contain syntax errors
   if (is_error(codes)) {
-    add_result(code, 'source'); add_result(attr(codes, 'condition')$message, 'error')
+    add_result(code, 'source'); add_result(attr2(codes, 'condition')$message, 'error')
     return(new_result(res))
   }
 
@@ -375,7 +375,7 @@ format.xfun_record_results = function(
         if (is_md && cls == 'plot') {
           z = sprintf('![%s](<%s>)', alt, z)
         } else {
-          o = attr(z, 'opts'); a = o$attr
+          o = attr2(z, 'opts'); a = o$attr
           z = gsub('^(\\s*\n)+|\n\\s*$', '', one_string(z))  # trim blank lines
           if (cls != 'source') z = paste0(o$comment %||% '#> ', split_lines(z))
           if (is_md) {
@@ -408,7 +408,7 @@ format.xfun_record_results = function(
       paste0(
         sprintf(
           '<pre class="%s"><code>',
-          if (cls == 'source') paste0('language-r" data-start="', attr(z, 'lines')[1]) else cls
+          if (cls == 'source') paste0('language-r" data-start="', attr2(z, 'lines')[1]) else cls
         ),
         html_escape(one_string(z)), '</code></pre>'
       )
