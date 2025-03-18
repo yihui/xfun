@@ -2,15 +2,21 @@
 % Please edit documentation in R/utils.R
 \name{attr2}
 \alias{attr2}
+\alias{attr}
 \title{Obtain an attribute of an object without partial matching}
 \usage{
 attr2(...)
+
+attr(...)
 }
 \arguments{
 \item{...}{Passed to \code{\link[base:attr]{base::attr()}} (without the \code{exact} argument).}
 }
 \description{
 An abbreviation of \code{\link[base:attr]{base::attr}}\code{(exact = TRUE)}.
+}
+\note{
+\code{xfun::attr()} is deprecated. Please use \code{xfun::attr2()} instead.
 }
 \examples{
 z = structure(list(a = 1), foo = 2)
