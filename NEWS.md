@@ -1,3 +1,5 @@
+# CHANGES IN xfun VERSION 0.53
+
 # CHANGES IN xfun VERSION 0.52
 
 - `xfun::attr()` is deprecated (to avoid masking `base::attr()`). Please use `xfun::attr2()` or `base::attr(exact = TRUE)` instead.
