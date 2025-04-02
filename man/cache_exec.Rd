@@ -95,3 +95,7 @@ y2 = xfun::cache_exec({
 # y1, y2, and x should be identical
 stopifnot(identical(y1, y2), identical(y1, x))
 }
+\references{
+See \url{https://yihui.org/litedown/#sec:option-cache} for how it
+works and an application in \pkg{litedown}.
+}
