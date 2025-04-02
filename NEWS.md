@@ -1,6 +1,6 @@
 # CHANGES IN xfun VERSION 0.52
 
-- `xfun::attr()` is deprecated (to avoid masking `base::attr()`). Please use `xfun::attr2()` instead.
+- `xfun::attr()` is deprecated (to avoid masking `base::attr()`). Please use `xfun::attr2()` or `base::attr(exact = TRUE)` instead.
 
 - Added an argument `date` to `pkg_bib()` to optionally include the date of retrieval in the bib entries (thanks, @HedvigS, #99).
 
