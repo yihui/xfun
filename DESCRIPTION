@@ -27,7 +27,6 @@ Suggests:
     knitr (>= 1.50),
     remotes,
     pak,
-    rhub,
     renv,
     curl,
     xml2,

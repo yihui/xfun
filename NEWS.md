@@ -14,6 +14,8 @@
 
 - The function `cache_rds()` is no longer recommended. Please consider using `cache_exec()` instead (thanks, @lenz99, #100).
 
+- Removed the `solaris` argument from `upload_win_builder()`.
+
 # CHANGES IN xfun VERSION 0.51
 
 - `tojson()` supports more types of data now, and will indent sub-elements for lists. See the help page [`?xfun::tojson`](https://git.yihui.org/xfun/manual.html#sec:man-tojson) for details.

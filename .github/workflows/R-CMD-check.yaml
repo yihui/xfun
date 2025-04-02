@@ -50,7 +50,7 @@ jobs:
         with:
           extra-packages: |
             any::rcmdcheck
-            rhub=?ignore-before-r=4.0.0
+            magick=?ignore-before-r=4.1.0
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
