@@ -11,7 +11,8 @@ pkg_bib(
   width = NULL,
   prefix = getOption("xfun.bib.prefix", "R-"),
   lib.loc = NULL,
-  packageURL = TRUE
+  packageURL = TRUE,
+  date = c("none", "package", "today")
 )
 }
 \arguments{
@@ -33,6 +34,12 @@ not be wrapped.}
 
 \item{packageURL}{Use the \code{URL} field from the \file{DESCRIPTION} file. See
 Details below.}
+
+\item{date}{The way to include a date of the form \verb{(retrieved YYYY-mm-dd)} in
+the \code{note} field of bib entries. For \code{date = 'none'}, no date is included.
+For \code{date = 'package'}, the \code{\link[=packageDate]{packageDate()}} of the package is included. For
+\code{date = 'today'}, \code{\link[=Sys.Date]{Sys.Date()}} is included. Alternatively, you can provide
+a date directly, e.g., \verb{date = '2025-04-01'.}}
 }
 \value{
 A list containing the citations. Citations are also written to the
@@ -80,6 +87,7 @@ packages.
 \examples{
 pkg_bib(c("base", "MASS", "xfun"))
 pkg_bib("cluster", prefix = "R-pkg-")  # a different prefix
+pkg_bib("xfun", date = "package")
 }
 \author{
 Yihui Xie and Michael Friendly

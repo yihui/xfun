@@ -2,6 +2,8 @@
 
 - `xfun::attr()` is deprecated (to avoid masking `base::attr()`). Please use `xfun::attr2()` instead.
 
+- Added an argument `date` to `pkg_bib()` to optionally include the date of retrieval in the bib entries (thanks, @HedvigS, #99).
+
 - Added a new function `url_destination()` to get the destination of a redirected URL.
 
 - Added a new function `rand_unit()` to generate pseudo-random numbers on `[0, 1)` based on a linear congruential generator.

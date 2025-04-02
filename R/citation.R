@@ -33,6 +33,11 @@
 #' @param lib.loc A vector of path names of R libraries.
 #' @param packageURL Use the `URL` field from the \file{DESCRIPTION} file. See
 #'   Details below.
+#' @param date The way to include a date of the form `(retrieved YYYY-mm-dd)` in
+#'   the `note` field of bib entries. For `date = 'none'`, no date is included.
+#'   For `date = 'package'`, the [packageDate()] of the package is included. For
+#'   `date = 'today'`, [Sys.Date()] is included. Alternatively, you can provide
+#'   a date directly, e.g., `date = '2025-04-01'.`
 #' @return A list containing the citations. Citations are also written to the
 #'   `file` as a side effect.
 #' @note Some packages on CRAN do not have standard bib entries, which was once
@@ -53,13 +58,15 @@
 #' @examples
 #' pkg_bib(c('base', 'MASS', 'xfun'))
 #' pkg_bib('cluster', prefix = 'R-pkg-')  # a different prefix
+#' pkg_bib('xfun', date = 'package')
 pkg_bib = function(
   x = .packages(), file = '', tweak = TRUE, width = NULL,
   prefix = getOption('xfun.bib.prefix', 'R-'), lib.loc = NULL,
-  packageURL = TRUE
+  packageURL = TRUE, date = c('none', 'package', 'today')
 ) {
   system.file = function(...) base::system.file(..., lib.loc = lib.loc)
   citation = function(...) utils::citation(..., lib.loc = lib.loc)
+  date = date[1]
   x = x[nzchar(x)] # remove possible empty string
   idx = mapply(system.file, package = x) == ''
   if (any(idx)) {
@@ -70,7 +77,7 @@ pkg_bib = function(
   x = setdiff(x, setdiff(base_pkgs(), 'base'))
   x = sort(x)
   bib = sapply(x, function(pkg) {
-    meta = packageDescription(pkg, lib.loc = lib.loc)
+    meta = packageDescription(pkg, lib.loc)
     # don't use the citation() URL if the package has provided its own URL
     cite = citation(pkg, auto = if (is.null(meta$URL)) meta else {
       if (packageURL) meta$Repository = meta$RemoteType = NULL
@@ -82,6 +89,10 @@ pkg_bib = function(
       # e.g. gpairs has "gpairs: " in the title
       cite$title = gsub(sprintf('^(%s: )(\\1)', pkg), '\\1', cite$title)
     }
+    date = format(switch(
+      date, none = '', package = packageDate(pkg, lib.loc), today = Sys.Date(), date
+    ))
+    if (!is.na(date) && date != '') cite$note = paste0(cite$note, ' (retrieved ', date, ')')
     entry = toBibtex(cite)
     entry[1] = sub('\\{,$', sprintf('{%s%s,', prefix, pkg), entry[1])
     entry
