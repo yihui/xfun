@@ -230,6 +230,8 @@ record = function(
     if (length(out)) add_result(out, 'output')
     expr
   }
+  # disable ANSI sequences in text output
+  opts = options(cli.num_colors = 1); on.exit(options(opts), add = TRUE)
   n = length(codes)
   for (i in seq_len(n)) {
     add_result(code <- codes[[i]], 'source')

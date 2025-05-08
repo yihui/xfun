@@ -2,6 +2,8 @@
 
 - Error messages captured by `record()` include the calls that triggered the errors now. Error messages from `rlang::abort()` are also better formatted.
 
+- ANSI sequences are disabled via `options(cli.num_colors = 1)` in `record()` to make sure pure text output is captured.
+
 # CHANGES IN xfun VERSION 0.52
 
 - `xfun::attr()` is deprecated (to avoid masking `base::attr()`). Please use `xfun::attr2()` or `base::attr(exact = TRUE)` instead.
