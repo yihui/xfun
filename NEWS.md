@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.53
 
+- Error messages captured by `record()` include the calls that triggered the errors now. Error messages from `rlang::abort()` are also better formatted.
+
 # CHANGES IN xfun VERSION 0.52
 
 - `xfun::attr()` is deprecated (to avoid masking `base::attr()`). Please use `xfun::attr2()` or `base::attr(exact = TRUE)` instead.
