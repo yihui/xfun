@@ -138,8 +138,7 @@ unlink(paste0(f, "_*.rds"))
 \seealso{
 \code{\link[=cache_exec]{cache_exec()}}, which is more flexible (e.g., it supports in-memory
 caching and different read/write methods for cache files).
-}
-\seealso{
+
 \code{qs}, which is required for \code{use.qs = TRUE}
 }
 \keyword{internal}
