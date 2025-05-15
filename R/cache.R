@@ -306,7 +306,9 @@ io_methods = list(
 #'   `"auto"`. Other types of objects are ignored.
 #' @param clean Whether to clean up the old cache files automatically when
 #'   `expr` has changed.
-#' @param ... Other arguments to be passed to [saveRDS()].
+#' @param use.qs Whether to use `qsave` and `qread` from the `qs` package
+#'   instead of `readRDS` and `saveRDS`
+#' @param ... Other arguments to be passed to [saveRDS()] or [qs::qsave()].
 #' @note Changes in the code in the `expr` argument do not necessarily always
 #'   invalidate the cache, if the changed code is [`parse`]`d` to the same
 #'   expression as the previous version of the code. For example, if you have
@@ -334,6 +336,7 @@ io_methods = list(
 #'   result to the file, otherwise read the cache file and return the value.
 #' @seealso [cache_exec()], which is more flexible (e.g., it supports in-memory
 #'   caching and different read/write methods for cache files).
+#' @seealso \pkg{\link{qs}}, which is required for `use.qs`
 #' @export
 #' @keywords internal
 #' @examples
@@ -353,7 +356,8 @@ io_methods = list(
 #' unlink(paste0(f, '_*.rds'))
 cache_rds = function(
   expr = {}, rerun = FALSE, file = 'cache.rds', dir = 'cache/',
-  hash = NULL, clean = getOption('xfun.cache_rds.clean', TRUE), ...
+  hash = NULL, clean = getOption('xfun.cache_rds.clean', TRUE), 
+  use.qs = FALSE, ...
 ) {
   if (loadable('knitr')) {
     if (missing(file) && !is.null(lab <- knitr::opts_current$get('label')))
@@ -362,7 +366,11 @@ cache_rds = function(
       dir = d
   }
   path = paste0(dir, file)
-  if (!grepl(r <- '([.]rds)$', path)) path = paste0(path, '.rds')
+  if (use.qs) {
+    if (!grepl(r <- '([.]qs)$', path)) path = paste0(path, '.qs')
+  } else {
+    if (!grepl(r <- '([.]rds)$', path)) path = paste0(path, '.rds')
+  }
   code = deparse(substitute(expr))
   md5  = md5_obj(code)
   if (identical(hash, 'auto')) hash = global_vars(code, parent.frame(2))
@@ -370,11 +378,21 @@ cache_rds = function(
   path = sub(r, paste0('_', md5, '\\1'), path)
   if (rerun) unlink(path)
   if (clean) clean_cache(path)
-  if (file_exists(path)) readRDS(path) else {
-    obj = expr  # lazy evaluation
-    dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
-    saveRDS(obj, path, ...)
-    obj
+  
+  if (use.qs) { 
+    if (file_exists(path)) qs::qread(path, strict = TRUE) else {
+      obj = expr  # lazy evaluation
+      dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+      qs::qsave(obj, path, ...)
+      obj
+    }
+  } else {
+    if (file_exists(path)) readRDS(path) else {
+      obj = expr  # lazy evaluation
+      dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+      saveRDS(obj, path, ...)
+      obj
+    }
   }
 }
 
