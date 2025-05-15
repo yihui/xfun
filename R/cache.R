@@ -361,7 +361,7 @@ cache_rds = function(
 ) {
   if (loadable('knitr')) {
     if (missing(file) && !is.null(lab <- knitr::opts_current$get('label')))
-      file = paste0(lab, '.rds')
+      file = paste0(lab, if (use.qs) '.qs' else '.rds')
     if (missing(dir) && !is.null(d <- knitr::opts_current$get('cache.path')))
       dir = d
   }
