@@ -12,6 +12,7 @@ cache_rds(
   dir = "cache/",
   hash = NULL,
   clean = getOption("xfun.cache_rds.clean", TRUE),
+  use.qs = FALSE,
   ...
 )
 }
@@ -40,6 +41,9 @@ filename (see Details). It can also take a special character value
 
 \item{clean}{Whether to clean up the old cache files automatically when
 \code{expr} has changed.}
+
+\item{use.qs}{Whether to use \code{qsave} and \code{qread} from the \code{qs} package
+instead of \code{readRDS} and \code{saveRDS}}
 
 \item{...}{Other arguments to be passed to \code{\link[=saveRDS]{saveRDS()}}.}
 }
@@ -134,5 +138,8 @@ unlink(paste0(f, "_*.rds"))
 \seealso{
 \code{\link[=cache_exec]{cache_exec()}}, which is more flexible (e.g., it supports in-memory
 caching and different read/write methods for cache files).
+}
+\seealso{
+\code{qs}, which is required for \code{use.qs = TRUE}
 }
 \keyword{internal}
