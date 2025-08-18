@@ -371,10 +371,11 @@ cache_rds = function(
   md5  = md5_obj(code)
   if (identical(hash, 'auto')) hash = global_vars(code, parent.frame(2))
   if (is.list(hash)) md5 = md5_obj(c(md5, md5_obj(hash)))
-  path = sub(r, paste0('_', md5, '\\1'), path)
+  ext = file_ext(path)
+  path = paste0(sans_ext(path), '_', md5, '.', ext)
   if (rerun) unlink(path)
   if (clean) clean_cache(path)
-  use_qs = file_ext(path) == 'qs'
+  use_qs = ext == 'qs'
   if (file_exists(path)) {
     if (use_qs) qs::qread(path, strict = TRUE) else readRDS(path)
   } else {
