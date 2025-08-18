@@ -246,10 +246,13 @@ record = function(
     }
     # print value (via record_print()) if visible
     if (!is_error(out) && out$visible) {
+      val = out$value
+      # if val is data.table, check if it needs to be printed
+      if (inherits(val, 'data.table') && 'data.table' %in% loadedNamespaces() &&
+          !data.table::shouldPrint(val)) next
       if (is.null(print)) print = record_print
       if (!is.function(print)) print = record_print.default
       p_args = print.args
-      val = out$value
       # index print args by first class of out unless args are wrapped in I()
       if (!inherits(p_args, 'AsIs')) p_args = p_args[[class(val)[1]]]
       out = handle_eval(if (length(p_args) == 0) print(val) else do.call(
