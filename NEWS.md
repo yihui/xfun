@@ -6,6 +6,8 @@
 
 - Skip printing data.table objects in `record()` if `data.table::shouldPrint()` returns `FALSE` (thanks, @TimTaylor, #105).
 
+- `cache_rds()` supports reading/writing cache with the **qs** package now (thanks, @cheny36, #104).
+
 # CHANGES IN xfun VERSION 0.52
 
 - `xfun::attr()` is deprecated (to avoid masking `base::attr()`). Please use `xfun::attr2()` or `base::attr(exact = TRUE)` instead.
