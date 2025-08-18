@@ -12,3 +12,10 @@ assert('record() handles raw_string objects', {
   rec = record('s')
   (as.character(rec[[2]]) %==% as.character(s))
 })
+
+if (loadable('data.table')) assert('record() works with data.table', {
+  x = c('d = data.table::as.data.table(mtcars)', 'd[, mpg := 99]')
+  rec = record(x, envir = globalenv())
+  (length(rec) %==% 1L)  # only source code, no output printed
+  (as.character(rec[[1]]) %==% x)
+})

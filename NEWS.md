@@ -4,6 +4,8 @@
 
 - ANSI sequences are disabled via `options(cli.num_colors = 1)` in `record()` to make sure pure text output is captured.
 
+- Skip printing data.table objects in `record()` if `data.table::shouldPrint()` returns `FALSE` (thanks, @TimTaylor, #105).
+
 # CHANGES IN xfun VERSION 0.52
 
 - `xfun::attr()` is deprecated (to avoid masking `base::attr()`). Please use `xfun::attr2()` or `base::attr(exact = TRUE)` instead.
