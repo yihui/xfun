@@ -12,7 +12,6 @@ cache_rds(
   dir = "cache/",
   hash = NULL,
   clean = getOption("xfun.cache_rds.clean", TRUE),
-  use.qs = FALSE,
   ...
 )
 }
@@ -26,7 +25,9 @@ the result again (i.e., invalidate the cache if it exists).}
 specified by the \code{dir} argument. If not specified and this function is
 called inside a code chunk of a \pkg{knitr} document (e.g., an R Markdown
 document), the default is the current chunk label plus the extension
-\file{.rds}.}
+\file{.rds}. If the filename has the extension \code{.qs}, \code{qsave()} and
+\code{qread()} from the \pkg{qs} package will be used instead of \code{readRDS()} and
+\code{saveRDS()}.}
 
 \item{dir}{The path of the RDS file is partially determined by \code{paste0(dir, file)}. If not specified and the \pkg{knitr} package is available, the
 default value of \code{dir} is the \pkg{knitr} chunk option \code{cache.path} (so if
@@ -42,10 +43,7 @@ filename (see Details). It can also take a special character value
 \item{clean}{Whether to clean up the old cache files automatically when
 \code{expr} has changed.}
 
-\item{use.qs}{Whether to use \code{qsave} and \code{qread} from the \code{qs} package
-instead of \code{readRDS} and \code{saveRDS}}
-
-\item{...}{Other arguments to be passed to \code{\link[=saveRDS]{saveRDS()}}.}
+\item{...}{Other arguments to be passed to \code{\link[=saveRDS]{saveRDS()}} or \code{\link[qs:qsave]{qs::qsave()}}.}
 }
 \value{
 If the cache file does not exist, run the expression and save the
@@ -138,7 +136,5 @@ unlink(paste0(f, "_*.rds"))
 \seealso{
 \code{\link[=cache_exec]{cache_exec()}}, which is more flexible (e.g., it supports in-memory
 caching and different read/write methods for cache files).
-
-\code{qs}, which is required for \code{use.qs = TRUE}
 }
 \keyword{internal}

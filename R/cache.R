@@ -293,7 +293,9 @@ io_methods = list(
 #'   specified by the `dir` argument. If not specified and this function is
 #'   called inside a code chunk of a \pkg{knitr} document (e.g., an R Markdown
 #'   document), the default is the current chunk label plus the extension
-#'   \file{.rds}.
+#'   \file{.rds}. If the filename has the extension `.qs`, `qsave()` and
+#'   `qread()` from the \pkg{qs} package will be used instead of `readRDS()` and
+#'   `saveRDS()`.
 #' @param dir The path of the RDS file is partially determined by `paste0(dir,
 #'   file)`. If not specified and the \pkg{knitr} package is available, the
 #'   default value of `dir` is the \pkg{knitr} chunk option `cache.path` (so if
@@ -306,8 +308,6 @@ io_methods = list(
 #'   `"auto"`. Other types of objects are ignored.
 #' @param clean Whether to clean up the old cache files automatically when
 #'   `expr` has changed.
-#' @param use.qs Whether to use `qsave` and `qread` from the `qs` package
-#'   instead of `readRDS` and `saveRDS`
 #' @param ... Other arguments to be passed to [saveRDS()] or [qs::qsave()].
 #' @note Changes in the code in the `expr` argument do not necessarily always
 #'   invalidate the cache, if the changed code is [`parse`]`d` to the same
@@ -336,7 +336,6 @@ io_methods = list(
 #'   result to the file, otherwise read the cache file and return the value.
 #' @seealso [cache_exec()], which is more flexible (e.g., it supports in-memory
 #'   caching and different read/write methods for cache files).
-#' @seealso \pkg{\link{qs}}, which is required for `use.qs`
 #' @export
 #' @keywords internal
 #' @examples
@@ -356,21 +355,18 @@ io_methods = list(
 #' unlink(paste0(f, '_*.rds'))
 cache_rds = function(
   expr = {}, rerun = FALSE, file = 'cache.rds', dir = 'cache/',
-  hash = NULL, clean = getOption('xfun.cache_rds.clean', TRUE), 
-  use.qs = FALSE, ...
+  hash = NULL, clean = getOption('xfun.cache_rds.clean', TRUE), ...
 ) {
   if (loadable('knitr')) {
-    if (missing(file) && !is.null(lab <- knitr::opts_current$get('label')))
-      file = paste0(lab, if (use.qs) '.qs' else '.rds')
+    if (!is.null(lab <- knitr::opts_current$get('label'))) {
+      if (missing(file)) file = '.rds'
+      if (startsWith(file, '.')) file = paste0(lab, file)
+    }
     if (missing(dir) && !is.null(d <- knitr::opts_current$get('cache.path')))
       dir = d
   }
   path = paste0(dir, file)
-  if (use.qs) {
-    if (!grepl(r <- '([.]qs)$', path)) path = paste0(path, '.qs')
-  } else {
-    if (!grepl(r <- '([.]rds)$', path)) path = paste0(path, '.rds')
-  }
+  if (file_ext(path) == '') path = paste0(path, '.rds')
   code = deparse(substitute(expr))
   md5  = md5_obj(code)
   if (identical(hash, 'auto')) hash = global_vars(code, parent.frame(2))
@@ -378,21 +374,14 @@ cache_rds = function(
   path = sub(r, paste0('_', md5, '\\1'), path)
   if (rerun) unlink(path)
   if (clean) clean_cache(path)
-  
-  if (use.qs) { 
-    if (file_exists(path)) qs::qread(path, strict = TRUE) else {
-      obj = expr  # lazy evaluation
-      dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
-      qs::qsave(obj, path, ...)
-      obj
-    }
+  use_qs = file_ext(path) == 'qs'
+  if (file_exists(path)) {
+    if (use_qs) qs::qread(path, strict = TRUE) else readRDS(path)
   } else {
-    if (file_exists(path)) readRDS(path) else {
-      obj = expr  # lazy evaluation
-      dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
-      saveRDS(obj, path, ...)
-      obj
-    }
+    obj = expr  # lazy evaluation
+    dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
+    if (use_qs) qs::qsave(obj, path, ...) else saveRDS(obj, path, ...)
+    obj
   }
 }
 
