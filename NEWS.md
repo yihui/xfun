@@ -1,3 +1,6 @@
+# CHANGES IN xfun VERSION 0.54
+
+
 # CHANGES IN xfun VERSION 0.53
 
 - Error messages captured by `record()` include the calls that triggered the errors now. Error messages from `rlang::abort()` are also better formatted.
