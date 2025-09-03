@@ -137,12 +137,12 @@ The function `proj_root()` was inspired by the **rprojroot** package, and tries 
 The function `from_root()` was inspired by `here::here()`, but returns a relative path (relative to the project's root directory found by `proj_root()`) instead of an absolute path. For example, `xfun::from_root('data', 'cars.csv')` in a code chunk of `docs/foo.Rmd` will return `../data/cars.csv` when `docs/` and `data/` directories are under the root directory of a project.
 
 ```
-root/
-  |-- data/
-  |   |-- cars.csv
-  |
-  |-- docs/
-      |-- foo.Rmd
+.
+|-- data
+|   |-- cars.csv
+|
+|-- docs
+    |-- foo.Rmd
 ```
 
 If file paths are too much pain for you to think about, you can just pass an incomplete path to the function `magic_path()`, and it will try to find the actual path recursively under subdirectories of a root directory. For example, you may only provide a base filename, and `magic_path()` will look for this file under subdirectories and return the actual path if it is found. By default, it returns a relative path, which is relative to the current working directory. With the above example, `xfun::magic_path('cars.csv')` in a code chunk of `docs/foo.Rmd` will return `../data/cars.csv`, if `cars.csv` is a unique filename in the project. You can freely move it to any folders of this project, and `magic_path()` will still find it. If you are not using a project to manage files, `magic_path()` will look for the file under subdirectories of the current working directory.
