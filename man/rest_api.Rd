@@ -65,7 +65,7 @@ variables \var{GITHUB_PAT}, \var{GITHUB_TOKEN}, \var{GH_TOKEN}. A PAT
 allows for a much higher rate limit in API calls. Without a token, you can
 only make 60 calls in an hour.
 }
-\examples{\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\examples{\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 # a normal GET request
 xfun::rest_api("https://httpbin.org", "/get")
 xfun::rest_api_raw("https://httpbin.org", "/get")

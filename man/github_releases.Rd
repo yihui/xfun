@@ -30,7 +30,7 @@ A character vector of (GIT) tags.
 Use the GitHub API (\code{\link[=github_api]{github_api()}}) to obtain the tags of the
 releases.
 }
-\examples{\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\examples{\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 xfun::github_releases("yihui/xfun")
 xfun::github_releases("gohugoio/hugo")
 \dontshow{\}) # examplesIf}

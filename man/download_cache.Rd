@@ -25,7 +25,7 @@ download_cache
 \description{
 This object provides methods to download files and cache them on disk.
 }
-\examples{\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\examples{\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 # the first time it may take a few seconds
 x1 = xfun::download_cache$get("https://www.r-project.org/")
 head(x1)

@@ -18,7 +18,7 @@ returns character output (e.g., with the argument \code{stdout = TRUE}),
 check if the output is encoded in UTF-8. If it is, mark it with UTF-8
 explicitly.
 }
-\examples{\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\examples{\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 a = shQuote(c("-e", "print(intToUtf8(c(20320, 22909)))"))
 x2 = system2("Rscript", a, stdout = TRUE)
 Encoding(x2)  # unknown
