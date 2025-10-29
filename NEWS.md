@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.54
 
+- `record()` no longer records empty plots triggered as side-effects by functions like `grid::convertUnit()` (thanks, @yjunechoe, yihui/litedown#96).
 
 # CHANGES IN xfun VERSION 0.53
 
