@@ -160,6 +160,11 @@ record = function(
       old_files <<- files
       old_times <<- file.mtime(files)
       if ((n <- length(plots)) == 0) return()
+      # if an empty plot is recorded, remove it (e.g., yihui/litedown#96)
+      if (n == 1 && empty_plot(old_plot)) {
+        file.remove(plots); old_files <<- character(); old_times <<- NULL
+        return()
+      }
 
       # indices of plots in results
       i = which(vapply(res, inherits, logical(1), 'record_plot'))
@@ -356,6 +361,26 @@ dev_ext = function(dev) {
   if (!is.character(name <- formals(dev)[[1]])) name = gsub('"', '', deparse(name))
   file_ext(name)
 }
+
+# test if a recorded plot is empty
+empty_plot = function(p) {
+  xs = lapply(p[[1]], function(x) x[[2]][[1]])
+  for (x in xs) {
+    if (hasName(x, 'name')) {
+      # base graphics
+      if (!x$name %in% empty_calls) return(FALSE)
+    } else if (is.call(x)) {
+      # grid graphics
+      if (!identical(as.character(x[[1]]), 'requireNamespace')) return(FALSE)
+    }
+  }
+  TRUE
+}
+
+empty_calls = c(
+  'C_clip', 'C_layout', 'C_par', 'C_plot_window', 'C_strHeight', 'C_strWidth',
+  'palette', 'palette2'
+)
 
 is_error = function(x) inherits(x, 'try-error')
 

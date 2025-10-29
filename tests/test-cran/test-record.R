@@ -19,3 +19,8 @@ if (loadable('data.table')) assert('record() works with data.table', {
   (length(rec) %==% 1L)  # only source code, no output printed
   (as.character(rec[[1]]) %==% x)
 })
+
+assert('record() avoids recording empty plots', {
+  rec = record('library(grid); g <- pointsGrob(); x <- convertUnit(g$x, "mm")')
+  (length(rec) %==% 1L)  # only source code, no plot generated
+})
