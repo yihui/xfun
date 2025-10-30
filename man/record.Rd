@@ -12,6 +12,7 @@ record(
   dev.path = "xfun-record",
   dev.ext = dev_ext(dev),
   dev.args = list(),
+  dev.keep = TRUE,
   message = TRUE,
   warning = TRUE,
   error = NA,
@@ -55,6 +56,12 @@ inferred from the first argument of the device function if possible.}
 \item{dev.args}{Extra arguments to be passed to the device. The default
 arguments are \code{list(units = 'in', onefile = FALSE, width = 7, height = 7, res = 96)}. If any of these arguments is not present in the device
 function, it will be dropped.}
+
+\item{dev.keep}{Indices of plots to be kept. The indices can be either
+numeric (positive or negative integers) or logical. Negative integers and
+false values will remove the corresponding plots. For example, if the code
+generated 3 plots, \code{dev.keep = c(1, 3)}, \code{-2}, and \code{c(T, F, T)} are
+equivalent ways to remove the second plot.}
 
 \item{message, warning, error}{If \code{TRUE}, record and store messages / warnings
 / errors in the output. If \code{FALSE}, suppress them. If \code{NA}, do not process

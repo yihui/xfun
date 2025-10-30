@@ -16,6 +16,11 @@
 #'   arguments are `list(units = 'in', onefile = FALSE, width = 7, height = 7,
 #'   res = 96)`. If any of these arguments is not present in the device
 #'   function, it will be dropped.
+#' @param dev.keep Indices of plots to be kept. The indices can be either
+#'   numeric (positive or negative integers) or logical. Negative integers and
+#'   false values will remove the corresponding plots. For example, if the code
+#'   generated 3 plots, `dev.keep = c(1, 3)`, `-2`, and `c(T, F, T)` are
+#'   equivalent ways to remove the second plot.
 #' @param message,warning,error If `TRUE`, record and store messages / warnings
 #'   / errors in the output. If `FALSE`, suppress them. If `NA`, do not process
 #'   them (messages will be emitted to the console, and errors will halt the
@@ -55,8 +60,8 @@
 #' file.remove(unlist(plots))
 record = function(
   code = NULL, dev = 'png', dev.path = 'xfun-record', dev.ext = dev_ext(dev),
-  dev.args = list(), message = TRUE, warning = TRUE, error = NA, cache = list(),
-  print = record_print, print.args = list(),
+  dev.args = list(), dev.keep = TRUE, message = TRUE, warning = TRUE, error = NA,
+  cache = list(), print = record_print, print.args = list(),
   verbose = getOption('xfun.record.verbose', 0), envir = parent.frame()
 ) {
   new_result = function(x = list()) structure(x, class = 'xfun_record_results')
@@ -272,6 +277,20 @@ record = function(
   # shut off the device to write out the last plot if there exists one
   dev_off()
   handle_plot(TRUE)
+
+  # filter plots
+  if (!isTRUE(dev.keep)) {
+    p = get_plots(); d = setdiff(p, p[dev.keep])  # p: all plots; d: to be deleted
+    if (length(d)) {
+      for (i in seq_along(res)) {
+        if (!inherits(r <- res[[i]], 'record_plot') || all(is.na(k <- match(d, r)))) next
+        r2 = r[-k[!is.na(k)]]  # remove plots matching d
+        attributes(r2) = attributes(r)  # preserve class
+        res[[i]] = r2
+      }
+      file.remove(d)
+    }
+  }
 
   # remove empty blocks
   res = Filter(length, res)
