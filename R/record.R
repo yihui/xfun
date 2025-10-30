@@ -20,7 +20,8 @@
 #'   numeric (positive or negative integers) or logical. Negative integers and
 #'   false values will remove the corresponding plots. For example, if the code
 #'   generated 3 plots, `dev.keep = c(1, 3)`, `-2`, and `c(T, F, T)` are
-#'   equivalent ways to remove the second plot.
+#'   equivalent ways to remove the second plot. The special value `dev.keep =
+#'   'last'` means to keep the last plot only.
 #' @param message,warning,error If `TRUE`, record and store messages / warnings
 #'   / errors in the output. If `FALSE`, suppress them. If `NA`, do not process
 #'   them (messages will be emitted to the console, and errors will halt the
@@ -280,7 +281,9 @@ record = function(
 
   # filter plots
   if (!isTRUE(dev.keep)) {
-    p = get_plots(); d = setdiff(p, p[dev.keep])  # p: all plots; d: to be deleted
+    p = get_plots()  # all plots
+    if (identical(dev.keep, 'last')) dev.keep = length(p)
+    d = setdiff(p, p[dev.keep])  # plots to be deleted
     if (length(d)) {
       for (i in seq_along(res)) {
         if (!inherits(r <- res[[i]], 'record_plot') || all(is.na(k <- match(d, r)))) next

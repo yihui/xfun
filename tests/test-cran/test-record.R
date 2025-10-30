@@ -31,6 +31,7 @@ assert('record() can selectively keep plots', {
   (cl(f()) %==% rep(c('source', 'plot'), 2))  # keep all plots
   (cl(f(-1)) %==% c('source', 'plot'))  # remove 1st plot
   (cl(f(c(FALSE, TRUE))) %==% c('source', 'plot'))  # ditto
+  (cl(f('last')) %==% c('source', 'plot'))  # keep the last plot only
   (cl(f(-2)) %==% c('source', 'plot', 'source'))  # remove 2nd plot
   (cl(f(FALSE)) %==% 'source')  # remove all plots
 })
