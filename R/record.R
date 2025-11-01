@@ -388,7 +388,7 @@ dev_ext = function(dev) {
 empty_plot = function(p) {
   xs = lapply(p[[1]], function(x) x[[2]][[1]])
   for (x in xs) {
-    if (hasName(x, 'name')) {
+    if ('name' %in% names(x)) {
       # base graphics
       if (!x$name %in% empty_calls) return(FALSE)
     } else if (is.call(x)) {
