@@ -640,7 +640,7 @@ compare_Rcheck = function(status_only = TRUE, output = '00check_diffs.md') {
     )
   }
   if (length(res) == 0) return()
-  res = c('---', 'title: xfun::rev_check() results', '---', '')
+  res = c('---', 'title: xfun::rev_check() results', '---', '', res)
   xfun::write_utf8(res, output)
   if (!loadable('litedown')) return(output)
   html_file = litedown::mark(output, text = res)
