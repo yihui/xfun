@@ -611,6 +611,8 @@ download_cache = local({
   )
 })
 
-cache_dir = function() {
+cache_dir = if (getRversion() >= '4.0.0') function() {
   getOption('xfun.cache.dir', tools::R_user_dir('xfun', 'cache'))
+} else function() {
+  getOption('xfun.cache.dir', file.path(tempdir(), 'xfun', 'cache'))
 }
