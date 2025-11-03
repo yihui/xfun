@@ -128,7 +128,7 @@ tinify_dir = function(dir = '.', ...) {
 #'   \file{.png}, \file{.jpeg}, and \file{.webp} images under `dir`.
 #' @param tinify Whether to compress images using [tinify()].
 #' @export
-#' @examples
+#' @examplesIf xfun::loadable('magick')
 #' f = xfun:::all_files('[.](png|jpe?g)$', R.home('doc'))
 #' file.copy(f, tempdir())
 #' f = file.path(tempdir(), basename(f))
