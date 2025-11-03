@@ -14,3 +14,6 @@ if (!has_fun('endsWith')) endsWith = function(x, s) {
 if (!has_fun('strrep')) strrep = function(x, times) {
   mapply(function(x, n) paste(rep(x, n), collapse = ''), x, times, USE.NAMES = FALSE)
 }
+if (!has_fun('packageDate', asNamespace('utils'))) packageDate = function(...) {
+  as.Date(packageDescription(..., fields = 'Date/Publication'))
+}
