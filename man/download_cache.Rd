@@ -25,7 +25,7 @@ download_cache
 \description{
 This object provides methods to download files and cache them on disk.
 }
-\examples{\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+\examples{\dontshow{if (interactive()) \{}
 # the first time it may take a few seconds
 x1 = xfun::download_cache$get("https://www.r-project.org/")
 head(x1)
@@ -44,6 +44,6 @@ xfun::download_cache$summary()
 xfun::download_cache$remove("https://yihui.org/images/logo.png", "raw")
 # remove all cache files
 xfun::download_cache$purge()
-\dontshow{\}) # examplesIf}
+\dontshow{\}}
 }
 \keyword{datasets}

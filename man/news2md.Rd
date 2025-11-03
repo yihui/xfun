@@ -24,8 +24,8 @@ version appears in a first-level header, each category (e.g., \samp{NEW
 FEATURES} or \samp{BUG FIXES}) is in a second-level header, and the news
 items are written into bullet lists.
 }
-\examples{\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+\examples{\dontshow{if (interactive()) \{}
 # news for the current version of R
 xfun::news2md("R", Version == getRversion(), output = NA)
-\dontshow{\}) # examplesIf}
+\dontshow{\}}
 }

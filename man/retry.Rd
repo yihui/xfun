@@ -23,8 +23,8 @@ times, with a pause between attempts.
 One application of this function is to download a web resource. Since the
 download might fail sometimes, you may want to retry it for a few more times.
 }
-\examples{\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+\examples{\dontshow{if (interactive()) \{}
 # read the GitHub releases info of the repo yihui/xfun
 xfun::retry(xfun::github_releases, "yihui/xfun")
-\dontshow{\}) # examplesIf}
+\dontshow{\}}
 }
