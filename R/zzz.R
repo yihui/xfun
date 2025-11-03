@@ -1,6 +1,9 @@
 has_fun = function(name, envir = baseenv()) exists(name, envir, inherits = FALSE)
 
 # for R < 4.0
+if (!has_fun('isFALSE')) isFALSE = function(x) {
+  is.logical(x) && length(x) == 1 && !is.na(x) && !x
+}
 if (!has_fun('startsWith')) startsWith = function(x, s) {
   substring(x, 1, nchar(s)) == s
 }
@@ -10,4 +13,7 @@ if (!has_fun('endsWith')) endsWith = function(x, s) {
 }
 if (!has_fun('strrep')) strrep = function(x, times) {
   mapply(function(x, n) paste(rep(x, n), collapse = ''), x, times, USE.NAMES = FALSE)
+}
+if (!has_fun('packageDate', asNamespace('utils'))) packageDate = function(...) {
+  as.Date(packageDescription(..., fields = 'Date/Publication'))
 }

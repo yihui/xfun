@@ -37,8 +37,8 @@ more information into the \code{session_info} output. For example,
 returns the version of Pandoc, which can be very useful information for
 diagnostics.
 }
-\examples{\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+\examples{\dontshow{if (interactive()) \{}
 xfun::session_info()
 if (xfun::loadable("MASS")) xfun::session_info("MASS")
-\dontshow{\}) # examplesIf}
+\dontshow{\}}
 }

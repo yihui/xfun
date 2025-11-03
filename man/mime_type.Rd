@@ -30,10 +30,10 @@ When querying the MIME type via the system command, the result will be
 cached to \code{xfun:::cache_dir()}. This will make future queries much faster,
 since running the command in real time can be a little slow.
 }
-\examples{\dontshow{if (tolower(Sys.getenv('CI')) == 'true') withAutoprint(\{ # examplesIf}
+\examples{\dontshow{if (tolower(Sys.getenv('CI')) == 'true') \{}
 f = list.files(R.home("doc"), full.names = TRUE)
 mime_type(f)
 mime_type(f, FALSE)  # don't use mime
 mime_type(f, FALSE, NA)  # run command for files without extension
-\dontshow{\}) # examplesIf}
+\dontshow{\}}
 }
