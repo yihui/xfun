@@ -154,13 +154,13 @@ cache_code = function(
     }
     hits = id_names(db)
     # clean up all cache for this id, i.e., remove :memory:__id__hash
-    if (base::isFALSE(config$keep)) rm_vars(hits, db)
+    if (isFALSE(config$keep)) rm_vars(hits, db)
     id = paste0(id, hash)
     id %in% ls_all(db)
   } else {
     db = list.files(id, full.names = TRUE)
     hits = grepl(file_pattern('[[:alnum:]]+'), basename(db))
-    if (base::isFALSE(config$keep)) file.remove(db[hits])
+    if (isFALSE(config$keep)) file.remove(db[hits])
     id = file.path(id, paste0(hash, '.', rw$name))
     file_exists(id)
   }
