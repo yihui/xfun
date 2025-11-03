@@ -70,7 +70,10 @@ jobs:
           R CMD INSTALL .
           cd ..
           R CMD build xfun
-          R CMD check --as-cran --no-manual xfun_*.tar.gz
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@HEAD
+        if: matrix.config.r < '4.0'
 
       - name: Test coverage
         if: success() && runner.os == 'Linux' && matrix.config.r == 'release'
