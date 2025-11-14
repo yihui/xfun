@@ -62,14 +62,14 @@ app_env = function() getFromNamespace('.httpd.handlers.env', 'tools')
 #' @export
 #' @examplesIf interactive()
 #' # a normal GET request
-#' xfun::rest_api('https://httpbin.org', '/get')
-#' xfun::rest_api_raw('https://httpbin.org', '/get')
+#' xfun::rest_api('https://mockhttp.org', '/get')
+#' xfun::rest_api_raw('https://mockhttp.org', '/get')
 #'
 #' # send the request with an auth header
-#' xfun::rest_api('https://httpbin.org', '/headers', 'OPEN SESAME!')
+#' xfun::rest_api('https://mockhttp.org', '/headers', 'OPEN SESAME!')
 #'
 #' # with query parameters
-#' xfun::rest_api('https://httpbin.org', '/response-headers', params = list(foo = 'bar'))
+#' xfun::rest_api('https://mockhttp.org', '/response-headers', params = list(foo = 'bar'))
 #'
 #' # get the rate limit info from GitHub
 #' xfun::github_api('/rate_limit')
