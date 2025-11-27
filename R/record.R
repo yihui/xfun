@@ -205,14 +205,17 @@ record = function(
     return(new_result(res))
   }
 
+  # trim error message and remove the uninformative part (yihui/litedown#109)
+  trim_error = function(e) {
+    x = sub('\\s+$', '', as.character(e))
+    sub(' in eval\\(expr, envir):', ':', x)
+  }
   handle_message = function(type, add = TRUE) {
     err = type == 'error'
     mf = if (!err) sub('^(.)', 'muffle\\U\\1', type, perl = TRUE)
     function(e) {
       if (is.na(add)) return()
-      if (isTRUE(add)) add_result(
-        if (err) sub('\\s+$', '', as.character(e)) else e$message, type
-      )
+      if (isTRUE(add)) add_result(if (err) trim_error(e) else e$message, type)
       if (!err) invokeRestart(mf)
     }
   }

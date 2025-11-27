@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.55
 
+- `record(error = TRUE)` will trim the error message by removing the uninformative part `in eval(expr, envir)` in the message (thanks, @ThomasSoeiro, yihui/litedown#109).
 
 # CHANGES IN xfun VERSION 0.54
 
