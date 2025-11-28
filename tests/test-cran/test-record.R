@@ -35,3 +35,12 @@ assert('record() can selectively keep plots', {
   (cl(f(-2)) %==% c('source', 'plot', 'source'))  # remove 2nd plot
   (cl(f(FALSE)) %==% 'source')  # remove all plots
 })
+
+# the option try.outFile was introduced in R 3.4.0
+opts = options(try.outFile = NULL)
+if (getRversion() >= '3.4.0') assert('record() can capture try() messages', {
+  rec = record('try(stop("asdf qwer zxcv"))')
+  (length(rec) %==% 2L)
+  (grepl('asdf qwer zxcv', rec[[2]]))
+})
+options(opts)
