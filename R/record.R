@@ -208,7 +208,7 @@ record = function(
   # trim error message and remove the uninformative part (yihui/litedown#109)
   trim_error = function(e) {
     x = sub('\\s+$', '', as.character(e))
-    sub(' in eval\\(expr, envir):', ':', x)
+    sub(' in eval\\(expr, envir(, enclos)?\\):', ':', x)
   }
   handle_message = function(type, add = TRUE) {
     err = type == 'error'
