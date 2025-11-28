@@ -2,6 +2,8 @@
 
 - `record(error = TRUE)` will trim the error message by removing the uninformative part `in eval(expr, envir)` in the message (thanks, @ThomasSoeiro, yihui/litedown#109).
 
+- `record()` will capture error messages generated from `try()` (thanks, @ThomasSoeiro, yihui/litedown#110).
+
 # CHANGES IN xfun VERSION 0.54
 
 - `record()` tries not to records empty plots triggered as side-effects by functions like `grid::convertUnit()` (thanks, @yjunechoe, yihui/litedown#96). However, the underlying technique is not robust enough to deal with all cases. In case certain undesired plots still get recorded, you can filter them out via the new argument of `record()`, `dev.keep`, which can take indices to determine which plots to keep. For example, `dev.keep = -1` means to remove the first plot.

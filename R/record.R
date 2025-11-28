@@ -236,11 +236,12 @@ record = function(
     out = NULL
     con = textConnection('out', 'w', local = TRUE)
     on.exit(close(con))
-    sink(con); on.exit({ sink(); close(con) })
+    # capture try() messages
+    opts = if (is.null(getOption('try.outFile'))) options(try.outFile = con)
+    sink(con); on.exit({ sink(); close(con); options(opts) })
     expr  # lazy evaluation
     on.exit()  # if no error occurred, clear up previous on-exit calls
-    sink()
-    close(con)
+    sink(); close(con); options(opts)
     if (length(out)) add_result(out, 'output')
     expr
   }
