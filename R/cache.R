@@ -38,11 +38,12 @@
 #' {})`. By default, [readRDS()] and [saveRDS()] are used. This argument can
 #' also take a character string to use some built-in read/write methods.
 #' Currently available methods include `rds` (the default), `raw` (using
-#' [serialize()] and [unserialize()]), and `qs` (using [qs::qread()] and
-#' [qs::qsave()]). The `rds` and `raw` methods only use base R functions (the
-#' `rds` method generates smaller files because it uses compression, but is
-#' often slower than the `raw` method, which does not use compression). The `qs`
-#' method requires the \pkg{qs} package, which can be much faster than base R
+#' [serialize()] and [unserialize()]), `qs2` (using [qs2::qs_read()] and
+#' [qs2::qs_save()]), and `qdata` (using [qs2::qd_read()] and [qs2::qd_save()]).
+#' The `rds` and `raw` methods only use base R functions (the `rds` method
+#' generates smaller files because it uses compression, but is often slower than
+#' the `raw` method, which does not use compression). The `qs2` and `qdata`
+#' methods require the \pkg{qs2} package, which can be much faster than base R
 #' methods and also supports compression.
 #' @param expr An R expression to be cached.
 #' @param path The path to save the cache. The special value `":memory:"` means
@@ -237,14 +238,24 @@ io_methods = list(
     name = 'qs',
     load = function(...) qs::qread(...),
     save = function(x, file, ...) qs::qsave(x, file, ...)
+  ),
+  qs2 = list(
+    name = 'qs2',
+    load = function(...) qs2::qs_read(...),
+    save = function(x, file, ...) qs2::qs_save(x, file, ...)
+  ),
+  qdata = list(
+    name = 'qdata',
+    load = function(...) qs2::qd_read(...),
+    save = function(x, file, ...) qs2::qd_save(x, file, ...)
   )
 )
 
 #' Cache the value of an R expression to an RDS file
 #'
-#' Save the value of an expression to a cache file (of the RDS format). Next
-#' time the value is loaded from the file if it exists. Please consider using
-#' [cache_exec()] instead, which is more flexible and intelligent.
+#' Save the value of an expression to a cache file. Next time the value is
+#' loaded from the file if it exists. Please consider using [cache_exec()]
+#' instead, which is more flexible and intelligent.
 #'
 #' Note that the `file` argument does not provide the full cache filename. The
 #' actual name of the cache file is of the form \file{BASENAME_HASH.rds}, where
@@ -256,6 +267,9 @@ io_methods = list(
 #' may also change, and the old cache will be invalidated (if it exists). If you
 #' want to find the cache file, look for \file{.rds} files that contain 32
 #' hexadecimal digits (consisting of 0-9 and a-z) at the end of the filename.
+#'
+#' The file can be other formats such as `.qs2`. See the `rw` argument of
+#' [cache_exec()].
 #'
 #' The possible ways to invalidate the cache are: 1) change the code in `expr`
 #' argument; 2) delete the cache file manually or automatically through the
@@ -293,9 +307,7 @@ io_methods = list(
 #'   specified by the `dir` argument. If not specified and this function is
 #'   called inside a code chunk of a \pkg{knitr} document (e.g., an R Markdown
 #'   document), the default is the current chunk label plus the extension
-#'   \file{.rds}. If the filename has the extension `.qs`, `qsave()` and
-#'   `qread()` from the \pkg{qs} package will be used instead of `readRDS()` and
-#'   `saveRDS()`.
+#'   \file{.rds}. The file can also be other formats (see Details).
 #' @param dir The path of the RDS file is partially determined by `paste0(dir,
 #'   file)`. If not specified and the \pkg{knitr} package is available, the
 #'   default value of `dir` is the \pkg{knitr} chunk option `cache.path` (so if
@@ -308,7 +320,8 @@ io_methods = list(
 #'   `"auto"`. Other types of objects are ignored.
 #' @param clean Whether to clean up the old cache files automatically when
 #'   `expr` has changed.
-#' @param ... Other arguments to be passed to [saveRDS()] or [qs::qsave()].
+#' @param ... Other arguments to be passed to the saving method such as
+#'   [saveRDS()].
 #' @note Changes in the code in the `expr` argument do not necessarily always
 #'   invalidate the cache, if the changed code is [`parse`]`d` to the same
 #'   expression as the previous version of the code. For example, if you have
@@ -372,16 +385,16 @@ cache_rds = function(
   if (identical(hash, 'auto')) hash = global_vars(code, parent.frame(2))
   if (is.list(hash)) md5 = md5_obj(c(md5, md5_obj(hash)))
   ext = file_ext(path)
+  if (!ext %in% names(io_methods))
+    stop('The file extension ', ext, ' is not supported.')
   path = paste0(sans_ext(path), '_', md5, '.', ext)
   if (rerun) unlink(path)
-  if (clean) clean_cache(path)
-  use_qs = ext == 'qs'
-  if (file_exists(path)) {
-    if (use_qs) qs::qread(path, strict = TRUE) else readRDS(path)
-  } else {
+  if (clean) clean_cache(path, ext)
+  m = io_methods[[ext]]
+  if (file_exists(path)) m$load(path) else {
     obj = expr  # lazy evaluation
-    dir.create(dirname(path), recursive = TRUE, showWarnings = FALSE)
-    if (use_qs) qs::qsave(obj, path, ...) else saveRDS(obj, path, ...)
+    dir_create(dirname(path))
+    m$save(obj, path, ...)
     obj
   }
 }
@@ -434,12 +447,12 @@ md5_one = function(x) {
 # clean up old cache files (those with the same base names as the new cache
 # file, e.g., if the new file is FOO_0123abc...z.rds, then FOO_9876def...x.rds
 # should be deleted)
-clean_cache = function(path) {
-  olds = list.files(dirname(path), '_[0-9a-f]{32}[.]rds$', full.names = TRUE)
+clean_cache = function(path, ext) {
+  olds = list.files(dirname(path), sprintf('_[0-9a-f]{32}[.]%s$', ext), full.names = TRUE)
   olds = c(olds, path)  # `path` may not exist; make sure it is in target paths
   base = basename(olds)
   keep = basename(path) == base  # keep this file (will cache to this file)
-  base = substr(base, 1, nchar(base) - 37)  # 37 = 1 (_) + 32 (md5 sum) + 4 (.rds)
+  base = substr(base, 1, nchar(base) - 34 - nchar(ext))  # 33 = 1 (_) + 32 (md5 sum) + 1 (.)
   unlink(olds[(base == base[keep][1]) & !keep])
 }
 

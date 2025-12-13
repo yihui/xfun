@@ -68,11 +68,12 @@ to force re-executing the expression.
 form \code{list(name = 'xxx', load = function(file) {}, save = function(x, file) {})}. By default, \code{\link[=readRDS]{readRDS()}} and \code{\link[=saveRDS]{saveRDS()}} are used. This argument can
 also take a character string to use some built-in read/write methods.
 Currently available methods include \code{rds} (the default), \code{raw} (using
-\code{\link[=serialize]{serialize()}} and \code{\link[=unserialize]{unserialize()}}), and \code{qs} (using \code{\link[qs:qread]{qs::qread()}} and
-\code{\link[qs:qsave]{qs::qsave()}}). The \code{rds} and \code{raw} methods only use base R functions (the
-\code{rds} method generates smaller files because it uses compression, but is
-often slower than the \code{raw} method, which does not use compression). The \code{qs}
-method requires the \pkg{qs} package, which can be much faster than base R
+\code{\link[=serialize]{serialize()}} and \code{\link[=unserialize]{unserialize()}}), \code{qs2} (using \code{\link[qs2:qs_read]{qs2::qs_read()}} and
+\code{\link[qs2:qs_save]{qs2::qs_save()}}), and \code{qdata} (using \code{\link[qs2:qd_read]{qs2::qd_read()}} and \code{\link[qs2:qd_save]{qs2::qd_save()}}).
+The \code{rds} and \code{raw} methods only use base R functions (the \code{rds} method
+generates smaller files because it uses compression, but is often slower than
+the \code{raw} method, which does not use compression). The \code{qs2} and \code{qdata}
+methods require the \pkg{qs2} package, which can be much faster than base R
 methods and also supports compression.
 }
 }

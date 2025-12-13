@@ -25,9 +25,7 @@ the result again (i.e., invalidate the cache if it exists).}
 specified by the \code{dir} argument. If not specified and this function is
 called inside a code chunk of a \pkg{knitr} document (e.g., an R Markdown
 document), the default is the current chunk label plus the extension
-\file{.rds}. If the filename has the extension \code{.qs}, \code{qsave()} and
-\code{qread()} from the \pkg{qs} package will be used instead of \code{readRDS()} and
-\code{saveRDS()}.}
+\file{.rds}. The file can also be other formats (see Details).}
 
 \item{dir}{The path of the RDS file is partially determined by \code{paste0(dir, file)}. If not specified and the \pkg{knitr} package is available, the
 default value of \code{dir} is the \pkg{knitr} chunk option \code{cache.path} (so if
@@ -43,16 +41,17 @@ filename (see Details). It can also take a special character value
 \item{clean}{Whether to clean up the old cache files automatically when
 \code{expr} has changed.}
 
-\item{...}{Other arguments to be passed to \code{\link[=saveRDS]{saveRDS()}} or \code{\link[qs:qsave]{qs::qsave()}}.}
+\item{...}{Other arguments to be passed to the saving method such as
+\code{\link[=saveRDS]{saveRDS()}}.}
 }
 \value{
 If the cache file does not exist, run the expression and save the
 result to the file, otherwise read the cache file and return the value.
 }
 \description{
-Save the value of an expression to a cache file (of the RDS format). Next
-time the value is loaded from the file if it exists. Please consider using
-\code{\link[=cache_exec]{cache_exec()}} instead, which is more flexible and intelligent.
+Save the value of an expression to a cache file. Next time the value is
+loaded from the file if it exists. Please consider using \code{\link[=cache_exec]{cache_exec()}}
+instead, which is more flexible and intelligent.
 }
 \details{
 Note that the \code{file} argument does not provide the full cache filename. The
@@ -65,6 +64,9 @@ means when the code or the \code{hash} argument changes, the \file{HASH} string
 may also change, and the old cache will be invalidated (if it exists). If you
 want to find the cache file, look for \file{.rds} files that contain 32
 hexadecimal digits (consisting of 0-9 and a-z) at the end of the filename.
+
+The file can be other formats such as \code{.qs2}. See the \code{rw} argument of
+\code{\link[=cache_exec]{cache_exec()}}.
 
 The possible ways to invalidate the cache are: 1) change the code in \code{expr}
 argument; 2) delete the cache file manually or automatically through the
