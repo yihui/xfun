@@ -42,7 +42,7 @@
 
 # CHANGES IN xfun VERSION 0.51
 
-- `tojson()` supports more types of data now, and will indent sub-elements for lists. See the help page [`?xfun::tojson`](https://git.yihui.org/xfun/manual.html#sec:man-tojson) for details.
+- `tojson()` supports more types of data now, and will indent sub-elements for lists. See the help page [`?xfun::tojson`](https://pkg.yihui.org/xfun/manual.html#sec:man-tojson) for details.
 
 - Updated the default API key for `upload_imgur()` since the previous default key stopped working for some reason (thanks, @camille-s @jennybc, #97).
 

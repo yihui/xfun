@@ -211,7 +211,7 @@ n2w(1e+15 - 1)
 
 ## Cache an R expression to disk or in memory
 
-Since **xfun** v0.44, you are recommended to use the function [`cache_exec()`](https://git.yihui.org/xfun/manual.html#sec:man-cache_exec), which provides a simple yet flexible caching mechanism. See https://yihui.org/litedown/#sec:option-cache for how it works. Previously, `cache_rds()` was mentioned here but it is no longer recommended (see [#100](https://github.com/yihui/xfun/issues/100)).
+Since **xfun** v0.44, you are recommended to use the function [`cache_exec()`](https://pkg.yihui.org/xfun/manual.html#sec:man-cache_exec), which provides a simple yet flexible caching mechanism. See https://yihui.org/litedown/#sec:option-cache for how it works. Previously, `cache_rds()` was mentioned here but it is no longer recommended (see [#100](https://github.com/yihui/xfun/issues/100)).
 
 ## Check reverse dependencies of a package
 
