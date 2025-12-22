@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.56
 
+- `github_releases(tag = 'latest')` is more accurate now.
+
 - Renamed the argument `url` to `input` in `browser_print()`.
 
 # CHANGES IN xfun VERSION 0.55
