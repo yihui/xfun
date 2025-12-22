@@ -31,7 +31,7 @@ Use the GitHub API (\code{\link[=github_api]{github_api()}}) to obtain the tags 
 releases.
 }
 \examples{\dontshow{if (interactive()) \{}
-xfun::github_releases("yihui/xfun")
-xfun::github_releases("gohugoio/hugo")
+xfun::github_releases("yihui/litedown")
+xfun::github_releases("gohugoio/hugo", "latest")
 \dontshow{\}}
 }

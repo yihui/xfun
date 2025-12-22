@@ -12,8 +12,8 @@
 #' @export
 #' @return A character vector of (GIT) tags.
 #' @examplesIf interactive()
-#' xfun::github_releases('yihui/xfun')
-#' xfun::github_releases('gohugoio/hugo')
+#' xfun::github_releases('yihui/litedown')
+#' xfun::github_releases('gohugoio/hugo', 'latest')
 github_releases = function(
   repo, tag = '', pattern = 'v[0-9.]+', use_jsonlite = loadable('jsonlite')
 ) {
