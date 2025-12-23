@@ -12,7 +12,8 @@
 #'
 #' If a source tarball of the expected version has been downloaded before (under
 #' the \file{tarball} directory), it will not be downloaded again (to save time
-#' and bandwidth).
+#' and bandwidth). The number of parallel downloads can be set via
+#' `options(xfun.rev_check.download_cores = n)` (default is `1`).
 #'
 #' After a package has been checked, the associated \file{*.Rcheck} directory
 #' will be deleted if the check was successful (no warnings or errors or notes),
@@ -571,14 +572,14 @@ plapply = function(X, FUN, ...) {
 download_tarball = function(p, db = available.packages(type = 'source'), dir = '.', retry = 3) {
   if (!dir_exists(dir)) dir.create(dir, recursive = TRUE)
   z = file.path(dir, sprintf('%s_%s.tar.gz', p, db[p, 'Version']))
-  mapply(function(p, z) {
+  parallel::mcmapply(function(p, z) {
     # remove other versions of the package tarball
     unlink(setdiff(list.files(dir, sprintf('^%s_.+.tar.gz', p), full.names = TRUE), z))
     for (i in seq_len(retry)) {
       if (file_exists(z)) break
       try(download.file(paste(db[p, 'Repository'], basename(z), sep = '/'), z, mode = 'wb'))
     }
-  }, p, z, SIMPLIFY = FALSE)
+  }, p, z, SIMPLIFY = FALSE, mc.cores = getOption('xfun.rev_check.download_cores', 1L))
   z
 }
 

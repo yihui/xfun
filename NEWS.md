@@ -4,6 +4,8 @@
 
 - Renamed the argument `url` to `input` in `browser_print()`.
 
+- `rev_check()` can download reverse dependency tarballs in parallel via `options(xfun.rev_check.download_cores = n)` (default `1`).
+
 # CHANGES IN xfun VERSION 0.55
 
 - `record(error = TRUE)` will trim the error message by removing the uninformative part `in eval(expr, envir)` in the message (thanks, @ThomasSoeiro, yihui/litedown#109).

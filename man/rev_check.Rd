@@ -81,7 +81,8 @@ will be generated under this directory, too.
 
 If a source tarball of the expected version has been downloaded before (under
 the \file{tarball} directory), it will not be downloaded again (to save time
-and bandwidth).
+and bandwidth). The number of parallel downloads can be set via
+\code{options(xfun.rev_check.download_cores = n)} (default is \code{1}).
 
 After a package has been checked, the associated \file{*.Rcheck} directory
 will be deleted if the check was successful (no warnings or errors or notes),
