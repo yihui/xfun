@@ -570,9 +570,10 @@ download_tarball = function(p, db = available.packages(type = 'source'), dir = '
   parallel::mcmapply(function(p, z) {
     # remove other versions of the package tarball
     unlink(setdiff(list.files(dir, sprintf('^%s_.+.tar.gz', p), full.names = TRUE), z))
+    u = paste(db[p, 'Repository'], basename(z), sep = '/')
     for (i in seq_len(retry)) {
       if (file_exists(z)) break
-      try(download.file(paste(db[p, 'Repository'], basename(z), sep = '/'), z, mode = 'wb'))
+      try(download.file(u, z, quiet = TRUE, mode = 'wb'))
     }
   }, p, z, SIMPLIFY = FALSE, mc.cores = mc_cores())
   z
