@@ -22,18 +22,17 @@ compare_Rcheck(status_only = TRUE, output = "00check_diffs.md")
 \item{pkg}{The package name.}
 
 \item{which}{Which types of reverse dependencies to check. See
-\code{\link[tools:package_dependencies]{tools::package_dependencies()}} for possible values. The
-special value \code{'hard'} means the hard dependencies, i.e.,
-\code{c('Depends', 'Imports', 'LinkingTo')}.}
+\code{\link[tools:package_dependencies]{tools::package_dependencies()}} for possible values. The special value
+\code{'hard'} means the hard dependencies, i.e., \code{c('Depends', 'Imports', 'LinkingTo')}.}
 
 \item{recheck}{A vector of package names to be (re)checked. If not provided
 and there are any \file{*.Rcheck} directories left by certain packages
-(this often means these packages failed the last time), \code{recheck} will
-be these packages; if there are no \file{*.Rcheck} directories but a text
-file \file{recheck} exists, \code{recheck} will be the character vector
-read from this file. This provides a way for you to manually specify the
-packages to be checked. If there are no packages to be rechecked, all
-reverse dependencies will be checked.}
+(this often means these packages failed the last time), \code{recheck} will be
+these packages; if there are no \file{*.Rcheck} directories but a text file
+\file{recheck} exists, \code{recheck} will be the character vector read from
+this file. This provides a way for you to manually specify the packages to
+be checked. If there are no packages to be rechecked, all reverse
+dependencies will be checked.}
 
 \item{ignore}{A vector of package names to be ignored in \command{R CMD
   check}. If this argument is missing and a file \file{00ignore} exists, the
@@ -63,14 +62,14 @@ will be converted to HTML, so you can see the diffs more clearly.}
 }
 \value{
 A named numeric vector with the names being package names of reverse
-dependencies; \code{0} indicates check success, \code{1} indicates failure,
-and \code{2} indicates that a package was not checked due to global
-timeout.
+dependencies; \code{0} indicates check success, \code{1} indicates failure, and \code{2}
+indicates that a package was not checked due to global timeout.
 }
 \description{
 Install the source package, figure out the reverse dependencies on CRAN,
 download all of their source packages, and run \command{R CMD check} on them
-in parallel.
+in parallel. The number of parallel downloads and checks can be set via
+\code{options(mc.cores = n)} (default is \code{\link[parallel:detectCores]{parallel::detectCores()}}).
 }
 \details{
 Everything occurs under the current working directory, and you are
@@ -81,8 +80,7 @@ will be generated under this directory, too.
 
 If a source tarball of the expected version has been downloaded before (under
 the \file{tarball} directory), it will not be downloaded again (to save time
-and bandwidth). The number of parallel downloads can be set via
-\code{options(xfun.rev_check.download_cores = n)} (default is \code{1}).
+and bandwidth).
 
 After a package has been checked, the associated \file{*.Rcheck} directory
 will be deleted if the check was successful (no warnings or errors or notes),
@@ -90,54 +88,53 @@ which means if you see a \file{*.Rcheck} directory, it means the check
 failed, and you need to take a look at the log files under that directory.
 
 The time to finish the check is recorded for each package. As the check goes
-on, the total remaining time will be roughly estimated via \code{n * mean(times)}, where \code{n} is the number of packages remaining to be
-checked, and \code{times} is a vector of elapsed time of packages that have
-been checked.
+on, the total remaining time will be roughly estimated via \code{n * mean(times)},
+where \code{n} is the number of packages remaining to be checked, and \code{times} is a
+vector of elapsed time of packages that have been checked.
 
 If a check on a reverse dependency failed, its \file{*.Rcheck} directory will
 be renamed to \file{*.Rcheck2}, and another check will be run against the
-CRAN version of the package unless \code{options(xfun.rev_check.compare = FALSE)} is set. If the logs of the two checks are the same, it means no new
-problems were introduced in the package, and you can probably ignore this
-particular reverse dependency. The function \code{compare_Rcheck()} can be
-used to create a summary of all the differences in the check logs under
-\file{*.Rcheck} and \file{*.Rcheck2}. This will be done automatically if
+CRAN version of the package unless \code{options(xfun.rev_check.compare = FALSE)}
+is set. If the logs of the two checks are the same, it means no new problems
+were introduced in the package, and you can probably ignore this particular
+reverse dependency. The function \code{compare_Rcheck()} can be used to create a
+summary of all the differences in the check logs under \file{*.Rcheck} and
+\file{*.Rcheck2}. This will be done automatically if
 \code{options(xfun.rev_check.summary = TRUE)} has been set.
 
-A recommended workflow is to use a special directory to run
-\code{rev_check()}, set the global \code{\link[=options]{options()}}
-\code{xfun.rev_check.src_dir} and \code{repos} in the R startup (see
-\verb{?}\code{\link{Startup}}) profile file \code{.Rprofile} under this directory,
+A recommended workflow is to use a special directory to run \code{rev_check()},
+set the global \code{\link[=options]{options()}} \code{xfun.rev_check.src_dir} and \code{repos} in the R
+startup (see \verb{?}\code{\link{Startup}}) profile file \code{.Rprofile} under this directory,
 and (optionally) set \code{R_LIBS_USER} in \file{.Renviron} to use a special
 library path (so that your usual library will not be cluttered). Then run
 \code{xfun::rev_check(pkg)} once, investigate and fix the problems or (if you
 believe it was not your fault) ignore broken packages in the file
-\file{00ignore}, and run \code{xfun::rev_check(pkg)} again to recheck the
-failed packages. Repeat this process until all \file{*.Rcheck} directories
-are gone.
+\file{00ignore}, and run \code{xfun::rev_check(pkg)} again to recheck the failed
+packages. Repeat this process until all \file{*.Rcheck} directories are gone.
 
-As an example, I set \code{options(repos = c(CRAN = 'https://cran.rstudio.com'), xfun.rev_check.src_dir = '~/Dropbox/repo')} in
-\file{.Rprofile}, and \verb{R_LIBS_USER=~/R-tmp} in \file{.Renviron}. Then I
-can run, for example, \code{xfun::rev_check('knitr')} repeatedly under a
-special directory \file{~/Downloads/revcheck}. Reverse dependencies and their
-dependencies will be installed to \file{~/R-tmp}, and \pkg{knitr} will be
-installed from \file{~/Dropbox/repo/kintr}.
+As an example, I set \code{options(repos = c(CRAN = 'https://cran.rstudio.com'), xfun.rev_check.src_dir = '~/Dropbox/repo')} in \file{.Rprofile}, and
+\verb{R_LIBS_USER=~/R-tmp} in \file{.Renviron}. Then I can run, for example,
+\code{xfun::rev_check('knitr')} repeatedly under a special directory
+\file{~/Downloads/revcheck}. Reverse dependencies and their dependencies will
+be installed to \file{~/R-tmp}, and \pkg{knitr} will be installed from
+\file{~/Dropbox/repo/kintr}.
 }
 \seealso{
-\code{devtools::revdep_check()} is more sophisticated, but currently
-has a few major issues that affect me: (1) It always deletes the
+\code{devtools::revdep_check()} is more sophisticated, but currently has
+a few major issues that affect me: (1) It always deletes the
 \file{*.Rcheck} directories
-(\url{https://github.com/r-lib/devtools/issues/1395}), which makes it
-difficult to know more information about the failures; (2) It does not
-fully install the source package before checking its reverse dependencies
-(\url{https://github.com/r-lib/devtools/pull/1397}); (3) I feel it is
-fairly difficult to iterate the check (ignore the successful packages and
-only check the failed packages); by comparison, \code{xfun::rev_check()}
-only requires you to run a short command repeatedly (failed packages are
+(\url{https://github.com/r-lib/devtools/issues/1395}), which makes it difficult
+to know more information about the failures; (2) It does not fully install
+the source package before checking its reverse dependencies
+(\url{https://github.com/r-lib/devtools/pull/1397}); (3) I feel it is fairly
+difficult to iterate the check (ignore the successful packages and only
+check the failed packages); by comparison, \code{xfun::rev_check()} only
+requires you to run a short command repeatedly (failed packages are
 indicated by the existing \file{*.Rcheck} directories, and automatically
 checked again the next time).
 
 \code{xfun::rev_check()} borrowed a very nice feature from
-\code{devtools::revdep_check()}: estimating and displaying the remaining
-time. This is particularly useful for packages with huge numbers of reverse
+\code{devtools::revdep_check()}: estimating and displaying the remaining time.
+This is particularly useful for packages with huge numbers of reverse
 dependencies.
 }

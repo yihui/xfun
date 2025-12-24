@@ -2,7 +2,8 @@
 #'
 #' Install the source package, figure out the reverse dependencies on CRAN,
 #' download all of their source packages, and run \command{R CMD check} on them
-#' in parallel.
+#' in parallel. The number of parallel downloads and checks can be set via
+#' `options(mc.cores = n)` (default is [parallel::detectCores()]).
 #'
 #' Everything occurs under the current working directory, and you are
 #' recommended to call this function under a designated directory, especially
@@ -12,8 +13,7 @@
 #'
 #' If a source tarball of the expected version has been downloaded before (under
 #' the \file{tarball} directory), it will not be downloaded again (to save time
-#' and bandwidth). The number of parallel downloads can be set via
-#' `options(xfun.rev_check.download_cores = n)` (default is `1`).
+#' and bandwidth).
 #'
 #' After a package has been checked, the associated \file{*.Rcheck} directory
 #' will be deleted if the check was successful (no warnings or errors or notes),
@@ -21,53 +21,50 @@
 #' failed, and you need to take a look at the log files under that directory.
 #'
 #' The time to finish the check is recorded for each package. As the check goes
-#' on, the total remaining time will be roughly estimated via `n *
-#' mean(times)`, where `n` is the number of packages remaining to be
-#' checked, and `times` is a vector of elapsed time of packages that have
-#' been checked.
+#' on, the total remaining time will be roughly estimated via `n * mean(times)`,
+#' where `n` is the number of packages remaining to be checked, and `times` is a
+#' vector of elapsed time of packages that have been checked.
 #'
 #' If a check on a reverse dependency failed, its \file{*.Rcheck} directory will
 #' be renamed to \file{*.Rcheck2}, and another check will be run against the
-#' CRAN version of the package unless `options(xfun.rev_check.compare =
-#' FALSE)` is set. If the logs of the two checks are the same, it means no new
-#' problems were introduced in the package, and you can probably ignore this
-#' particular reverse dependency. The function `compare_Rcheck()` can be
-#' used to create a summary of all the differences in the check logs under
-#' \file{*.Rcheck} and \file{*.Rcheck2}. This will be done automatically if
+#' CRAN version of the package unless `options(xfun.rev_check.compare = FALSE)`
+#' is set. If the logs of the two checks are the same, it means no new problems
+#' were introduced in the package, and you can probably ignore this particular
+#' reverse dependency. The function `compare_Rcheck()` can be used to create a
+#' summary of all the differences in the check logs under \file{*.Rcheck} and
+#' \file{*.Rcheck2}. This will be done automatically if
 #' `options(xfun.rev_check.summary = TRUE)` has been set.
 #'
-#' A recommended workflow is to use a special directory to run
-#' `rev_check()`, set the global [options()]
-#' `xfun.rev_check.src_dir` and `repos` in the R startup (see
-#' `?`[`Startup`]) profile file `.Rprofile` under this directory,
+#' A recommended workflow is to use a special directory to run `rev_check()`,
+#' set the global [options()] `xfun.rev_check.src_dir` and `repos` in the R
+#' startup (see `?`[`Startup`]) profile file `.Rprofile` under this directory,
 #' and (optionally) set `R_LIBS_USER` in \file{.Renviron} to use a special
 #' library path (so that your usual library will not be cluttered). Then run
 #' `xfun::rev_check(pkg)` once, investigate and fix the problems or (if you
 #' believe it was not your fault) ignore broken packages in the file
-#' \file{00ignore}, and run `xfun::rev_check(pkg)` again to recheck the
-#' failed packages. Repeat this process until all \file{*.Rcheck} directories
-#' are gone.
+#' \file{00ignore}, and run `xfun::rev_check(pkg)` again to recheck the failed
+#' packages. Repeat this process until all \file{*.Rcheck} directories are gone.
 #'
-#' As an example, I set `options(repos = c(CRAN =
-#' 'https://cran.rstudio.com'), xfun.rev_check.src_dir = '~/Dropbox/repo')` in
-#' \file{.Rprofile}, and `R_LIBS_USER=~/R-tmp` in \file{.Renviron}. Then I
-#' can run, for example, `xfun::rev_check('knitr')` repeatedly under a
-#' special directory \file{~/Downloads/revcheck}. Reverse dependencies and their
-#' dependencies will be installed to \file{~/R-tmp}, and \pkg{knitr} will be
-#' installed from \file{~/Dropbox/repo/kintr}.
+#' As an example, I set `options(repos = c(CRAN = 'https://cran.rstudio.com'),
+#' xfun.rev_check.src_dir = '~/Dropbox/repo')` in \file{.Rprofile}, and
+#' `R_LIBS_USER=~/R-tmp` in \file{.Renviron}. Then I can run, for example,
+#' `xfun::rev_check('knitr')` repeatedly under a special directory
+#' \file{~/Downloads/revcheck}. Reverse dependencies and their dependencies will
+#' be installed to \file{~/R-tmp}, and \pkg{knitr} will be installed from
+#' \file{~/Dropbox/repo/kintr}.
 #' @param pkg The package name.
 #' @param which Which types of reverse dependencies to check. See
-#'   [tools::package_dependencies()] for possible values. The
-#'   special value `'hard'` means the hard dependencies, i.e.,
-#'   `c('Depends', 'Imports', 'LinkingTo')`.
+#'   [tools::package_dependencies()] for possible values. The special value
+#'   `'hard'` means the hard dependencies, i.e., `c('Depends', 'Imports',
+#'   'LinkingTo')`.
 #' @param recheck A vector of package names to be (re)checked. If not provided
 #'   and there are any \file{*.Rcheck} directories left by certain packages
-#'   (this often means these packages failed the last time), `recheck` will
-#'   be these packages; if there are no \file{*.Rcheck} directories but a text
-#'   file \file{recheck} exists, `recheck` will be the character vector
-#'   read from this file. This provides a way for you to manually specify the
-#'   packages to be checked. If there are no packages to be rechecked, all
-#'   reverse dependencies will be checked.
+#'   (this often means these packages failed the last time), `recheck` will be
+#'   these packages; if there are no \file{*.Rcheck} directories but a text file
+#'   \file{recheck} exists, `recheck` will be the character vector read from
+#'   this file. This provides a way for you to manually specify the packages to
+#'   be checked. If there are no packages to be rechecked, all reverse
+#'   dependencies will be checked.
 #' @param ignore A vector of package names to be ignored in \command{R CMD
 #'   check}. If this argument is missing and a file \file{00ignore} exists, the
 #'   file will be read as a character vector and passed to this argument.
@@ -80,25 +77,24 @@
 #'   package. The (approximate) total time can be limited by the global option
 #'   `xfun.rev_check.timeout_total`.
 #' @return A named numeric vector with the names being package names of reverse
-#'   dependencies; `0` indicates check success, `1` indicates failure,
-#'   and `2` indicates that a package was not checked due to global
-#'   timeout.
-#' @seealso `devtools::revdep_check()` is more sophisticated, but currently
-#'   has a few major issues that affect me: (1) It always deletes the
+#'   dependencies; `0` indicates check success, `1` indicates failure, and `2`
+#'   indicates that a package was not checked due to global timeout.
+#' @seealso `devtools::revdep_check()` is more sophisticated, but currently has
+#'   a few major issues that affect me: (1) It always deletes the
 #'   \file{*.Rcheck} directories
-#'   (<https://github.com/r-lib/devtools/issues/1395>), which makes it
-#'   difficult to know more information about the failures; (2) It does not
-#'   fully install the source package before checking its reverse dependencies
-#'   (<https://github.com/r-lib/devtools/pull/1397>); (3) I feel it is
-#'   fairly difficult to iterate the check (ignore the successful packages and
-#'   only check the failed packages); by comparison, `xfun::rev_check()`
-#'   only requires you to run a short command repeatedly (failed packages are
+#'   (<https://github.com/r-lib/devtools/issues/1395>), which makes it difficult
+#'   to know more information about the failures; (2) It does not fully install
+#'   the source package before checking its reverse dependencies
+#'   (<https://github.com/r-lib/devtools/pull/1397>); (3) I feel it is fairly
+#'   difficult to iterate the check (ignore the successful packages and only
+#'   check the failed packages); by comparison, `xfun::rev_check()` only
+#'   requires you to run a short command repeatedly (failed packages are
 #'   indicated by the existing \file{*.Rcheck} directories, and automatically
 #'   checked again the next time).
 #'
 #'   `xfun::rev_check()` borrowed a very nice feature from
-#'   `devtools::revdep_check()`: estimating and displaying the remaining
-#'   time. This is particularly useful for packages with huge numbers of reverse
+#'   `devtools::revdep_check()`: estimating and displaying the remaining time.
+#'   This is particularly useful for packages with huge numbers of reverse
 #'   dependencies.
 #' @export
 rev_check = function(
@@ -560,12 +556,11 @@ crandalf_merge = function(pkg) {
   f1
 }
 
+mc_cores = function() getOption('mc.cores', parallel::detectCores())
+
 # mclapply() with a different default for mc.cores and disable prescheduling
 plapply = function(X, FUN, ...) {
-  parallel::mclapply(
-    X, FUN, ..., mc.cores = getOption('mc.cores', parallel::detectCores()),
-    mc.preschedule = FALSE
-  )
+  parallel::mclapply(X, FUN, ..., mc.cores = mc_cores(), mc.preschedule = FALSE)
 }
 
 # download the source package from CRAN
@@ -579,7 +574,7 @@ download_tarball = function(p, db = available.packages(type = 'source'), dir = '
       if (file_exists(z)) break
       try(download.file(paste(db[p, 'Repository'], basename(z), sep = '/'), z, mode = 'wb'))
     }
-  }, p, z, SIMPLIFY = FALSE, mc.cores = getOption('xfun.rev_check.download_cores', 1L))
+  }, p, z, SIMPLIFY = FALSE, mc.cores = mc_cores())
   z
 }
 
