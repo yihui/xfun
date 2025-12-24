@@ -4,7 +4,7 @@
 
 - Renamed the argument `url` to `input` in `browser_print()`.
 
-- `rev_check()` can download reverse dependency tarballs in parallel via `options(mc.cores = n)` (default `parallel::detectCores()`).
+- `rev_check()` can download reverse dependency tarballs in parallel via `options(xfun.rev_check.download_cores = n)` (default `parallel::detectCores()`).
 
 # CHANGES IN xfun VERSION 0.55
 

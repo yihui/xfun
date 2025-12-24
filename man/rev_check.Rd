@@ -68,8 +68,10 @@ indicates that a package was not checked due to global timeout.
 \description{
 Install the source package, figure out the reverse dependencies on CRAN,
 download all of their source packages, and run \command{R CMD check} on them
-in parallel. The number of parallel downloads and checks can be set via
-\code{options(mc.cores = n)} (default is \code{\link[parallel:detectCores]{parallel::detectCores()}}).
+in parallel. The number of parallel downloads can be set via
+\code{options(xfun.rev_check.download_cores = n)} and the number of parallel
+checks can be set via \code{options(mc.cores = n)} (both default to
+\code{\link[parallel:detectCores]{parallel::detectCores()}}).
 }
 \details{
 Everything occurs under the current working directory, and you are

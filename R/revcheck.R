@@ -2,8 +2,10 @@
 #'
 #' Install the source package, figure out the reverse dependencies on CRAN,
 #' download all of their source packages, and run \command{R CMD check} on them
-#' in parallel. The number of parallel downloads and checks can be set via
-#' `options(mc.cores = n)` (default is [parallel::detectCores()]).
+#' in parallel. The number of parallel downloads can be set via
+#' `options(xfun.rev_check.download_cores = n)` and the number of parallel
+#' checks can be set via `options(mc.cores = n)` (both default to
+#' [parallel::detectCores()]).
 #'
 #' Everything occurs under the current working directory, and you are
 #' recommended to call this function under a designated directory, especially
@@ -556,7 +558,7 @@ crandalf_merge = function(pkg) {
   f1
 }
 
-mc_cores = function() getOption('mc.cores', parallel::detectCores())
+mc_cores = function(name = 'mc.cores') getOption(name, parallel::detectCores())
 
 # mclapply() with a different default for mc.cores and disable prescheduling
 plapply = function(X, FUN, ...) {
@@ -575,7 +577,7 @@ download_tarball = function(p, db = available.packages(type = 'source'), dir = '
       if (file_exists(z)) break
       try(download.file(u, z, quiet = TRUE, mode = 'wb'))
     }
-  }, p, z, SIMPLIFY = FALSE, mc.cores = mc_cores())
+  }, p, z, SIMPLIFY = FALSE, mc.cores = mc_cores('xfun.rev_check.download_cores'))
   z
 }
 
