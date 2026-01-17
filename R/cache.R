@@ -234,11 +234,6 @@ io_methods = list(
     load = function(...) readRDS(...),
     save = function(x, file, ...) saveRDS(x, file, ...)
   ),
-  qs = list(
-    name = 'qs',
-    load = function(...) qs::qread(...),
-    save = function(x, file, ...) qs::qsave(x, file, ...)
-  ),
   qs2 = list(
     name = 'qs2',
     load = function(...) qs2::qs_read(...),
