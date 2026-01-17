@@ -17,14 +17,6 @@ warning2 = function(...) warning(..., call. = FALSE)
 #' xfun::attr2(z, 'foo')  # 2
 attr2 = function(...) base::attr(..., exact = TRUE)
 
-#' @rdname attr2
-#' @export
-#' @note `xfun::attr()` is deprecated. Please use `xfun::attr2()` instead.
-attr = function(...) {
-  .Deprecated('xfun::attr2()', old = 'xfun::attr()')
-  attr2(...)
-}
-
 #' Set environment variables
 #'
 #' Set environment variables from a named character vector, and return the old
