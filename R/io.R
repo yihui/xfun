@@ -396,9 +396,9 @@ msg_cat = function(...) {
 #'   an index file with `0` as the base name (e.g., `0.rds`).
 #' @param path The path to write files to / read files from.
 #' @param method The file save/load method. It can be a string (e.g., `rds`,
-#'   `raw`, or `qs`) or a list. See the `rw` argument of [cache_exec()]. By
+#'   `raw`, or `qs2`) or a list. See the `rw` argument of [cache_exec()]. By
 #'   default, it is automatically detected by checking the existence of the
-#'   index file (e.g., `0.rds`, `0.raw`, or `0.qs`).
+#'   index file (e.g., `0.rds`, `0.raw`, or `0.qs2`).
 #' @param envir The environment to [get] or [assign] objects.
 #' @return [lazy_save()] returns invisible `NULL`; [lazy_load()] returns the
 #'   object names invisibly.

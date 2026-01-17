@@ -16,9 +16,9 @@ an index file with \code{0} as the base name (e.g., \verb{0.rds}).}
 \item{path}{The path to write files to / read files from.}
 
 \item{method}{The file save/load method. It can be a string (e.g., \code{rds},
-\code{raw}, or \code{qs}) or a list. See the \code{rw} argument of \code{\link[=cache_exec]{cache_exec()}}. By
+\code{raw}, or \code{qs2}) or a list. See the \code{rw} argument of \code{\link[=cache_exec]{cache_exec()}}. By
 default, it is automatically detected by checking the existence of the
-index file (e.g., \verb{0.rds}, \verb{0.raw}, or \verb{0.qs}).}
+index file (e.g., \verb{0.rds}, \verb{0.raw}, or \verb{0.qs2}).}
 
 \item{envir}{The environment to \link{get} or \link{assign} objects.}
 }
