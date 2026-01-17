@@ -22,6 +22,7 @@ output:
 
 ```{r setup, include=FALSE}
 library(xfun)
+litedown::reactor(attr.source = 'r')
 ```
 
 After writing about 20 R packages, I found I had accumulated several utility functions that I used across different packages, so I decided to extract them into a separate package. Previously I had been using the evil triple-colon `:::` to access these internal utility functions. Now with **xfun**, these functions have been exported, and more importantly, documented. It should be better to use them under the sun instead of in the dark.
@@ -55,7 +56,7 @@ I want it, or I do not want. There is no "I probably want".
 
 When R prints a character vector, your eyes may be distracted by the indices like `[1]`, double quotes, and escape sequences. To see a character vector in its "raw" form, you can use `cat(..., sep = '\n')`. The function `raw_string()` marks a character vector as "raw", and the corresponding printing function will call `cat(sep = '\n')` to print the character vector to the console.
 
-```{r comment=''}
+```{r}
 library(xfun)
 raw_string(head(LETTERS))
 (x = c("a \"b\"", "hello\tworld!"))
@@ -95,7 +96,7 @@ I can never remember how to properly use `grep` or `sed` to search and replace s
 
 All functions are based on `gsub_file()`, which performs searching and replacing in a single file, e.g.,
 
-```{r comment=''}
+```{r}
 library(xfun)
 f = tempfile()
 writeLines(c("hello", "world"), f)
@@ -107,7 +108,7 @@ The function `gsub_dir()` is very flexible: you can limit the list of files by M
 
 The function `process_file()` is a more general way to process files. Basically it reads a file, process the content with a function that you pass to it, and writes back the text, e.g.,
 
-```{r, comment=''}
+```{r}
 process_file(f, function(x) {
   rep(x, 3)  # repeat the content 3 times
 })
@@ -162,7 +163,7 @@ xfun::is_windows()
 
 Oftentimes I see users attach a series of packages in the beginning of their scripts by repeating `library()` multiple times. This could be easily vectorized, and the function `xfun::pkg_attach()` does this job. For example,
 
-```{r eval=FALSE}
+```r
 library(testit)
 library(parallel)
 library(tinytex)
@@ -171,13 +172,13 @@ library(mime)
 
 is equivalent to
 
-```{r eval=FALSE}
+```r
 xfun::pkg_attach(c('testit', 'parallel', 'tinytex', 'mime'))
 ```
 
 I also see scripts that contain code to install a package if it is not available, e.g.,
 
-```{r eval=FALSE}
+```r
 if (!requireNamespace('tinytex')) install.packages('tinytex')
 library(tinytex)
 ```
