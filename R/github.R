@@ -12,8 +12,8 @@
 #' @export
 #' @return A character vector of (GIT) tags.
 #' @examplesIf interactive()
-#' xfun::github_releases('yihui/xfun')
-#' xfun::github_releases('gohugoio/hugo')
+#' xfun::github_releases('yihui/litedown')
+#' xfun::github_releases('gohugoio/hugo', 'latest')
 github_releases = function(
   repo, tag = '', pattern = 'v[0-9.]+', use_jsonlite = loadable('jsonlite')
 ) {
@@ -56,7 +56,10 @@ github_releases2 = function(repo, tag = '', pattern = '[^"&]+') {
   )
   h = if (tag == '') read() else tryCatch(read(), error = function(e) '')
   r = sprintf('^.*?%s/releases/tag/(%s)".*', repo, pattern)
-  unique(grep_sub(r, '\\1', h))
+  v = unique(grep_sub(r, '\\1', h))
+  # if a tag is specified, use the 1st value because other tags may be mentioned
+  # in the current tag page
+  if (tag == '') v else head(v, 1)
 }
 
 #' @details `github_api()` is a wrapper function based on

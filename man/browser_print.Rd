@@ -5,7 +5,7 @@
 \title{Print a web page to PDF/PNG/JPEG}
 \usage{
 browser_print(
-  url,
+  input,
   output = ".pdf",
   args = "default",
   window_size = c(1280, 1024),
@@ -13,7 +13,7 @@ browser_print(
 )
 }
 \arguments{
-\item{url}{Path or URL to the page to be printed.}
+\item{input}{Path or URL to the HTML page to be printed.}
 
 \item{output}{An output filename. If only an extension is provided, the
 filename will be inferred from \code{url} via \code{\link[=url_filename]{url_filename()}}. Only \code{.pdf},
@@ -24,7 +24,8 @@ default arguments can be found in \code{xfun:::browser_args()}. You may pass
 additional arguments on top of these via, e.g., \code{c('default', '--no-pdf-header-footer')}, or completely override the default arguments by
 providing a vector of other arguments.}
 
-\item{window_size}{The browser window size when printing to PNG/JPEG.}
+\item{window_size}{The browser window size when taking a PNG/JPEG screenshot.
+Ignored when printing to PDF.}
 
 \item{browser}{Path to the web browser. By default, the browser is found via
 \code{xfun:::find_browser()}. If it cannot be found, you may set the global
@@ -36,7 +37,8 @@ argument.}
 The \code{output} path if the web page is successfully printed.
 }
 \description{
-Print a web page via a headless browser such as Chromium or Google Chrome.
+Print a web page to PDF or take a screenshot to PNG/JPEG via a headless
+browser such as Chromium or Google Chrome.
 }
 \examples{\dontshow{if (interactive()) \{}
 xfun::browser_print("https://www.r-project.org")

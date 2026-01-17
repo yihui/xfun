@@ -115,6 +115,14 @@ submit_cran = function(file = pkg_build(), comment = '') {
   on.exit(unlink(d, recursive = TRUE), add = TRUE)
   desc = file.path(gsub('_.*', '', basename(file)), 'DESCRIPTION')
   untar(file, desc, exdir = d)
+  # check if there are any problematic URLs (I often forget this)
+  if (is.function(check_url <- asNamespace('tools')$check_package_urls)) {
+    if (NROW(res <- check_url(file.path(d, dirname(desc))))) {
+      print(res)
+      stop('Please correct URLs above first.')
+    }
+  }
+  # name and email of maintainer
   info = read.dcf(file.path(d, desc), fields = 'Maintainer')[1, 1]
   info = unlist(strsplit(info, '( <|>)'))
 

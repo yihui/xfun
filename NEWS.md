@@ -1,3 +1,11 @@
+# CHANGES IN xfun VERSION 0.56
+
+- `github_releases(tag = 'latest')` is more accurate now.
+
+- Renamed the argument `url` to `input` in `browser_print()`.
+
+- `rev_check()` can download reverse dependency tarballs in parallel via `options(xfun.rev_check.download_cores = n)` (default `parallel::detectCores()`).
+
 # CHANGES IN xfun VERSION 0.55
 
 - `record(error = TRUE)` will trim the error message by removing the uninformative part `in eval(expr, envir)` in the message (thanks, @ThomasSoeiro, yihui/litedown#109).
@@ -42,7 +50,7 @@
 
 # CHANGES IN xfun VERSION 0.51
 
-- `tojson()` supports more types of data now, and will indent sub-elements for lists. See the help page [`?xfun::tojson`](https://git.yihui.org/xfun/manual.html#sec:man-tojson) for details.
+- `tojson()` supports more types of data now, and will indent sub-elements for lists. See the help page [`?xfun::tojson`](https://pkg.yihui.org/xfun/manual.html#sec:man-tojson) for details.
 
 - Updated the default API key for `upload_imgur()` since the previous default key stopped working for some reason (thanks, @camille-s @jennybc, #97).
 

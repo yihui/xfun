@@ -1,7 +1,8 @@
 #' Print a web page to PDF/PNG/JPEG
 #'
-#' Print a web page via a headless browser such as Chromium or Google Chrome.
-#' @param url Path or URL to the page to be printed.
+#' Print a web page to PDF or take a screenshot to PNG/JPEG via a headless
+#' browser such as Chromium or Google Chrome.
+#' @param input Path or URL to the HTML page to be printed.
 #' @param output An output filename. If only an extension is provided, the
 #'   filename will be inferred from `url` via [url_filename()]. Only `.pdf`,
 #'   `.png`, and `.jpeg` are supported.
@@ -10,7 +11,8 @@
 #'   additional arguments on top of these via, e.g., `c('default',
 #'   '--no-pdf-header-footer')`, or completely override the default arguments by
 #'   providing a vector of other arguments.
-#' @param window_size The browser window size when printing to PNG/JPEG.
+#' @param window_size The browser window size when taking a PNG/JPEG screenshot.
+#'   Ignored when printing to PDF.
 #' @param browser Path to the web browser. By default, the browser is found via
 #'   `xfun:::find_browser()`. If it cannot be found, you may set the global
 #'   option `options(xfun.browser = )` or environment variable `R_XFUN_BROWSER`
@@ -21,12 +23,12 @@
 #' @examplesIf interactive()
 #' xfun::browser_print('https://www.r-project.org')
 browser_print = function(
-  url, output = '.pdf', args = 'default', window_size = c(1280, 1024),
+  input, output = '.pdf', args = 'default', window_size = c(1280, 1024),
   browser = env_option('xfun.browser', find_browser())
 ) {
   if (!file.exists(browser)) browser = Sys.which(browser)
   if (!utils::file_test('-x', browser)) stop('The browser is not executable: ', browser)
-  if (sans_ext(output) == '') output = with_ext(url_filename(url), output)
+  if (sans_ext(output) == '') output = with_ext(url_filename(input), output)
   to_pdf = tolower(file_ext(output)) == 'pdf'
   if (!to_pdf && !grepl('--window-size=', args))
     args = c(args, paste0('--window-size=', paste(window_size, collapse = ',')))
@@ -34,10 +36,11 @@ browser_print = function(
     args = setdiff(c(
       args, browser_args(),
       sprintf('--%s="%s"', if (to_pdf) 'print-to-pdf' else 'screenshot', normalize_path(output)),
-      shQuote(url)
+      shQuote(input)
     ), 'default')
   }
-  if (system2(browser, args, stderr = FALSE) == 0) output else stop('Failed to print to ', output)
+  if (system2(browser, args, stderr = FALSE) != 0) stop('Failed to print to ', output)
+  output
 }
 
 browser_args = function() c(
