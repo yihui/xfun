@@ -1,3 +1,6 @@
+# CHANGES IN xfun VERSION 0.57
+
+
 # CHANGES IN xfun VERSION 0.56
 
 - Removed the deprecated `xfun::attr()`. Please use `xfun::attr2()` instead.
