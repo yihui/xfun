@@ -2,8 +2,8 @@
 #'
 #' A JSON serializer that only works on a limited types of R data (`NULL`,
 #' lists, arrays, logical/character/numeric/date/time vectors). Other types of
-#' data will be coerced to character. A character string of the class
-#' `JS_LITERAL` is treated as raw JavaScript, so will not be quoted. The
+#' data will be coerced to character. A character string
+#' wrapped in `JS()` is treated as raw JavaScript, so will not be quoted. The
 #' function `json_vector()` converts an atomic R vector to JSON.
 #'
 #' Both `NULL` and `NA` are converted to `null`. Named lists are converted to
@@ -31,7 +31,6 @@
 #' tojson(matrix(1:12, 3))
 #'
 #' # literal JS code
-#' JS = function(x) structure(x, class = 'JS_LITERAL')
 #' tojson(list(a = 1:5, b = JS('function() {return true;}')))
 tojson = function(x) {
   if (inherits(x, 'json')) return(x)
@@ -67,6 +66,10 @@ tojson = function(x) {
     paste(x, collapse = '\n')
   } else json_atomic(x)
 }
+
+#' @rdname tojson
+#' @export
+JS = function(x) structure(x, class = 'JS_LITERAL')
 
 json_atomic = function(x, to_array = NA) {
   use_quote = !(is.numeric(x) || is.logical(x))

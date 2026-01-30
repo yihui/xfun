@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.57
 
+- Added a new function `JS()` to mark a character string as literal JavaScript code so that `tojson()` will not quote it.
 
 # CHANGES IN xfun VERSION 0.56
 

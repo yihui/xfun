@@ -2,10 +2,13 @@
 % Please edit documentation in R/json.R
 \name{tojson}
 \alias{tojson}
+\alias{JS}
 \alias{json_vector}
 \title{A simple JSON serializer}
 \usage{
 tojson(x)
+
+JS(x)
 
 json_vector(x, to_array = FALSE, quote = TRUE)
 }
@@ -22,8 +25,8 @@ A character string.
 \description{
 A JSON serializer that only works on a limited types of R data (\code{NULL},
 lists, arrays, logical/character/numeric/date/time vectors). Other types of
-data will be coerced to character. A character string of the class
-\code{JS_LITERAL} is treated as raw JavaScript, so will not be quoted. The
+data will be coerced to character. A character string
+wrapped in \code{JS()} is treated as raw JavaScript, so will not be quoted. The
 function \code{json_vector()} converts an atomic R vector to JSON.
 }
 \details{
@@ -53,7 +56,6 @@ tojson(unname(head(iris)))  # each row is in an element
 tojson(matrix(1:12, 3))
 
 # literal JS code
-JS = function(x) structure(x, class = "JS_LITERAL")
 tojson(list(a = 1:5, b = JS("function() {return true;}")))
 }
 \seealso{
