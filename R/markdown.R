@@ -365,8 +365,7 @@ md_table = function(x, digits = NULL, na = NULL, newline = NULL, limit = NULL) {
 tabset = function(x, value = str) {
   obj = paste(deparse(substitute(x)), collapse = ' ')
   md_viewable(.tabset(x, value), meta = list(
-    css = c('@default', '@tabsets'), js = '@tabsets',
-    title = paste0('`xfun::tabset(', obj, ')`')
+    css = '@tabsets', js = '@tabsets', title = paste0('`xfun::tabset(', obj, ')`')
   ))
 }
 
