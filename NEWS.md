@@ -2,6 +2,8 @@
 
 - Added a new function `JS()` to mark a character string as literal JavaScript code so that `tojson()` will not quote it.
 
+- Added a new function `tab_content` to create custom tab content from a character vector for `tabset()`.
+
 # CHANGES IN xfun VERSION 0.56
 
 - Removed the deprecated `xfun::attr()`. Please use `xfun::attr2()` instead.

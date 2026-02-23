@@ -345,11 +345,15 @@ md_table = function(x, digits = NULL, na = NULL, newline = NULL, limit = NULL) {
 #' The tab titles are names of list members, and the tab content contains the
 #' values of list members. If a list member is also a list, it will be
 #' represented recursively with a child tabset.
-#' @param x A list.
+#' @param x A list for `tabset()`, and a character vector for `tab_content()`.
 #' @param value A function to print the value of a list member. By default,
 #'   [str()] is used to print the structure of the value. You may also use
 #'   [dput()] to output the full value, but it may be slow when the size of the
-#'   value is too big.
+#'   value is too big. If the function prints the value to the console, the
+#'   output will be captured and shown in a code block. If you want construct
+#'   the tab content by yourself instead of capturing console output as a code
+#'   block, you may pass the Markdown content to [tab_content()] and return it
+#'   in this `value()` function.
 #' @return A character vector of Markdown that can be rendered to HTML with
 #'   [litedown::mark()].
 #' @export
@@ -362,6 +366,14 @@ md_table = function(x, digits = NULL, na = NULL, newline = NULL, limit = NULL) {
 #' plot(1:10)
 #' p = recordPlot()
 #' xfun::tabset(p)
+#'
+#' # custom tab content
+#' xfun::tabset(iris, function(x) {
+#'   if (is.factor(x)) {
+#'     res = c('A factor with levels: ', xfun::join_words(levels(x), before = '`'))
+#'     xfun::tab_content(res)
+#'   } else print(summary(x))
+#' })
 tabset = function(x, value = str) {
   obj = paste(deparse(substitute(x)), collapse = ' ')
   md_viewable(.tabset(x, value), meta = list(
@@ -387,9 +399,17 @@ tabset = function(x, value = str) {
     }
     c('::: tabset', res, ':::')
   } else {
-    c('```r', capture.output(value(x)), '```')
+    out = capture.output(val <- value(x))
+    # if the value() function prints something, use a code block to show the
+    # output; otherwise, show the value itself if it is a record_asis object
+    if (length(out)) c('```r', out, '```') else
+      as.character(if (inherits(val, 'record_asis')) val)
   }
 }
+
+#' @rdname tabset
+#' @export
+tab_content = function(x) invisible(new_record(x, 'asis'))
 
 md_viewable = function(x, ...) {
   structure(x, class = c('xfun_md_viewable', 'record_asis'), ...)

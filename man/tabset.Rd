@@ -2,17 +2,24 @@
 % Please edit documentation in R/markdown.R
 \name{tabset}
 \alias{tabset}
+\alias{tab_content}
 \title{Represent a (recursive) list with (nested) tabsets}
 \usage{
 tabset(x, value = str)
+
+tab_content(x)
 }
 \arguments{
-\item{x}{A list.}
+\item{x}{A list for \code{tabset()}, and a character vector for \code{tab_content()}.}
 
 \item{value}{A function to print the value of a list member. By default,
 \code{\link[=str]{str()}} is used to print the structure of the value. You may also use
 \code{\link[=dput]{dput()}} to output the full value, but it may be slow when the size of the
-value is too big.}
+value is too big. If the function prints the value to the console, the
+output will be captured and shown in a code block. If you want construct
+the tab content by yourself instead of capturing console output as a code
+block, you may pass the Markdown content to \code{\link[=tab_content]{tab_content()}} and return it
+in this \code{value()} function.}
 }
 \value{
 A character vector of Markdown that can be rendered to HTML with
