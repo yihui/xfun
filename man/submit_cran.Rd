@@ -4,19 +4,22 @@
 \alias{submit_cran}
 \title{Submit a source package to CRAN}
 \usage{
-submit_cran(file = pkg_build(), comment = "")
+submit_cran(file = pkg_build(), comment = "", sync = TRUE)
 }
 \arguments{
 \item{file}{The path to the source package tarball. By default, the current
 working directory is treated as the package root directory, and
 automatically built into a tarball, which is deleted after submission. This
 means you should run \code{xfun::submit_cran()} in the root directory of a
-package project, unless you want to pass a path explicitly to the
-\code{file} argument.}
+package project, unless you want to pass a path explicitly to the \code{file}
+argument.}
 
 \item{comment}{Submission comments for CRAN. By default, if a file
 \file{cran-comments.md} exists, its content will be read and used as the
 comment.}
+
+\item{sync}{Whether to sync the current Git branch with the remote repository
+before submission.}
 }
 \description{
 Build a source package and submit it to CRAN with the \pkg{curl} package.

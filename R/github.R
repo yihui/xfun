@@ -111,6 +111,20 @@ git_test_branch = function() {
   )
 }
 
+# pull from the current branch if it is a git repository and has a current branch
+git_pull_current <- function() {
+  is_repo = git('rev-parse --is-inside-work-tree', stdout = FALSE, stderr = FALSE)
+  if (is_repo == 0) {
+    branch = git('branch --show-current', stdout = TRUE)
+    if (length(branch) == 1 && branch != '') {
+      if (length(git('diff', stdout = TRUE))) {
+        git('stash'); on.exit(git('stash pop'), add = TRUE)
+      }
+      git(c('pull', 'origin', branch))
+    }
+  }
+}
+
 gh = function(...) {
   if (Sys.which('gh') == '') stop('GitHub CLI not found: https://cli.github.com')
   system2('gh', ...)
