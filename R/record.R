@@ -234,14 +234,15 @@ record = function(
   # a simplified version of capture.output()
   handle_output = function(expr) {
     out = NULL
-    con = textConnection('out', 'w', local = TRUE)
+    con = rawConnection(raw(0), 'w')
     on.exit(close(con))
     # capture try() messages
     opts = if (is.null(getOption('try.outFile'))) options(try.outFile = con)
     sink(con); on.exit({ sink(); close(con); options(opts) })
     expr  # lazy evaluation
     on.exit()  # if no error occurred, clear up previous on-exit calls
-    sink(); close(con); options(opts)
+    sink(); out = rawToChar(rawConnectionValue(con)); close(con); options(opts)
+    out = strsplit(out, '\n', fixed = TRUE)[[1]]
     if (length(out)) add_result(out, 'output')
     expr
   }

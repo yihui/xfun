@@ -4,6 +4,8 @@
 
 - Added a new function `tab_content` to create custom tab content from a character vector for `tabset()`.
 
+- Fixed a bottleneck in `xfun::record()` when the code prints a huge amount of output (thanks, @idavydov, quarto-dev/quarto-cli#14156).
+
 # CHANGES IN xfun VERSION 0.56
 
 - Removed the deprecated `xfun::attr()`. Please use `xfun::attr2()` instead.
