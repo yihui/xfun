@@ -19,8 +19,7 @@ assert("tojson() works", {
 
   (.tojson(list('"a b"' = 'quotes "\'')) %==% '{\n  "\\"a b\\"": "quotes \\"\'"\n}')
 
-  JS = function(x) structure(x, class = "JS_EVAL")
-  x = list(a = 1:5, b = JS("function() {return true;}"))
+  x = list(a = 1:5, b = js("function() {return true;}"))
   out = '{\n  "a": [1, 2, 3, 4, 5],\n  "b": function() {return true;}\n}'
   (.tojson(x) %==% out)
 })

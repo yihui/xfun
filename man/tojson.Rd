@@ -2,13 +2,13 @@
 % Please edit documentation in R/json.R
 \name{tojson}
 \alias{tojson}
-\alias{JS}
+\alias{js}
 \alias{json_vector}
 \title{A simple JSON serializer}
 \usage{
 tojson(x)
 
-JS(x)
+js(x)
 
 json_vector(x, to_array = FALSE, quote = TRUE)
 }
@@ -26,7 +26,7 @@ A character string.
 A JSON serializer that only works on a limited types of R data (\code{NULL},
 lists, arrays, logical/character/numeric/date/time vectors). Other types of
 data will be coerced to character. A character string
-wrapped in \code{JS()} is treated as raw JavaScript, so will not be quoted. The
+wrapped in \code{js()} is treated as raw JavaScript, so will not be quoted. The
 function \code{json_vector()} converts an atomic R vector to JSON.
 }
 \details{
@@ -56,7 +56,7 @@ tojson(unname(head(iris)))  # each row is in an element
 tojson(matrix(1:12, 3))
 
 # literal JS code
-tojson(list(a = 1:5, b = JS("function() {return true;}")))
+tojson(list(a = 1:5, b = js("function() {return true;}")))
 }
 \seealso{
 The \pkg{jsonlite} package provides a full JSON serializer.
