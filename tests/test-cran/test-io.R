@@ -44,3 +44,60 @@ assert('grep_sub() matches elements and do substitution on them', {
   (grep_sub('a([b]+)c', 'a\\U\\1c', c('abc', 'abbbc', 'addc', '123'), perl = TRUE) %==%
      c('aBc', 'aBBBc'))
 })
+
+assert('read_bin() reads binary files', {
+  f = tempfile()
+  writeBin(as.raw(1:10), f)
+  (read_bin(f) %==% as.raw(1:10))
+  unlink(f)
+})
+
+assert('append_utf8() appends content to a file and sorts it by default', {
+  f = tempfile()
+  write_utf8(c('b', 'a'), f)
+  append_utf8('c', f)
+  (read_utf8(f) %==% c('a', 'b', 'c'))
+})
+
+assert('append_unique() appends only lines not already in the file and sorts', {
+  f = tempfile()
+  write_utf8(c('b', 'a'), f)
+  append_unique(c('a', 'c'), f)  # 'a' is already there; only 'c' is new
+  (read_utf8(f) %==% c('a', 'b', 'c'))
+})
+
+assert('process_file() applies a function to file contents', {
+  f = tempfile()
+  write_utf8('Hello World', f)
+  process_file(f, function(x) gsub('World', 'R', x))
+  (read_utf8(f) %==% 'Hello R')
+  unlink(f)
+})
+
+assert('sort_file() sorts lines in a file', {
+  f = tempfile()
+  write_utf8(c('b', 'a', 'c'), f)
+  sort_file(f)
+  (read_utf8(f) %==% c('a', 'b', 'c'))
+  unlink(f)
+})
+
+assert('gsub_file() replaces patterns in a file', {
+  f = tempfile()
+  writeLines(c('hello', 'world'), f)
+  gsub_file(f, 'world', 'R', fixed = TRUE)
+  (readLines(f) %==% c('hello', 'R'))
+  unlink(f)
+})
+
+assert('read_all() reads and concatenates files', {
+  f1 = tempfile(); f2 = tempfile()
+  write_utf8(c('a', 'b'), f1)
+  write_utf8(c('c', 'd'), f2)
+  res = read_all(c(f1, f2))
+  (as.character(res) %==% c('a', 'b', 'c', 'd'))
+  # with before/after: 1 before + 2 content + 1 after = 4 per file, 8 total
+  res2 = read_all(c(f1, f2), before = function(f) paste('#', f), after = '')
+  (length(res2) %==% 8L)
+  unlink(c(f1, f2))
+})
