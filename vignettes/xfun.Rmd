@@ -75,7 +75,7 @@ as.character(xfun::file_string(f))  # essentially a character string
 
 ## Get the data URI of a file
 
-Files can be encoded into base64 strings via `base64_uri()`. This is a common technique to embed arbitrary files in HTML documents (which is [what `xfun::embed_file()` does](https://bookdown.org/yihui/rmarkdown-cookbook/embed-file.html) and it is based on `base64_uri()`).
+Files can be encoded into base64 strings via `base64_uri()`. This is a common technique to embed arbitrary files in HTML documents (which is [what `xfun::embed_file()` does](https://yihui.org/rmarkdown-cookbook/embed-file.html) and it is based on `base64_uri()`).
 
 ```{r}
 f = system.file("LICENSE", package = "xfun")
