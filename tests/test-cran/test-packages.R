@@ -20,7 +20,7 @@ assert('pkg_load() loads packages and returns logical vector', {
 
 assert('pkg_attach() attaches packages', {
   pkg_attach('stats')
-  ('stats' %in% search())
+  ('package:stats' %in% search())
 })
 
 assert('pkg_available() checks if a package with a version is available', {
