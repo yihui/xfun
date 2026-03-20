@@ -97,9 +97,8 @@ assert('str_wrap() wraps text and returns same-length output', {
 })
 
 assert('decimal_dot() forces dot as the decimal separator', {
-  opts = options(OutDec = ',')
-  on.exit(options(opts), add = TRUE)
-  (decimal_dot(as.character(1.234)) %==% '1.234')
-  # restores original option after call
-  (getOption('OutDec') %==% ',')
+  old = options(OutDec = ',')
+  r = decimal_dot(as.character(1.234))
+  options(old)  # restore OutDec
+  (r %==% '1.234')
 })
