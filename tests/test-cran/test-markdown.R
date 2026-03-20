@@ -111,7 +111,7 @@ assert('md_table() generates a Markdown pipe table', {
   # basic usage
   x = data.frame(a = 1:3, b = c('x', 'y', 'z'), stringsAsFactors = FALSE)
   res = md_table(x)
-  (length(res) %==% 5)  # header + separator + 3 rows
+  (length(res) %==% 5L)  # header + separator + 3 rows
   (grepl('^\\|', res[1]))  # starts with pipe
   (grepl('\\|$', res[1]))  # ends with pipe
   # numeric column is right-aligned

@@ -29,7 +29,7 @@ assert('tojson() returns a json object with raw_string class', {
   (inherits(res, 'json'))
   (inherits(res, 'xfun_raw_string'))
   # passing a json object through tojson() should return it unchanged
-  (identical(tojson(res), res))
+  (tojson(res) %==% res)
 })
 
 assert('json_vector() converts atomic vectors to JSON', {

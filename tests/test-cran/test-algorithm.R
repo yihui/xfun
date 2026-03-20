@@ -2,9 +2,9 @@ library(testit)
 
 assert('rand_unit() returns values in [0, 1)', {
   x = rand_unit(100, seed = 42)
-  (length(x) %==% 100)
-  (all(x >= 0))
-  (all(x < 1))
+  (length(x) %==% 100L)
+  (x >= 0)
+  (x < 1)
 })
 
 assert('rand_unit() produces reproducible results with the same seed', {
@@ -14,12 +14,12 @@ assert('rand_unit() produces reproducible results with the same seed', {
 })
 
 assert('rand_unit() returns 0 values for n = 0', {
-  (length(rand_unit(0, seed = 1)) %==% 0)
+  (length(rand_unit(0, seed = 1)) %==% 0L)
 })
 
 assert('md5() computes checksums', {
   (is.character(md5(1:10)))
-  (nchar(md5(1:10)) %==% 32)
+  (nchar(md5(1:10)) %==% 32L)
   # x2 and x3 should be identical since they are the same integer sequence
   x2 = 1:10; x3 = seq(1, 10)
   (md5(x2) %==% md5(x3))
@@ -44,5 +44,5 @@ assert('cache_exec() uses cache on second call', {
   Sys.sleep(0.01)  # ensure time would differ if re-evaluated
   r2 = cache_exec({Sys.time()}, path = ':memory:', id = id)
   # r2 should come from cache, so they should be identical
-  (identical(r1, r2))
+  (r1 %==% r2)
 })

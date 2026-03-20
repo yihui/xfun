@@ -19,7 +19,7 @@ assert('divide_chunk() parses YAML-style chunk options', {
   res = divide_chunk('r', yaml_like)
   (res$options$label %==% 'mine')
   (isTRUE(res$options$echo))
-  (res$options$fig.width %==% 8)
+  (res$options$fig.width == 8)  # avoid integer vs double mismatch
   (res$code %==% '1 + 1')
 })
 
@@ -34,7 +34,7 @@ assert('divide_chunk() parses CSV-style chunk options', {
 assert('divide_chunk() returns empty options for empty code', {
   res = divide_chunk('r', character(0))
   (is.null(res$options))
-  (length(res$code) %==% 0)
+  (length(res$code) %==% 0L)
 })
 
 assert('divide_chunk() returns code unchanged when no option comments', {

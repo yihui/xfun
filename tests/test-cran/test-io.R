@@ -98,6 +98,6 @@ assert('read_all() reads and concatenates files', {
   (as.character(res) %==% c('a', 'b', 'c', 'd'))
   # with before/after: 1 before + 2 content + 1 after = 4 per file, 8 total
   res2 = read_all(c(f1, f2), before = function(f) paste('#', f), after = '')
-  (length(res2) %==% 8)
+  (length(res2) %==% 8L)
   unlink(c(f1, f2))
 })

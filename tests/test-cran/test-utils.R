@@ -37,9 +37,9 @@ assert('env_option() reads from options() and env vars', {
 })
 
 assert('parse_only() parses R code without keeping source', {
-  (length(parse_only(character(0))) %==% 0)
-  (length(parse_only('1+1')) %==% 1)
-  (length(parse_only(c('y~x', '1:5'))) %==% 2)
+  (length(parse_only(character(0))) %==% 0L)
+  (length(parse_only('1+1')) %==% 1L)
+  (length(parse_only(c('y~x', '1:5'))) %==% 2L)
 })
 
 assert('try_silent() suppresses errors', {
@@ -84,13 +84,13 @@ assert('html_tag() generates correct HTML', {
 
 assert('format_bytes() formats byte counts', {
   res = format_bytes(c(1, 1024))
-  (length(res) %==% 2)
+  (length(res) %==% 2L)
   (is.character(res))
 })
 
 assert('msg_cat() prints messages suppressibly', {
   out = capture.output(suppressMessages(msg_cat('hello')))
-  (length(out) %==% 0)
+  (length(out) %==% 0L)
   out = capture.output(msg_cat('world'))
   (out %==% 'world')
 })
