@@ -16,10 +16,10 @@ assert('csv_options() parses chunk options to a list', {
 
 assert('divide_chunk() parses YAML-style chunk options', {
   yaml_like = c('#| label: mine', '#| echo: true', '#| fig.width: 8', '1 + 1')
-  res = divide_chunk('r', yaml_like)
+  res = divide_chunk('r', yaml_like, use_yaml = FALSE)
   (res$options$label %==% 'mine')
   (isTRUE(res$options$echo))
-  (res$options$fig.width == 8)  # avoid integer vs double mismatch
+  (res$options$fig.width %==% 8L)
   (res$code %==% '1 + 1')
 })
 
@@ -28,6 +28,7 @@ assert('divide_chunk() parses CSV-style chunk options', {
   res = divide_chunk('r', csv_like)
   (res$options$label %==% 'mine')
   (isTRUE(res$options$echo))
+  (res$options$fig.width %==% 8)
   (res$code %==% '1 + 1')
 })
 

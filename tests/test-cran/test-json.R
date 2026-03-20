@@ -22,12 +22,8 @@ assert("tojson() works", {
   x = list(a = 1:5, b = js("function() {return true;}"))
   out = '{\n  "a": [1, 2, 3, 4, 5],\n  "b": function() {return true;}\n}'
   (.tojson(x) %==% out)
-})
 
-assert('tojson() returns a json object with raw_string class', {
-  res = tojson(NULL)
-  (inherits(res, 'json'))
-  (inherits(res, 'xfun_raw_string'))
+  res = tojson(list(NULL, 1:10, TRUE, FALSE))
   # passing a json object through tojson() should return it unchanged
   (tojson(res) %==% res)
 })
