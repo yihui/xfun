@@ -86,3 +86,20 @@ assert('alnum_id() generates ID strings', {
   (alnum_id(x) %==% c('hello-world-123', 'a-b-c-456'))
   (alnum_id(x, '[^[:alpha:]]+') %==% c('hello-world', 'a-b-c'))
 })
+
+assert('str_wrap() wraps text and returns same-length output', {
+  x = c('hello world foo bar baz', 'another long string here')
+  res = str_wrap(x, width = 10)
+  (length(res) %==% length(x))
+  (is.character(res))
+  # each element should contain newlines when wrapping was needed
+  (grepl('\n', res[1]))
+})
+
+assert('decimal_dot() forces dot as the decimal separator', {
+  opts = options(OutDec = ',')
+  on.exit(options(opts), add = TRUE)
+  (decimal_dot(as.character(1.234)) %==% '1.234')
+  # restores original option after call
+  (getOption('OutDec') %==% ',')
+})

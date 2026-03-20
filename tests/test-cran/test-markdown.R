@@ -101,3 +101,25 @@ assert('fenced_block() wraps content inside fences', {
   (fenced_block('<i>info</i>', '=html') %==% c('', '``` {=html}', '<i>info</i>', '```'))
   (fenced_block('1+1', c('.lang', '#id', 'foo="BAR"')) %==% c('', '``` {.lang #id foo="BAR"}', '1+1', '```'))
 })
+
+assert('fenced_div() uses colons as fence character', {
+  res = fenced_div('content')
+  (res %==% c('', ':::', 'content', ':::'))
+})
+
+assert('md_table() generates a Markdown pipe table', {
+  # basic usage
+  x = data.frame(a = 1:3, b = c('x', 'y', 'z'), stringsAsFactors = FALSE)
+  res = md_table(x)
+  (length(res) %==% 5)  # header + separator + 3 rows
+  (grepl('^\\|', res[1]))  # starts with pipe
+  (grepl('\\|$', res[1]))  # ends with pipe
+  # numeric column is right-aligned
+  (grepl('--:', res[2]))
+
+  # empty columns
+  (md_table(data.frame()) %==% character())
+
+  # error for non-2D objects
+  (has_error(md_table(1:5)))
+})

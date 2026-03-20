@@ -23,3 +23,19 @@ assert("tojson() works", {
   out = '{\n  "a": [1, 2, 3, 4, 5],\n  "b": function() {return true;}\n}'
   (.tojson(x) %==% out)
 })
+
+assert('tojson() returns a json object with raw_string class', {
+  res = tojson(NULL)
+  (inherits(res, 'json'))
+  (inherits(res, 'xfun_raw_string'))
+  # passing a json object through tojson() should return it unchanged
+  (identical(tojson(res), res))
+})
+
+assert('json_vector() converts atomic vectors to JSON', {
+  (json_vector(c('a', 'b'), to_array = TRUE) %==% '["a", "b"]')
+  (json_vector(c('a', 'b'), to_array = FALSE) %==% c('"a"', '"b"'))
+  (json_vector(1:3, to_array = TRUE, quote = FALSE) %==% '[1, 2, 3]')
+  # NA becomes null
+  (json_vector(c('a', NA_character_), to_array = TRUE) %==% '["a", null]')
+})

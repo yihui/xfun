@@ -13,3 +13,33 @@ assert('csv_options() parses chunk options to a list', {
   (has_error(csv_options('a,b')))
   (has_error(csv_options('a,b,c=qwer')))
 })
+
+assert('divide_chunk() parses YAML-style chunk options', {
+  yaml_like = c('#| label: mine', '#| echo: true', '#| fig.width: 8', '1 + 1')
+  res = divide_chunk('r', yaml_like)
+  (res$options$label %==% 'mine')
+  (isTRUE(res$options$echo))
+  (res$options$fig.width %==% 8)
+  (res$code %==% '1 + 1')
+})
+
+assert('divide_chunk() parses CSV-style chunk options', {
+  csv_like = c("#| mine, echo = TRUE, fig.width = 8", "1 + 1")
+  res = divide_chunk('r', csv_like)
+  (res$options$label %==% 'mine')
+  (isTRUE(res$options$echo))
+  (res$code %==% '1 + 1')
+})
+
+assert('divide_chunk() returns empty options for empty code', {
+  res = divide_chunk('r', character(0))
+  (is.null(res$options))
+  (length(res$code) %==% 0)
+})
+
+assert('divide_chunk() returns code unchanged when no option comments', {
+  code = c('x = 1', 'y = 2')
+  res = divide_chunk('r', code)
+  (is.null(res$options))
+  (res$code %==% code)
+})
