@@ -50,27 +50,9 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        if: matrix.config.r >= '4.0'
-        with:
-          extra-packages: |
-            any::rcmdcheck
-            magick=?ignore-before-r=4.1.0
-          needs: check
+      - uses: yihui/actions/setup-r-dependencies@HEAD
 
-      - uses: r-lib/actions/check-r-package@v2
-        if: matrix.config.r >= '4.0'
-        with:
-          upload-snapshots: true
-
-      - name: Check against R < 4.0
-        if: matrix.config.r < '4.0'
-        run: |
-          Rscript .github/workflows/deps.R
-          R CMD INSTALL .
-          cd ..
-          R CMD build xfun
-          R CMD check --as-cran --no-manual xfun_*.tar.gz
+      - uses: yihui/actions/check-r-package@HEAD
 
       - name: Test coverage
         if: success() && runner.os == 'Linux' && matrix.config.r == 'release'

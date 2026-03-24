@@ -24,3 +24,5 @@ jobs:
         uses: r-lib/actions/setup-r@HEAD
         with:
           use-public-rspm: true
+
+      - uses: yihui/actions/setup-r-dependencies@HEAD
