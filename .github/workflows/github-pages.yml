@@ -14,10 +14,10 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
+      - uses: actions/checkout@HEAD
+      - uses: actions/configure-pages@HEAD
         with:
           enablement: true
       - uses: r-lib/actions/setup-r@HEAD
@@ -27,8 +27,8 @@ jobs:
       - uses: yihui/litedown/site@HEAD
         with:
           site-dir: 'site'
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@HEAD
         with:
           path: 'site'
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@HEAD
