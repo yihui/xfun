@@ -110,6 +110,8 @@ pkg_maintainers = function(pkgs) {
 #' @export
 submit_cran = function(file = pkg_build(), comment = '', sync = TRUE) {
   if (sync) git_pull_current()
+  # check if there are any problematic URLs (I often forget this)
+  if (loadable('urlchecker')) getFromNamespace('url_update', 'urlchecker')()
 
   # if the tarball is automatically created, delete it after submission
   if (missing(file)) on.exit(file.remove(file), add = TRUE)
@@ -119,13 +121,6 @@ submit_cran = function(file = pkg_build(), comment = '', sync = TRUE) {
   on.exit(unlink(d, recursive = TRUE), add = TRUE)
   desc = file.path(gsub('_.*', '', basename(file)), 'DESCRIPTION')
   untar(file, desc, exdir = d)
-  # check if there are any problematic URLs (I often forget this)
-  if (is.function(check_url <- asNamespace('tools')$check_package_urls)) {
-    if (NROW(res <- check_url(file.path(d, dirname(desc))))) {
-      print(res)
-      stop('Please correct URLs above first.')
-    }
-  }
   # name and email of maintainer
   info = read.dcf(file.path(d, desc), fields = 'Maintainer')[1, 1]
   info = unlist(strsplit(info, '( <|>)'))
