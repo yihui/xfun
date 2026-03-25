@@ -347,11 +347,9 @@ url_destination = function(x, force = FALSE) {
   function(x, force = FALSE) {
     if (!force && is.character(db[[x]])) return(db[[x]])
     h = curlGetHeaders(x)
+    if ((s <- attr2(h, 'status')) >= 400) stop2('URL ', x, ' returned status code ', s)
     u = grep_sub('^location:\\s+(.+?)[\r\n]*$', '\\1', h, ignore.case = TRUE)
-    db[[x]] <<- if (length(u)) tail(u, 1) else {
-      if ((s <- attr2(h, 'status')) >= 400) stop('URL ', x, ' returned status code ', s)
-      x
-    }
+    db[[x]] <<- if (length(u)) tail(u, 1) else x
   }
 })
 
