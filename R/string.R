@@ -479,7 +479,7 @@ html_escape = function(x, attr = FALSE) {
 #' @export
 html_view = function(x, ...) {
   new_app('xfun-html', function(path, ...) {
-    if (dir_exists(path)) list(payload = if (path == '.') x else path) else {
+    if (dir_exists(path)) list(payload = if (path == '.') one_string(x) else path) else {
       list(file = normalizePath(path), `content-type` = mime_type(path))
     }
   }, ...)

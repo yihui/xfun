@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.58
 
+- `html_view()` should join the input character vector by `\n`, otherwise only the first element of the vector will be passed to the browser (thanks, @XiangyunHuang, yihui/gglite#15).
+
 # CHANGES IN xfun VERSION 0.57
 
 - Added a new function `js()` to mark a character string as literal JavaScript code so that `tojson()` will not quote it.
