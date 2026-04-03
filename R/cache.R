@@ -113,7 +113,7 @@ cache_code = function(
   if (!is.character(path <- config$path)) {
     # when caching is not enabled, we should clean up hashes for local variables
     # to make sure the next cached chunk will get the up-to-date hash
-    vars = intersect(config$vars %||% find_locals(code), ls_all(dict))
+    vars = intersect(config$vars %||% if (loadable('codetools')) find_locals(code), ls_all(dict))
     rm_vars(vars, dict)
     return()
   }
