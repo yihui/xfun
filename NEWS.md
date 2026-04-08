@@ -2,6 +2,8 @@
 
 - `html_view()` should join the input character vector by `\n`, otherwise only the first element of the vector will be passed to the browser (thanks, @XiangyunHuang, yihui/gglite#15).
 
+- `tojson()` will convert length 1 columns to arrays, too. Previously, such columns were converted to scalars, e.g., `data.frame(x = 1)` would be converted to `{"x": 1}` instead of `{"x": [1]}`. This makes sure data frame columns are always arrays in JSON.
+
 # CHANGES IN xfun VERSION 0.57
 
 - Added a new function `js()` to mark a character string as literal JavaScript code so that `tojson()` will not quote it.

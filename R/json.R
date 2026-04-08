@@ -49,9 +49,13 @@ tojson = function(x) {
     if (length(x) == 0) return('{}')
     # output unnamed data frames by rows instead of columns
     nms = names(x)
-    by_row = is.data.frame(x) && is.null(nms)
+    is_df = is.data.frame(x)
+    by_row = is_df && is.null(nms)
     cols = unlist(lapply(x, function(z) {
-      if (by_row) json_atomic(z, FALSE) else .tojson(z, n + 1)
+      if (by_row) json_atomic(z, FALSE) else {
+        # data frame columns must be arrays even for length 1
+        .tojson(if (is_df) I(z) else z, n + 1)
+      }
     }))
     if (is.null(nms)) {
       if (by_row) {

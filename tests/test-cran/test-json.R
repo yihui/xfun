@@ -19,6 +19,18 @@ assert("tojson() works", {
 
   (.tojson(list('"a b"' = 'quotes "\'')) %==% '{\n  "\\"a b\\"": "quotes \\"\'"\n}')
 
+  # data frames
+  (.tojson(data.frame()) %==% '{}')
+  # by column for named data frames
+  x = data.frame(a = 1:3, b = c('x', 'y', 'z'))
+  (.tojson(x) %==% '{\n  "a": [1, 2, 3],\n  "b": ["x", "y", "z"]\n}')
+  # length 1 columns must be arrays, too
+  x = data.frame(a = 1, b = 'x')
+  (.tojson(x) %==% '{\n  "a": [1],\n  "b": ["x"]\n}')
+  # by row for unnamed data frames
+  x = unname(data.frame(a = 1:3, b = c('x', 'y', 'z')))
+  (.tojson(x) %==% '[\n  [1, "x"],\n  [2, "y"],\n  [3, "z"]\n]')
+
   x = list(a = 1:5, b = js("function() {return true;}"))
   out = '{\n  "a": [1, 2, 3, 4, 5],\n  "b": function() {return true;}\n}'
   (.tojson(x) %==% out)
