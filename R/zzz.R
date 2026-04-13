@@ -20,7 +20,7 @@ if (!has_fun('packageDate', asNamespace('utils'))) packageDate = function(...) {
 
 .onUnload = function(libpath) {
   if (!is.null(.httpd$port)) {
-    .Call(C_httpd_stop)
+    .Call(httpd_stop)
     .httpd$port = NULL
   }
 }

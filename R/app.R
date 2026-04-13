@@ -1,9 +1,9 @@
 #' Create a local web application
 #'
-#' Create a local web application backed by a simple built-in HTTP server that
-#' listens on `127.0.0.1`. The server is started automatically on the first
-#' call to `new_app()` and processes incoming requests via R's task-callback
-#' mechanism (see [addTaskCallback()]), so it is intended for interactive use.
+#' Create a local web application backed by a simple built-in HTTP server.
+#' The server is started automatically on the first call to `new_app()` and
+#' processes incoming requests via R's task-callback mechanism (see
+#' [addTaskCallback()]), so it is intended for interactive use.
 #' @param name The app name (a character string, and each app should have a
 #'   unique name).
 #' @param handler A function with signature `function(path, query, post,
@@ -29,19 +29,26 @@
 #'   }
 #' @param open Whether to open the app URL in a browser, or a function to open
 #'   it.
+#' @param host The host/IP address to listen on.  Use `"127.0.0.1"` (default)
+#'   to accept only local connections, or `"0.0.0.0"` to accept connections on
+#'   all network interfaces.  This argument is only used when the server is
+#'   first started; subsequent `new_app()` calls reuse the existing server.
 #' @param ports A vector of candidate port numbers.  The first port that can be
 #'   successfully bound is used.
-#' @return The app URL of the form `http://127.0.0.1:port/name/` (invisibly).
+#' @return The app URL of the form `http://host:port/name/` (invisibly).
 #' @export
-new_app = function(name, handler, open = interactive(), ports = 4321 + 1:10) {
+new_app = function(
+  name, handler, open = interactive(), host = '127.0.0.1', ports = 4321 + 1:10
+) {
   if (is.null(.httpd$port)) {
-    port = .Call(C_httpd_start, as.integer(ports))
+    port = .Call(httpd_start, as.integer(ports), as.character(host))
     if (port < 0L) stop2("Failed to start HTTP server on any of the specified ports.")
     .httpd$port = port
+    .httpd$host = host
     .httpd$cb_id = addTaskCallback(function(...) {
       apps = .httpd$apps
       if (length(apps))
-        .Call(C_httpd_poll, names(apps), unname(apps))
+        .Call(httpd_poll, names(apps), unname(apps))
       TRUE
     }, name = 'xfun.httpd')
   }
@@ -50,25 +57,26 @@ new_app = function(name, handler, open = interactive(), ports = 4321 + 1:10) {
     if (path == '') path = '.'
     in_dir(wd, handler(path, ...))
   }
-  url = sprintf('http://127.0.0.1:%d/%s/', .httpd$port, name)
+  # use 127.0.0.1 in the URL when binding on all interfaces (0.0.0.0 is not
+  # directly routable from a browser)
+  url_host = if (identical(.httpd$host, '0.0.0.0')) '127.0.0.1' else .httpd$host
+  url = sprintf('http://%s:%d/%s/', url_host, .httpd$port, name)
   if (isTRUE(open)) open = getOption('viewer', browseURL)
   if (is.function(open)) open(url)
   invisible(url)
 }
 
-#' @rdname new_app
-#' @param name Character vector of app names to stop; defaults to all running
-#'   apps.
-#' @export
+# stop one or more apps (and shut down the server when all apps are removed)
 stop_app = function(name = names(.httpd$apps)) {
   for (n in name) .httpd$apps[[n]] = NULL
   if (length(.httpd$apps) == 0L && !is.null(.httpd$port)) {
-    .Call(C_httpd_stop)
+    .Call(httpd_stop)
     if (!is.null(.httpd$cb_id)) {
       removeTaskCallback(.httpd$cb_id)
       .httpd$cb_id = NULL
     }
     .httpd$port = NULL
+    .httpd$host = NULL
   }
 }
 
@@ -76,6 +84,7 @@ stop_app = function(name = names(.httpd$apps)) {
 .httpd = new.env(parent = emptyenv())
 .httpd$apps  = list()
 .httpd$port  = NULL
+.httpd$host  = NULL
 .httpd$cb_id = NULL
 
 #' Get data from a REST API

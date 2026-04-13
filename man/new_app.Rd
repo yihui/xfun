@@ -2,32 +2,65 @@
 % Please edit documentation in R/app.R
 \name{new_app}
 \alias{new_app}
+\alias{stop_app}
 \title{Create a local web application}
 \usage{
-new_app(name, handler, open = interactive(), ports = 4321 + 1:10)
+new_app(
+  name,
+  handler,
+  open = interactive(),
+  host = "127.0.0.1",
+  ports = 4321 + 1:10
+)
+
+stop_app(name = names(.httpd$apps))
 }
 \arguments{
 \item{name}{The app name (a character string, and each app should have a
-unique name).}
+unique name). For \code{stop_app()}, a character vector of app names to stop;
+defaults to all running apps.}
 
-\item{handler}{A function that takes the HTTP request information (the first
-argument is the requested path) and returns a response.}
+\item{handler}{A function with signature \code{function(path, query, post, headers)}
+that handles HTTP requests and returns a response list. The arguments are:
+\describe{
+  \item{\code{path}}{character(1): URL path relative to the app root (never
+    empty; the bare root maps to \code{"."}).}
+  \item{\code{query}}{Named character vector of URL-decoded query parameters.}
+  \item{\code{post}}{Raw vector containing the request body (length 0 for GET
+    requests).}
+  \item{\code{headers}}{Raw vector of request headers in the form
+    \code{"Request-Method: METHOD\nField: value\n..."}.}
+}
+The return value should be a named list with one or more of:
+\describe{
+  \item{\code{payload}}{character(1): the response body.}
+  \item{\code{file}}{character(1): path to a file to stream as the body.}
+  \item{\code{content-type}}{character(1): MIME type (default
+    \code{"text/html; charset=UTF-8"}).}
+  \item{\code{status code}}{integer(1): HTTP status code (default 200).}
+  \item{\code{header}}{Named character vector of extra response headers.}
+}}
 
-\item{open}{Whether to open the app, or a function to open the app URL.}
+\item{open}{Whether to open the app URL in a browser, or a function to open it.}
 
-\item{ports}{A vector of ports to try for starting the server.}
+\item{host}{The host/IP address to listen on. Use \code{"127.0.0.1"} (default)
+to accept only local connections, or \code{"0.0.0.0"} to accept connections on
+all network interfaces. This argument is only used when the server is first
+started; subsequent \code{new_app()} calls reuse the existing server.}
+
+\item{ports}{A vector of candidate port numbers. The first port that can be
+successfully bound is used.}
 }
 \value{
-The app URL of the form \verb{http://127.0.0.1:port/custom/name/}.
+\code{new_app()} returns the app URL of the form \verb{http://host:port/name/}
+(invisibly). \code{stop_app()} returns nothing.
 }
 \description{
-An experimental function to create a local web application based on R's
-internal \code{httpd} server (which is primarily for running R's dynamic help
-system).
-}
-\note{
-This function is not based on base R's public API, and is possible to
-break in the future, which is also why the documentation here is terse.
-Please avoid creating public-facing web apps with it. You may consider
-packages like \pkg{httpuv} and \pkg{Rserve} for production web apps.
+Create a local web application backed by a simple built-in HTTP server.
+The server is started automatically on the first call to \code{new_app()} and
+processes incoming requests via R's task-callback mechanism (see
+\code{\link{addTaskCallback}()}), so it is intended for interactive use.
+
+\code{stop_app()} stops one or more apps and shuts down the server when all
+apps have been removed.
 }

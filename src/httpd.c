@@ -1,7 +1,7 @@
 /*
  * A minimal HTTP/1.0 server for xfun's new_app() function.
  *
- * The server runs on 127.0.0.1 only.  httpd_start() opens a non-blocking
+ * The server binds to the address given by httpd_start() (default 127.0.0.1).  httpd_start() opens a non-blocking
  * listen socket.  httpd_poll() is called from R's task-callback mechanism
  * (addTaskCallback); it accepts at most one pending connection per call,
  * parses the HTTP request, dispatches to the matching R handler, and sends
@@ -258,15 +258,30 @@ static void send_response(xfun_socket_t fd, SEXP resp) {
 /* ---- exported C functions -------------------------------------------- */
 
 /*
- * httpd_start(ports)
+ * httpd_start(ports, host)
  * ports: integer vector of candidate port numbers
+ * host:  character(1) IP address to bind to ("127.0.0.1" or "0.0.0.0", etc.)
  * Returns: the port actually bound, or -1 on failure.
  */
-SEXP httpd_start(SEXP ports) {
+SEXP httpd_start(SEXP ports, SEXP host) {
 #ifdef _WIN32
     WSADATA wsa;
     if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) return ScalarInteger(-1);
 #endif
+    const char *host_str = "127.0.0.1";
+    if (!isNull(host) && TYPEOF(host) == STRSXP && LENGTH(host) > 0)
+        host_str = CHAR(STRING_ELT(host, 0));
+
+    struct in_addr bind_addr;
+#ifdef _WIN32
+    bind_addr.s_addr = inet_addr(host_str);
+    if (bind_addr.s_addr == INADDR_NONE)
+        bind_addr.s_addr = htonl(INADDR_LOOPBACK);
+#else
+    if (inet_pton(AF_INET, host_str, &bind_addr) != 1)
+        bind_addr.s_addr = htonl(INADDR_LOOPBACK);
+#endif
+
     int n = LENGTH(ports);
     for (int i = 0; i < n; i++) {
         int port = INTEGER(ports)[i];
@@ -278,9 +293,9 @@ SEXP httpd_start(SEXP ports) {
 
         struct sockaddr_in addr;
         memset(&addr, 0, sizeof(addr));
-        addr.sin_family      = AF_INET;
-        addr.sin_port        = htons((unsigned short)port);
-        addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+        addr.sin_family = AF_INET;
+        addr.sin_port   = htons((unsigned short)port);
+        addr.sin_addr   = bind_addr;
 
         if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) != 0 ||
             listen(fd, 16) != 0) {
