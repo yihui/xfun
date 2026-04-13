@@ -1,46 +1,82 @@
 #' Create a local web application
 #'
-#' An experimental function to create a local web application based on R's
-#' internal `httpd` server (which is primarily for running R's dynamic help
-#' system).
+#' Create a local web application backed by a simple built-in HTTP server that
+#' listens on `127.0.0.1`. The server is started automatically on the first
+#' call to `new_app()` and processes incoming requests via R's task-callback
+#' mechanism (see [addTaskCallback()]), so it is intended for interactive use.
 #' @param name The app name (a character string, and each app should have a
 #'   unique name).
-#' @param handler A function that takes the HTTP request information (the first
-#'   argument is the requested path) and returns a response.
-#' @param open Whether to open the app, or a function to open the app URL.
-#' @param ports A vector of ports to try for starting the server.
-#' @return The app URL of the form `http://127.0.0.1:port/custom/name/`.
-#' @note This function is not based on base R's public API, and is possible to
-#'   break in the future, which is also why the documentation here is terse.
-#'   Please avoid creating public-facing web apps with it. You may consider
-#'   packages like \pkg{httpuv} and \pkg{Rserve} for production web apps.
+#' @param handler A function with signature `function(path, query, post,
+#'   headers)` that handles HTTP requests and returns a response list.  The
+#'   arguments are:
+#'   \describe{
+#'     \item{`path`}{character(1): URL path relative to the app root (never
+#'       empty; the bare root maps to `"."`).}
+#'     \item{`query`}{Named character vector of URL-decoded query parameters.}
+#'     \item{`post`}{Raw vector containing the request body (length 0 for GET
+#'       requests).}
+#'     \item{`headers`}{Raw vector of request headers in the form
+#'       `"Request-Method: METHOD\nField: value\n..."`.}
+#'   }
+#'   The return value should be a named list with one or more of:
+#'   \describe{
+#'     \item{`payload`}{character(1): the response body.}
+#'     \item{`file`}{character(1): path to a file to stream as the body.}
+#'     \item{`content-type`}{character(1): MIME type (default
+#'       `"text/html; charset=UTF-8"`).}
+#'     \item{`status code`}{integer(1): HTTP status code (default 200).}
+#'     \item{`header`}{Named character vector of extra response headers.}
+#'   }
+#' @param open Whether to open the app URL in a browser, or a function to open
+#'   it.
+#' @param ports A vector of candidate port numbers.  The first port that can be
+#'   successfully bound is used.
+#' @return The app URL of the form `http://127.0.0.1:port/name/` (invisibly).
 #' @export
 new_app = function(name, handler, open = interactive(), ports = 4321 + 1:10) {
-  if (is.null(getOption('help.ports'))) {
-    options(help.ports = ports); on.exit(options(help.ports = NULL))
+  if (is.null(.httpd$port)) {
+    port = .Call(C_httpd_start, as.integer(ports))
+    if (port < 0L) stop2("Failed to start HTTP server on any of the specified ports.")
+    .httpd$port = port
+    .httpd$cb_id = addTaskCallback(function(...) {
+      apps = .httpd$apps
+      if (length(apps))
+        .Call(C_httpd_poll, names(apps), unname(apps))
+      TRUE
+    }, name = 'xfun.httpd')
   }
-  port = suppressMessages(tools::startDynamicHelp(NA))
-  url  = sprintf('http://127.0.0.1:%d/custom/%s/', port, name)
-  wd = getwd()  # always run handler under the original working directory
-  h = function(path, ...) {
-    path = sub(paste0('^/custom/', name, '/'), '', path)
+  wd = getwd()
+  .httpd$apps[[name]] = function(path, ...) {
     if (path == '') path = '.'
     in_dir(wd, handler(path, ...))
   }
-  # to anyone who sees the dirty assign() here, please close your eyes and walk
-  # away as quickly as possible; thanks!
-  assign(name, h, envir = app_env())
+  url = sprintf('http://127.0.0.1:%d/%s/', .httpd$port, name)
   if (isTRUE(open)) open = getOption('viewer', browseURL)
   if (is.function(open)) open(url)
   invisible(url)
 }
 
-# remove apps registered in the app environment
-stop_app = function(name = ls(app_env(), all.names = TRUE)) {
-  rm(list = name, envir = app_env())
+#' @rdname new_app
+#' @param name Character vector of app names to stop; defaults to all running
+#'   apps.
+#' @export
+stop_app = function(name = names(.httpd$apps)) {
+  for (n in name) .httpd$apps[[n]] = NULL
+  if (length(.httpd$apps) == 0L && !is.null(.httpd$port)) {
+    .Call(C_httpd_stop)
+    if (!is.null(.httpd$cb_id)) {
+      removeTaskCallback(.httpd$cb_id)
+      .httpd$cb_id = NULL
+    }
+    .httpd$port = NULL
+  }
 }
 
-app_env = function() getFromNamespace('.httpd.handlers.env', 'tools')
+# internal state for the built-in HTTP server
+.httpd = new.env(parent = emptyenv())
+.httpd$apps  = list()
+.httpd$port  = NULL
+.httpd$cb_id = NULL
 
 #' Get data from a REST API
 #'

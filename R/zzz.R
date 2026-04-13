@@ -17,3 +17,10 @@ if (!has_fun('strrep')) strrep = function(x, times) {
 if (!has_fun('packageDate', asNamespace('utils'))) packageDate = function(...) {
   as.Date(packageDescription(..., fields = 'Date/Publication'))
 }
+
+.onUnload = function(libpath) {
+  if (!is.null(.httpd$port)) {
+    .Call(C_httpd_stop)
+    .httpd$port = NULL
+  }
+}
