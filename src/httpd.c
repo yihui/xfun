@@ -74,6 +74,7 @@ static InputHandler *xfun_input_handler   = NULL;
 static SEXP          xfun_poll_fn         = NULL; /* protected R function */
 
 static void xfun_input_handler_cb(void *data) {
+    (void)data;  /* unused */
     if (!xfun_poll_fn) return;
     int err = 0;
     SEXP call = PROTECT(lang1(xfun_poll_fn));

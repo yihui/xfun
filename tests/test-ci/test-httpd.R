@@ -22,7 +22,7 @@ http_get = function(host, port, path) {
   on.exit(try(close(sock), silent = TRUE), add = TRUE)
   # Write the HTTP request into the TCP send buffer
   req = paste0('GET ', path, ' HTTP/1.0\r\nHost: ', host, '\r\n\r\n')
-  writeBin(chartr('\n', '\n', req), sock)  # binary write; data goes into TCP buffer
+  writeBin(req, sock)  # binary write; \r\n line endings are already in req
   # Poll the server: it accepts, reads the buffered request, calls the R
   # handler, writes the response, and closes the server-side fd.
   .Call(xfun:::httpd_poll,
