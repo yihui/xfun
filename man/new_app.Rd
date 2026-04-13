@@ -41,7 +41,10 @@ The return value should be a named list with one or more of:
   \item{\code{header}}{Named character vector of extra response headers.}
 }}
 
-\item{open}{Whether to open the app URL in a browser, or a function to open it.}
+\item{open}{Whether to open the app URL in a browser, or a function to open
+it. In non-interactive sessions this also controls whether the call blocks:
+passing \code{open = FALSE} explicitly suppresses both browser-opening and
+blocking, so additional apps can be registered afterwards.}
 
 \item{host}{The host/IP address to listen on. Use \code{"127.0.0.1"} (default)
 to accept only local connections, or \code{"0.0.0.0"} to accept connections on
@@ -58,9 +61,20 @@ successfully bound is used.}
 \description{
 Create a local web application backed by a simple built-in HTTP server.
 The server is started automatically on the first call to \code{new_app()} and
-processes incoming requests via R's task-callback mechanism (see
-\code{\link{addTaskCallback}()}), so it is intended for interactive use.
+integrates with R's event loop so that incoming connections are processed
+without blocking the R console (interactive use) or blocks the session until
+interrupted (non-interactive use).
 
-\code{stop_app()} stops one or more apps and shuts down the server when all
-apps have been removed.
+On Unix/macOS in interactive sessions, incoming connections are handled
+immediately via R's input-handler mechanism, so the browser gets a response
+without the user needing to press Enter. On Windows in interactive sessions,
+a task callback (\code{addTaskCallback}) is used instead, so a response is
+delivered after the next top-level R expression is evaluated.
+
+In non-interactive sessions (e.g. \code{Rscript -e 'litedown::roam()'}),
+\code{new_app()} blocks the R session after registering the app, running a
+tight event loop until the user interrupts (e.g. Ctrl+C in a terminal).
+This blocking only activates when the \code{open} argument is not explicitly
+set to \code{FALSE}; registrations that pass \code{open = FALSE} do not block,
+so multiple apps can be registered sequentially before blocking starts.
 }

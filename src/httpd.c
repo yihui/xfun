@@ -1,12 +1,19 @@
 /*
  * A minimal HTTP/1.0 server for xfun's new_app() function.
  *
- * The server binds to the address given by httpd_start() (default 127.0.0.1).  httpd_start() opens a non-blocking
- * listen socket.  httpd_poll() is called from R's task-callback mechanism
- * (addTaskCallback); it accepts at most one pending connection per call,
- * parses the HTTP request, dispatches to the matching R handler, and sends
- * the response — all within a single C call so the R handler is invoked
- * synchronously from C via R_tryEval().
+ * The server binds to the address given by httpd_start() (default 127.0.0.1).
+ * httpd_start() opens a non-blocking listen socket.
+ *
+ * In interactive R sessions on Unix, httpd_set_input_handler() registers the
+ * server socket with R's event loop (addInputHandler) so that incoming
+ * connections are handled immediately, without the user needing to press Enter.
+ * On Windows (and as a fallback), the R side uses addTaskCallback().
+ *
+ * For non-interactive (batch) R sessions, httpd_serve() blocks in a tight
+ * select() loop and processes requests until interrupted (Ctrl+C).
+ *
+ * httpd_poll() is a non-blocking single-shot check used by the task callback
+ * and by the Unix input-handler callback.
  *
  * The R handler convention (same as R's internal httpd) is:
  *   handler(path, query, post, headers)
@@ -36,13 +43,13 @@ typedef SOCKET xfun_socket_t;
 #  define xfun_close_sock(s) closesocket(s)
 #  define xfun_nonblock(s)   do { u_long m_ = 1; ioctlsocket(s, FIONBIO, &m_); } while (0)
 #  define strncasecmp        _strnicmp
-#  pragma comment(lib, "ws2_32.lib")
 #else
 #  include <sys/socket.h>
 #  include <netinet/in.h>
 #  include <arpa/inet.h>
 #  include <unistd.h>
 #  include <fcntl.h>
+#  include <R_ext/eventloop.h>  /* addInputHandler / removeInputHandler */
 typedef int xfun_socket_t;
 #  define XFUN_INVALID_SOCK  (-1)
 #  define xfun_close_sock(s) close(s)
@@ -59,6 +66,21 @@ typedef int xfun_socket_t;
 
 /* ---- global server state --------------------------------------------- */
 static xfun_socket_t server_fd = XFUN_INVALID_SOCK;
+
+#ifndef _WIN32
+/* Unix-only: input handler registered with R's event loop so connections
+ * are serviced immediately while R is idle, without the user pressing Enter. */
+static InputHandler *xfun_input_handler   = NULL;
+static SEXP          xfun_poll_fn         = NULL; /* protected R function */
+
+static void xfun_input_handler_cb(void *data) {
+    if (!xfun_poll_fn) return;
+    int err = 0;
+    SEXP call = PROTECT(lang1(xfun_poll_fn));
+    R_tryEval(call, R_GlobalEnv, &err);
+    UNPROTECT(1);
+}
+#endif
 
 /* ---- helpers ---------------------------------------------------------- */
 
@@ -312,9 +334,19 @@ SEXP httpd_start(SEXP ports, SEXP host) {
 
 /*
  * httpd_stop()
- * Closes the server socket.
+ * Closes the server socket and cleans up the Unix input handler if present.
  */
 SEXP httpd_stop(void) {
+#ifndef _WIN32
+    if (xfun_input_handler) {
+        removeInputHandler(&R_InputHandlers, xfun_input_handler);
+        xfun_input_handler = NULL;
+    }
+    if (xfun_poll_fn) {
+        R_ReleaseObject(xfun_poll_fn);
+        xfun_poll_fn = NULL;
+    }
+#endif
     if (server_fd != XFUN_INVALID_SOCK) {
         xfun_close_sock(server_fd);
         server_fd = XFUN_INVALID_SOCK;
@@ -326,29 +358,44 @@ SEXP httpd_stop(void) {
 }
 
 /*
- * httpd_poll(names, handlers)
- * names:    character vector of registered app names
- * handlers: list of R handler functions (parallel to names)
- *
- * Accepts at most one pending connection, parses it, dispatches to the
- * matching handler, and sends the response.  Should be called from a
- * task callback registered with addTaskCallback().
- *
- * Returns TRUE if a connection was processed, FALSE otherwise.
+ * httpd_set_input_handler(fn)
+ * Unix only: register (fn != NULL) or deregister (fn == NULL / R_NilValue) the
+ * server socket with R's event loop so incoming connections are handled
+ * immediately while R is idle at the prompt.
+ * On Windows this is a no-op (task callbacks are used instead).
  */
-SEXP httpd_poll(SEXP names, SEXP handlers) {
-    if (server_fd == XFUN_INVALID_SOCK) return ScalarLogical(FALSE);
+SEXP httpd_set_input_handler(SEXP fn) {
+#ifndef _WIN32
+    /* deregister any existing handler first */
+    if (xfun_input_handler) {
+        removeInputHandler(&R_InputHandlers, xfun_input_handler);
+        xfun_input_handler = NULL;
+    }
+    if (xfun_poll_fn) {
+        R_ReleaseObject(xfun_poll_fn);
+        xfun_poll_fn = NULL;
+    }
+    if (!isNull(fn) && server_fd != XFUN_INVALID_SOCK) {
+        R_PreserveObject(fn);
+        xfun_poll_fn      = fn;
+        xfun_input_handler = addInputHandler(
+            R_InputHandlers, (int)server_fd, xfun_input_handler_cb, XActivity
+        );
+    }
+#endif
+    return R_NilValue;
+}
 
-    /* non-blocking check for a pending connection */
-    fd_set rfds;
-    FD_ZERO(&rfds);
-    FD_SET(server_fd, &rfds);
-    struct timeval tv = { 0, 0 };
-    if (select((int)server_fd + 1, &rfds, NULL, NULL, &tv) <= 0)
-        return ScalarLogical(FALSE);
+/* ---- internal: handle one accepted connection ------------------------ */
 
+/*
+ * Accept and fully handle one pending connection.  Parses the HTTP request,
+ * dispatches to the matching R handler, and sends the response.
+ * Returns 1 if a connection was handled, 0 otherwise.
+ */
+static int httpd_handle_connection(SEXP names, SEXP handlers) {
     xfun_socket_t cfd = accept(server_fd, NULL, NULL);
-    if (cfd == XFUN_INVALID_SOCK) return ScalarLogical(FALSE);
+    if (cfd == XFUN_INVALID_SOCK) return 0;
 
     /* ---- read the HTTP request headers into a dynamic buffer ---------- */
     char  *req     = NULL;
@@ -363,7 +410,7 @@ SEXP httpd_poll(SEXP names, SEXP handlers) {
         if (req_len + 4096 + 1 > req_cap) {
             req_cap = (req_cap == 0) ? 8192 : req_cap * 2;
             char *tmp = (char *)realloc(req, req_cap);
-            if (!tmp) { free(req); xfun_close_sock(cfd); return ScalarLogical(FALSE); }
+            if (!tmp) { free(req); xfun_close_sock(cfd); return 0; }
             req = tmp;
         }
         int nr = (int)recv(cfd, req + req_len, req_cap - req_len - 1, 0);
@@ -379,12 +426,12 @@ SEXP httpd_poll(SEXP names, SEXP handlers) {
         free(req);
         send_all(cfd, "HTTP/1.0 400 Bad Request\r\nContent-Length: 0\r\n\r\n", 47);
         xfun_close_sock(cfd);
-        return ScalarLogical(FALSE);
+        return 0;
     }
 
     /* ---- parse request line: METHOD SP path[?qs] SP HTTP/x.x --------- */
     char *eol = strstr(req, "\r\n");
-    if (!eol) { free(req); xfun_close_sock(cfd); return ScalarLogical(FALSE); }
+    if (!eol) { free(req); xfun_close_sock(cfd); return 0; }
     *eol = '\0';  /* temporarily terminate the request line */
 
     char method[16] = "GET", raw_path[4096] = "/";
@@ -445,7 +492,7 @@ SEXP httpd_poll(SEXP names, SEXP handlers) {
      */
     int   hbuf_cap = 4096, hbuf_len = 0;
     char *hbuf = (char *)malloc(hbuf_cap);
-    if (!hbuf) { free(req); free(body); xfun_close_sock(cfd); return ScalarLogical(FALSE); }
+    if (!hbuf) { free(req); free(body); xfun_close_sock(cfd); return 0; }
 
 #define HBUF_WRITE(s, slen) \
     do { \
@@ -485,7 +532,7 @@ SEXP httpd_poll(SEXP names, SEXP handlers) {
     if (!hbuf) {
         free(req); free(body);
         xfun_close_sock(cfd);
-        return ScalarLogical(FALSE);
+        return 0;
     }
 
     /* ---- route: /appname[/rest] --------------------------------------- */
@@ -517,7 +564,7 @@ SEXP httpd_poll(SEXP names, SEXP handlers) {
         free(req); free(body); free(hbuf);
         send_all(cfd, "HTTP/1.0 404 Not Found\r\nContent-Length: 0\r\n\r\n", 46);
         xfun_close_sock(cfd);
-        return ScalarLogical(TRUE);
+        return 1;
     }
 
     /* ---- build R arguments ------------------------------------------- */
@@ -548,5 +595,44 @@ SEXP httpd_poll(SEXP names, SEXP handlers) {
 
     UNPROTECT(6);
     xfun_close_sock(cfd);
-    return ScalarLogical(TRUE);
+    return 1;
+}
+
+/*
+ * httpd_poll(names, handlers)
+ * Non-blocking: check for one pending connection and handle it if present.
+ * Used by the task callback (Windows) and the Unix input-handler callback.
+ * Returns TRUE if a connection was processed, FALSE otherwise.
+ */
+SEXP httpd_poll(SEXP names, SEXP handlers) {
+    if (server_fd == XFUN_INVALID_SOCK) return ScalarLogical(FALSE);
+
+    fd_set rfds;
+    FD_ZERO(&rfds);
+    FD_SET(server_fd, &rfds);
+    struct timeval tv = { 0, 0 };
+    if (select((int)server_fd + 1, &rfds, NULL, NULL, &tv) <= 0)
+        return ScalarLogical(FALSE);
+
+    return ScalarLogical(httpd_handle_connection(names, handlers));
+}
+
+/*
+ * httpd_serve(names, handlers)
+ * Blocking loop: service requests until the server socket is closed or
+ * the user interrupts (Ctrl+C).  Intended for non-interactive R sessions
+ * where blocking the session is acceptable and expected.
+ */
+SEXP httpd_serve(SEXP names, SEXP handlers) {
+    while (server_fd != XFUN_INVALID_SOCK) {
+        R_CheckUserInterrupt();
+
+        fd_set rfds;
+        FD_ZERO(&rfds);
+        FD_SET(server_fd, &rfds);
+        struct timeval tv = { 0, 50000 };  /* 50 ms */
+        if (select((int)server_fd + 1, &rfds, NULL, NULL, &tv) > 0)
+            httpd_handle_connection(names, handlers);
+    }
+    return R_NilValue;
 }

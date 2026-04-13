@@ -2,8 +2,22 @@
 #'
 #' Create a local web application backed by a simple built-in HTTP server.
 #' The server is started automatically on the first call to `new_app()` and
-#' processes incoming requests via R's task-callback mechanism (see
-#' [addTaskCallback()]), so it is intended for interactive use.
+#' integrates with R's event loop so that incoming connections are processed
+#' without blocking the R console (interactive use) or blocks the session until
+#' interrupted (non-interactive use).
+#'
+#' On Unix/macOS in interactive sessions, incoming connections are handled
+#' immediately via R's input-handler mechanism, so the browser gets a response
+#' without the user needing to press Enter.  On Windows in interactive sessions,
+#' a task callback (`addTaskCallback`) is used instead, so a response is
+#' delivered after the next top-level R expression is evaluated.
+#'
+#' In non-interactive sessions (e.g. `Rscript -e 'litedown::roam()'`),
+#' `new_app()` blocks the R session after registering the app, running a
+#' tight event loop until the user interrupts (e.g. Ctrl+C in a terminal).
+#' This blocking only activates when the `open` argument is not explicitly
+#' set to `FALSE`; registrations that pass `open = FALSE` do not block,
+#' so multiple apps can be registered sequentially before blocking starts.
 #' @param name The app name (a character string, and each app should have a
 #'   unique name).
 #' @param handler A function with signature `function(path, query, post,
@@ -28,48 +42,82 @@
 #'     \item{`header`}{Named character vector of extra response headers.}
 #'   }
 #' @param open Whether to open the app URL in a browser, or a function to open
-#'   it.
+#'   it.  In non-interactive sessions this also controls whether the call
+#'   blocks: passing `open = FALSE` explicitly suppresses both browser-opening
+#'   and blocking, so additional apps can be registered afterwards.
 #' @param host The host/IP address to listen on.  Use `"127.0.0.1"` (default)
 #'   to accept only local connections, or `"0.0.0.0"` to accept connections on
 #'   all network interfaces.  This argument is only used when the server is
 #'   first started; subsequent `new_app()` calls reuse the existing server.
 #' @param ports A vector of candidate port numbers.  The first port that can be
 #'   successfully bound is used.
-#' @return The app URL of the form `http://host:port/name/` (invisibly).
+#' @return `new_app()` returns the app URL of the form `http://host:port/name/`
+#'   (invisibly). `stop_app()` returns nothing.
 #' @export
 new_app = function(
   name, handler, open = interactive(), host = '127.0.0.1', ports = 4321 + 1:10
 ) {
-  if (is.null(.httpd$port)) {
+  first_app = is.null(.httpd$port)
+  if (first_app) {
     port = .Call(httpd_start, as.integer(ports), as.character(host))
     if (port < 0L) stop2("Failed to start HTTP server on any of the specified ports.")
     .httpd$port = port
     .httpd$host = host
-    .httpd$cb_id = addTaskCallback(function(...) {
+
+    poll_fn = function() {
       apps = .httpd$apps
       if (length(apps))
         .Call(httpd_poll, names(apps), unname(apps))
-      TRUE
-    }, name = 'xfun.httpd')
+    }
+    if (interactive()) {
+      if (is_windows()) {
+        # Windows: use task callbacks (response delivered after next R expression)
+        .httpd$cb_id = addTaskCallback(function(...) {
+          poll_fn(); TRUE
+        }, name = 'xfun.httpd')
+      } else {
+        # Unix/macOS: register socket with R's event loop for immediate response
+        .Call(httpd_set_input_handler, poll_fn)
+      }
+    }
+    # Non-interactive mode: no task callback needed; httpd_serve() blocks below
   }
+
   wd = getwd()
   .httpd$apps[[name]] = function(path, ...) {
     if (path == '') path = '.'
     in_dir(wd, handler(path, ...))
   }
+
   # use 127.0.0.1 in the URL when binding on all interfaces (0.0.0.0 is not
   # directly routable from a browser)
   url_host = if (identical(.httpd$host, '0.0.0.0')) '127.0.0.1' else .httpd$host
   url = sprintf('http://%s:%d/%s/', url_host, .httpd$port, name)
   if (isTRUE(open)) open = getOption('viewer', browseURL)
   if (is.function(open)) open(url)
+
+  # In non-interactive sessions, block after the app is ready — but only when
+  # open was not explicitly set to FALSE (which signals "more apps to come").
+  if (!interactive() && !identical(open, FALSE)) {
+    on.exit(stop_app(), add = TRUE)
+    message('Serving at ', url, ' (press Ctrl+C to stop)')
+    tryCatch(
+      .Call(httpd_serve, names(.httpd$apps), unname(.httpd$apps)),
+      interrupt = function(e) invisible(NULL)
+    )
+  }
+
   invisible(url)
 }
 
-# stop one or more apps (and shut down the server when all apps are removed)
+#' @param name For `stop_app()`, a character vector of app names to stop;
+#'   defaults to all running apps.
+#' @rdname new_app
+#' @export
 stop_app = function(name = names(.httpd$apps)) {
   for (n in name) .httpd$apps[[n]] = NULL
   if (length(.httpd$apps) == 0L && !is.null(.httpd$port)) {
+    if (!is_windows()) .Call(httpd_set_input_handler, NULL)
     .Call(httpd_stop)
     if (!is.null(.httpd$cb_id)) {
       removeTaskCallback(.httpd$cb_id)
@@ -86,7 +134,6 @@ stop_app = function(name = names(.httpd$apps)) {
 .httpd$port  = NULL
 .httpd$host  = NULL
 .httpd$cb_id = NULL
-
 #' Get data from a REST API
 #'
 #' Read data from a REST API and optionally with an authorization token in the
