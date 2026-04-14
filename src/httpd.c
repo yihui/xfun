@@ -50,7 +50,6 @@ typedef SOCKET xfun_socket_t;
 #  include <arpa/inet.h>
 #  include <unistd.h>
 #  include <fcntl.h>
-#  include <R_ext/eventloop.h>  /* addInputHandler / removeInputHandler */
 typedef int xfun_socket_t;
 #  define XFUN_INVALID_SOCK  (-1)
 #  define xfun_close_sock(s) close(s)
@@ -64,7 +63,15 @@ typedef int xfun_socket_t;
 #include <R.h>
 #include <Rinternals.h>
 #include <R_ext/Utils.h>       /* R_tryEval, R_CheckUserInterrupt */
-#include <R_ext/eventloop.h>   /* R_PolledEvents (all platforms) */
+
+#ifdef _WIN32
+/* R_ext/eventloop.h may not be present in all Windows R binary
+ * distributions.  R_PolledEvents is exported from R.dll; declare it via
+ * LibExtern (defined in Rconfig.h, included transitively by R.h above). */
+LibExtern void (* R_PolledEvents)(void);
+#else
+#  include <R_ext/eventloop.h> /* addInputHandler, removeInputHandler, R_PolledEvents */
+#endif
 
 /* ---- global server state --------------------------------------------- */
 static xfun_socket_t server_fd = XFUN_INVALID_SOCK;
