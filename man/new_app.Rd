@@ -3,7 +3,7 @@
 \name{new_app}
 \alias{new_app}
 \alias{stop_app}
-\title{Create a local web application}
+\title{Create or stop a local web application}
 \usage{
 new_app(
   name,
@@ -16,9 +16,9 @@ new_app(
 stop_app(name = names(.httpd$apps))
 }
 \arguments{
-\item{name}{The app name (a character string, and each app should have a
-unique name). For \code{stop_app()}, a character vector of app names to stop;
-defaults to all running apps.}
+\item{name}{The app name (a character string; each app needs a unique name).
+For \code{stop_app()}, a character vector of app names to stop; defaults to all
+running apps.}
 
 \item{handler}{A function with signature \code{function(path, query, post, headers)}
 that handles HTTP requests and returns a response list. The arguments are:
@@ -46,35 +46,26 @@ it. In non-interactive sessions this also controls whether the call blocks:
 passing \code{open = FALSE} explicitly suppresses both browser-opening and
 blocking, so additional apps can be registered afterwards.}
 
-\item{host}{The host/IP address to listen on. Use \code{"127.0.0.1"} (default)
-to accept only local connections, or \code{"0.0.0.0"} to accept connections on
-all network interfaces. This argument is only used when the server is first
-started; subsequent \code{new_app()} calls reuse the existing server.}
+\item{host}{Passed to \code{httpd_start()}. Only used when the server is not yet
+running, or when the user explicitly provides a value that differs from the
+running server's host.}
 
-\item{ports}{A vector of candidate port numbers. The first port that can be
-successfully bound is used.}
+\item{ports}{Passed to \code{httpd_start()}. Only used when the server is not yet
+running, or when the user explicitly provides values that differ from the
+currently bound port.}
 }
 \value{
 \code{new_app()} returns the app URL of the form \verb{http://host:port/name/}
 (invisibly). \code{stop_app()} returns nothing.
 }
 \description{
-Create a local web application backed by a simple built-in HTTP server.
-The server is started automatically on the first call to \code{new_app()} and
-integrates with R's event loop so that incoming connections are processed
-without blocking the R console (interactive use) or blocks the session until
-interrupted (non-interactive use).
+\code{new_app()} registers a handler function under a named URL path and starts
+the HTTP server if it is not already running. It is a higher-level wrapper
+around \code{httpd_start()} intended for interactive use.
 
-On Unix/macOS in interactive sessions, incoming connections are handled
-immediately via R's input-handler mechanism, so the browser gets a response
-without the user needing to press Enter. On Windows in interactive sessions,
-a task callback (\code{addTaskCallback}) is used instead, so a response is
-delivered after the next top-level R expression is evaluated.
-
-In non-interactive sessions (e.g. \code{Rscript -e 'litedown::roam()'}),
-\code{new_app()} blocks the R session after registering the app, running a
-tight event loop until the user interrupts (e.g. Ctrl+C in a terminal).
-This blocking only activates when the \code{open} argument is not explicitly
-set to \code{FALSE}; registrations that pass \code{open = FALSE} do not block,
-so multiple apps can be registered sequentially before blocking starts.
+\code{stop_app()} deregisters one or more apps and shuts the server down when no
+apps remain.
+}
+\seealso{
+\code{\link{httpd_start}} for the lower-level server start/stop functions.
 }

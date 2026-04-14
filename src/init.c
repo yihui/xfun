@@ -14,14 +14,14 @@ extern SEXP httpd_set_input_handler(SEXP);
 extern SEXP httpd_serve(SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
-  {"base64_enc",              (DL_FUNC) &base64_enc,              1},
-  {"base64_dec",              (DL_FUNC) &base64_dec,              1},
-  {"rand_lcg",                (DL_FUNC) &rand_lcg,                5},
-  {"httpd_start",             (DL_FUNC) &httpd_start,             2},
-  {"httpd_stop",              (DL_FUNC) &httpd_stop,              0},
-  {"httpd_poll",              (DL_FUNC) &httpd_poll,              2},
-  {"httpd_set_input_handler", (DL_FUNC) &httpd_set_input_handler, 1},
-  {"httpd_serve",             (DL_FUNC) &httpd_serve,             2},
+  {"base64_enc",               (DL_FUNC) &base64_enc,              1},
+  {"base64_dec",               (DL_FUNC) &base64_dec,              1},
+  {"rand_lcg",                 (DL_FUNC) &rand_lcg,                5},
+  {"C_httpd_start",            (DL_FUNC) &httpd_start,             2},
+  {"C_httpd_stop",             (DL_FUNC) &httpd_stop,              0},
+  {"C_httpd_poll",             (DL_FUNC) &httpd_poll,              2},
+  {"C_httpd_set_input_handler",(DL_FUNC) &httpd_set_input_handler, 1},
+  {"C_httpd_serve",            (DL_FUNC) &httpd_serve,             2},
   {NULL, NULL, 0}
 };
 
