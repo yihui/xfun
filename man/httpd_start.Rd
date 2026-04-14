@@ -25,7 +25,9 @@ is used.}
 port and dispatches incoming requests to registered handler functions.
 \code{httpd_stop()} stops the server and removes all registered apps.
 
-In interactive R sessions the server integrates with R's event loop:
-connections are handled immediately without the user needing to press Enter
-(on Unix/macOS via \code{addInputHandler}; on Windows via \code{R_PolledEvents}).
+In interactive R sessions the server integrates with R's event loop.
+On Unix/macOS, incoming connections are handled immediately via
+\code{addInputHandler} so the browser gets a response without the user pressing
+Enter. On Windows, a task callback (\code{addTaskCallback}) is used, so a
+response is delivered after the next top-level R expression is evaluated.
 }

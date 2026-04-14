@@ -50,6 +50,7 @@ typedef SOCKET xfun_socket_t;
 #  include <arpa/inet.h>
 #  include <unistd.h>
 #  include <fcntl.h>
+#  include <R_ext/eventloop.h>  /* addInputHandler / removeInputHandler */
 typedef int xfun_socket_t;
 #  define XFUN_INVALID_SOCK  (-1)
 #  define xfun_close_sock(s) close(s)
@@ -62,49 +63,18 @@ typedef int xfun_socket_t;
 #include <ctype.h>
 #include <R.h>
 #include <Rinternals.h>
-#include <R_ext/Utils.h>       /* R_tryEval, R_CheckUserInterrupt */
-
-#ifdef _WIN32
-/* R_ext/eventloop.h may not be present in all Windows R binary
- * distributions.  R_PolledEvents is exported from R.dll; declare it via
- * LibExtern (defined in Rconfig.h, included transitively by R.h above). */
-LibExtern void (* R_PolledEvents)(void);
-#else
-#  include <R_ext/eventloop.h> /* addInputHandler, removeInputHandler, R_PolledEvents */
-#endif
+#include <R_ext/Utils.h>  /* R_tryEval, R_CheckUserInterrupt */
 
 /* ---- global server state --------------------------------------------- */
 static xfun_socket_t server_fd = XFUN_INVALID_SOCK;
 
-/* Preserved R function called to poll the server; set by
- * httpd_set_input_handler().  Used by both the Unix input-handler callback
- * and the Windows R_PolledEvents callback. */
-static SEXP xfun_poll_fn = NULL;
-
-#ifdef _WIN32
-/* Windows: hook R_PolledEvents to poll the server socket without needing
- * the user to press Enter. */
-static void (*old_polled_events)(void) = NULL;
-
-static void xfun_polled_events_cb(void) {
-    if (xfun_poll_fn && server_fd != XFUN_INVALID_SOCK) {
-        fd_set rfds;
-        FD_ZERO(&rfds);
-        FD_SET(server_fd, &rfds);
-        struct timeval tv = { 0, 0 };
-        if (select((int)server_fd + 1, &rfds, NULL, NULL, &tv) > 0) {
-            int err = 0;
-            SEXP call = PROTECT(lang1(xfun_poll_fn));
-            R_tryEval(call, R_GlobalEnv, &err);
-            UNPROTECT(1);
-        }
-    }
-    if (old_polled_events) old_polled_events();
-}
-#else
-/* Unix/macOS: use addInputHandler so the socket fd is watched by R's
- * select()-based event loop and the callback fires immediately on arrival. */
+#ifndef _WIN32
+/* Unix/macOS: input handler registered with R's event loop so connections
+ * are serviced immediately while R is idle, without the user pressing Enter.
+ * (R_PolledEvents is not exported from R.dll on Windows, so Windows uses
+ * addTaskCallback() on the R side instead.) */
 static InputHandler *xfun_input_handler = NULL;
+static SEXP          xfun_poll_fn       = NULL; /* preserved R function */
 
 static void xfun_input_handler_cb(void *data) {
     (void)data;  /* unused */
@@ -368,24 +338,20 @@ SEXP httpd_start(SEXP ports, SEXP host) {
 
 /*
  * httpd_stop()
- * Closes the server socket and cleans up the event-loop integration.
+ * Closes the server socket and cleans up the Unix input handler if present.
+ * On Windows, any addTaskCallback is removed on the R side.
  */
 SEXP httpd_stop(void) {
-#ifdef _WIN32
-    if (R_PolledEvents == xfun_polled_events_cb) {
-        R_PolledEvents = old_polled_events;
-        old_polled_events = NULL;
-    }
-#else
+#ifndef _WIN32
     if (xfun_input_handler) {
         removeInputHandler(&R_InputHandlers, xfun_input_handler);
         xfun_input_handler = NULL;
     }
-#endif
     if (xfun_poll_fn) {
         R_ReleaseObject(xfun_poll_fn);
         xfun_poll_fn = NULL;
     }
+#endif
     if (server_fd != XFUN_INVALID_SOCK) {
         xfun_close_sock(server_fd);
         server_fd = XFUN_INVALID_SOCK;
@@ -398,30 +364,13 @@ SEXP httpd_stop(void) {
 
 /*
  * httpd_set_input_handler(fn)
- * Register (fn is a function) or deregister (fn is NULL/R_NilValue) the
- * server with R's event loop so connections are handled without user input:
- *   Unix/macOS – addInputHandler() watches the server socket fd directly.
- *   Windows    – installs an R_PolledEvents callback that polls the socket.
+ * Unix/macOS only: register (fn is a function) or deregister (fn is
+ * NULL/R_NilValue) the server socket with R's event loop so incoming
+ * connections are handled immediately while R is idle at the prompt.
+ * On Windows this is a no-op; the R side uses addTaskCallback() instead.
  */
 SEXP httpd_set_input_handler(SEXP fn) {
-#ifdef _WIN32
-    /* Deregister existing Windows hook */
-    if (R_PolledEvents == xfun_polled_events_cb) {
-        R_PolledEvents = old_polled_events;
-        old_polled_events = NULL;
-    }
-    if (xfun_poll_fn) {
-        R_ReleaseObject(xfun_poll_fn);
-        xfun_poll_fn = NULL;
-    }
-    if (!isNull(fn) && server_fd != XFUN_INVALID_SOCK) {
-        R_PreserveObject(fn);
-        xfun_poll_fn      = fn;
-        old_polled_events = R_PolledEvents;
-        R_PolledEvents    = xfun_polled_events_cb;
-    }
-#else
-    /* Deregister existing Unix handler */
+#ifndef _WIN32
     if (xfun_input_handler) {
         removeInputHandler(&R_InputHandlers, xfun_input_handler);
         xfun_input_handler = NULL;

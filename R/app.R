@@ -4,9 +4,11 @@
 #' port and dispatches incoming requests to registered handler functions.
 #' `httpd_stop()` stops the server and removes all registered apps.
 #'
-#' In interactive R sessions the server integrates with R's event loop:
-#' connections are handled immediately without the user needing to press Enter
-#' (on Unix/macOS via `addInputHandler`; on Windows via `R_PolledEvents`).
+#' In interactive R sessions the server integrates with R's event loop.
+#' On Unix/macOS, incoming connections are handled immediately via
+#' `addInputHandler` so the browser gets a response without the user pressing
+#' Enter.  On Windows, a task callback (`addTaskCallback`) is used, so a
+#' response is delivered after the next top-level R expression is evaluated.
 #' @param host The host/IP address to bind to.  Use `"127.0.0.1"` (default)
 #'   for local-only connections, or `"0.0.0.0"` for all network interfaces.
 #' @param ports A vector of candidate port numbers.  The first available port
@@ -25,7 +27,17 @@ httpd_start = function(host = '127.0.0.1', ports = 4321 + 1:10) {
       apps = .httpd$apps
       if (length(apps)) .Call(C_httpd_poll, names(apps), unname(apps))
     }
-    .Call(C_httpd_set_input_handler, poll_fn)
+    if (is_windows()) {
+      # Windows: R_PolledEvents is not exported from R.dll, so use a task
+      # callback; response delivered after the next top-level R expression.
+      .httpd$cb_id = addTaskCallback(function(...) {
+        poll_fn(); TRUE
+      }, name = 'xfun.httpd')
+    } else {
+      # Unix/macOS: register the socket fd with R's event loop for immediate
+      # response without the user needing to press Enter.
+      .Call(C_httpd_set_input_handler, poll_fn)
+    }
   }
 
   url_host = if (identical(host, '0.0.0.0')) '127.0.0.1' else host
@@ -35,8 +47,12 @@ httpd_start = function(host = '127.0.0.1', ports = 4321 + 1:10) {
 #' @rdname httpd_start
 #' @export
 httpd_stop = function() {
-  .Call(C_httpd_set_input_handler, NULL)
+  if (!is_windows()) .Call(C_httpd_set_input_handler, NULL)
   .Call(C_httpd_stop)
+  if (!is.null(.httpd$cb_id)) {
+    removeTaskCallback(.httpd$cb_id)
+    .httpd$cb_id = NULL
+  }
   .httpd$apps = list()
   .httpd$port = NULL
   .httpd$host = NULL
@@ -136,9 +152,10 @@ stop_app = function(name = names(.httpd$apps)) {
 
 # internal state for the built-in HTTP server
 .httpd = new.env(parent = emptyenv())
-.httpd$apps = list()
-.httpd$port = NULL
-.httpd$host = NULL
+.httpd$apps  = list()
+.httpd$port  = NULL
+.httpd$host  = NULL
+.httpd$cb_id = NULL  # Windows task callback ID
 #' Get data from a REST API
 #'
 #' Read data from a REST API and optionally with an authorization token in the
