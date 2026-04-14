@@ -7,10 +7,6 @@
 #' In interactive R sessions the server integrates with R's event loop:
 #' connections are handled immediately without the user needing to press Enter
 #' (on Unix/macOS via `addInputHandler`; on Windows via `R_PolledEvents`).
-#'
-#' In non-interactive sessions `new_app()` blocks the R session after
-#' registering the app, running a tight event loop until the user interrupts
-#' (e.g. Ctrl+C in a terminal).
 #' @param host The host/IP address to bind to.  Use `"127.0.0.1"` (default)
 #'   for local-only connections, or `"0.0.0.0"` for all network interfaces.
 #' @param ports A vector of candidate port numbers.  The first available port

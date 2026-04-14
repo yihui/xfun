@@ -28,8 +28,4 @@ port and dispatches incoming requests to registered handler functions.
 In interactive R sessions the server integrates with R's event loop:
 connections are handled immediately without the user needing to press Enter
 (on Unix/macOS via \code{addInputHandler}; on Windows via \code{R_PolledEvents}).
-
-In non-interactive sessions \code{new_app()} blocks the R session after
-registering the app, running a tight event loop until the user interrupts
-(e.g. Ctrl+C in a terminal).
 }
