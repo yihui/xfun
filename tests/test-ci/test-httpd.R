@@ -1,6 +1,6 @@
 library(testit)
 
-# Find a free port to use for the test server.
+# Find a free port.
 find_free_port = function(ports = 4321 + 1:20) {
   for (p in ports) {
     sock = tryCatch(serverSocket(p), error = function(e) NULL)
@@ -9,9 +9,10 @@ find_free_port = function(ports = 4321 + 1:20) {
   NULL
 }
 
-# Send a raw HTTP/1.0 request and return the full response as a string.
-# The server must be polled manually AFTER writing the request so that it
-# reads the TCP buffer, invokes the R handler, and writes the response.
+# Send a raw HTTP/1.0 request to the proxy and return the full response as a
+# string.  After writing the request we call Sys.sleep() so R's event loop
+# runs and R's internal httpd can accept + process the connection forwarded by
+# the proxy thread.
 http_request = function(host, port, method, path, body = NULL, extra_headers = '') {
   sock = tryCatch(
     socketConnection(host, port = port, open = 'r+b', blocking = TRUE, timeout = 5),
@@ -29,8 +30,9 @@ http_request = function(host, port, method, path, body = NULL, extra_headers = '
     if (!is.null(body)) body else ''
   )
   writeBin(req, sock)
-  # Poll the server: accepts, parses, calls handler, sends response, closes fd.
-  .Call(C_httpd_poll, names(.httpd$apps), unname(.httpd$apps))
+  # Allow time for the proxy thread to connect to R's httpd and for R's
+  # event loop (triggered by Sys.sleep) to process the request.
+  Sys.sleep(0.3)
   tryCatch(paste(readLines(sock, warn = FALSE), collapse = '\n'),
            error = function(e) NULL)
 }
@@ -39,7 +41,7 @@ port = find_free_port()
 
 if (!is.null(port)) {
 
-  # Start a handler that echoes back the request details as plain text.
+  # Handler echoes back request details as plain text.
   url = new_app(
     'test',
     function(path, query, post, headers) {
@@ -56,27 +58,25 @@ if (!is.null(port)) {
   )
   on.exit(stop_app('test'), add = TRUE)
 
-  assert('new_app() / httpd_start() returns the expected URL', {
+  assert('new_app() returns the expected URL', {
     (url %==% sprintf('http://127.0.0.1:%d/test/', port))
   })
 
-  assert('server responds to a GET request', {
+  assert('proxy responds to a GET request', {
     resp = http_request('127.0.0.1', port, 'GET', '/test/hello')
     (!is.null(resp))
     (grepl('200 OK',     resp, fixed = TRUE))
     (grepl('path=hello', resp, fixed = TRUE))
   })
 
-  assert('query parameters are parsed and URL-decoded', {
+  assert('query parameters are URL-decoded', {
     resp = http_request('127.0.0.1', port, 'GET', '/test/page?foo=bar%20baz')
     (!is.null(resp))
-    # path is the path component only (query is separate)
     (grepl('path=page',        resp, fixed = TRUE))
-    # query parameter 'foo' should be URL-decoded
     (grepl('query_foo=bar baz', resp, fixed = TRUE))
   })
 
-  assert('POST body is received correctly', {
+  assert('POST body is forwarded correctly', {
     resp = http_request('127.0.0.1', port, 'POST', '/test/submit',
                         body = 'hello=world')
     (!is.null(resp))
@@ -84,25 +84,24 @@ if (!is.null(port)) {
     (grepl('method=POST',      resp, fixed = TRUE))
   })
 
-  assert('request headers are forwarded to the handler', {
+  assert('request headers reach the handler', {
     resp = http_request('127.0.0.1', port, 'GET', '/test/hdr',
                         extra_headers = 'X-Custom: test-value\r\n')
     (!is.null(resp))
-    # The raw headers passed to the handler contain all request headers
     (grepl('200 OK', resp, fixed = TRUE))
   })
 
-  assert('unknown app returns 404', {
+  assert('unknown app returns an error page', {
     resp = http_request('127.0.0.1', port, 'GET', '/no-such-app/')
     (!is.null(resp))
-    (grepl('404', resp, fixed = TRUE))
+    # R's httpd returns 200 with an error page when no handler is registered
+    (grepl('httpd error', resp, fixed = TRUE))
   })
 
-  assert('httpd_stop() shuts down the server', {
+  assert('stop_app() shuts down the proxy', {
     stop_app('test')
-    on.exit(NULL)   # cancel the earlier on.exit so we don't double-stop
-    (is.null(.httpd$port))
-    # Any new connection attempt must fail now
+    on.exit(NULL)   # cancel earlier on.exit so we don't double-stop
+    (is.null(.proxy$port))
     (is.null(tryCatch(
       socketConnection('127.0.0.1', port = port, open = 'r+b', timeout = 1),
       error = function(e) NULL

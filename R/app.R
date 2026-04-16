@@ -1,161 +1,138 @@
-#' Start or stop the built-in HTTP server
-#'
-#' `httpd_start()` starts a minimal HTTP server that listens on a local TCP
-#' port and dispatches incoming requests to registered handler functions.
-#' `httpd_stop()` stops the server and removes all registered apps.
-#'
-#' In interactive R sessions the server integrates with R's event loop.
-#' On Unix/macOS, incoming connections are handled immediately via
-#' `addInputHandler` so the browser gets a response without the user pressing
-#' Enter.  On Windows, a task callback (`addTaskCallback`) is used, so a
-#' response is delivered after the next top-level R expression is evaluated.
-#' @param host The host/IP address to bind to.  Use `"127.0.0.1"` (default)
-#'   for local-only connections, or `"0.0.0.0"` for all network interfaces.
-#' @param ports A vector of candidate port numbers.  The first available port
-#'   is used.
-#' @return `httpd_start()` returns the base server URL invisibly (e.g.
-#'   `"http://127.0.0.1:4322/"`).  `httpd_stop()` returns nothing.
-#' @export
-httpd_start = function(host = '127.0.0.1', ports = 4321 + 1:10) {
-  port = .Call(C_httpd_start, as.integer(ports), as.character(host))
-  if (port < 0L) stop2("Failed to start HTTP server on any of the specified ports.")
-  .httpd$port = port
-  .httpd$host = host
-
-  if (interactive()) {
-    poll_fn = function() {
-      apps = .httpd$apps
-      if (length(apps)) .Call(C_httpd_poll, names(apps), unname(apps))
-    }
-    if (is_windows()) {
-      # Windows: R_PolledEvents is not exported from R.dll, so use a task
-      # callback; response delivered after the next top-level R expression.
-      .httpd$cb_id = addTaskCallback(function(...) {
-        poll_fn(); TRUE
-      }, name = 'xfun.httpd')
-    } else {
-      # Unix/macOS: register the socket fd with R's event loop for immediate
-      # response without the user needing to press Enter.
-      .Call(C_httpd_set_input_handler, poll_fn)
-    }
-  }
-
-  url_host = if (identical(host, '0.0.0.0')) '127.0.0.1' else host
-  invisible(sprintf('http://%s:%d/', url_host, port))
-}
-
-#' @rdname httpd_start
-#' @export
-httpd_stop = function() {
-  if (!is_windows()) .Call(C_httpd_set_input_handler, NULL)
-  .Call(C_httpd_stop)
-  if (!is.null(.httpd$cb_id)) {
-    removeTaskCallback(.httpd$cb_id)
-    .httpd$cb_id = NULL
-  }
-  .httpd$apps = list()
-  .httpd$port = NULL
-  .httpd$host = NULL
-}
-
 #' Create or stop a local web application
 #'
-#' `new_app()` registers a handler function under a named URL path and starts
-#' the HTTP server if it is not already running.  It is a higher-level wrapper
-#' around `httpd_start()` intended for interactive use.
+#' `new_app()` registers a handler function for a URL path on the local HTTP
+#' server and optionally opens the URL in a browser.  `stop_app()` deregisters
+#' one or more apps.
 #'
-#' `stop_app()` deregisters one or more apps and shuts the server down when no
-#' apps remain.
-#' @param name The app name (a character string; each app needs a unique name).
+#' The server is R's built-in httpd (the same one that powers dynamic help).
+#' A lightweight proxy started by xfun provides clean URLs of the form
+#' `http://127.0.0.1:PORT/name/` instead of R's native
+#' `http://127.0.0.1:PORT/custom/name/`.  The proxy runs in a background
+#' thread and works immediately on all platforms without the user needing to
+#' press Enter (no R event-loop involvement is required for the proxy itself).
+#' @param name App name (a character string; each app needs a unique name).
 #' @param handler A function with signature `function(path, query, post,
-#'   headers)` that handles HTTP requests and returns a response list.  The
-#'   arguments are:
-#'   \describe{
-#'     \item{`path`}{character(1): URL path relative to the app root (never
-#'       empty; the bare root maps to `"."`).}
-#'     \item{`query`}{Named character vector of URL-decoded query parameters.}
-#'     \item{`post`}{Raw vector containing the request body (length 0 for GET
-#'       requests).}
-#'     \item{`headers`}{Raw vector of request headers in the form
-#'       `"Request-Method: METHOD\nField: value\n..."`.}
-#'   }
-#'   The return value should be a named list with one or more of:
-#'   \describe{
-#'     \item{`payload`}{character(1): the response body.}
-#'     \item{`file`}{character(1): path to a file to stream as the body.}
-#'     \item{`content-type`}{character(1): MIME type (default
-#'       `"text/html; charset=UTF-8"`).}
-#'     \item{`status code`}{integer(1): HTTP status code (default 200).}
-#'     \item{`header`}{Named character vector of extra response headers.}
-#'   }
+#'   headers)` that handles HTTP requests and returns a response list.
 #' @param open Whether to open the app URL in a browser, or a function to open
 #'   it.  In non-interactive sessions this also controls whether the call
 #'   blocks: passing `open = FALSE` explicitly suppresses both browser-opening
-#'   and blocking, so additional apps can be registered afterwards.
-#' @param host Passed to `httpd_start()`.  Only used when the server is not yet
-#'   running, or when the user explicitly provides a value that differs from the
-#'   running server's host.
-#' @param ports Passed to `httpd_start()`.  Only used when the server is not yet
-#'   running, or when the user explicitly provides values that differ from the
-#'   currently bound port.
-#' @return `new_app()` returns the app URL of the form
-#'   `"http://host:port/name/"` (invisibly).  `stop_app()` returns nothing.
+#'   and blocking.
+#' @param host Bind address for the proxy (`"127.0.0.1"` or `"0.0.0.0"`).
+#' @param ports Candidate proxy ports; the first available port is used.
+#' @return `new_app()` returns the app URL invisibly.  `stop_app()` returns
+#'   nothing.
 #' @export
 new_app = function(
   name, handler, open = interactive(), host = '127.0.0.1', ports = 4321 + 1:10
 ) {
-  # Restart the server when the user explicitly provides host/ports that differ
-  # from the currently running server; otherwise start only if not yet running.
-  needs_start = is.null(.httpd$port)
-  if (!needs_start && (!missing(ports) || !missing(host))) {
-    if (!identical(as.integer(ports), .httpd$port) ||
-        !identical(host, .httpd$host)) {
-      httpd_stop()
-      needs_start = TRUE
-    }
-  }
-  if (needs_start) httpd_start(host, ports)
+  # Start R's internal httpd (returns its port).
+  backend = .httpd_port()
+  if (backend <= 0L) stop2("Failed to start R's internal httpd.")
 
+  # Register our wrapper in R's httpd environment.
   wd = getwd()
-  .httpd$apps[[name]] = function(path, ...) {
+  h = function(path, query = NULL, body = NULL, headers = NULL) {
+    path = sub(paste0('^/custom/', name, '/'), '', path)
     if (path == '') path = '.'
-    in_dir(wd, handler(path, ...))
+    # Reconstruct named, URL-decoded query params from the X-Xfun-Query
+    # header added by our proxy (R's httpd discards parameter names).
+    q = .parse_xfun_query(headers)
+    # Normalise body/post and headers to raw vectors.
+    post = if (is.null(body)    || length(body)    == 0L) raw(0) else
+             if (is.raw(body))    body    else charToRaw(body)
+    hdrs = if (is.null(headers) || length(headers) == 0L) raw(0) else
+             if (is.raw(headers)) headers else charToRaw(headers[1L])
+    in_dir(wd, handler(path, q, post, hdrs))
   }
+  assign(name, h, envir = .httpd_env())
 
-  url_host = if (identical(.httpd$host, '0.0.0.0')) '127.0.0.1' else .httpd$host
-  url = sprintf('http://%s:%d/%s/', url_host, .httpd$port, name)
+  # Start proxy if not running, or restart when user provides an explicit
+  # different set of ports.
+  if (is.null(.proxy$port) || !missing(ports)) {
+    p = proxy_start(as.integer(ports), backend)
+    if (p < 0L) stop2("Failed to start proxy on any of the given ports.")
+    .proxy$port = p
+  }
+  .proxy$apps[[name]] = TRUE
+
+  url_host = if (identical(host, '0.0.0.0')) '127.0.0.1' else host
+  url = sprintf('http://%s:%d/%s/', url_host, .proxy$port, name)
   if (isTRUE(open)) open = getOption('viewer', browseURL)
   if (is.function(open)) open(url)
 
-  # In non-interactive sessions, block until interrupted — but only when open
-  # was not explicitly set to FALSE (which signals "more apps to come").
   if (!interactive() && !identical(open, FALSE)) {
     on.exit(stop_app(), add = TRUE)
     message('Serving at ', url, ' (press Ctrl+C to stop)')
     tryCatch(
-      .Call(C_httpd_serve, names(.httpd$apps), unname(.httpd$apps)),
+      while (TRUE) Sys.sleep(1),
       interrupt = function(e) invisible(NULL)
     )
   }
-
   invisible(url)
 }
 
-#' @param name For `stop_app()`, a character vector of app names to stop;
-#'   defaults to all running apps.
 #' @rdname new_app
 #' @export
-stop_app = function(name = names(.httpd$apps)) {
-  for (n in name) .httpd$apps[[n]] = NULL
-  if (length(.httpd$apps) == 0L && !is.null(.httpd$port)) httpd_stop()
+stop_app = function(name = names(.proxy$apps)) {
+  e = .httpd_env()
+  for (n in name) {
+    if (exists(n, envir = e, inherits = FALSE)) rm(list = n, envir = e)
+    .proxy$apps[[n]] = NULL
+  }
+  if (length(.proxy$apps) == 0L && !is.null(.proxy$port)) proxy_stop()
 }
 
-# internal state for the built-in HTTP server
-.httpd = new.env(parent = emptyenv())
-.httpd$apps  = list()
-.httpd$port  = NULL
-.httpd$host  = NULL
-.httpd$cb_id = NULL  # Windows task callback ID
+# ---- internal helpers -------------------------------------------------------
+
+# Start R's internal httpd; return its port (or -1 on failure).
+.httpd_port = function() suppressMessages(tools::startDynamicHelp(NA))
+
+# Environment where R's httpd looks up /custom/* handlers.
+.httpd_env = function() getFromNamespace('.httpd.handlers.env', 'tools')
+
+# Internal proxy state.
+.proxy = new.env(parent = emptyenv())
+.proxy$port = NULL   # proxy listen port
+.proxy$apps = list() # names of registered apps
+
+# Start the proxy on the first available port from `ports`; return bound port or -1.
+proxy_start = function(ports, backend_port) {
+  .Call(C_proxy_start, as.integer(ports), as.integer(backend_port))
+}
+
+# Stop the proxy thread and close the listen socket.
+proxy_stop = function() {
+  .Call(C_proxy_stop)
+  .proxy$port = NULL
+}
+
+# Parse the X-Xfun-Query header (added by the proxy) into a named, URL-decoded
+# character vector.  Falls back to character(0) when absent.
+.parse_xfun_query = function(headers) {
+  if (is.null(headers) || length(headers) == 0L) return(character(0))
+  hs = if (is.raw(headers)) rawToChar(headers) else paste(headers, collapse = '\n')
+  # Find the X-Xfun-Query line.
+  qs = ''
+  for (line in strsplit(hs, '\n', fixed = TRUE)[[1L]]) {
+    line = sub('\r$', '', line)
+    if (startsWith(line, 'X-Xfun-Query: ')) {
+      qs = substring(line, nchar('X-Xfun-Query: ') + 1L)
+      break
+    }
+  }
+  if (!nzchar(qs)) return(character(0))
+  pairs = Filter(nzchar, strsplit(qs, '&', fixed = TRUE)[[1L]])
+  if (!length(pairs)) return(character(0))
+  keys = vals = character(length(pairs))
+  for (i in seq_along(pairs)) {
+    kv = strsplit(pairs[[i]], '=', fixed = TRUE)[[1L]]
+    keys[[i]] = utils::URLdecode(kv[[1L]])
+    vals[[i]] = if (length(kv) >= 2L)
+      utils::URLdecode(paste(kv[-1L], collapse = '=')) else ''
+  }
+  setNames(vals, keys)
+}
+
 #' Get data from a REST API
 #'
 #' Read data from a REST API and optionally with an authorization token in the

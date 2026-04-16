@@ -5,67 +5,42 @@
 \alias{stop_app}
 \title{Create or stop a local web application}
 \usage{
-new_app(
-  name,
-  handler,
-  open = interactive(),
-  host = "127.0.0.1",
-  ports = 4321 + 1:10
-)
+new_app(name, handler, open = interactive(), host = "127.0.0.1",
+  ports = 4321 + 1:10)
 
-stop_app(name = names(.httpd$apps))
+stop_app(name = names(.proxy$apps))
 }
 \arguments{
-\item{name}{The app name (a character string; each app needs a unique name).
-For \code{stop_app()}, a character vector of app names to stop; defaults to all
-running apps.}
+\item{name}{App name (a character string; each app needs a unique name).
+For \code{stop_app()}, a character vector of app names to stop;
+defaults to all running apps.}
 
-\item{handler}{A function with signature \code{function(path, query, post, headers)}
-that handles HTTP requests and returns a response list. The arguments are:
-\describe{
-  \item{\code{path}}{character(1): URL path relative to the app root (never
-    empty; the bare root maps to \code{"."}).}
-  \item{\code{query}}{Named character vector of URL-decoded query parameters.}
-  \item{\code{post}}{Raw vector containing the request body (length 0 for GET
-    requests).}
-  \item{\code{headers}}{Raw vector of request headers in the form
-    \code{"Request-Method: METHOD\nField: value\n..."}.}
-}
-The return value should be a named list with one or more of:
-\describe{
-  \item{\code{payload}}{character(1): the response body.}
-  \item{\code{file}}{character(1): path to a file to stream as the body.}
-  \item{\code{content-type}}{character(1): MIME type (default
-    \code{"text/html; charset=UTF-8"}).}
-  \item{\code{status code}}{integer(1): HTTP status code (default 200).}
-  \item{\code{header}}{Named character vector of extra response headers.}
-}}
+\item{handler}{A function with signature \code{function(path, query, post,
+headers)} that handles HTTP requests and returns a response list.}
 
 \item{open}{Whether to open the app URL in a browser, or a function to open
-it. In non-interactive sessions this also controls whether the call blocks:
-passing \code{open = FALSE} explicitly suppresses both browser-opening and
-blocking, so additional apps can be registered afterwards.}
+it.  In non-interactive sessions this also controls whether the call
+blocks: passing \code{open = FALSE} explicitly suppresses both
+browser-opening and blocking.}
 
-\item{host}{Passed to \code{httpd_start()}. Only used when the server is not yet
-running, or when the user explicitly provides a value that differs from the
-running server's host.}
+\item{host}{Bind address for the proxy (\code{"127.0.0.1"} or
+\code{"0.0.0.0"}).}
 
-\item{ports}{Passed to \code{httpd_start()}. Only used when the server is not yet
-running, or when the user explicitly provides values that differ from the
-currently bound port.}
+\item{ports}{Candidate proxy ports; the first available port is used.}
 }
 \value{
-\code{new_app()} returns the app URL of the form \verb{http://host:port/name/}
-(invisibly). \code{stop_app()} returns nothing.
+\code{new_app()} returns the app URL invisibly.
+\code{stop_app()} returns nothing.
 }
 \description{
-\code{new_app()} registers a handler function under a named URL path and starts
-the HTTP server if it is not already running. It is a higher-level wrapper
-around \code{httpd_start()} intended for interactive use.
+\code{new_app()} registers a handler function for a URL path on the local HTTP
+server and optionally opens the URL in a browser.  \code{stop_app()} deregisters
+one or more apps.
 
-\code{stop_app()} deregisters one or more apps and shuts the server down when no
-apps remain.
-}
-\seealso{
-\code{\link{httpd_start}} for the lower-level server start/stop functions.
+The server is R's built-in httpd (the same one that powers dynamic help).
+A lightweight proxy started by xfun provides clean URLs of the form
+\code{http://127.0.0.1:PORT/name/} instead of R's native
+\code{http://127.0.0.1:PORT/custom/name/}.  The proxy runs in a background
+thread and works immediately on all platforms without the user needing to
+press Enter.
 }

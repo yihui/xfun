@@ -1,0 +1,44 @@
+name: Update picohttpparser
+
+on:
+  schedule:
+    - cron: '0 3 1 * *'  # first day of every month at 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download latest picohttpparser
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/h2o/picohttpparser/master/picohttpparser.h \
+            -o src/picohttpparser.h
+          curl -fsSL https://raw.githubusercontent.com/h2o/picohttpparser/master/picohttpparser.c \
+            -o src/picohttpparser.c
+
+      - name: Check for changes
+        id: diff
+        run: |
+          if git diff --quiet src/picohttpparser.h src/picohttpparser.c; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Open pull request
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: 'chore: update vendored picohttpparser'
+          title: 'Update vendored picohttpparser'
+          body: |
+            Automated monthly update of `src/picohttpparser.{h,c}` from
+            [h2o/picohttpparser](https://github.com/h2o/picohttpparser) (master branch).
+          branch: automated/update-picohttpparser
+          delete-branch: true
