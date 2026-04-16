@@ -91,11 +91,12 @@ if (!is.null(port)) {
     (grepl('200 OK', resp, fixed = TRUE))
   })
 
-  assert('unknown app returns an error page', {
+  assert('unknown app does not invoke our handler', {
     resp = http_request('127.0.0.1', port, 'GET', '/no-such-app/')
     (!is.null(resp))
-    # R's httpd returns 200 with an error page when no handler is registered
-    (grepl('httpd error', resp, fixed = TRUE))
+    # R's httpd returns an error page (format varies by version); verify our
+    # handler was NOT called (it would return "path=no-such-app").
+    (!grepl('path=no-such-app', resp, fixed = TRUE))
   })
 
   assert('stop_app() shuts down the proxy', {
