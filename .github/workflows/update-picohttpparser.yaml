@@ -17,9 +17,9 @@ jobs:
 
       - name: Download latest picohttpparser
         run: |
-          curl -fsSL https://raw.githubusercontent.com/h2o/picohttpparser/master/picohttpparser.h \
+          curl -fsSL https://raw.githubusercontent.com/h2o/picohttpparser/HEAD/picohttpparser.h \
             -o src/picohttpparser.h
-          curl -fsSL https://raw.githubusercontent.com/h2o/picohttpparser/master/picohttpparser.c \
+          curl -fsSL https://raw.githubusercontent.com/h2o/picohttpparser/HEAD/picohttpparser.c \
             -o src/picohttpparser.c
 
       - name: Check for changes
@@ -39,6 +39,6 @@ jobs:
           title: 'Update vendored picohttpparser'
           body: |
             Automated monthly update of `src/picohttpparser.{h,c}` from
-            [h2o/picohttpparser](https://github.com/h2o/picohttpparser) (master branch).
+            [h2o/picohttpparser](https://github.com/h2o/picohttpparser) (HEAD branch).
           branch: automated/update-picohttpparser
           delete-branch: true
