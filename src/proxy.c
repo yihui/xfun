@@ -1,19 +1,20 @@
 /*
- * proxy.c — per-app lightweight reverse-proxy for xfun's new_app() / stop_app().
+ * proxy.c — shared-port reverse-proxy for xfun's new_app() / stop_app().
  *
- * Each xfun app gets its own dedicated proxy instance on a unique port.
- * The instance's background thread prepends a per-app prefix to all
- * incoming request paths before forwarding to R's internal httpd:
+ * A single proxy instance listens on one port and can serve multiple
+ * xfun apps at the same time.  The app is identified by a "~name" prefix
+ * in the request URL path:
  *
- *   PORT/path  →  BACKEND:/custom/xfun:name/path
+ *   PORT/~name/rest  →  BACKEND:/custom/xfun:name:PORT/rest  (named app)
+ *   PORT/rest        →  BACKEND:/custom/xfun::PORT/rest       (nameless app)
  *
- * Using one port per app eliminates any catch-all ambiguity: the port
- * uniquely identifies the app, and the prefix encodes the R httpd
- * handler key ("xfun:name" or "xfun:" for the unnamed app).
+ * The port number is embedded in the rewritten path so that the R-level
+ * httpd handler key (assigned with assign("xfun:name:PORT", ...)) is unique
+ * even when two apps share a port under different names.
  *
- * Instances are managed as a fixed-size array (XP_MAX slots).
- * proxy_start() returns the slot index; proxy_stop(slot) tears down
- * that specific instance, leaving all others running.
+ * Multiple instances are supported (up to XP_MAX=32), one per distinct
+ * listen port.  proxy_start(port, backend) allocates a slot and returns
+ * its index; proxy_stop(slot) tears down that instance.
  */
 
 /* ---- platform socket + thread portability -------------------------------- */
@@ -47,12 +48,12 @@ typedef int xp_sock_t;
 /* ---- per-instance state ------------------------------------------------- */
 #define XP_MAX        32
 #define XP_BUF        65536
-#define XP_PREFIX_MAX 256
 
 typedef struct {
     xp_sock_t    listen;
-    int          backend;
-    char         prefix[XP_PREFIX_MAX]; /* e.g. "/custom/xfun:foo" */
+    int          port;       /* own listen port (embedded in rewritten path) */
+    int          backend;    /* R httpd backend port */
+    int          passthrough;/* 1 = forward all paths verbatim; 0 = ~name rewriting */
     volatile int active;
 #ifdef _WIN32
     HANDLE       thread;
@@ -134,25 +135,53 @@ static void xp_handle(xp_sock_t cfd, xp_instance_t *inst)
         }
     }
 
-    /* rewrite path: prepend the instance prefix
-     * e.g. /page  →  /custom/xfun:foo/page  (prefix = "/custom/xfun:foo")
-     *      /      →  /custom/xfun:foo/       (prefix = "/custom/xfun:foo")
-     *      /page  →  /custom/xfun:/page      (prefix = "/custom/xfun:", unnamed app)
+    /* rewrite path.
+     *
+     * passthrough mode (inst->passthrough = 1):
+     *   forward path verbatim — used to proxy the entire R httpd server.
+     *
+     * ~name rewriting mode (default):
+     *   /~name/rest  →  /custom/xfun:name:PORT/rest  (named app)
+     *   /~name       →  /custom/xfun:name:PORT/       (named app, root)
+     *   /~name?q=1   →  /custom/xfun:name:PORT/?q=1
+     *   /rest        →  /custom/xfun::PORT/rest        (nameless app)
      */
     char npath[4096];
-    size_t plen = strlen(inst->prefix);
-    if (path_len > 0 && path[0] == '/') {
-        if (plen + path_len + 1 >= sizeof(npath)) goto done;
-        memcpy(npath, inst->prefix, plen);
-        memcpy(npath + plen, path, path_len);
-        npath[plen + path_len] = '\0';
+    if (inst->passthrough) {
+        if (path_len + 1 >= sizeof(npath)) goto done;
+        memcpy(npath, path, path_len);
+        npath[path_len] = '\0';
+    } else if (path_len >= 2 && path[0] == '/' && path[1] == '~') {
+        /* named app: extract name up to '/', '?', or end of path */
+        size_t ni = 2;
+        while (ni < path_len && path[ni] != '/' && path[ni] != '?') ni++;
+        size_t nlen = ni - 2;           /* length of name */
+        if (nlen > 255) goto done;      /* reject unreasonably long app names */
+        const char *rest = path + ni;
+        size_t rlen = path_len - ni;
+        if (rlen == 0 || rest[0] == '?') {
+            /* /~name  or  /~name?q=1 → insert '/' before rest */
+            int n = snprintf(npath, sizeof(npath),
+                             "/custom/xfun:%.*s:%d/%.*s",
+                             (int)nlen, path + 2,
+                             inst->port,
+                             (int)rlen, rest);
+            if (n <= 0 || n >= (int)sizeof(npath)) goto done;
+        } else {
+            /* /~name/rest */
+            int n = snprintf(npath, sizeof(npath),
+                             "/custom/xfun:%.*s:%d%.*s",
+                             (int)nlen, path + 2,
+                             inst->port,
+                             (int)rlen, rest);
+            if (n <= 0 || n >= (int)sizeof(npath)) goto done;
+        }
     } else {
-        /* ensure a leading slash between prefix and path */
-        if (plen + path_len + 2 >= sizeof(npath)) goto done;
-        memcpy(npath, inst->prefix, plen);
-        npath[plen] = '/';
-        memcpy(npath + plen + 1, path, path_len);
-        npath[plen + path_len + 1] = '\0';
+        /* nameless app: /rest → /custom/xfun::PORT/rest */
+        int n = snprintf(npath, sizeof(npath),
+                         "/custom/xfun::%d%.*s",
+                         inst->port, (int)path_len, path);
+        if (n <= 0 || n >= (int)sizeof(npath)) goto done;
     }
 
     /* connect to R's httpd backend */
@@ -256,12 +285,16 @@ static void *xp_thread_fn(void *arg)
 /* ---- R entry points ----------------------------------------------------- */
 
 /*
- * proxy_start(port, backend_port, prefix)
- * Allocate a new proxy instance that listens on `port`, forwards to
- * `backend_port`, and prepends `prefix` to all request paths.
+ * proxy_start(port, backend_port, passthrough, host)
+ * Allocate a new proxy instance.
+ *   port:        port to listen on
+ *   backend_port: R httpd backend port to forward to
+ *   passthrough: logical — TRUE = forward all paths verbatim (full httpd proxy);
+ *                           FALSE = use ~name URL rewriting (for new_app())
+ *   host:        bind address ("127.0.0.1" or "0.0.0.0")
  * Returns the slot index (>= 0) on success, -1L on failure.
  */
-SEXP proxy_start(SEXP r_port, SEXP r_backend, SEXP r_prefix)
+SEXP proxy_start(SEXP r_port, SEXP r_backend, SEXP r_passthrough, SEXP r_host)
 {
     xp_instances_init();
 
@@ -281,11 +314,14 @@ SEXP proxy_start(SEXP r_port, SEXP r_backend, SEXP r_prefix)
 
     {
         xp_instance_t *inst = &xp_inst[slot];
-        inst->backend = INTEGER(r_backend)[0];
-        const char *pfx = CHAR(STRING_ELT(r_prefix, 0));
-        if (strlen(pfx) >= XP_PREFIX_MAX) goto fail;  /* prefix too long */
-        strncpy(inst->prefix, pfx, XP_PREFIX_MAX - 1);
-        inst->prefix[XP_PREFIX_MAX - 1] = '\0';
+        inst->backend     = INTEGER(r_backend)[0];
+        inst->port        = INTEGER(r_port)[0];
+        inst->passthrough = LOGICAL(r_passthrough)[0];
+
+        /* determine bind address */
+        const char *host_str = CHAR(STRING_ELT(r_host, 0));
+        in_addr_t bind_addr = (strcmp(host_str, "0.0.0.0") == 0)
+                              ? htonl(INADDR_ANY) : htonl(INADDR_LOOPBACK);
 
         int port = INTEGER(r_port)[0];
         xp_sock_t fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -297,7 +333,7 @@ SEXP proxy_start(SEXP r_port, SEXP r_backend, SEXP r_prefix)
         memset(&addr, 0, sizeof(addr));
         addr.sin_family      = AF_INET;
         addr.sin_port        = htons((unsigned short)port);
-        addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+        addr.sin_addr.s_addr = bind_addr;
         if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) != 0 ||
             listen(fd, 32) != 0) { xp_close(fd); goto fail; }
 

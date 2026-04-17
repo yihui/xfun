@@ -12,9 +12,11 @@ stop_app(name = names(.proxy$apps))
 }
 \arguments{
 \item{name}{App name (a character string). Use \code{name = ''} for a nameless
-root app. Each name must be unique; calling \code{new_app()} with an existing
-name replaces that app. For \code{stop_app()}, a character vector of app names
-to stop; defaults to all running apps.}
+root app served at \code{http://host:PORT/}; a non-empty name is served at
+\code{http://host:PORT/~name/}. Each name must be unique; calling
+\code{new_app()} with an existing name replaces that app. For
+\code{stop_app()}, a character vector of app names to stop; defaults to
+all running apps.}
 
 \item{handler}{A function with signature \code{function(path, query, post,
 headers)} that handles HTTP requests and returns a response list.}
@@ -27,9 +29,11 @@ browser-opening and blocking.}
 \item{host}{Bind address for the proxy (\code{"127.0.0.1"} or
 \code{"0.0.0.0"}).}
 
-\item{ports}{Candidate proxy ports; the first available port not already in
-use by another xfun app is chosen. Falls back to \code{\link{random_port}()}
-if all candidates are taken. See \code{\link{random_port}()} to pick a port
+\item{ports}{Candidate proxy ports. When omitted, all apps share the same
+port (the first available one from \code{4321 + 1:30}). Pass an explicit
+value to select a different port for this app; falls back to
+\code{\link{random_port}()} if all candidates are in use by other
+processes. See \code{\link{random_port}()} to pick a port
 programmatically.}
 }
 \value{
@@ -37,11 +41,12 @@ programmatically.}
 \code{stop_app()} returns nothing.
 }
 \description{
-\code{new_app()} starts a dedicated local HTTP proxy for an app, registers a
-handler, and optionally opens the URL in a browser. Each app gets its own
-proxy port so there is no ambiguity in routing. \code{stop_app()} deregisters
-one or more apps and stops their proxies.
+\code{new_app()} starts a local HTTP proxy for an app, registers a handler,
+and optionally opens the URL in a browser. By default all apps share one
+proxy port; pass explicit \code{ports} to use a different port.
+\code{stop_app()} deregisters one or more apps (and shuts the proxy down
+when no apps remain on that port).
 
-Requests are forwarded to R's internal httpd
-(\code{http://127.0.0.1:PORT/custom/xfun:name/}).
+Requests are forwarded to R's internal httpd at
+\code{http://127.0.0.1:BACKEND/custom/xfun:name:PORT/}.
 }
