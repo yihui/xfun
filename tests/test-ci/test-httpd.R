@@ -25,8 +25,13 @@ http_body = function(resp) {
 }
 
 # Send a raw HTTP/1.0 request and return the full response as a string.
-# Uses non-blocking reads with short Sys.sleep() between polls so R's httpd
-# event loop keeps running while we wait for the response.
+# Uses socketSelect() to check readability before each readBin() so that:
+#   - We only read when data (or EOF) is truly available (avoids EAGAIN errors
+#     on non-blocking sockets that some R versions surface as exceptions).
+#   - We detect EOF reliably: socketSelect() returns TRUE + readBin() returns
+#     empty means the server has closed the connection and all data is consumed.
+# Sys.sleep() between polls yields R's main-thread event loop so that R's
+# internal httpd can process the incoming request and send its response.
 http_request = function(host, port, method, path, body = NULL, extra_headers = '') {
   sock = tryCatch(
     socketConnection(host, port = port, open = 'r+b', blocking = FALSE, timeout = 5),
@@ -45,14 +50,18 @@ http_request = function(host, port, method, path, body = NULL, extra_headers = '
   )
   writeBin(req, sock)
   buf = raw(0L)
-  stable = 0L  # consecutive empty reads after finding the header/body separator
   for (i in seq_len(100L)) {  # up to 10 seconds total
     Sys.sleep(0.1)  # yield to R's event loop so httpd can process the request
-    chunk = tryCatch(readBin(sock, raw(), n = 65536L), error = function(e) raw(0L))
-    if (length(chunk) > 0L) {
-      buf = c(buf, chunk)
-      stable = 0L
-    }
+    # Non-blocking readability check: TRUE = data or EOF ready; FALSE = nothing yet.
+    ready = tryCatch(
+      socketSelect(list(sock), write = FALSE, timeout = 0),
+      error = function(e) FALSE
+    )
+    if (!isTRUE(ready[1L])) next  # nothing available yet; keep yielding
+    chunk = tryCatch(readBin(sock, raw(), n = 65536L), error = function(e) NULL)
+    # NULL or empty when socket is readable means EOF: all data has been received.
+    if (is.null(chunk) || length(chunk) == 0L) break
+    buf = c(buf, chunk)
     s = rawToChar(buf)
     # Find the header/body separator (CRLF or LF style)
     sep = regexpr('\r\n\r\n|\n\n', s, perl = TRUE)
@@ -63,14 +72,9 @@ http_request = function(host, port, method, path, body = NULL, extra_headers = '
       if (length(cl) > 0L && nzchar(cl)) {
         expected = as.integer(sub('(?i).*Content-Length: *', '', cl, perl = TRUE))
         if (nchar(s) - body_start + 1L >= expected) break
-      } else {
-        # No Content-Length: wait for the body to stabilise (5 consecutive
-        # empty reads ≈ 0.5 s) before assuming the response is complete.
-        # This prevents breaking after only the headers arrive in the first
-        # TCP packet when the body follows in a subsequent packet.
-        if (length(chunk) == 0L) stable = stable + 1L
-        if (stable >= 5L) break
       }
+      # No Content-Length: continue reading until the server closes the connection
+      # (EOF detected above breaks the loop with all data in buf).
     }
   }
   if (length(buf) == 0L) NULL else rawToChar(buf)
