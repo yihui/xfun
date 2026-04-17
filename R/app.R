@@ -92,15 +92,19 @@ stop_app = function(name = names(.proxy$apps)) {
 #' @param port Default port to try first.
 #' @param n Number of additional random ports to try.
 #' @param exclude Integer vector of ports to exclude from the search.
-#' @return An integer port number. Signals an error if no port is found.
+#' @param error Whether to signal an error (default) or return `NULL` when no
+#'   port is found.
+#' @return An integer port number. When `error = TRUE` (default), signals an
+#'   error if no port is found; when `error = FALSE`, returns `NULL`.
 #' @export
-random_port = function(port = 4321L, n = 20L, exclude = NULL) {
+random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
   # exclude ports considered unsafe by Chrome http://superuser.com/a/188070
   unsafe = c(3659, 4045, 5060, 5061, 6000, 6566, 6665:6669, 6697)
   ports  = sample(setdiff(3000:8000, unsafe), n)
   ports  = setdiff(c(port, ports), exclude)
   for (p in ports) if (.port_available(p)) return(p)
-  stop2("Cannot find an available TCP port")
+  if (error) stop2("Cannot find an available TCP port")
+  return(NULL)
 }
 
 # ---- internal helpers -------------------------------------------------------
@@ -129,23 +133,14 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL) {
     s = .proxy$port_to_slot[[as.character(p)]]
     if (!is.null(s)) return(list(port = p, slot = s))
   }
-  # Start a new proxy on the first available candidate port.
-  for (p in candidates) {
+  # Try each candidate then fall back to a random port.
+  for (p in c(candidates, random_port(error = FALSE))) {
     if (.port_available(p)) {
       slot = proxy_start(as.integer(p), as.integer(backend), host = host)
       if (slot >= 0L) {
         .proxy$port_to_slot[[as.character(p)]] = slot
         return(list(port = p, slot = slot))
       }
-    }
-  }
-  # Fallback: random port.
-  p = tryCatch(random_port(), error = function(e) -1L)
-  if (p > 0L) {
-    slot = proxy_start(as.integer(p), as.integer(backend), host = host)
-    if (slot >= 0L) {
-      .proxy$port_to_slot[[as.character(p)]] = slot
-      return(list(port = p, slot = slot))
     }
   }
   stop2("No available port found.")
@@ -175,11 +170,9 @@ proxy_stop = function(slot) {
 }
 
 # Check if a TCP port is available by attempting to bind a server socket.
+# Uses a C-level function so it works on all R versions (serverSocket() is R >= 4.0).
 .port_available = function(port) {
-  s = tryCatch(serverSocket(port), error = function(e) NULL)
-  if (is.null(s)) return(FALSE)
-  close(s)
-  TRUE
+  isTRUE(.Call(C_port_available, as.integer(port)))
 }
 
 # Build a per-app R handler closure registered in R's httpd handler environment.

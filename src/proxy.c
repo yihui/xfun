@@ -320,8 +320,7 @@ SEXP proxy_start(SEXP r_port, SEXP r_backend, SEXP r_passthrough, SEXP r_host)
 
         /* determine bind address */
         const char *host_str = CHAR(STRING_ELT(r_host, 0));
-        in_addr_t bind_addr = (strcmp(host_str, "0.0.0.0") == 0)
-                              ? htonl(INADDR_ANY) : htonl(INADDR_LOOPBACK);
+        int use_any = (strcmp(host_str, "0.0.0.0") == 0);
 
         int port = INTEGER(r_port)[0];
         xp_sock_t fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -333,7 +332,7 @@ SEXP proxy_start(SEXP r_port, SEXP r_backend, SEXP r_passthrough, SEXP r_host)
         memset(&addr, 0, sizeof(addr));
         addr.sin_family      = AF_INET;
         addr.sin_port        = htons((unsigned short)port);
-        addr.sin_addr.s_addr = bind_addr;
+        addr.sin_addr.s_addr = use_any ? htonl(INADDR_ANY) : htonl(INADDR_LOOPBACK);
         if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) != 0 ||
             listen(fd, 32) != 0) { xp_close(fd); goto fail; }
 
@@ -361,6 +360,36 @@ fail:
     if (xp_wsa_refs == 0) WSACleanup();
 #endif
     return ScalarInteger(-1);
+}
+
+/*
+ * port_available(port)
+ * Try to bind a TCP socket on 127.0.0.1:port; return TRUE if the port is
+ * free, FALSE otherwise.  Works on all R versions (no serverSocket() needed).
+ */
+SEXP xp_port_available(SEXP r_port)
+{
+#ifdef _WIN32
+    WSADATA wsa; WSAStartup(MAKEWORD(2, 2), &wsa);
+#endif
+    int port = INTEGER(r_port)[0];
+    xp_sock_t fd = socket(AF_INET, SOCK_STREAM, 0);
+    int ok = 0;
+    if (fd != XP_INVALID) {
+        int one = 1;
+        setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char *)&one, sizeof(one));
+        struct sockaddr_in addr;
+        memset(&addr, 0, sizeof(addr));
+        addr.sin_family      = AF_INET;
+        addr.sin_port        = htons((unsigned short)port);
+        addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+        ok = (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) == 0);
+        xp_close(fd);
+    }
+#ifdef _WIN32
+    WSACleanup();
+#endif
+    return ScalarLogical(ok);
 }
 
 /*

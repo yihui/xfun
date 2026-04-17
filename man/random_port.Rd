@@ -4,7 +4,7 @@
 \alias{random_port}
 \title{Find a random available TCP port}
 \usage{
-random_port(port = 4321L, n = 20L, exclude = NULL)
+random_port(port = 4321L, n = 20L, exclude = NULL, error = TRUE)
 }
 \arguments{
 \item{port}{Default port to try first.}
@@ -12,9 +12,13 @@ random_port(port = 4321L, n = 20L, exclude = NULL)
 \item{n}{Number of additional random ports to try.}
 
 \item{exclude}{Integer vector of ports to exclude from the search.}
+
+\item{error}{Whether to signal an error (default) or return \code{NULL} when no
+port is found.}
 }
 \value{
-An integer port number. Signals an error if no port is found.
+An integer port number. When \code{error = TRUE} (default), signals an
+error if no port is found; when \code{error = FALSE}, returns \code{NULL}.
 }
 \description{
 Find an available TCP port, starting with \code{port}, then sampling from
