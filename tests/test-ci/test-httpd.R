@@ -45,10 +45,14 @@ http_request = function(host, port, method, path, body = NULL, extra_headers = '
   )
   writeBin(req, sock)
   buf = raw(0L)
-  for (i in seq_len(50L)) {  # up to 5 seconds total
+  stable = 0L  # consecutive empty reads after finding the header/body separator
+  for (i in seq_len(100L)) {  # up to 10 seconds total
     Sys.sleep(0.1)  # yield to R's event loop so httpd can process the request
     chunk = tryCatch(readBin(sock, raw(), n = 65536L), error = function(e) raw(0L))
-    if (length(chunk) > 0L) buf = c(buf, chunk)
+    if (length(chunk) > 0L) {
+      buf = c(buf, chunk)
+      stable = 0L
+    }
     s = rawToChar(buf)
     # Find the header/body separator (CRLF or LF style)
     sep = regexpr('\r\n\r\n|\n\n', s, perl = TRUE)
@@ -60,7 +64,12 @@ http_request = function(host, port, method, path, body = NULL, extra_headers = '
         expected = as.integer(sub('(?i).*Content-Length: *', '', cl, perl = TRUE))
         if (nchar(s) - body_start + 1L >= expected) break
       } else {
-        break  # no Content-Length header; assume body is complete
+        # No Content-Length: wait for the body to stabilise (5 consecutive
+        # empty reads ≈ 0.5 s) before assuming the response is complete.
+        # This prevents breaking after only the headers arrive in the first
+        # TCP packet when the body follows in a subsequent packet.
+        if (length(chunk) == 0L) stable = stable + 1L
+        if (stable >= 5L) break
       }
     }
   }
