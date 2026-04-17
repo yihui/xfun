@@ -51,6 +51,7 @@ jobs:
       - uses: yihui/actions/setup-r-dependencies@HEAD
         with:
           extra-packages: ${{ (runner.os == 'Linux' && matrix.config.r == 'release') && 'covr' || '' }}
+          r-universe: cran
 
       - uses: yihui/actions/check-r-package@HEAD
 
