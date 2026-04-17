@@ -55,7 +55,7 @@ jobs:
       - name: Test coverage
         if: success() && runner.os == 'Linux' && matrix.config.r == 'release'
         run: |
-          pak::pkg_install('covr')
+          xfun::pkg_load2('covr')
           cov = covr::package_coverage(
             quiet = FALSE,
             clean = FALSE,
