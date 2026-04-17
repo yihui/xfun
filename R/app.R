@@ -1,16 +1,16 @@
 #' Create or stop a local web application
 #'
-#' `new_app()` registers a handler function for a URL path on the local HTTP
-#' server and optionally opens the URL in a browser. `stop_app()` deregisters
-#' one or more apps.
+#' `new_app()` starts a dedicated local HTTP proxy for an app, registers a
+#' handler, and optionally opens the URL in a browser. Each app gets its own
+#' proxy port so there is no ambiguity in routing. `stop_app()` deregisters
+#' one or more apps and stops their proxies.
 #'
-#' The app URL is `http://127.0.0.1:PORT/name/`. Use `name = ''` to register a
-#' catch-all handler at `http://127.0.0.1:PORT/`. R's internal httpd (the same
-#' one that powers the help system) serves the requests.
-#' @param name App name (a character string). Use `name = ''` to register a
-#'   catch-all handler at the server root. Each non-empty name must be unique.
-#'   For `stop_app()`, a character vector of app names to stop; defaults to all
-#'   running apps.
+#' Requests are forwarded to R's internal httpd
+#' (`http://127.0.0.1:PORT/custom/xfun:name/`).
+#' @param name App name (a character string). Use `name = ''` for a nameless
+#'   root app. Each name must be unique; calling `new_app()` with an existing
+#'   name replaces that app. For `stop_app()`, a character vector of app names
+#'   to stop; defaults to all running apps.
 #' @param handler A function with signature `function(path, query, post,
 #'   headers)` that handles HTTP requests and returns a response list.
 #' @param open Whether to open the app URL in a browser, or a function to open
@@ -18,8 +18,9 @@
 #'   blocks: passing `open = FALSE` explicitly suppresses both browser-opening
 #'   and blocking.
 #' @param host Bind address for the proxy (`"127.0.0.1"` or `"0.0.0.0"`).
-#' @param ports Candidate proxy ports; the first available port is used. See
-#'   [random_port()] to find a free port programmatically.
+#' @param ports Candidate proxy ports; the first available port not already in
+#'   use by another xfun app is chosen. Falls back to [random_port()] if all
+#'   candidates are taken. See [random_port()] to pick a port programmatically.
 #' @return `new_app()` returns the app URL invisibly. `stop_app()` returns
 #'   nothing.
 #' @export
@@ -29,29 +30,37 @@ new_app = function(
   backend = .httpd_port()
   if (backend <= 0L) stop2("Failed to start R's internal httpd.")
 
-  # Register the single xfun dispatcher in R's httpd environment (once).
-  e = .httpd_env()
-  if (!exists('xfun:', envir = e, inherits = FALSE))
-    assign('xfun:', .xfun_dispatch, envir = e)
+  # Replace any existing app with the same name.
+  if (!is.null(.proxy$apps[[name]])) stop_app(name)
 
-  # Store per-app handler and working directory.
-  .proxy$apps[[name]] = list(fn = handler, wd = getwd())
+  # Pick a port: skip ports already used by running apps, fallback to random_port().
+  used = vapply(.proxy$apps, `[[`, 0L, 'port')
+  candidates = setdiff(as.integer(ports), used)
+  port = -1L
+  for (p in candidates) if (.port_available(p)) { port = p; break }
+  if (port < 0L)
+    port = tryCatch(random_port(exclude = used), error = function(e) -1L)
+  if (port < 0L) stop2("No available port found.")
 
-  # Start proxy if not running, or restart when user provides explicit ports.
-  if (is.null(.proxy$port) || !missing(ports)) {
-    p = proxy_start(as.integer(ports), backend)
-    if (p < 0L) stop2("Failed to start proxy on any of the given ports.")
-    .proxy$port = p
-  }
+  # Start a dedicated proxy for this app; prefix encodes the R httpd handler key.
+  prefix = paste0('/custom/xfun:', name)
+  slot = proxy_start(as.integer(port), as.integer(backend), prefix)
+  if (slot < 0L) stop2("Failed to start proxy on port ", port, ".")
+
+  # Register per-app R handler under key 'xfun:name' (or 'xfun:' for name = '').
+  assign(paste0('xfun:', name), .make_app_handler(name, handler, getwd()),
+         envir = .httpd_env())
+
+  # Record app state.
+  .proxy$apps[[name]] = list(port = port, slot = slot)
 
   url_host = if (identical(host, '0.0.0.0')) '127.0.0.1' else host
-  url = sprintf('http://%s:%d/%s', url_host, .proxy$port,
-                if (nzchar(name)) paste0(name, '/') else '')
+  url = sprintf('http://%s:%d/', url_host, port)
   if (isTRUE(open)) open = getOption('viewer', browseURL)
   if (is.function(open)) open(url)
 
   if (!interactive() && !identical(open, FALSE)) {
-    on.exit(stop_app(), add = TRUE)
+    on.exit(stop_app(name), add = TRUE)
     message('Serving at ', url, ' (press Ctrl+C to stop)')
     tryCatch(
       while (TRUE) Sys.sleep(1),
@@ -64,12 +73,15 @@ new_app = function(
 #' @rdname new_app
 #' @export
 stop_app = function(name = names(.proxy$apps)) {
-  for (n in name) .proxy$apps[[n]] = NULL
-  if (length(.proxy$apps) == 0L) {
-    if (!is.null(.proxy$port)) proxy_stop()
-    e = .httpd_env()
-    if (exists('xfun:', envir = e, inherits = FALSE))
-      rm(list = 'xfun:', envir = e)
+  for (n in name) {
+    app = .proxy$apps[[n]]
+    if (!is.null(app)) {
+      proxy_stop(app$slot)
+      e = .httpd_env()
+      key = paste0('xfun:', n)
+      if (exists(key, envir = e, inherits = FALSE)) rm(list = key, envir = e)
+      .proxy$apps[[n]] = NULL
+    }
   }
 }
 
@@ -98,20 +110,19 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL) {
 # Environment where R's httpd looks up /custom/* handlers.
 .httpd_env = function() getFromNamespace('.httpd.handlers.env', 'tools')
 
-# Internal proxy state.
+# Internal proxy state: per-app list of list(port, slot).
 .proxy = new.env(parent = emptyenv())
-.proxy$port = NULL   # proxy listen port
-.proxy$apps = list() # name → list(fn, wd)
+.proxy$apps = list()
 
-# Start the proxy on the first available port from `ports`; return bound port or -1.
-proxy_start = function(ports, backend_port) {
-  .Call(C_proxy_start, as.integer(ports), as.integer(backend_port))
+# Start a proxy instance on `port` forwarding to `backend_port` with `prefix`.
+# Returns the slot index (>= 0) or -1 on failure.
+proxy_start = function(port, backend_port, prefix) {
+  .Call(C_proxy_start, as.integer(port), as.integer(backend_port), as.character(prefix))
 }
 
-# Stop the proxy thread and close the listen socket.
-proxy_stop = function() {
-  .Call(C_proxy_stop)
-  .proxy$port = NULL
+# Stop the proxy instance identified by its slot index.
+proxy_stop = function(slot) {
+  .Call(C_proxy_stop, as.integer(slot))
 }
 
 # Coerce body/headers-like argument to a raw vector.
@@ -129,39 +140,20 @@ proxy_stop = function() {
   TRUE
 }
 
-# Single R-level dispatcher for all xfun apps. Registered as 'xfun:' in
-# R's httpd handler environment. Proxy rewrites /name/rest to
-# /custom/xfun:/name/rest so R dispatches here for every xfun app request.
-.xfun_dispatch = function(path, query = NULL, body = NULL, headers = NULL) {
-  # Strip the /custom/xfun: prefix inserted by the proxy.
-  real = sub('^/custom/xfun:', '', path)  # /name/rest  or  /rest
-  q    = .parse_xfun_query(headers)
-  post = .as_raw(body)
-  hdrs = .as_raw(headers)
-
-  # Try named apps first (non-empty names, longest first to avoid prefix conflicts).
-  named = names(.proxy$apps)
-  named = named[nzchar(named)]
-  named = named[order(nchar(named), decreasing = TRUE)]
-  for (n in named) {
-    pfx = paste0('/', n)
-    if (real == pfx || startsWith(real, paste0(pfx, '/'))) {
-      sub_path = sub(paste0('^', pfx, '/?'), '', real)
-      if (!nzchar(sub_path)) sub_path = '.'
-      app = .proxy$apps[[n]]
-      return(in_dir(app$wd, app$fn(sub_path, q, post, hdrs)))
-    }
+# Build a per-app R handler closure registered in R's httpd handler environment.
+# The proxy rewrites /path → /custom/xfun:name/path so R routes here.
+# The handler strips the /custom/xfun:name prefix and calls the user function.
+.make_app_handler = function(name, fn, wd) {
+  prefix = paste0('/custom/xfun:', name)
+  function(path, query = NULL, body = NULL, headers = NULL) {
+    real = if (startsWith(path, prefix)) substring(path, nchar(prefix) + 1L) else path
+    real = sub('^/', '', real)
+    if (!nzchar(real)) real = '.'
+    q    = .parse_xfun_query(headers)
+    post = .as_raw(body)
+    hdrs = .as_raw(headers)
+    in_dir(wd, fn(real, q, post, hdrs))
   }
-
-  # Catch-all (name = '').
-  if ('' %in% names(.proxy$apps)) {
-    app      = .proxy$apps[['']]
-    sub_path = sub('^/', '', real)
-    if (!nzchar(sub_path)) sub_path = '.'
-    return(in_dir(app$wd, app$fn(sub_path, q, post, hdrs)))
-  }
-
-  list(payload = 'Not found', 'content-type' = 'text/html', 'status code' = 404L)
 }
 
 # Parse the X-Xfun-Query header (added by the proxy) into a named, URL-decoded

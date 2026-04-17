@@ -55,25 +55,25 @@ if (!is.null(port)) {
   on.exit(stop_app('test'), add = TRUE)
 
   assert('new_app() returns the expected URL', {
-    (url %==% sprintf('http://127.0.0.1:%d/test/', port))
+    (url %==% sprintf('http://127.0.0.1:%d/', port))
   })
 
   assert('proxy responds to a GET request', {
-    resp = http_request('127.0.0.1', port, 'GET', '/test/hello')
+    resp = http_request('127.0.0.1', port, 'GET', '/hello')
     (!is.null(resp))
     (grepl('200 OK',     resp, fixed = TRUE))
     (grepl('path=hello', resp, fixed = TRUE))
   })
 
   assert('query parameters are URL-decoded', {
-    resp = http_request('127.0.0.1', port, 'GET', '/test/page?foo=bar%20baz')
+    resp = http_request('127.0.0.1', port, 'GET', '/page?foo=bar%20baz')
     (!is.null(resp))
     (grepl('path=page',        resp, fixed = TRUE))
     (grepl('query_foo=bar baz', resp, fixed = TRUE))
   })
 
   assert('POST body is forwarded correctly', {
-    resp = http_request('127.0.0.1', port, 'POST', '/test/submit',
+    resp = http_request('127.0.0.1', port, 'POST', '/submit',
                         body = 'hello=world')
     (!is.null(resp))
     (grepl('post=hello=world', resp, fixed = TRUE))
@@ -81,24 +81,35 @@ if (!is.null(port)) {
   })
 
   assert('request headers reach the handler', {
-    resp = http_request('127.0.0.1', port, 'GET', '/test/hdr',
+    resp = http_request('127.0.0.1', port, 'GET', '/hdr',
                         extra_headers = 'X-Custom: test-value\r\n')
     (!is.null(resp))
     (grepl('200 OK',              resp, fixed = TRUE))
     (grepl('x_custom=test-value', resp, fixed = TRUE))
   })
 
-  assert('unknown app returns a 404 response', {
-    resp = http_request('127.0.0.1', port, 'GET', '/no-such-app/')
-    (!is.null(resp))
-    # Dispatcher returns 404; our handler was NOT called.
-    (!grepl('path=no-such-app', resp, fixed = TRUE))
+  assert('two apps on different ports are independent', {
+    port2 = tryCatch(random_port(exclude = port), error = function(e) NULL)
+    if (!is.null(port2)) {
+      url2 = new_app(
+        'test2',
+        function(path, ...) list(payload = paste0('app2-', path), 'content-type' = 'text/plain'),
+        open = FALSE, ports = port2
+      )
+      on.exit(stop_app('test2'), add = TRUE)
+      resp1 = http_request('127.0.0.1', port,  'GET', '/hi')
+      resp2 = http_request('127.0.0.1', port2, 'GET', '/hi')
+      stop_app('test2')
+      on.exit(stop_app('test'), add = TRUE)  # restore original on.exit
+      (grepl('path=hi', resp1, fixed = TRUE))
+      (grepl('app2-hi', resp2, fixed = TRUE))
+    }
   })
 
   assert('stop_app() shuts down the proxy', {
     stop_app('test')
     on.exit(NULL)   # cancel earlier on.exit so we don't double-stop
-    (is.null(.proxy$port))
+    (is.null(.proxy$apps[['test']]))
     (is.null(tryCatch(
       socketConnection('127.0.0.1', port = port, open = 'r+b', timeout = 1),
       error = function(e) NULL

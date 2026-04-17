@@ -1,18 +1,19 @@
 /*
- * proxy.c — lightweight reverse-proxy for xfun's new_app() / stop_app().
+ * proxy.c — per-app lightweight reverse-proxy for xfun's new_app() / stop_app().
  *
- * The proxy listens on a user-visible port (LISTEN_PORT) and forwards
- * requests to R's internal httpd (BACKEND_PORT), rewriting the URL so that
- *   LISTEN_PORT  /app-name/rest   →   BACKEND_PORT  /custom/xfun:/app-name/rest
+ * Each xfun app gets its own dedicated proxy instance on a unique port.
+ * The instance's background thread prepends a per-app prefix to all
+ * incoming request paths before forwarding to R's internal httpd:
  *
- * The proxy runs in a background thread (pthreads on Unix/macOS, a Windows
- * thread on Windows).  It never calls any R functions, so it works
- * immediately in interactive sessions on all platforms without requiring the
- * user to press Enter (no R event-loop involvement needed for the proxy
- * itself; R's internal httpd has its own event-loop integration for all
- * platforms).
+ *   PORT/path  →  BACKEND:/custom/xfun:name/path
  *
- * HTTP parsing uses the vendored picohttpparser library.
+ * Using one port per app eliminates any catch-all ambiguity: the port
+ * uniquely identifies the app, and the prefix encodes the R httpd
+ * handler key ("xfun:name" or "xfun:" for the unnamed app).
+ *
+ * Instances are managed as a fixed-size array (XP_MAX slots).
+ * proxy_start() returns the slot index; proxy_stop(slot) tears down
+ * that specific instance, leaving all others running.
  */
 
 /* ---- platform socket + thread portability -------------------------------- */
@@ -25,7 +26,6 @@ typedef SOCKET xp_sock_t;
 #  define XP_INVALID  INVALID_SOCKET
 #  define xp_close(s) closesocket(s)
 #  define strncasecmp _strnicmp
-static HANDLE xp_thread = NULL;
 #else
 #  include <sys/socket.h>
 #  include <netinet/in.h>
@@ -35,8 +35,6 @@ static HANDLE xp_thread = NULL;
 typedef int xp_sock_t;
 #  define XP_INVALID  (-1)
 #  define xp_close(s) close(s)
-static pthread_t xp_thread;
-static int       xp_thread_valid = 0;
 #endif
 
 #include <string.h>
@@ -46,15 +44,49 @@ static int       xp_thread_valid = 0;
 #include <Rinternals.h>
 #include "picohttpparser.h"
 
-/* ---- proxy state -------------------------------------------------------- */
-static xp_sock_t     xp_listen   = XP_INVALID;
-static int           xp_backend  = 0;
-static volatile int  xp_active   = 0;
+/* ---- per-instance state ------------------------------------------------- */
+#define XP_MAX        32
+#define XP_BUF        65536
+#define XP_PREFIX_MAX 256
 
-/* ---- handle one client connection -------------------------------------- */
-#define XP_BUF 65536
+typedef struct {
+    xp_sock_t    listen;
+    int          backend;
+    char         prefix[XP_PREFIX_MAX]; /* e.g. "/custom/xfun:foo" */
+    volatile int active;
+#ifdef _WIN32
+    HANDLE       thread;
+#else
+    pthread_t    thread;
+    int          thread_valid;
+#endif
+} xp_instance_t;
 
-static void xp_handle(xp_sock_t cfd)
+static xp_instance_t xp_inst[XP_MAX];
+static int           xp_init_done = 0;
+
+#ifdef _WIN32
+static int xp_wsa_refs = 0;
+#endif
+
+static void xp_instances_init(void)
+{
+    if (xp_init_done) return;
+    for (int i = 0; i < XP_MAX; i++) {
+        xp_inst[i].listen = XP_INVALID;
+        xp_inst[i].active = 0;
+#ifdef _WIN32
+        xp_inst[i].thread = NULL;
+#else
+        xp_inst[i].thread_valid = 0;
+#endif
+    }
+    xp_init_done = 1;
+}
+
+/* ---- handle one client connection --------------------------------------- */
+
+static void xp_handle(xp_sock_t cfd, xp_instance_t *inst)
 {
     char ibuf[XP_BUF];
     int  ntot = 0, hend = -1;
@@ -102,19 +134,25 @@ static void xp_handle(xp_sock_t cfd)
         }
     }
 
-    /* rewrite path: /name/rest → /custom/xfun:/name/rest
-     * (keeps leading '/'; single 'xfun:' handler dispatches to per-app R fns) */
+    /* rewrite path: prepend the instance prefix
+     * e.g. /page  →  /custom/xfun:foo/page  (prefix = "/custom/xfun:foo")
+     *      /      →  /custom/xfun:foo/       (prefix = "/custom/xfun:foo")
+     *      /page  →  /custom/xfun:/page      (prefix = "/custom/xfun:", unnamed app)
+     */
     char npath[4096];
+    size_t plen = strlen(inst->prefix);
     if (path_len > 0 && path[0] == '/') {
-        if (path_len + 14 >= sizeof(npath)) goto done;  /* 13 (prefix) + path_len + 1 (NUL) */
-        memcpy(npath, "/custom/xfun:", 13);
-        memcpy(npath + 13, path, path_len);
-        npath[13 + path_len] = '\0';
+        if (plen + path_len + 1 >= sizeof(npath)) goto done;
+        memcpy(npath, inst->prefix, plen);
+        memcpy(npath + plen, path, path_len);
+        npath[plen + path_len] = '\0';
     } else {
-        if (path_len + 15 >= sizeof(npath)) goto done;  /* 14 (prefix) + path_len + 1 (NUL) */
-        memcpy(npath, "/custom/xfun:/", 14);
-        memcpy(npath + 14, path, path_len);
-        npath[14 + path_len] = '\0';
+        /* ensure a leading slash between prefix and path */
+        if (plen + path_len + 2 >= sizeof(npath)) goto done;
+        memcpy(npath, inst->prefix, plen);
+        npath[plen] = '/';
+        memcpy(npath + plen + 1, path, path_len);
+        npath[plen + path_len + 1] = '\0';
     }
 
     /* connect to R's httpd backend */
@@ -124,7 +162,7 @@ static void xp_handle(xp_sock_t cfd)
         struct sockaddr_in ba;
         memset(&ba, 0, sizeof(ba));
         ba.sin_family      = AF_INET;
-        ba.sin_port        = htons((unsigned short)xp_backend);
+        ba.sin_port        = htons((unsigned short)inst->backend);
         ba.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
         if (connect(bfd, (struct sockaddr *)&ba, sizeof(ba)) != 0) {
             xp_close(bfd); goto done;
@@ -146,14 +184,11 @@ static void xp_handle(xp_sock_t cfd)
         if (strncasecmp(hdrs[i].name, "proxy-connection", nl) == 0) continue;
         char hline[4096];
         int hlen = snprintf(hline, sizeof(hline), "%.*s: %.*s\r\n",
-                            (int)nl,              hdrs[i].name,
+                            (int)nl,                hdrs[i].name,
                             (int)hdrs[i].value_len, hdrs[i].value);
         send(bfd, hline, hlen, 0);
     }
-    /* Add X-Xfun-Query header with the raw query string so that the R
-     * wrapper can reconstruct a named character vector of URL-decoded
-     * parameters (R's httpd provides only URL-decoded values, without
-     * the parameter names). */
+    /* inject X-Xfun-Query header (raw query string for named param reconstruction) */
     {
         const char *qs = NULL; size_t qs_len = 0;
         for (size_t ci = 0; ci < path_len; ci++) {
@@ -195,20 +230,20 @@ done:
     xp_close(cfd);
 }
 
-/* ---- proxy thread ------------------------------------------------------- */
+/* ---- proxy thread -------------------------------------------------------- */
 #ifdef _WIN32
 static DWORD WINAPI xp_thread_fn(LPVOID arg)
 #else
 static void *xp_thread_fn(void *arg)
 #endif
 {
-    (void)arg;
-    while (xp_active) {
-        fd_set rfds; FD_ZERO(&rfds); FD_SET(xp_listen, &rfds);
+    xp_instance_t *inst = (xp_instance_t *)arg;
+    while (inst->active) {
+        fd_set rfds; FD_ZERO(&rfds); FD_SET(inst->listen, &rfds);
         struct timeval tv = {0, 100000}; /* 100 ms */
-        if (select((int)xp_listen + 1, &rfds, NULL, NULL, &tv) > 0) {
-            xp_sock_t cfd = accept(xp_listen, NULL, NULL);
-            if (cfd != XP_INVALID) xp_handle(cfd);
+        if (select((int)inst->listen + 1, &rfds, NULL, NULL, &tv) > 0) {
+            xp_sock_t cfd = accept(inst->listen, NULL, NULL);
+            if (cfd != XP_INVALID) xp_handle(cfd, inst);
         }
     }
 #ifdef _WIN32
@@ -221,35 +256,40 @@ static void *xp_thread_fn(void *arg)
 /* ---- R entry points ----------------------------------------------------- */
 
 /*
- * proxy_start(ports, backend_port)
- * Try ports in order; bind to the first available one; start background
- * thread.  Returns the bound port on success, -1L on failure.
+ * proxy_start(port, backend_port, prefix)
+ * Allocate a new proxy instance that listens on `port`, forwards to
+ * `backend_port`, and prepends `prefix` to all request paths.
+ * Returns the slot index (>= 0) on success, -1L on failure.
  */
-SEXP proxy_start(SEXP r_ports, SEXP r_backend)
+SEXP proxy_start(SEXP r_port, SEXP r_backend, SEXP r_prefix)
 {
+    xp_instances_init();
+
 #ifdef _WIN32
-    WSADATA wsa;
-    WSAStartup(MAKEWORD(2, 2), &wsa);
+    if (xp_wsa_refs == 0) { WSADATA wsa; WSAStartup(MAKEWORD(2, 2), &wsa); }
+    xp_wsa_refs++;
 #endif
 
-    /* stop any previously running proxy */
-    if (xp_active) {
-        xp_active = 0;
-#ifdef _WIN32
-        if (xp_thread) { WaitForSingleObject(xp_thread, 1000); CloseHandle(xp_thread); xp_thread = NULL; }
-#else
-        if (xp_thread_valid) { pthread_join(xp_thread, NULL); xp_thread_valid = 0; }
-#endif
-        if (xp_listen != XP_INVALID) { xp_close(xp_listen); xp_listen = XP_INVALID; }
+    /* find a free slot */
+    int slot = -1;
+    for (int i = 0; i < XP_MAX; i++) {
+        if (!xp_inst[i].active && xp_inst[i].listen == XP_INVALID) {
+            slot = i; break;
+        }
     }
+    if (slot < 0) goto fail;
 
-    xp_backend = INTEGER(r_backend)[0];
-    int n = LENGTH(r_ports);
+    {
+        xp_instance_t *inst = &xp_inst[slot];
+        inst->backend = INTEGER(r_backend)[0];
+        const char *pfx = CHAR(STRING_ELT(r_prefix, 0));
+        strncpy(inst->prefix, pfx, XP_PREFIX_MAX - 1);
+        inst->prefix[XP_PREFIX_MAX - 1] = '\0';
 
-    for (int i = 0; i < n; i++) {
-        int port = INTEGER(r_ports)[i];
+        int port = INTEGER(r_port)[0];
         xp_sock_t fd = socket(AF_INET, SOCK_STREAM, 0);
-        if (fd == XP_INVALID) continue;
+        if (fd == XP_INVALID) goto fail;
+
         int one = 1;
         setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char *)&one, sizeof(one));
         struct sockaddr_in addr;
@@ -258,40 +298,61 @@ SEXP proxy_start(SEXP r_ports, SEXP r_backend)
         addr.sin_port        = htons((unsigned short)port);
         addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
         if (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) != 0 ||
-            listen(fd, 32) != 0) { xp_close(fd); continue; }
+            listen(fd, 32) != 0) { xp_close(fd); goto fail; }
 
-        xp_listen = fd;
-        xp_active = 1;
+        inst->listen = fd;
+        inst->active = 1;
 
 #ifdef _WIN32
-        xp_thread = CreateThread(NULL, 0, xp_thread_fn, NULL, 0, NULL);
-        if (!xp_thread) { xp_active = 0; xp_close(fd); xp_listen = XP_INVALID; return ScalarInteger(-1L); }
-#else
-        if (pthread_create(&xp_thread, NULL, xp_thread_fn, NULL) != 0) {
-            xp_active = 0; xp_close(fd); xp_listen = XP_INVALID; xp_thread_valid = 0;
-            return ScalarInteger(-1L);
+        inst->thread = CreateThread(NULL, 0, xp_thread_fn, inst, 0, NULL);
+        if (!inst->thread) {
+            inst->active = 0; xp_close(fd); inst->listen = XP_INVALID; goto fail;
         }
-        xp_thread_valid = 1;
+#else
+        if (pthread_create(&inst->thread, NULL, xp_thread_fn, inst) != 0) {
+            inst->active = 0; xp_close(fd); inst->listen = XP_INVALID;
+            inst->thread_valid = 0; goto fail;
+        }
+        inst->thread_valid = 1;
 #endif
-        return ScalarInteger(port);
+        return ScalarInteger(slot);
     }
-    return ScalarInteger(-1L);
+
+fail:
+#ifdef _WIN32
+    xp_wsa_refs--;
+    if (xp_wsa_refs == 0) WSACleanup();
+#endif
+    return ScalarInteger(-1);
 }
 
 /*
- * proxy_stop()
- * Signal the thread to stop, wait for it, close the listen socket.
+ * proxy_stop(slot)
+ * Signal the background thread of the given instance to stop, wait for it,
+ * and close the listen socket.
  */
-SEXP proxy_stop(void)
+SEXP proxy_stop(SEXP r_slot)
 {
-    xp_active = 0;
+    xp_instances_init();
+    int slot = INTEGER(r_slot)[0];
+    if (slot < 0 || slot >= XP_MAX) return R_NilValue;
+
+    xp_instance_t *inst = &xp_inst[slot];
+    if (!inst->active) return R_NilValue;
+
+    inst->active = 0;
 #ifdef _WIN32
-    if (xp_thread) { WaitForSingleObject(xp_thread, 1000); CloseHandle(xp_thread); xp_thread = NULL; }
-    if (xp_listen != XP_INVALID) { xp_close(xp_listen); xp_listen = XP_INVALID; }
-    WSACleanup();
+    if (inst->thread) {
+        WaitForSingleObject(inst->thread, 1000);
+        CloseHandle(inst->thread);
+        inst->thread = NULL;
+    }
+    if (inst->listen != XP_INVALID) { xp_close(inst->listen); inst->listen = XP_INVALID; }
+    xp_wsa_refs--;
+    if (xp_wsa_refs == 0) WSACleanup();
 #else
-    if (xp_thread_valid) { pthread_join(xp_thread, NULL); xp_thread_valid = 0; }
-    if (xp_listen != XP_INVALID) { xp_close(xp_listen); xp_listen = XP_INVALID; }
+    if (inst->thread_valid) { pthread_join(inst->thread, NULL); inst->thread_valid = 0; }
+    if (inst->listen != XP_INVALID) { xp_close(inst->listen); inst->listen = XP_INVALID; }
 #endif
     return R_NilValue;
 }
