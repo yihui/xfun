@@ -43,20 +43,25 @@ http_request = function(host, port, method, path, body = NULL, extra_headers = '
     '\r\n',
     if (!is.null(body)) body else ''
   )
-  writeBin(req, sock)  # writeBin on non-blocking socket
+  writeBin(req, sock)
   buf = raw(0L)
-  empty = 0L
   for (i in seq_len(50L)) {  # up to 5 seconds total
     Sys.sleep(0.1)  # yield to R's event loop so httpd can process the request
     chunk = tryCatch(readBin(sock, raw(), n = 65536L), error = function(e) raw(0L))
-    if (length(chunk) > 0L) {
-      buf   = c(buf, chunk)
-      empty = 0L
-      s = rawToChar(buf)
-      if (grepl('\n\n', s, fixed = TRUE)) break  # complete response received
-    } else if (length(buf) > 0L) {
-      empty = empty + 1L
-      if (empty >= 3L) break  # several empty reads after data → connection closed
+    if (length(chunk) > 0L) buf = c(buf, chunk)
+    s = rawToChar(buf)
+    # Find the header/body separator (CRLF or LF style)
+    sep = regexpr('\r\n\r\n|\n\n', s, perl = TRUE)
+    if (sep[1L] > 0L) {
+      body_start = sep[1L] + attr(sep, 'match.length')
+      # Use Content-Length to confirm the full body has arrived
+      cl = regmatches(s, regexpr('(?i)Content-Length: *(\\d+)', s, perl = TRUE))
+      if (length(cl) > 0L && nzchar(cl)) {
+        expected = as.integer(sub('(?i).*Content-Length: *', '', cl, perl = TRUE))
+        if (nchar(s) - body_start + 1L >= expected) break
+      } else {
+        break  # no Content-Length header; assume body is complete
+      }
     }
   }
   if (length(buf) == 0L) NULL else rawToChar(buf)
