@@ -183,10 +183,7 @@ proxy_stop = function(slot) {
     real = if (startsWith(path, prefix)) substring(path, nchar(prefix) + 1L) else path
     real = sub('^/', '', real)
     if (real == '') real = '.'
-    q    = .parse_xfun_query(headers)
-    post = .as_raw(body)
-    hdrs = .as_raw(headers)
-    in_dir(wd, fn(real, q, post, hdrs))
+    in_dir(wd, fn(real, .parse_xfun_query(headers), .as_raw(body), .as_raw(headers)))
   }
 }
 
