@@ -5,28 +5,30 @@
 \alias{stop_app}
 \title{Create or stop a local web application}
 \usage{
-new_app(name, handler, open = interactive(), host = "127.0.0.1",
-  ports = 4321 + 1:10)
+new_app(name, handler, open = TRUE, host = "127.0.0.1",
+  ports = 4321 + 1:30)
 
 stop_app(name = names(.proxy$apps))
 }
 \arguments{
-\item{name}{App name (a character string; each app needs a unique name).
-For \code{stop_app()}, a character vector of app names to stop;
-defaults to all running apps.}
+\item{name}{App name (a character string). Use \code{name = ''} to register a
+catch-all handler at the server root. Each non-empty name must be unique.
+For \code{stop_app()}, a character vector of app names to stop; defaults to
+all running apps.}
 
 \item{handler}{A function with signature \code{function(path, query, post,
 headers)} that handles HTTP requests and returns a response list.}
 
 \item{open}{Whether to open the app URL in a browser, or a function to open
-it.  In non-interactive sessions this also controls whether the call
+it. In non-interactive sessions this also controls whether the call
 blocks: passing \code{open = FALSE} explicitly suppresses both
 browser-opening and blocking.}
 
 \item{host}{Bind address for the proxy (\code{"127.0.0.1"} or
 \code{"0.0.0.0"}).}
 
-\item{ports}{Candidate proxy ports; the first available port is used.}
+\item{ports}{Candidate proxy ports; the first available port is used. See
+\code{\link{random_port}()} to find a free port programmatically.}
 }
 \value{
 \code{new_app()} returns the app URL invisibly.
@@ -34,13 +36,10 @@ browser-opening and blocking.}
 }
 \description{
 \code{new_app()} registers a handler function for a URL path on the local HTTP
-server and optionally opens the URL in a browser.  \code{stop_app()} deregisters
+server and optionally opens the URL in a browser. \code{stop_app()} deregisters
 one or more apps.
 
-The server is R's built-in httpd (the same one that powers dynamic help).
-A lightweight proxy started by xfun provides clean URLs of the form
-\code{http://127.0.0.1:PORT/name/} instead of R's native
-\code{http://127.0.0.1:PORT/custom/name/}.  The proxy runs in a background
-thread and works immediately on all platforms without the user needing to
-press Enter.
+The app URL is \code{http://127.0.0.1:PORT/name/}. Use \code{name = ''} to
+register a catch-all handler at \code{http://127.0.0.1:PORT/}. R's internal
+httpd (the same one that powers the help system) serves the requests.
 }

@@ -1,62 +1,52 @@
 #' Create or stop a local web application
 #'
 #' `new_app()` registers a handler function for a URL path on the local HTTP
-#' server and optionally opens the URL in a browser.  `stop_app()` deregisters
+#' server and optionally opens the URL in a browser. `stop_app()` deregisters
 #' one or more apps.
 #'
-#' The server is R's built-in httpd (the same one that powers dynamic help).
-#' A lightweight proxy started by xfun provides clean URLs of the form
-#' `http://127.0.0.1:PORT/name/` instead of R's native
-#' `http://127.0.0.1:PORT/custom/name/`.  The proxy runs in a background
-#' thread and works immediately on all platforms without the user needing to
-#' press Enter (no R event-loop involvement is required for the proxy itself).
-#' @param name App name (a character string; each app needs a unique name).
+#' The app URL is `http://127.0.0.1:PORT/name/`. Use `name = ''` to register a
+#' catch-all handler at `http://127.0.0.1:PORT/`. R's internal httpd (the same
+#' one that powers the help system) serves the requests.
+#' @param name App name (a character string). Use `name = ''` to register a
+#'   catch-all handler at the server root. Each non-empty name must be unique.
+#'   For `stop_app()`, a character vector of app names to stop; defaults to all
+#'   running apps.
 #' @param handler A function with signature `function(path, query, post,
 #'   headers)` that handles HTTP requests and returns a response list.
 #' @param open Whether to open the app URL in a browser, or a function to open
-#'   it.  In non-interactive sessions this also controls whether the call
+#'   it. In non-interactive sessions this also controls whether the call
 #'   blocks: passing `open = FALSE` explicitly suppresses both browser-opening
 #'   and blocking.
 #' @param host Bind address for the proxy (`"127.0.0.1"` or `"0.0.0.0"`).
-#' @param ports Candidate proxy ports; the first available port is used.
-#' @return `new_app()` returns the app URL invisibly.  `stop_app()` returns
+#' @param ports Candidate proxy ports; the first available port is used. See
+#'   [random_port()] to find a free port programmatically.
+#' @return `new_app()` returns the app URL invisibly. `stop_app()` returns
 #'   nothing.
 #' @export
 new_app = function(
-  name, handler, open = interactive(), host = '127.0.0.1', ports = 4321 + 1:10
+  name, handler, open = TRUE, host = '127.0.0.1', ports = 4321 + 1:30
 ) {
-  # Start R's internal httpd (returns its port).
   backend = .httpd_port()
   if (backend <= 0L) stop2("Failed to start R's internal httpd.")
 
-  # Register our wrapper in R's httpd environment.
-  wd = getwd()
-  h = function(path, query = NULL, body = NULL, headers = NULL) {
-    path = sub(paste0('^/custom/', name, '/'), '', path)
-    if (path == '') path = '.'
-    # Reconstruct named, URL-decoded query params from the X-Xfun-Query
-    # header added by our proxy (R's httpd discards parameter names).
-    q = .parse_xfun_query(headers)
-    # Normalise body/post and headers to raw vectors.
-    post = if (is.null(body)    || length(body)    == 0L) raw(0) else
-             if (is.raw(body))    body    else charToRaw(body)
-    hdrs = if (is.null(headers) || length(headers) == 0L) raw(0) else
-             if (is.raw(headers)) headers else charToRaw(headers[1L])
-    in_dir(wd, handler(path, q, post, hdrs))
-  }
-  assign(name, h, envir = .httpd_env())
+  # Register the single xfun dispatcher in R's httpd environment (once).
+  e = .httpd_env()
+  if (!exists('xfun:', envir = e, inherits = FALSE))
+    assign('xfun:', .xfun_dispatch, envir = e)
 
-  # Start proxy if not running, or restart when user provides an explicit
-  # different set of ports.
+  # Store per-app handler and working directory.
+  .proxy$apps[[name]] = list(fn = handler, wd = getwd())
+
+  # Start proxy if not running, or restart when user provides explicit ports.
   if (is.null(.proxy$port) || !missing(ports)) {
     p = proxy_start(as.integer(ports), backend)
     if (p < 0L) stop2("Failed to start proxy on any of the given ports.")
     .proxy$port = p
   }
-  .proxy$apps[[name]] = TRUE
 
   url_host = if (identical(host, '0.0.0.0')) '127.0.0.1' else host
-  url = sprintf('http://%s:%d/%s/', url_host, .proxy$port, name)
+  url = sprintf('http://%s:%d/%s', url_host, .proxy$port,
+                if (nzchar(name)) paste0(name, '/') else '')
   if (isTRUE(open)) open = getOption('viewer', browseURL)
   if (is.function(open)) open(url)
 
@@ -74,12 +64,30 @@ new_app = function(
 #' @rdname new_app
 #' @export
 stop_app = function(name = names(.proxy$apps)) {
-  e = .httpd_env()
-  for (n in name) {
-    if (exists(n, envir = e, inherits = FALSE)) rm(list = n, envir = e)
-    .proxy$apps[[n]] = NULL
+  for (n in name) .proxy$apps[[n]] = NULL
+  if (length(.proxy$apps) == 0L) {
+    if (!is.null(.proxy$port)) proxy_stop()
+    e = .httpd_env()
+    if (exists('xfun:', envir = e, inherits = FALSE))
+      rm(list = 'xfun:', envir = e)
   }
-  if (length(.proxy$apps) == 0L && !is.null(.proxy$port)) proxy_stop()
+}
+
+#' Find a random available TCP port
+#'
+#' Find an available TCP port, starting with `port`, then sampling from
+#' 3000--8000 (excluding ports known to be blocked by Chrome).
+#' @param port Default port to try first.
+#' @param n Number of additional random ports to try.
+#' @param exclude Integer vector of ports to exclude from the search.
+#' @return An integer port number. Signals an error if no port is found.
+#' @export
+random_port = function(port = 4321L, n = 20L, exclude = NULL) {
+  unsafe = c(3659, 4045, 5060, 5061, 6000, 6566, 6665:6669, 6697)
+  ports  = sample(setdiff(3000:8000, unsafe), n)
+  ports  = setdiff(c(port, ports), exclude)
+  for (p in ports) if (.port_available(p)) return(p)
+  stop2("Cannot find an available TCP port")
 }
 
 # ---- internal helpers -------------------------------------------------------
@@ -93,7 +101,7 @@ stop_app = function(name = names(.proxy$apps)) {
 # Internal proxy state.
 .proxy = new.env(parent = emptyenv())
 .proxy$port = NULL   # proxy listen port
-.proxy$apps = list() # names of registered apps
+.proxy$apps = list() # name → list(fn, wd)
 
 # Start the proxy on the first available port from `ports`; return bound port or -1.
 proxy_start = function(ports, backend_port) {
@@ -106,8 +114,58 @@ proxy_stop = function() {
   .proxy$port = NULL
 }
 
+# Coerce body/headers-like argument to a raw vector.
+.as_raw = function(x) {
+  if (is.null(x) || length(x) == 0L) return(raw(0))
+  if (is.raw(x)) return(x)
+  charToRaw(x[[1L]])
+}
+
+# Check if a TCP port is available by attempting to bind a server socket.
+.port_available = function(port) {
+  s = tryCatch(serverSocket(port), error = function(e) NULL)
+  if (is.null(s)) return(FALSE)
+  close(s)
+  TRUE
+}
+
+# Single R-level dispatcher for all xfun apps. Registered as 'xfun:' in
+# R's httpd handler environment. Proxy rewrites /name/rest to
+# /custom/xfun:/name/rest so R dispatches here for every xfun app request.
+.xfun_dispatch = function(path, query = NULL, body = NULL, headers = NULL) {
+  # Strip the /custom/xfun: prefix inserted by the proxy.
+  real = sub('^/custom/xfun:', '', path)  # /name/rest  or  /rest
+  q    = .parse_xfun_query(headers)
+  post = .as_raw(body)
+  hdrs = .as_raw(headers)
+
+  # Try named apps first (non-empty names, longest first to avoid prefix conflicts).
+  named = names(.proxy$apps)
+  named = named[nzchar(named)]
+  named = named[order(nchar(named), decreasing = TRUE)]
+  for (n in named) {
+    pfx = paste0('/', n)
+    if (real == pfx || startsWith(real, paste0(pfx, '/'))) {
+      sub_path = sub(paste0('^', pfx, '/?'), '', real)
+      if (!nzchar(sub_path)) sub_path = '.'
+      app = .proxy$apps[[n]]
+      return(in_dir(app$wd, app$fn(sub_path, q, post, hdrs)))
+    }
+  }
+
+  # Catch-all (name = '').
+  if ('' %in% names(.proxy$apps)) {
+    app      = .proxy$apps[['']]
+    sub_path = sub('^/', '', real)
+    if (!nzchar(sub_path)) sub_path = '.'
+    return(in_dir(app$wd, app$fn(sub_path, q, post, hdrs)))
+  }
+
+  list(payload = 'Not found', 'content-type' = 'text/html', 'status code' = 404L)
+}
+
 # Parse the X-Xfun-Query header (added by the proxy) into a named, URL-decoded
-# character vector.  Falls back to character(0) when absent.
+# character vector. Falls back to character(0) when absent.
 .parse_xfun_query = function(headers) {
   if (is.null(headers) || length(headers) == 0L) return(character(0))
   hs = if (is.raw(headers)) rawToChar(headers) else paste(headers, collapse = '\n')

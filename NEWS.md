@@ -1,5 +1,9 @@
 # CHANGES IN xfun VERSION 0.58
 
+- Added `new_app()` and `stop_app()` to create and stop local web applications backed by R's internal httpd. A lightweight C proxy (using the vendored [picohttpparser](https://github.com/h2o/picohttpparser)) rewrites `/name/rest` to `/custom/xfun:/name/rest` so apps are served at `http://127.0.0.1:PORT/name/`. The proxy runs in a background thread and works immediately on all platforms without pressing Enter. Use `name = ''` for a catch-all handler at the server root.
+
+- Added `random_port()` to find a random available TCP port (useful for the `ports` argument of `new_app()`).
+
 - `html_view()` should join the input character vector by `\n`, otherwise only the first element of the vector will be passed to the browser (thanks, @XiangyunHuang, yihui/gglite#15).
 
 - `tojson()` will convert length 1 columns to arrays, too. Previously, such columns were converted to scalars, e.g., `data.frame(x = 1)` would be converted to `{"x": 1}` instead of `{"x": [1]}`. This makes sure data frame columns are always arrays in JSON.

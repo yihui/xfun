@@ -1,16 +1,9 @@
 library(testit)
 
-# Find a free port.
-find_free_port = function(ports = 4321 + 1:20) {
-  for (p in ports) {
-    sock = tryCatch(serverSocket(p), error = function(e) NULL)
-    if (!is.null(sock)) { close(sock); return(p) }
-  }
-  NULL
-}
+port = tryCatch(random_port(), error = function(e) NULL)
 
 # Send a raw HTTP/1.0 request to the proxy and return the full response as a
-# string.  After writing the request we call Sys.sleep() so R's event loop
+# string. After writing the request we call Sys.sleep() so R's event loop
 # runs and R's internal httpd can accept + process the connection forwarded by
 # the proxy thread.
 http_request = function(host, port, method, path, body = NULL, extra_headers = '') {
@@ -37,19 +30,22 @@ http_request = function(host, port, method, path, body = NULL, extra_headers = '
            error = function(e) NULL)
 }
 
-port = find_free_port()
-
 if (!is.null(port)) {
 
-  # Handler echoes back request details as plain text.
+  # Handler echoes back request details as plain text, including a custom header.
   url = new_app(
     'test',
     function(path, query, post, headers) {
+      h = if (length(headers) > 0L) rawToChar(headers) else ''
       body = paste0(
         'path=', path, '\n',
         'query_foo=', if ('foo' %in% names(query)) query[['foo']] else '', '\n',
-        'post=', rawToChar(post), '\n',
-        'method=', sub('\n.*', '', sub('Request-Method: ', '', rawToChar(headers)))
+        'post=', if (length(post) > 0L) rawToChar(post) else '', '\n',
+        'method=', sub('\n.*', '', sub('Request-Method: ', '', h)), '\n',
+        'x_custom=', {
+          m = regmatches(h, regexpr('X-Custom: [^\r\n]+', h))
+          if (length(m)) sub('X-Custom: ', '', m) else 'MISSING'
+        }
       )
       list(payload = body, 'content-type' = 'text/plain')
     },
@@ -88,14 +84,14 @@ if (!is.null(port)) {
     resp = http_request('127.0.0.1', port, 'GET', '/test/hdr',
                         extra_headers = 'X-Custom: test-value\r\n')
     (!is.null(resp))
-    (grepl('200 OK', resp, fixed = TRUE))
+    (grepl('200 OK',              resp, fixed = TRUE))
+    (grepl('x_custom=test-value', resp, fixed = TRUE))
   })
 
-  assert('unknown app does not invoke our handler', {
+  assert('unknown app returns a 404 response', {
     resp = http_request('127.0.0.1', port, 'GET', '/no-such-app/')
     (!is.null(resp))
-    # R's httpd returns an error page (format varies by version); verify our
-    # handler was NOT called (it would return "path=no-such-app").
+    # Dispatcher returns 404; our handler was NOT called.
     (!grepl('path=no-such-app', resp, fixed = TRUE))
   })
 

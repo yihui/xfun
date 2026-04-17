@@ -3,7 +3,7 @@
  *
  * The proxy listens on a user-visible port (LISTEN_PORT) and forwards
  * requests to R's internal httpd (BACKEND_PORT), rewriting the URL so that
- *   LISTEN_PORT  /app-name/rest   →   BACKEND_PORT  /custom/app-name/rest
+ *   LISTEN_PORT  /app-name/rest   →   BACKEND_PORT  /custom/xfun:/app-name/rest
  *
  * The proxy runs in a background thread (pthreads on Unix/macOS, a Windows
  * thread on Windows).  It never calls any R functions, so it works
@@ -102,16 +102,19 @@ static void xp_handle(xp_sock_t cfd)
         }
     }
 
-    /* rewrite path: /name/rest → /custom/name/rest */
+    /* rewrite path: /name/rest → /custom/xfun:/name/rest
+     * (keeps leading '/'; single 'xfun:' handler dispatches to per-app R fns) */
     char npath[4096];
     if (path_len > 0 && path[0] == '/') {
-        if (path_len + 8 >= sizeof(npath)) goto done;
-        memcpy(npath, "/custom", 7);
-        memcpy(npath + 7, path, path_len);
-        npath[7 + path_len] = '\0';
+        if (path_len + 14 >= sizeof(npath)) goto done;  /* 13 (prefix) + path_len + 1 (NUL) */
+        memcpy(npath, "/custom/xfun:", 13);
+        memcpy(npath + 13, path, path_len);
+        npath[13 + path_len] = '\0';
     } else {
-        if (snprintf(npath, sizeof(npath), "/custom/%.*s",
-                     (int)path_len, path) >= (int)sizeof(npath)) goto done;
+        if (path_len + 15 >= sizeof(npath)) goto done;  /* 14 (prefix) + path_len + 1 (NUL) */
+        memcpy(npath, "/custom/xfun:/", 14);
+        memcpy(npath + 14, path, path_len);
+        npath[14 + path_len] = '\0';
     }
 
     /* connect to R's httpd backend */
