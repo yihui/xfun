@@ -5,7 +5,7 @@
 \alias{stop_app}
 \title{Create or stop a local web application}
 \usage{
-new_app(name, handler, open = TRUE, host = "127.0.0.1",
+new_app(name, handler, open = interactive(), host = "127.0.0.1",
   ports = 4321 + 1:30)
 
 stop_app(name = names(.proxy$apps))

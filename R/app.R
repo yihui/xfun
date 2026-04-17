@@ -24,7 +24,7 @@
 #'   nothing.
 #' @export
 new_app = function(
-  name, handler, open = TRUE, host = '127.0.0.1', ports = 4321 + 1:30
+  name, handler, open = interactive(), host = '127.0.0.1', ports = 4321 + 1:30
 ) {
   backend = .httpd_port()
   if (backend <= 0L) stop2("Failed to start R's internal httpd.")
