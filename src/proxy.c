@@ -283,6 +283,7 @@ SEXP proxy_start(SEXP r_port, SEXP r_backend, SEXP r_prefix)
         xp_instance_t *inst = &xp_inst[slot];
         inst->backend = INTEGER(r_backend)[0];
         const char *pfx = CHAR(STRING_ELT(r_prefix, 0));
+        if (strlen(pfx) >= XP_PREFIX_MAX) goto fail;  /* prefix too long */
         strncpy(inst->prefix, pfx, XP_PREFIX_MAX - 1);
         inst->prefix[XP_PREFIX_MAX - 1] = '\0';
 

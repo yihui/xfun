@@ -34,7 +34,7 @@ new_app = function(
   if (!is.null(.proxy$apps[[name]])) stop_app(name)
 
   # Pick a port: skip ports already used by running apps, fallback to random_port().
-  used = vapply(.proxy$apps, `[[`, 0L, 'port')
+  used = unlist(lapply(.proxy$apps, function(a) a[['port']]))
   candidates = setdiff(as.integer(ports), used)
   port = -1L
   for (p in candidates) if (.port_available(p)) { port = p; break }

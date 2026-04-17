@@ -96,11 +96,9 @@ if (!is.null(port)) {
         function(path, ...) list(payload = paste0('app2-', path), 'content-type' = 'text/plain'),
         open = FALSE, ports = port2
       )
-      on.exit(stop_app('test2'), add = TRUE)
       resp1 = http_request('127.0.0.1', port,  'GET', '/hi')
       resp2 = http_request('127.0.0.1', port2, 'GET', '/hi')
       stop_app('test2')
-      on.exit(stop_app('test'), add = TRUE)  # restore original on.exit
       (grepl('path=hi', resp1, fixed = TRUE))
       (grepl('app2-hi', resp2, fixed = TRUE))
     }
