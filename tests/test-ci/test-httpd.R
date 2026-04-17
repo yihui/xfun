@@ -80,9 +80,7 @@ http_request = function(host, port, method, path, body = NULL, extra_headers = '
   if (length(buf) == 0L) NULL else rawToChar(buf)
 }
 
-port = tryCatch(random_port(), error = function(e) NULL)
-
-if (!is.null(port)) {
+if (!is.null(port <- random_port(error = FALSE))) {
 
   # Handler echoes request details via make_body() so the test can compare
   # the response body against make_body() called directly.
