@@ -17,3 +17,7 @@ if (!has_fun('strrep')) strrep = function(x, times) {
 if (!has_fun('packageDate', asNamespace('utils'))) packageDate = function(...) {
   as.Date(packageDescription(..., fields = 'Date/Publication'))
 }
+
+.onUnload = function(libpath) {
+  if (length(.proxy$apps) > 0L) stop_app()
+}

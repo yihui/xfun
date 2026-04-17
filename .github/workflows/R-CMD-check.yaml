@@ -49,13 +49,14 @@ jobs:
           use-public-rspm: true
 
       - uses: yihui/actions/setup-r-dependencies@HEAD
+        with:
+          extra-packages: ${{ (runner.os == 'Linux' && matrix.config.r == 'release') && 'covr' || '' }}
 
       - uses: yihui/actions/check-r-package@HEAD
 
       - name: Test coverage
         if: success() && runner.os == 'Linux' && matrix.config.r == 'release'
         run: |
-          pak::pkg_install('covr')
           cov = covr::package_coverage(
             quiet = FALSE,
             clean = FALSE,

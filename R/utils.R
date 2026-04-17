@@ -320,4 +320,6 @@ handle_error = function(
 }
 
 # a shorthand for rm(list =, envir =)
-rm_vars = function(x, envir, ...) rm(list = x, envir = envir, ...)
+rm_vars = function(x, envir, ...) {
+  rm(list = intersect(x, ls(envir, all.names = TRUE)), envir = envir, ...)
+}
