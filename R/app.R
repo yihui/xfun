@@ -34,7 +34,7 @@ new_app = function(
   if (!is.null(.proxy$apps[[name]])) stop_app(name)
 
   # Pick a port: skip ports already used by running apps, fallback to random_port().
-  used = unlist(lapply(.proxy$apps, function(a) a[['port']]))
+  used = unlist(lapply(.proxy$apps, `[[`, 'port'))
   candidates = setdiff(as.integer(ports), used)
   port = -1L
   for (p in candidates) if (.port_available(p)) { port = p; break }
@@ -95,6 +95,7 @@ stop_app = function(name = names(.proxy$apps)) {
 #' @return An integer port number. Signals an error if no port is found.
 #' @export
 random_port = function(port = 4321L, n = 20L, exclude = NULL) {
+  # exclude ports considered unsafe by Chrome http://superuser.com/a/188070
   unsafe = c(3659, 4045, 5060, 5061, 6000, 6566, 6665:6669, 6697)
   ports  = sample(setdiff(3000:8000, unsafe), n)
   ports  = setdiff(c(port, ports), exclude)
@@ -127,9 +128,9 @@ proxy_stop = function(slot) {
 
 # Coerce body/headers-like argument to a raw vector.
 .as_raw = function(x) {
-  if (is.null(x) || length(x) == 0L) return(raw(0))
-  if (is.raw(x)) return(x)
-  charToRaw(x[[1L]])
+  if (is.null(x) || length(x) == 0L) raw(0) else {
+    if (is.raw(x)) x else charToRaw(x[[1L]])
+  }
 }
 
 # Check if a TCP port is available by attempting to bind a server socket.
