@@ -14,17 +14,22 @@ make_body = function(path, foo = '', post = '', method = '', x_custom = 'MISSING
 }
 
 # Extract the HTTP response body (strip status line + headers).
-# Works on the string returned by http_request() (readLines + paste).
+# Works on the raw bytes returned by http_request() (handles both \r\n\r\n and \n\n).
 http_body = function(resp) {
   if (is.null(resp)) return(NULL)
-  idx = regexpr('\n\n', resp, fixed = TRUE)
-  if (idx[1L] > 0L) substring(resp, idx[1L] + 2L) else resp
+  for (sep in c('\r\n\r\n', '\n\n')) {
+    m = regexpr(sep, resp, fixed = TRUE)
+    if (m[1L] > 0L) return(substring(resp, m[1L] + nchar(sep)))
+  }
+  resp
 }
 
 # Send a raw HTTP/1.0 request and return the full response as a string.
+# Uses non-blocking reads with short Sys.sleep() between polls so R's httpd
+# event loop keeps running while we wait for the response.
 http_request = function(host, port, method, path, body = NULL, extra_headers = '') {
   sock = tryCatch(
-    socketConnection(host, port = port, open = 'r+b', blocking = TRUE, timeout = 5),
+    socketConnection(host, port = port, open = 'r+b', blocking = FALSE, timeout = 5),
     error = function(e) NULL
   )
   if (is.null(sock)) return(NULL)
@@ -38,10 +43,23 @@ http_request = function(host, port, method, path, body = NULL, extra_headers = '
     '\r\n',
     if (!is.null(body)) body else ''
   )
-  writeBin(req, sock)
-  Sys.sleep(0.5)  # allow proxy + R httpd to process the request and send a full response
-  tryCatch(paste(readLines(sock, warn = FALSE), collapse = '\n'),
-           error = function(e) NULL)
+  writeBin(req, sock)  # writeBin on non-blocking socket
+  buf = raw(0L)
+  empty = 0L
+  for (i in seq_len(50L)) {  # up to 5 seconds total
+    Sys.sleep(0.1)  # yield to R's event loop so httpd can process the request
+    chunk = tryCatch(readBin(sock, raw(), n = 65536L), error = function(e) raw(0L))
+    if (length(chunk) > 0L) {
+      buf   = c(buf, chunk)
+      empty = 0L
+      s = rawToChar(buf)
+      if (grepl('\n\n', s, fixed = TRUE)) break  # complete response received
+    } else if (length(buf) > 0L) {
+      empty = empty + 1L
+      if (empty >= 3L) break  # several empty reads after data → connection closed
+    }
+  }
+  if (length(buf) == 0L) NULL else rawToChar(buf)
 }
 
 port = tryCatch(random_port(), error = function(e) NULL)
