@@ -104,7 +104,6 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
   ports  = setdiff(c(port, ports), exclude)
   for (p in ports) if (.port_available(p)) return(p)
   if (error) stop2("Cannot find an available TCP port")
-  return(NULL)
 }
 
 # ---- internal helpers -------------------------------------------------------
