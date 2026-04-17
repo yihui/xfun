@@ -50,11 +50,8 @@ new_app = function(
   .proxy$apps[[name]] = list(port = port, slot = slot)
 
   url_host = if (identical(host, '0.0.0.0')) '127.0.0.1' else host
-  url = if (nzchar(name)) {
-    sprintf('http://%s:%d/~%s/', url_host, port, name)
-  } else {
-    sprintf('http://%s:%d/', url_host, port)
-  }
+  url = if (name == '') '' else sprintf('~%s/', name)
+  url = sprintf('http://%s:%d/%s', url_host, port, url)
   if (isTRUE(open)) open = getOption('viewer', browseURL)
   if (is.function(open)) open(url)
 
@@ -72,20 +69,18 @@ new_app = function(
 #' @rdname new_app
 #' @export
 stop_app = function(name = names(.proxy$apps)) {
+  if (!missing(name)) name = intersect(name, names(.proxy$apps))
   for (n in name) {
     idx = match(n, names(.proxy$apps))
-    if (!is.na(idx)) {
-      app = .proxy$apps[[idx]]
-      key = paste0('xfun:', n, ':', app$port)
-      e = .httpd_env()
-      if (exists(key, envir = e, inherits = FALSE)) rm(list = key, envir = e)
-      .proxy$apps[[idx]] = NULL
-      # Stop the proxy only when no other apps remain on that port.
-      still_on_port = Filter(function(a) a$port == app$port, .proxy$apps)
-      if (length(still_on_port) == 0L) {
-        proxy_stop(app$slot)
-        .proxy$port_to_slot[[as.character(app$port)]] = NULL
-      }
+    app = .proxy$apps[[idx]]
+    key = paste0('xfun:', n, ':', app$port)
+    rm_vars(key, .httpd_env())
+    .proxy$apps[[idx]] = NULL
+    # Stop the proxy only when no other apps remain on that port.
+    still_on_port = Filter(function(a) a$port == app$port, .proxy$apps)
+    if (length(still_on_port) == 0L) {
+      proxy_stop(app$slot)
+      .proxy$port_to_slot[[as.character(app$port)]] = NULL
     }
   }
 }
@@ -195,7 +190,7 @@ proxy_stop = function(slot) {
   function(path, query = NULL, body = NULL, headers = NULL) {
     real = if (startsWith(path, prefix)) substring(path, nchar(prefix) + 1L) else path
     real = sub('^/', '', real)
-    if (!nzchar(real)) real = '.'
+    if (real == '') real = '.'
     q    = .parse_xfun_query(headers)
     post = .as_raw(body)
     hdrs = .as_raw(headers)
@@ -217,7 +212,7 @@ proxy_stop = function(slot) {
       break
     }
   }
-  if (!nzchar(qs)) return(character(0))
+  if (qs == '') return(character(0))
   pairs = Filter(nzchar, strsplit(qs, '&', fixed = TRUE)[[1L]])
   if (!length(pairs)) return(character(0))
   keys = vals = character(length(pairs))
