@@ -346,6 +346,14 @@ SEXP xp_port_available(SEXP r_port, SEXP r_host)
     xp_sock_t fd = socket(AF_INET, SOCK_STREAM, 0);
     int ok = 0;
     if (fd != XP_INVALID) {
+#ifdef _WIN32
+#  ifdef SO_EXCLUSIVEADDRUSE
+        /* Ensure accurate port-availability checks on Windows by preventing
+         * shared binds when probing whether a port is free. */
+        BOOL one = 1;
+        setsockopt(fd, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, (const char *)&one, sizeof(one));
+#  endif
+#endif
         struct sockaddr_in addr;
         memset(&addr, 0, sizeof(addr));
         addr.sin_family      = AF_INET;

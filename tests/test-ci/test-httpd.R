@@ -44,7 +44,8 @@ http_request = function(host, port, method, path, body = NULL, extra_headers = '
   )
   writeBin(req, sock)
   buf = raw(0L)
-  for (i in seq_len(300L)) {
+  # 120 * 0.1s = up to 12 seconds for slow CI environments.
+  for (i in seq_len(120L)) {
     Sys.sleep(0.1)
     ready = tryCatch(socketSelect(list(sock), write = FALSE, timeout = 0), error = function(e) FALSE)
     if (!isTRUE(ready[1L])) next
@@ -64,7 +65,7 @@ http_request = function(host, port, method, path, body = NULL, extra_headers = '
   if (length(buf) == 0L) NULL else rawToChar(buf)
 }
 
-# Retry a request until a non-empty response body is received.
+# Retry a request until a complete response with a non-empty body is received.
 http_request_full = function(host, port, method, path, body = NULL, extra_headers = '', tries = 30L) {
   resp = NULL
   for (i in seq_len(tries)) {

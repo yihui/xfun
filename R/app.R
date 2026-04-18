@@ -143,10 +143,15 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 # Find an available proxy port without starting the proxy.
 .find_proxy_port = function(candidates = NULL) {
   if (is.null(candidates)) candidates = 4321 + 1:30
-  for (p in c(candidates, random_port(error = FALSE, exclude = candidates))) {
+  tried = c(candidates, random_port(error = FALSE, exclude = candidates))
+  for (p in tried) {
     if (!is.na(p) && .port_available(p)) return(as.integer(p))
   }
-  stop2("No available port found.")
+  stop2(
+    "No available proxy port found (tried candidates ",
+    paste(unique(candidates), collapse = ', '),
+    " and random fallback ports)."
+  )
 }
 
 # Start a proxy instance on `port` forwarding to `backend_port`.
@@ -203,7 +208,7 @@ proxy_stop = function(slot) {
     real = if (startsWith(path, prefix)) substring(path, nchar(prefix) + 1L) else path
     real = sub('^/', '', real)
     if (real == '') real = '.'
-    q = if (is.null(query)) character(0) else query
+    q = if (is.null(query)) .parse_xfun_query(headers) else query
     in_dir(wd, fn(real, q, .as_raw(body), .as_raw(headers)))
   }
 }
