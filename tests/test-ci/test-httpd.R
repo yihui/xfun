@@ -102,7 +102,7 @@ if (!is.null(port <- random_port(error = FALSE))) {
            'content-type' = 'text/plain')
     },
     open = FALSE,
-    ports = port
+    port = port
   )
   on.exit(stop_app('test'), add = TRUE)
 
@@ -140,7 +140,7 @@ if (!is.null(port <- random_port(error = FALSE))) {
   assert('a nameless app shares the port and serves the root path', {
     new_app('', function(path, ...) {
       list(payload = paste0('nameless:', path), 'content-type' = 'text/plain')
-    }, open = FALSE)  # no explicit ports → reuses 'test' port
+    }, open = FALSE)  # no explicit port → reuses 'test' port
     resp_named   = http_request('127.0.0.1', port, 'GET', '/~test/hi')
     resp_nameless = http_request('127.0.0.1', port, 'GET', '/hi')
     stop_app('')

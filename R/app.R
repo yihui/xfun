@@ -19,7 +19,7 @@
 #'   blocks: passing `open = FALSE` explicitly suppresses both browser-opening
 #'   and blocking.
 #' @param host Bind address for the proxy (`"127.0.0.1"` or `"0.0.0.0"`).
-#' @param ports Candidate proxy ports. When omitted, all apps share the same
+#' @param port Candidate proxy ports. When omitted, all apps share the same
 #'   port (the first available one from `4321 + 1:30`). Pass an explicit value
 #'   to select a different port for this app; falls back to [random_port()] if
 #'   all candidates are in use by other processes. See [random_port()] to pick
@@ -28,17 +28,15 @@
 #'   nothing.
 #' @export
 new_app = function(
-  name, handler, open = interactive(), host = '127.0.0.1', ports = 4321 + 1:30
+  name, handler, open = interactive(), host = '127.0.0.1', port = NULL
 ) {
   backend = .httpd_port()
-  if (backend <= 0L) stop2("Failed to start R's internal httpd.")
 
   # Replace any existing app with the same name.
   if (name %in% names(.proxy$apps)) stop_app(name)
 
   # Determine which proxy port/slot to use.
-  use_default = missing(ports)
-  ps = .find_proxy(as.integer(ports), backend, use_default, host)
+  ps = .find_proxy(port, backend, host)
   port = ps$port
   slot = ps$slot
 
@@ -109,7 +107,11 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 # ---- internal helpers -------------------------------------------------------
 
 # Start R's internal httpd; return its port (or -1 on failure).
-.httpd_port = function() suppressMessages(tools::startDynamicHelp(NA))
+.httpd_port = function() {
+  p = suppressMessages(tools::startDynamicHelp(NA))
+  if (p <= 0L) stop2("Failed to start R's internal httpd.")
+  p
+}
 
 # Environment where R's httpd looks up /custom/* handlers.
 .httpd_env = function() getFromNamespace('.httpd.handlers.env', 'tools')
@@ -121,9 +123,10 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 
 # Find or start a proxy for the given port candidates.
 # When use_default is TRUE and a proxy already exists, reuse it (shared port).
-.find_proxy = function(candidates, backend, use_default, host = '127.0.0.1') {
+.find_proxy = function(candidates, backend, host = '127.0.0.1') {
+  if (use_default <- is.null(candidates)) candidates = 4321 + 1:30
   # Reuse any running proxy when using the default port selection.
-  if (use_default && length(.proxy$port_to_slot) > 0L) {
+  if (use_default && length(.proxy$port_to_slot)) {
     p = as.integer(names(.proxy$port_to_slot)[1L])
     return(list(port = p, slot = .proxy$port_to_slot[[1L]]))
   }

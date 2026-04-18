@@ -5,13 +5,7 @@
 \alias{stop_app}
 \title{Create or stop a local web application}
 \usage{
-new_app(
-  name,
-  handler,
-  open = interactive(),
-  host = "127.0.0.1",
-  ports = 4321 + 1:30
-)
+new_app(name, handler, open = interactive(), host = "127.0.0.1", port = NULL)
 
 stop_app(name = names(.proxy$apps))
 }
@@ -31,7 +25,7 @@ and blocking.}
 
 \item{host}{Bind address for the proxy (\code{"127.0.0.1"} or \code{"0.0.0.0"}).}
 
-\item{ports}{Candidate proxy ports. When omitted, all apps share the same
+\item{port}{Candidate proxy ports. When omitted, all apps share the same
 port (the first available one from \code{4321 + 1:30}). Pass an explicit value
 to select a different port for this app; falls back to \code{\link[=random_port]{random_port()}} if
 all candidates are in use by other processes. See \code{\link[=random_port]{random_port()}} to pick

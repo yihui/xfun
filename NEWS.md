@@ -2,6 +2,8 @@
 
 - Now `new_app()` doesn't use R's internal httpd directly, but a lightweight C proxy (using the vendored [picohttpparser](https://github.com/h2o/picohttpparser)) rewrites `http://127.0.0.1:PORT/*` to `https://127.0.0.1:BACKPORT/custom/xfun:/*` where `BACKPORT` is the port used by R's internal httpd, and the app is served at `http://127.0.0.1:PORT`.
 
+- Renamed `new_app()`'s argument `ports` to `port`.
+
 - Added `random_port()` to find a random available TCP port (e.g., it can be used for the `ports` argument of `new_app()`).
 
 - `html_view()` should join the input character vector by `\n`, otherwise only the first element of the vector will be passed to the browser (thanks, @XiangyunHuang, yihui/gglite#15).
