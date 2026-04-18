@@ -1,0 +1,24 @@
+* installing *source* package ‘xfun’ ...
+** this is package ‘xfun’ version ‘0.57.6’
+** using staged installation
+** libs
+using C compiler: ‘gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0’
+gcc -std=gnu2x -I"/opt/R/4.5.3/lib/R/include" -DNDEBUG   -I/usr/local/include    -fpic  -g -O2  -c base64.c -o base64.o
+gcc -std=gnu2x -I"/opt/R/4.5.3/lib/R/include" -DNDEBUG   -I/usr/local/include    -fpic  -g -O2  -c init.c -o init.o
+gcc -std=gnu2x -I"/opt/R/4.5.3/lib/R/include" -DNDEBUG   -I/usr/local/include    -fpic  -g -O2  -c picohttpparser.c -o picohttpparser.o
+gcc -std=gnu2x -I"/opt/R/4.5.3/lib/R/include" -DNDEBUG   -I/usr/local/include    -fpic  -g -O2  -c proxy.c -o proxy.o
+gcc -std=gnu2x -I"/opt/R/4.5.3/lib/R/include" -DNDEBUG   -I/usr/local/include    -fpic  -g -O2  -c rand_lcg.c -o rand_lcg.o
+gcc -std=gnu2x -shared -L/opt/R/4.5.3/lib/R/lib -L/usr/local/lib -o xfun.so base64.o init.o picohttpparser.o proxy.o rand_lcg.o -lpthread -L/opt/R/4.5.3/lib/R/lib -lR
+installing to /home/runner/work/xfun/xfun/xfun.Rcheck/00LOCK-xfun/00new/xfun/libs
+** R
+** inst
+** byte-compile and prepare package for lazy loading
+** help
+*** installing help indices
+** building package indices
+** installing vignettes
+** testing if installed package can be loaded from temporary location
+** checking absolute paths in shared objects and dynamic libraries
+** testing if installed package can be loaded from final location
+** testing if installed package keeps a record of temporary installation path
+* DONE (xfun)
