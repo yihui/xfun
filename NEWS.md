@@ -1,10 +1,6 @@
 # CHANGES IN xfun VERSION 0.58
 
-- `new_app(name = '')` now serves exactly one proxy-backed app per port at `http://127.0.0.1:PORT/` (without app-name routing in URLs), and `new_app(name != '')` falls back to the legacy direct httpd route `/custom/name/` for backward compatibility.
-
-- Added `help_proxy()` to start a passthrough proxy to R's help server (useful for exposing help pages on LAN, e.g., with `host = '0.0.0.0'`).
-
-- Port availability checks now test both `127.0.0.1` and `0.0.0.0`.
+- `new_app()` now uses a lightweight C proxy in front of R's internal httpd: `new_app(name = '')` serves one proxy-backed app per port at `http://127.0.0.1:PORT/`, `new_app(name != '')` keeps legacy direct httpd routing via `/custom/name/` for compatibility, `help_proxy()` can proxy the full help server for LAN access, and port availability checks test both `127.0.0.1` and `0.0.0.0`.
 
 - Renamed `new_app()`'s argument `ports` to `port`.
 

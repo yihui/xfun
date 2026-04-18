@@ -78,6 +78,8 @@ http_request_full = function(host, port, method, path, body = NULL, extra_header
   resp
 }
 
+url_port = function(url) as.integer(sub('^https?://[^:]+:([0-9]+)/.*$', '\\1', url))
+
 if (!is.null(port <- random_port(error = FALSE))) {
 
   # Run the proxy-backed app in a separate R process so requests are sent from
@@ -147,6 +149,30 @@ if (!is.null(port <- random_port(error = FALSE))) {
                              extra_headers = 'X-Custom: test-value\r\n')
     (!is.null(resp))
     (http_body(resp) %==% make_body('hdr', method = 'GET', x_custom = 'test-value'))
+  })
+
+  assert('.find_proxy_port() excludes ports used by new_app(name = \"\")', {
+    old_apps = .proxy$apps
+    old_help = .proxy$help
+    on.exit({
+      .proxy$apps = old_apps
+      .proxy$help = old_help
+    }, add = TRUE)
+    .proxy$apps[['']] = list(type = 'proxy', port = 4322L, slot = NA_integer_, key = 'xfun:4322')
+    p = .find_proxy_port(4322:4325)
+    (p != 4322L)
+  })
+
+  assert('.find_proxy_port() excludes ports used by help_proxy()', {
+    old_apps = .proxy$apps
+    old_help = .proxy$help
+    on.exit({
+      .proxy$apps = old_apps
+      .proxy$help = old_help
+    }, add = TRUE)
+    .proxy$help[['4323']] = 1L
+    p = .find_proxy_port(4323:4326)
+    (p != 4323L)
   })
 
   url = new_app(

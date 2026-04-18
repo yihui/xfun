@@ -330,19 +330,11 @@ fail:
     return ScalarInteger(-1);
 }
 
-/*
- * port_available(port, host)
- * Try to bind a TCP socket on host:port; return TRUE if the port is free,
- * FALSE otherwise. Works on all R versions (no serverSocket() needed).
- */
-SEXP xp_port_available(SEXP r_port, SEXP r_host)
+static int xp_bind_available(int port, int use_any)
 {
 #ifdef _WIN32
     WSADATA wsa; WSAStartup(MAKEWORD(2, 2), &wsa);
 #endif
-    int port = INTEGER(r_port)[0];
-    const char *host_str = CHAR(STRING_ELT(r_host, 0));
-    int use_any = (strcmp(host_str, "0.0.0.0") == 0);
     xp_sock_t fd = socket(AF_INET, SOCK_STREAM, 0);
     int ok = 0;
     if (fd != XP_INVALID) {
@@ -365,7 +357,21 @@ SEXP xp_port_available(SEXP r_port, SEXP r_host)
 #ifdef _WIN32
     WSACleanup();
 #endif
-    return ScalarLogical(ok);
+    return ok;
+}
+
+/*
+ * port_available(port)
+ * Try to bind a TCP socket on both 127.0.0.1:port and 0.0.0.0:port.
+ * Return TRUE only if both binds succeed.
+ */
+SEXP xp_port_available(SEXP r_port)
+{
+    int port = INTEGER(r_port)[0];
+    return ScalarLogical(
+        xp_bind_available(port, 0) &&
+        xp_bind_available(port, 1)
+    );
 }
 
 /*

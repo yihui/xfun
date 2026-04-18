@@ -38,17 +38,17 @@ new_app = function(
   if (name %in% names(.proxy$apps)) stop_app(name)
 
   if (identical(name, '')) {
-    port = .find_proxy_port(port)
+    port = .find_proxy_port(port, c(.proxy_app_ports(), names(.proxy$help)))
     slot = proxy_start(as.integer(port), as.integer(backend), host = host)
     if (slot < 0L) stop2("Failed to start proxy on port ", port, ".")
     key = paste0('xfun:', port)
-    assign(key, .make_proxy_handler(port, handler, getwd()), envir = .httpd_env())
-    .proxy$apps[[name]] = list(type = 'proxy', slot = slot, key = key)
+    assign(key, .make_app_handler(paste0('/custom/xfun:', port), handler, getwd()), envir = .httpd_env())
+    .proxy$apps[[name]] = list(type = 'proxy', slot = slot, key = key, port = port)
     url_host = if (identical(host, '0.0.0.0')) '127.0.0.1' else host
     url = sprintf('http://%s:%d/', url_host, port)
   } else {
     key = as.character(name)
-    assign(key, .make_httpd_handler(name, handler, getwd()), envir = .httpd_env())
+    assign(key, .make_app_handler(paste0('/custom/', name), handler, getwd()), envir = .httpd_env())
     .proxy$apps[[name]] = list(type = 'httpd', key = key)
     url = sprintf('http://127.0.0.1:%d/custom/%s/', backend, name)
   }
@@ -80,17 +80,10 @@ stop_app = function(name = names(.proxy$apps)) {
   }
 }
 
-#' Start a passthrough proxy for R's help pages
-#'
-#' Start a proxy that forwards all request paths to R's internal httpd, which
-#' can be used to expose the help system to other devices on LAN.
-#' @param port Candidate proxy ports.
-#' @param host Bind address for the proxy (`"127.0.0.1"` or `"0.0.0.0"`).
-#' @return The help index URL, invisibly.
-#' @export
+# start an internal passthrough proxy for R's help pages.
 help_proxy = function(port = NULL, host = '0.0.0.0') {
   p1 = .httpd_port()
-  p2 = .find_proxy_port(port)
+  p2 = .find_proxy_port(port, .proxy_app_ports())
   old = .proxy$help[[as.character(p2)]]
   if (!is.null(old)) proxy_stop(old)
   slot = proxy_start(as.integer(p2), as.integer(p1), TRUE, host)
@@ -141,9 +134,15 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 .proxy$help = list()  # help proxy port → slot index
 
 # Find an available proxy port without starting the proxy.
-.find_proxy_port = function(candidates = NULL) {
+.proxy_app_ports = function() {
+  vapply(Filter(function(x) identical(x$type, 'proxy'), .proxy$apps), `[[`, integer(1), 'port')
+}
+
+.find_proxy_port = function(candidates = NULL, exclude = integer()) {
   if (is.null(candidates)) candidates = 4321 + 1:30
-  tried = c(candidates, random_port(error = FALSE, exclude = candidates))
+  exclude = unique(c(as.integer(exclude), .proxy_app_ports(), as.integer(names(.proxy$help))))
+  candidates = setdiff(candidates, exclude)
+  tried = c(candidates, random_port(error = FALSE, exclude = c(candidates, exclude)))
   for (p in tried) {
     if (!is.na(p) && .port_available(p)) return(as.integer(p))
   }
@@ -179,31 +178,12 @@ proxy_stop = function(slot) {
 
 # Check if a TCP port is available by attempting to bind a server socket.
 # Uses a C-level function so it works on all R versions (serverSocket() is R >= 4.0).
-.port_available_host = function(port, host) {
-  isTRUE(.Call(C_port_available, as.integer(port), as.character(host)))
-}
-
 .port_available = function(port) {
-  .port_available_host(port, '127.0.0.1') &&
-    .port_available_host(port, '0.0.0.0')
+  isTRUE(.Call(C_port_available, as.integer(port)))
 }
 
-# Build the R handler for proxy mode (`name = ''`).
-# The proxy rewrites /rest → /custom/xfun:PORT/rest.
-.make_proxy_handler = function(port, fn, wd) {
-  prefix = paste0('/custom/xfun:', port)
-  function(path, query = NULL, body = NULL, headers = NULL) {
-    real = if (startsWith(path, prefix)) substring(path, nchar(prefix) + 1L) else path
-    real = sub('^/', '', real)
-    if (real == '') real = '.'
-    q = if (is.null(query)) .parse_xfun_query(headers) else query
-    in_dir(wd, fn(real, q, .as_raw(body), .as_raw(headers)))
-  }
-}
-
-# Build the R handler for legacy direct-httpd mode (`name != ''`).
-.make_httpd_handler = function(name, fn, wd) {
-  prefix = paste0('/custom/', name)
+# Build an R httpd handler closure.
+.make_app_handler = function(prefix, fn, wd) {
   function(path, query = NULL, body = NULL, headers = NULL) {
     real = if (startsWith(path, prefix)) substring(path, nchar(prefix) + 1L) else path
     real = sub('^/', '', real)
