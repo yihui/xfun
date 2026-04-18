@@ -20,4 +20,5 @@ if (!has_fun('packageDate', asNamespace('utils'))) packageDate = function(...) {
 
 .onUnload = function(libpath) {
   if (length(.proxy$apps) > 0L) stop_app()
+  if (length(.proxy$help) > 0L) .stop_help_proxy()
 }

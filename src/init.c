@@ -9,7 +9,7 @@ extern SEXP base64_dec(SEXP);
 extern SEXP rand_lcg(SEXP, SEXP, SEXP, SEXP, SEXP);
 extern SEXP proxy_start(SEXP, SEXP, SEXP, SEXP);
 extern SEXP proxy_stop(SEXP);
-extern SEXP xp_port_available(SEXP);
+extern SEXP xp_port_available(SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
   {"base64_enc",       (DL_FUNC) &base64_enc,       1},
@@ -17,7 +17,7 @@ static const R_CallMethodDef CallEntries[] = {
   {"rand_lcg",         (DL_FUNC) &rand_lcg,         5},
   {"C_proxy_start",    (DL_FUNC) &proxy_start,      4},
   {"C_proxy_stop",     (DL_FUNC) &proxy_stop,       1},
-  {"C_port_available", (DL_FUNC) &xp_port_available, 1},
+  {"C_port_available", (DL_FUNC) &xp_port_available, 2},
   {NULL, NULL, 0}
 };
 

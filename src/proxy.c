@@ -1,19 +1,15 @@
 /*
- * proxy.c — shared-port reverse-proxy for xfun's new_app() / stop_app().
+ * proxy.c — reverse-proxy for xfun's new_app() / help_proxy().
  *
- * A single proxy instance listens on one port and can serve multiple
- * xfun apps at the same time.  The app is identified by a "~name" prefix
- * in the request URL path:
+ * A proxy instance listens on one port and rewrites each request URL path:
  *
- *   PORT/~name/rest  →  BACKEND:/custom/xfun:name:PORT/rest  (named app)
- *   PORT/rest        →  BACKEND:/custom/xfun::PORT/rest       (nameless app)
+ *   PORT/rest        →  BACKEND:/custom/xfun:PORT/rest
  *
  * The port number is embedded in the rewritten path so that the R-level
- * httpd handler key (assigned with assign("xfun:name:PORT", ...)) is unique
- * even when two apps share a port under different names.
+ * httpd handler key (assigned with assign("xfun:PORT", ...)) is unique.
  *
  * Multiple instances are supported (up to XP_MAX=32), one per distinct
- * listen port.  proxy_start(port, backend) allocates a slot and returns
+ * listen port. proxy_start(port, backend) allocates a slot and returns
  * its index; proxy_stop(slot) tears down that instance.
  */
 
@@ -140,46 +136,18 @@ static void xp_handle(xp_sock_t cfd, xp_instance_t *inst)
      * passthrough mode (inst->passthrough = 1):
      *   forward path verbatim — used to proxy the entire R httpd server.
      *
-     * ~name rewriting mode (default):
-     *   /~name/rest  →  /custom/xfun:name:PORT/rest  (named app)
-     *   /~name       →  /custom/xfun:name:PORT/       (named app, root)
-     *   /~name?q=1   →  /custom/xfun:name:PORT/?q=1
-     *   /rest        →  /custom/xfun::PORT/rest        (nameless app)
+     * app mode (default):
+     *   /rest → /custom/xfun:PORT/rest
      */
     char npath[4096];
     if (inst->passthrough) {
         if (path_len + 1 >= sizeof(npath)) goto done;
         memcpy(npath, path, path_len);
         npath[path_len] = '\0';
-    } else if (path_len >= 2 && path[0] == '/' && path[1] == '~') {
-        /* named app: extract name up to '/', '?', or end of path */
-        size_t ni = 2;
-        while (ni < path_len && path[ni] != '/' && path[ni] != '?') ni++;
-        size_t nlen = ni - 2;           /* length of name */
-        if (nlen > 255) goto done;      /* reject unreasonably long app names */
-        const char *rest = path + ni;
-        size_t rlen = path_len - ni;
-        if (rlen == 0 || rest[0] == '?') {
-            /* /~name  or  /~name?q=1 → insert '/' before rest */
-            int n = snprintf(npath, sizeof(npath),
-                             "/custom/xfun:%.*s:%d/%.*s",
-                             (int)nlen, path + 2,
-                             inst->port,
-                             (int)rlen, rest);
-            if (n <= 0 || n >= (int)sizeof(npath)) goto done;
-        } else {
-            /* /~name/rest */
-            int n = snprintf(npath, sizeof(npath),
-                             "/custom/xfun:%.*s:%d%.*s",
-                             (int)nlen, path + 2,
-                             inst->port,
-                             (int)rlen, rest);
-            if (n <= 0 || n >= (int)sizeof(npath)) goto done;
-        }
     } else {
-        /* nameless app: /rest → /custom/xfun::PORT/rest */
+        /* app mode: /rest → /custom/xfun:PORT/rest */
         int n = snprintf(npath, sizeof(npath),
-                         "/custom/xfun::%d%.*s",
+                         "/custom/xfun:%d%.*s",
                          inst->port, (int)path_len, path);
         if (n <= 0 || n >= (int)sizeof(npath)) goto done;
     }
@@ -363,26 +331,26 @@ fail:
 }
 
 /*
- * port_available(port)
- * Try to bind a TCP socket on 127.0.0.1:port; return TRUE if the port is
- * free, FALSE otherwise.  Works on all R versions (no serverSocket() needed).
+ * port_available(port, host)
+ * Try to bind a TCP socket on host:port; return TRUE if the port is free,
+ * FALSE otherwise. Works on all R versions (no serverSocket() needed).
  */
-SEXP xp_port_available(SEXP r_port)
+SEXP xp_port_available(SEXP r_port, SEXP r_host)
 {
 #ifdef _WIN32
     WSADATA wsa; WSAStartup(MAKEWORD(2, 2), &wsa);
 #endif
     int port = INTEGER(r_port)[0];
+    const char *host_str = CHAR(STRING_ELT(r_host, 0));
+    int use_any = (strcmp(host_str, "0.0.0.0") == 0);
     xp_sock_t fd = socket(AF_INET, SOCK_STREAM, 0);
     int ok = 0;
     if (fd != XP_INVALID) {
-        int one = 1;
-        setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (const char *)&one, sizeof(one));
         struct sockaddr_in addr;
         memset(&addr, 0, sizeof(addr));
         addr.sin_family      = AF_INET;
         addr.sin_port        = htons((unsigned short)port);
-        addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+        addr.sin_addr.s_addr = use_any ? htonl(INADDR_ANY) : htonl(INADDR_LOOPBACK);
         ok = (bind(fd, (struct sockaddr *)&addr, sizeof(addr)) == 0);
         xp_close(fd);
     }

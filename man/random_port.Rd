@@ -23,4 +23,6 @@ error if no port is found; when \code{error = FALSE}, returns \code{NULL}.
 \description{
 Find an available TCP port, starting with \code{port}, then sampling from
 3000--8000 (excluding ports known to be blocked by Chrome).
+
+Port availability is checked on both \code{127.0.0.1} and \code{0.0.0.0}.
 }
