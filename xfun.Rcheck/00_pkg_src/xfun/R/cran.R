@@ -1,0 +1,159 @@
+# retrieve the release dates of packages
+cran_pkg_dates = function(full = FALSE, maintainer = 'Yihui Xie') {
+  info = tools::CRAN_package_db()
+  pkgs = info[grep(maintainer, info$Maintainer), 'Package']
+  info = setNames(vector('list', length(pkgs)), pkgs)
+  for (p in pkgs) {
+    message('Processing ', p)
+    x = readLines(u <- sprintf('https://cran.rstudio.com/web/packages/%s/', p))
+    i = which(x == '<td>Published:</td>')
+    if (length(i) == 0) stop('Cannot find the publishing date from ', u)
+    d = as.Date(gsub('</?td>', '', x[i[1] + 1]))
+    x = try_silent(suppressWarnings(readLines(
+      u <- sprintf('https://cran.r-project.org/src/contrib/Archive/%s/', p)
+    )))
+    if (inherits(x, 'try-error')) {
+      info[[p]] = d; next
+    }
+    r = '.+</td><td align="right">(\\d{4,}-\\d{2}-\\d{2}) .+'
+    d = c(d, as.Date(gsub(r, '\\1', grep(r, x, value = TRUE))))
+    info[[p]] = sort(d, decreasing = TRUE)
+  }
+  if (full) info else sort(do.call(c, lapply(info, `[`, 1)), decreasing = TRUE)
+}
+
+# return packages that haven't been updated for X days, and can be updated on CRAN
+cran_updatable = function(days = 90, maintainer = 'Yihui Xie') {
+  info = cran_pkg_dates(TRUE, maintainer)
+  flag = unlist(lapply(info, function(d) {
+    sum(d > Sys.Date() - 180) < 6 && d[1] < Sys.Date() - days
+  }))
+  if (length(pkgs <- names(which(flag))) == 0) return(pkgs)
+  # look into DESCRIPTION in GitHub repos and see if new version has been pushed
+  info = tools::CRAN_package_db()
+  info = info[info$Package %in% pkgs, , drop = FALSE]
+  pkgs = info$Package
+  for (i in seq_len(nrow(info))) {
+    b = grep_sub('^(https://github.com/[^/]+/[^/]+)/issues$', '\\1', info$BugReports[i])
+    if (length(b) != 1) next
+    f = tempfile()
+    u = paste0(b, '/raw/HEAD/DESCRIPTION')
+    if (is.null(tryCatch(download.file(u, f, quiet = TRUE), error = function(e) NULL))) next
+    d = read.dcf(f)
+    file.remove(f)
+    if (!'Version' %in% colnames(d)) next
+    if (as.numeric_version(d[, 'Version']) <= paste0(info$Version[i], '.1')) {
+      pkgs = setdiff(pkgs, info$Package[i])
+      message('Skipped package ', info$Package[i], ' ', d[, 'Version'], ' (no new version).')
+    } else {
+      message('Package can be updated: ', b)
+    }
+  }
+  pkgs
+}
+
+
+#' Some utility functions for checking packages
+#'
+#' Miscellaneous utility functions to obtain information about the package
+#' checking environment.
+#' @export
+#' @keywords internal
+is_R_CMD_check = function() {
+  !is.na(check_package_name()) || tolower(Sys.getenv('_R_CHECK_LICENSE_')) == 'true'
+}
+
+#' @rdname is_R_CMD_check
+#' @export
+is_CRAN_incoming = function() {
+  isTRUE(as.logical(Sys.getenv('_R_CHECK_CRAN_INCOMING_REMOTE_')))
+}
+
+#' @rdname is_R_CMD_check
+#' @export
+check_package_name = function() {
+  Sys.getenv('_R_CHECK_PACKAGE_NAME_', NA)
+}
+
+# is R CMD check running on a package that has a version lower or equal to `version`?
+#' @rdname is_R_CMD_check
+#' @export
+check_old_package = function(name, version) {
+  if (is.na(pkg <- check_package_name()) || !(pkg %in% name)) return(FALSE)
+  tryCatch(packageVersion(pkg) <= version[pkg == name], error = function(e) FALSE)
+}
+
+# return package maintainers (with email addresses)
+pkg_maintainers = function(pkgs) {
+  info = tools::CRAN_package_db()
+  info = info[match(pkgs, info$Package), c('Package', 'Maintainer')]
+  setNames(info$Maintainer, info$Package)
+}
+
+#' Submit a source package to CRAN
+#'
+#' Build a source package and submit it to CRAN with the \pkg{curl} package.
+#' @param file The path to the source package tarball. By default, the current
+#'   working directory is treated as the package root directory, and
+#'   automatically built into a tarball, which is deleted after submission. This
+#'   means you should run `xfun::submit_cran()` in the root directory of a
+#'   package project, unless you want to pass a path explicitly to the `file`
+#'   argument.
+#' @param comment Submission comments for CRAN. By default, if a file
+#'   \file{cran-comments.md} exists, its content will be read and used as the
+#'   comment.
+#' @param sync Whether to sync the current Git branch with the remote repository
+#'   before submission.
+#' @seealso `devtools::submit_cran()` does the same job, with a few more
+#'   dependencies in addition to \pkg{curl} (such as \pkg{cli});
+#'   `xfun::submit_cran()` only depends on \pkg{curl}.
+#' @export
+submit_cran = function(file = pkg_build(), comment = '', sync = TRUE) {
+  if (sync) git_pull_current()
+  # check if there are any problematic URLs (I often forget this)
+  if (loadable('urlchecker')) getFromNamespace('url_update', 'urlchecker')()
+
+  # if the tarball is automatically created, delete it after submission
+  if (missing(file)) on.exit(file.remove(file), add = TRUE)
+
+  # read the maintainer's name/email
+  dir_create(d <- tempfile())
+  on.exit(unlink(d, recursive = TRUE), add = TRUE)
+  desc = file.path(gsub('_.*', '', basename(file)), 'DESCRIPTION')
+  untar(file, desc, exdir = d)
+  # name and email of maintainer
+  info = read.dcf(file.path(d, desc), fields = 'Maintainer')[1, 1]
+  info = unlist(strsplit(info, '( <|>)'))
+
+  # read submission comments from cran-comments.md if exists
+  if (missing(comment) && file_exists(f <- 'cran-comments.md')) {
+    comment = file_string(f)
+  }
+  params = list(
+    uploaded_file = curl::form_file(file), name = info[1], email = info[2],
+    upload = 'Upload package'
+  )
+  params$comment = if (length(comment)) comment
+  server = 'https://xmpalantir.wu.ac.at/cransubmit/index2.php'
+
+  # submit the form
+  h = curl::new_handle()
+  curl::handle_setform(h, .list = params)
+  res = curl::curl_fetch_memory(server, h)
+
+  # find the pkg_id from the response page
+  id = grep_sub(
+    '(.*<input name="pkg_id" type="hidden" value=")([^"]+)(".*)', '\\2',
+    rawToChar(res$content)
+  )
+  if (length(id) != 1) stop('Failed to submit ', file, ' to CRAN')
+
+  # skip the review and submit directly
+  h = curl::new_handle()
+  curl::handle_setform(h, .list = list(pkg_id = id, submit = 'Submit package'))
+  res = curl::curl_fetch_memory(server, h)
+  if (grepl('>Step 3<', rawToChar(res$content))) message(
+    'The package has been submitted. Please confirm the submission in email: ',
+    params$email
+  ) else message('The submission may be unsuccessful.')
+}
