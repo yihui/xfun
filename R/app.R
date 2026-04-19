@@ -201,7 +201,8 @@ proxy_stop = function(slot) {
   if (!has_fun('serverSocket') || !has_fun('socketAccept')) {
     stop2("new_app() requires serverSocket() and socketAccept() (R >= 4.0.0).")
   }
-  s = tryCatch(serverSocket(as.integer(port)), error = function(e) NULL)
+  server_socket = get0('serverSocket', baseenv(), mode = 'function', inherits = FALSE)
+  s = tryCatch(server_socket(as.integer(port)), error = function(e) NULL)
   if (is.null(s)) return(FALSE)
   close(s)
   TRUE
@@ -251,21 +252,23 @@ proxy_stop = function(slot) {
 
 # Main proxy loop running in a background R process.
 .proxy_run = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
+  server_socket = get0('serverSocket', baseenv(), mode = 'function', inherits = FALSE)
+  socket_accept = get0('socketAccept', baseenv(), mode = 'function', inherits = FALSE)
   # serverSocket() binds all interfaces (no host argument), so use it only when
   # we explicitly want a public bind on 0.0.0.0; otherwise keep host-specific
   # binding via socketConnection(server = TRUE).
-  use_server_socket = has_fun('serverSocket') && has_fun('socketAccept') && identical(host, '0.0.0.0')
+  use_server_socket = is.function(server_socket) && is.function(socket_accept) && identical(host, '0.0.0.0')
 
   listener = NULL
   if (use_server_socket) {
-    listener = serverSocket(port)
+    listener = server_socket(port)
     on.exit(close(listener), add = TRUE)
   }
 
   repeat {
     con = tryCatch(
       if (use_server_socket) {
-        socketAccept(listener, blocking = TRUE, open = 'r+b', timeout = 60)
+        socket_accept(listener, blocking = TRUE, open = 'r+b', timeout = 60)
       } else {
         socketConnection(host = host, port = port, server = TRUE, blocking = TRUE, open = 'r+b')
       },

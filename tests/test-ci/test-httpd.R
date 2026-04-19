@@ -80,7 +80,11 @@ http_request_full = function(host, port, method, path, body = NULL, extra_header
 
 url_port = function(url) as.integer(sub('^https?://[^:]+:([0-9]+)/.*$', '\\1', url))
 
-if (!is.null(port <- random_port(error = FALSE))) {
+if (
+  exists('serverSocket', mode = 'function', envir = baseenv(), inherits = FALSE) &&
+  exists('socketAccept', mode = 'function', envir = baseenv(), inherits = FALSE) &&
+  !is.null(port <- random_port(error = FALSE))
+) {
 
   # Run the proxy-backed app in a separate R process so requests are sent from
   # this R session to reduce random timing issues in CI.
