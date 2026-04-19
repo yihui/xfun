@@ -288,8 +288,8 @@ proxy_stop = function(slot) {
 
   path = req$path
   path2 = if (isTRUE(passthrough)) path else sprintf('/custom/xfun:%d%s', port, path)
-  i = regexpr('?', path, fixed = TRUE)[1]
-  query = if (i > 0L) substring(path, i + 1L) else ''
+  q_pos = regexpr('?', path, fixed = TRUE)[1L]
+  query = if (q_pos > 0L) substring(path, q_pos + 1L) else ''
 
   backend = tryCatch(
     socketConnection(
@@ -342,7 +342,11 @@ proxy_stop = function(slot) {
   clen = 0L
   if (length(headers)) {
     i = grep('^content-length:', headers, ignore.case = TRUE)
-    if (length(i)) clen = suppressWarnings(as.integer(trimws(sub('^[^:]*:', '', headers[[i[1L]]]))))
+    if (length(i)) {
+      v = sub('^[^:]*:', '', headers[[i[1L]]])
+      v = trimws(v)
+      clen = suppressWarnings(as.integer(v))
+    }
     if (is.na(clen) || clen < 0L) clen = 0L
   }
   body = if (clen > 0L) readBin(con, raw(), clen) else raw(0)
