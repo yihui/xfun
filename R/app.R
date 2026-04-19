@@ -120,6 +120,9 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 
 # Start R's internal httpd; return its port (or -1 on failure).
 .httpd_port = function() {
+  if (is.null(getOption('help.ports'))) {
+    options(help.ports = 4321 + 1:30); on.exit(options(help.ports = NULL))
+  }
   p = suppressMessages(tools::startDynamicHelp(NA))
   if (p <= 0L) stop2("Failed to start R's internal httpd.")
   p
