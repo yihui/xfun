@@ -273,7 +273,7 @@ proxy_stop = function(slot) {
   repeat {
     con = tryCatch(
       if (use_server_socket) {
-        socketAccept(listener, blocking = TRUE, open = 'r+b', timeout = getOption('timeout'))
+        socketAccept(listener, blocking = TRUE, open = 'r+b', timeout = 60)
       } else {
         socketConnection(host = host, port = port, server = TRUE, blocking = TRUE, open = 'r+b')
       },
@@ -338,7 +338,8 @@ proxy_stop = function(slot) {
   }
   if (!length(lines)) return(NULL)
 
-  req = strsplit(lines[[1L]], ' +')[[1L]]
+  req = strsplit(lines[[1L]], ' ', fixed = TRUE)[[1L]]
+  req = req[nzchar(req)]
   if (length(req) < 2L) return(NULL)
   method = req[[1L]]
   path = req[[2L]]
