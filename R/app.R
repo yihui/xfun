@@ -40,7 +40,6 @@ new_app = function(
   if (identical(name, '')) {
     port = .find_proxy_port(port, names(.proxy$help))
     slot = proxy_start(as.integer(port), as.integer(backend), host = host)
-    if (.proxy_start_failed(slot)) stop2("Failed to start proxy on port ", port, ".")
     key = paste0('xfun:', port)
     assign(key, .make_app_handler(paste0('/custom/xfun:', port), handler, getwd()), envir = .httpd_env())
     .proxy$apps[[name]] = list(type = 'proxy', slot = slot, key = key, port = port)
@@ -87,7 +86,6 @@ help_proxy = function(port = NULL, host = '0.0.0.0') {
   old = .proxy$help[[as.character(p2)]]
   if (!is.null(old)) proxy_stop(old)
   slot = proxy_start(as.integer(p2), as.integer(p1), TRUE, host)
-  if (.proxy_start_failed(slot)) stop2("Failed to start help proxy on port ", p2, ".")
   .proxy$help[[as.character(p2)]] = slot
   u = sprintf('http://127.0.0.1:%d/doc/html/index.html', p2)
   message('Proxy started at ', u)
@@ -136,11 +134,6 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 .proxy$apps = list()  # app name → list(type, key, slot?)
 .proxy$help = list()  # help proxy port → slot index
 
-.has_server_socket_support = function() {
-  exists('serverSocket', mode = 'function', envir = baseenv(), inherits = FALSE) &&
-    exists('socketAccept', mode = 'function', envir = baseenv(), inherits = FALSE)
-}
-
 # Find an available proxy port without starting the proxy.
 .proxy_app_ports = function() {
   vapply(Filter(function(x) identical(x$type, 'proxy'), .proxy$apps), `[[`, integer(1), 'port')
@@ -168,21 +161,22 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 # host: bind address; "0.0.0.0" to listen on all interfaces.
 # Returns an internal proxy handle, or -1 on failure.
 proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
+  if (!has_fun('serverSocket') || !has_fun('socketAccept')) {
+    stop2("new_app() requires serverSocket() and socketAccept() (R >= 4.0.0).")
+  }
   port = as.integer(port)
   backend_port = as.integer(backend_port)
   passthrough = isTRUE(passthrough)
   host = as.character(host)[1]
 
-  bg = tryCatch(
-    Rscript_bg(.proxy_run, list(
-      port = port, backend_port = backend_port, passthrough = passthrough, host = host
-    )),
-    error = function(e) NULL
-  )
-  if (!is.null(bg) && .proxy_wait_ready(port, host)) return(paste0('r:', bg$pid))
-  if (!is.null(bg)) try(proc_kill(bg$pid), silent = TRUE)
-
-  .Call(C_proxy_start, port, backend_port, passthrough, host)
+  bg = Rscript_bg(.proxy_run, list(
+    port = port, backend_port = backend_port, passthrough = passthrough, host = host
+  ))
+  if (!.proxy_wait_ready(port, host)) {
+    try(proc_kill(bg$pid), silent = TRUE)
+    stop2("Failed to start proxy on port ", port, ".")
+  }
+  paste0('r:', bg$pid)
 }
 
 # Stop the proxy instance identified by its slot index.
@@ -190,9 +184,8 @@ proxy_stop = function(slot) {
   if (is.character(slot) && length(slot) == 1L && startsWith(slot, 'r:')) {
     pid = sub('^r:', '', slot)
     if (grepl('^[0-9]+$', pid)) try(proc_kill(as.integer(pid)), silent = TRUE)
-    return(invisible(NULL))
   }
-  .Call(C_proxy_stop, as.integer(slot))
+  invisible(NULL)
 }
 
 # Coerce body/headers-like argument to a raw vector.
@@ -203,15 +196,15 @@ proxy_stop = function(slot) {
 }
 
 # Check if a TCP port is available by attempting to bind a server socket.
-# On R >= 4.0 use serverSocket(); otherwise fall back to C code.
+# Requires serverSocket() / socketAccept() (R >= 4.0.0).
 .port_available = function(port) {
-  if (.has_server_socket_support()) {
-    s = tryCatch(serverSocket(as.integer(port)), error = function(e) NULL)
-    if (is.null(s)) return(FALSE)
-    close(s)
-    return(TRUE)
+  if (!has_fun('serverSocket') || !has_fun('socketAccept')) {
+    stop2("new_app() requires serverSocket() and socketAccept() (R >= 4.0.0).")
   }
-  isTRUE(.Call(C_port_available, as.integer(port)))
+  s = tryCatch(serverSocket(as.integer(port)), error = function(e) NULL)
+  if (is.null(s)) return(FALSE)
+  close(s)
+  TRUE
 }
 
 # Build an R httpd handler closure.
@@ -231,11 +224,6 @@ proxy_stop = function(slot) {
     proxy_stop(.proxy$help[[p]])
     .proxy$help[[p]] = NULL
   }
-}
-
-.proxy_start_failed = function(slot) {
-  if (is.character(slot)) return(FALSE)
-  is.numeric(slot) && length(slot) == 1L && is.finite(slot) && slot < 0L
 }
 
 .proxy_connect_host = function(host) {
@@ -266,7 +254,7 @@ proxy_stop = function(slot) {
   # serverSocket() binds all interfaces (no host argument), so use it only when
   # we explicitly want a public bind on 0.0.0.0; otherwise keep host-specific
   # binding via socketConnection(server = TRUE).
-  use_server_socket = .has_server_socket_support() && identical(host, '0.0.0.0')
+  use_server_socket = has_fun('serverSocket') && has_fun('socketAccept') && identical(host, '0.0.0.0')
 
   listener = NULL
   if (use_server_socket) {
