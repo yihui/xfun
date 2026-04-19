@@ -234,6 +234,8 @@ proxy_stop = function(slot) {
 }
 
 .proxy_connect_host = function(host) {
+  # server may bind all interfaces (0.0.0.0), but local readiness checks should
+  # use loopback for a deterministic self-connection target.
   if (identical(host, '0.0.0.0')) '127.0.0.1' else host
 }
 
@@ -253,6 +255,7 @@ proxy_stop = function(slot) {
   FALSE
 }
 
+# Main proxy loop running in a background R process.
 .proxy_run = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
   # serverSocket() binds all interfaces (no host argument), so use it only when
   # we explicitly want a public bind on 0.0.0.0; otherwise keep host-specific
@@ -282,13 +285,14 @@ proxy_stop = function(slot) {
   }
 }
 
+# Read a client HTTP request, forward it to backend httpd, and relay response.
 .proxy_forward = function(client, port, backend_port, passthrough = FALSE) {
   req = .proxy_read_request(client)
   if (is.null(req)) return()
 
   path = req$path
   path2 = if (isTRUE(passthrough)) path else sprintf('/custom/xfun:%d%s', port, path)
-  q_pos = regexpr('?', path, fixed = TRUE)[1L]
+  q_pos = regexpr('\\?', path)[1L]
   query = if (q_pos > 0L) substring(path, q_pos + 1L) else ''
 
   backend = tryCatch(
@@ -322,10 +326,11 @@ proxy_stop = function(slot) {
   flush(client)
 }
 
+# Parse one HTTP request from a socket connection.
 .proxy_read_request = function(con) {
   lines = character()
   repeat {
-    x = suppressWarnings(readLines(con, n = 1L, warn = FALSE))
+    x = readLines(con, n = 1L, warn = FALSE)
     if (!length(x)) return(NULL)
     x = sub('\r$', '', x)
     if (!nzchar(x)) break
