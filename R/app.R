@@ -169,14 +169,16 @@ proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.
   passthrough = isTRUE(passthrough)
   host = as.character(host)[1]
 
-  bg = Rscript_bg(.proxy_run, list(
-    port = port, backend_port = backend_port, passthrough = passthrough, host = host
-  ))
-  if (!.proxy_wait_ready(port, host)) {
-    try(proc_kill(bg$pid), silent = TRUE)
-    stop2("Failed to start proxy on port ", port, ".")
-  }
-  paste0('r:', bg$pid)
+  cmd = file.path(R.home('bin'), 'Rscript')
+  host2 = shQuote(host)
+  libs = paste(sprintf("'%s'", gsub("'", "\\\\'", .libPaths(), fixed = TRUE)), collapse = ", ")
+  code = sprintf(
+    ".libPaths(c(%s)); xfun:::.proxy_run(port = %dL, backend_port = %dL, passthrough = %s, host = %s)",
+    libs, port, backend_port, if (passthrough) 'TRUE' else 'FALSE', host2
+  )
+  pid = tryCatch(bg_process(cmd, c('--vanilla', '-e', code)), error = function(e) '')
+  if (!grepl('^[0-9]+$', pid)) stop2("Failed to start proxy on port ", port, ".")
+  paste0('r:', pid)
 }
 
 # Stop the proxy instance identified by its slot index.
@@ -232,22 +234,6 @@ proxy_stop = function(slot) {
   # server may bind all interfaces (0.0.0.0), but local readiness checks should
   # use loopback for a deterministic self-connection target.
   if (identical(host, '0.0.0.0')) '127.0.0.1' else host
-}
-
-.proxy_wait_ready = function(port, host, tries = 100L, delay = 0.05) {
-  host = .proxy_connect_host(host)
-  for (i in seq_len(tries)) {
-    con = tryCatch(
-      socketConnection(host = host, port = port, open = 'r+b', blocking = TRUE, timeout = 0.5),
-      error = function(e) NULL
-    )
-    if (!is.null(con)) {
-      close(con)
-      return(TRUE)
-    }
-    Sys.sleep(delay)
-  }
-  FALSE
 }
 
 # Main proxy loop running in a background R process.
@@ -323,14 +309,26 @@ proxy_stop = function(slot) {
 
 # Parse one HTTP request from a socket connection.
 .proxy_read_request = function(con) {
-  lines = character()
+  buf = raw(0)
+  head_end = 0L
+  sep_len = 0L
   repeat {
-    x = readLines(con, n = 1L, warn = FALSE)
+    x = readBin(con, raw(), 65536L)
     if (!length(x)) return(NULL)
-    x = sub('\r$', '', x)
-    if (!nzchar(x)) break
-    lines = c(lines, x)
+    buf = c(buf, x)
+    s = rawToChar(buf)
+    m = regexpr('\r\n\r\n|\n\n', s, perl = TRUE)
+    if (m[1L] > 0L) {
+      head_end = m[1L]
+      sep_len = attr(m, 'match.length')
+      break
+    }
+    if (length(buf) >= 65536L) return(NULL)
   }
+
+  hs = substring(rawToChar(buf), 1L, head_end + sep_len - 1L)
+  hs = sub('\r\n\r\n$|\n\n$', '', hs, perl = TRUE)
+  lines = strsplit(hs, '\r\n|\n', perl = TRUE)[[1L]]
   if (!length(lines)) return(NULL)
 
   req = strsplit(lines[[1L]], ' ', fixed = TRUE)[[1L]]
@@ -350,7 +348,14 @@ proxy_stop = function(slot) {
     }
     if (is.na(clen) || clen < 0L) clen = 0L
   }
-  body = if (clen > 0L) readBin(con, raw(), clen) else raw(0)
+  body0 = raw(0)
+  body_start = head_end + sep_len
+  if (body_start <= length(buf)) body0 = buf[body_start:length(buf)]
+  if (length(body0) < clen) {
+    body = c(body0, readBin(con, raw(), clen - length(body0)))
+  } else {
+    body = body0[seq_len(clen)]
+  }
   list(method = method, path = path, headers = headers, body = body)
 }
 
