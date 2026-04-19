@@ -167,9 +167,6 @@ proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.
   backend_port = as.integer(backend_port)
   passthrough = isTRUE(passthrough)
   host = as.character(host)[1]
-  if (!host %in% c('127.0.0.1', '0.0.0.0')) {
-    stop2("host must be either '127.0.0.1' or '0.0.0.0'.")
-  }
 
   bg = tryCatch(
     Rscript_bg(.proxy_run, list(
@@ -187,7 +184,7 @@ proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.
 proxy_stop = function(slot) {
   if (is.character(slot) && length(slot) == 1L && startsWith(slot, 'r:')) {
     pid = sub('^r:', '', slot)
-    if (grepl('^[0-9]+$', pid)) try(proc_kill(pid), silent = TRUE)
+    if (grepl('^[0-9]+$', pid)) try(proc_kill(as.integer(pid)), silent = TRUE)
     return(invisible(NULL))
   }
   .Call(C_proxy_stop, as.integer(slot))
@@ -232,6 +229,7 @@ proxy_stop = function(slot) {
 }
 
 .proxy_start_failed = function(slot) {
+  if (is.character(slot)) return(FALSE)
   is.numeric(slot) && length(slot) == 1L && is.finite(slot) && slot < 0L
 }
 
@@ -256,6 +254,9 @@ proxy_stop = function(slot) {
 }
 
 .proxy_run = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
+  # serverSocket() binds all interfaces (no host argument), so use it only when
+  # we explicitly want a public bind on 0.0.0.0; otherwise keep host-specific
+  # binding via socketConnection(server = TRUE).
   use_server_socket = exists('serverSocket', mode = 'function', envir = baseenv(), inherits = FALSE) &&
     exists('socketAccept', mode = 'function', envir = baseenv(), inherits = FALSE) &&
     identical(host, '0.0.0.0')
