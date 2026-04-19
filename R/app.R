@@ -40,7 +40,7 @@ new_app = function(
   if (identical(name, '')) {
     port = .find_proxy_port(port, names(.proxy$help))
     slot = proxy_start(as.integer(port), as.integer(backend), host = host)
-    if (slot < 0L) stop2("Failed to start proxy on port ", port, ".")
+    if (.proxy_start_failed(slot)) stop2("Failed to start proxy on port ", port, ".")
     key = paste0('xfun:', port)
     assign(key, .make_app_handler(paste0('/custom/xfun:', port), handler, getwd()), envir = .httpd_env())
     .proxy$apps[[name]] = list(type = 'proxy', slot = slot, key = key, port = port)
@@ -87,7 +87,7 @@ help_proxy = function(port = NULL, host = '0.0.0.0') {
   old = .proxy$help[[as.character(p2)]]
   if (!is.null(old)) proxy_stop(old)
   slot = proxy_start(as.integer(p2), as.integer(p1), TRUE, host)
-  if (slot < 0L) stop2("Failed to start help proxy on port ", p2, ".")
+  if (.proxy_start_failed(slot)) stop2("Failed to start help proxy on port ", p2, ".")
   .proxy$help[[as.character(p2)]] = slot
   u = sprintf('http://127.0.0.1:%d/doc/html/index.html', p2)
   message('Proxy started at ', u)
@@ -163,12 +163,33 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 # host: bind address; "0.0.0.0" to listen on all interfaces.
 # Returns the slot index (>= 0) or -1 on failure.
 proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
-  .Call(C_proxy_start, as.integer(port), as.integer(backend_port),
-        isTRUE(passthrough), as.character(host))
+  port = as.integer(port)
+  backend_port = as.integer(backend_port)
+  passthrough = isTRUE(passthrough)
+  host = as.character(host)[1]
+  if (!host %in% c('127.0.0.1', '0.0.0.0')) {
+    stop2("host must be either '127.0.0.1' or '0.0.0.0'.")
+  }
+
+  bg = tryCatch(
+    Rscript_bg(.proxy_run, list(
+      port = port, backend_port = backend_port, passthrough = passthrough, host = host
+    )),
+    error = function(e) NULL
+  )
+  if (!is.null(bg) && .proxy_wait_ready(port, host)) return(paste0('r:', bg$pid))
+  if (!is.null(bg)) try(proc_kill(bg$pid), silent = TRUE)
+
+  .Call(C_proxy_start, port, backend_port, passthrough, host)
 }
 
 # Stop the proxy instance identified by its slot index.
 proxy_stop = function(slot) {
+  if (is.character(slot) && length(slot) == 1L && startsWith(slot, 'r:')) {
+    pid = sub('^r:', '', slot)
+    if (grepl('^[0-9]+$', pid)) try(proc_kill(pid), silent = TRUE)
+    return(invisible(NULL))
+  }
   .Call(C_proxy_stop, as.integer(slot))
 }
 
@@ -182,6 +203,12 @@ proxy_stop = function(slot) {
 # Check if a TCP port is available by attempting to bind a server socket.
 # Uses a C-level function so it works on all R versions (serverSocket() is R >= 4.0).
 .port_available = function(port) {
+  if (exists('serverSocket', mode = 'function', envir = baseenv(), inherits = FALSE)) {
+    s = tryCatch(serverSocket(as.integer(port)), error = function(e) NULL)
+    if (is.null(s)) return(FALSE)
+    close(s)
+    return(TRUE)
+  }
   isTRUE(.Call(C_port_available, as.integer(port)))
 }
 
@@ -202,6 +229,123 @@ proxy_stop = function(slot) {
     proxy_stop(.proxy$help[[p]])
     .proxy$help[[p]] = NULL
   }
+}
+
+.proxy_start_failed = function(slot) {
+  is.numeric(slot) && length(slot) == 1L && is.finite(slot) && slot < 0L
+}
+
+.proxy_connect_host = function(host) {
+  if (identical(host, '0.0.0.0')) '127.0.0.1' else host
+}
+
+.proxy_wait_ready = function(port, host, tries = 100L, delay = 0.05) {
+  host = .proxy_connect_host(host)
+  for (i in seq_len(tries)) {
+    con = tryCatch(
+      socketConnection(host = host, port = port, open = 'r+b', blocking = TRUE, timeout = 0.5),
+      error = function(e) NULL
+    )
+    if (!is.null(con)) {
+      close(con)
+      return(TRUE)
+    }
+    Sys.sleep(delay)
+  }
+  FALSE
+}
+
+.proxy_run = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
+  use_server_socket = exists('serverSocket', mode = 'function', envir = baseenv(), inherits = FALSE) &&
+    exists('socketAccept', mode = 'function', envir = baseenv(), inherits = FALSE) &&
+    identical(host, '0.0.0.0')
+
+  listener = NULL
+  if (use_server_socket) {
+    listener = serverSocket(port)
+    on.exit(close(listener), add = TRUE)
+  }
+
+  repeat {
+    con = tryCatch(
+      if (use_server_socket) {
+        socketAccept(listener, blocking = TRUE, open = 'r+b', timeout = getOption('timeout'))
+      } else {
+        socketConnection(host = host, port = port, server = TRUE, blocking = TRUE, open = 'r+b')
+      },
+      error = function(e) NULL
+    )
+    if (is.null(con)) next
+    try(.proxy_forward(con, port, backend_port, passthrough), silent = TRUE)
+    try(close(con), silent = TRUE)
+  }
+}
+
+.proxy_forward = function(client, port, backend_port, passthrough = FALSE) {
+  req = .proxy_read_request(client)
+  if (is.null(req)) return()
+
+  path = req$path
+  path2 = if (isTRUE(passthrough)) path else sprintf('/custom/xfun:%d%s', port, path)
+  i = regexpr('?', path, fixed = TRUE)[1]
+  query = if (i > 0L) substring(path, i + 1L) else ''
+
+  backend = tryCatch(
+    socketConnection(
+      host = '127.0.0.1', port = backend_port, open = 'r+b', blocking = TRUE, timeout = 5
+    ),
+    error = function(e) NULL
+  )
+  if (is.null(backend)) return()
+  on.exit(try(close(backend), silent = TRUE), add = TRUE)
+
+  headers = req$headers
+  if (length(headers)) {
+    keep = !grepl('^(connection|keep-alive|proxy-connection):', headers, ignore.case = TRUE)
+    headers = headers[keep]
+  }
+  if (nzchar(query)) headers = c(headers, paste0('X-Xfun-Query: ', query))
+
+  txt = paste(c(
+    sprintf('%s %s HTTP/1.0', req$method, path2), headers, '', ''
+  ), collapse = '\r\n')
+  writeBin(charToRaw(txt), backend)
+  if (length(req$body)) writeBin(req$body, backend)
+  flush(backend)
+
+  repeat {
+    x = readBin(backend, raw(), 65536L)
+    if (!length(x)) break
+    writeBin(x, client)
+  }
+  flush(client)
+}
+
+.proxy_read_request = function(con) {
+  lines = character()
+  repeat {
+    x = suppressWarnings(readLines(con, n = 1L, warn = FALSE))
+    if (!length(x)) return(NULL)
+    x = sub('\r$', '', x)
+    if (!nzchar(x)) break
+    lines = c(lines, x)
+  }
+  if (!length(lines)) return(NULL)
+
+  req = strsplit(lines[[1L]], ' +')[[1L]]
+  if (length(req) < 2L) return(NULL)
+  method = req[[1L]]
+  path = req[[2L]]
+  headers = lines[-1L]
+
+  clen = 0L
+  if (length(headers)) {
+    i = grep('^content-length:', headers, ignore.case = TRUE)
+    if (length(i)) clen = suppressWarnings(as.integer(trimws(sub('^[^:]*:', '', headers[[i[1L]]]))))
+    if (is.na(clen) || clen < 0L) clen = 0L
+  }
+  body = if (clen > 0L) readBin(con, raw(), clen) else raw(0)
+  list(method = method, path = path, headers = headers, body = body)
 }
 
 # Parse the X-Xfun-Query header (added by the proxy) into a named, URL-decoded
