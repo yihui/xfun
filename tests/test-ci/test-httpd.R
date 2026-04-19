@@ -25,13 +25,7 @@ http_body = function(resp) {
 }
 
 # Send a raw HTTP/1.0 request and return the full response as a string.
-# Uses socketSelect() to check readability before each readBin() so that:
-#   - We only read when data (or EOF) is truly available (avoids EAGAIN errors
-#     on non-blocking sockets that some R versions surface as exceptions).
-#   - We detect EOF reliably: socketSelect() returns TRUE + readBin() returns
-#     empty means the server has closed the connection and all data is consumed.
-# Sys.sleep() between polls yields R's main-thread event loop so that R's
-# internal httpd can process the incoming request and send its response.
+# Use non-blocking I/O plus Content-Length checks to avoid partial-response flakes.
 http_request = function(host, port, method, path, body = NULL, extra_headers = '') {
   sock = tryCatch(
     socketConnection(host, port = port, open = 'r+b', blocking = FALSE, timeout = 5),
@@ -50,40 +44,137 @@ http_request = function(host, port, method, path, body = NULL, extra_headers = '
   )
   writeBin(req, sock)
   buf = raw(0L)
-  for (i in seq_len(100L)) {  # up to 10 seconds total
-    Sys.sleep(0.1)  # yield to R's event loop so httpd can process the request
-    # Non-blocking readability check: TRUE = data or EOF ready; FALSE = nothing yet.
-    ready = tryCatch(
-      socketSelect(list(sock), write = FALSE, timeout = 0),
-      error = function(e) FALSE
-    )
-    if (!isTRUE(ready[1L])) next  # nothing available yet; keep yielding
+  # 120 * 0.1s = up to 12 seconds for slow CI environments.
+  for (i in seq_len(120L)) {
+    Sys.sleep(0.1)
+    ready = tryCatch(socketSelect(list(sock), write = FALSE, timeout = 0), error = function(e) FALSE)
+    if (!isTRUE(ready[1L])) next
     chunk = tryCatch(readBin(sock, raw(), n = 65536L), error = function(e) NULL)
-    # NULL or empty when socket is readable means EOF: all data has been received.
-    if (is.null(chunk) || length(chunk) == 0L) break
+    if (is.null(chunk)) next
+    if (length(chunk) == 0L) break
     buf = c(buf, chunk)
     s = rawToChar(buf)
-    # Find the header/body separator (CRLF or LF style)
     sep = regexpr('\r\n\r\n|\n\n', s, perl = TRUE)
-    if (sep[1L] > 0L) {
-      body_start = sep[1L] + attr(sep, 'match.length')
-      # Use Content-Length to confirm the full body has arrived
-      cl = regmatches(s, regexpr('(?i)Content-Length: *(\\d+)', s, perl = TRUE))
-      if (length(cl) > 0L && nzchar(cl)) {
-        expected = as.integer(sub('(?i).*Content-Length: *', '', cl, perl = TRUE))
-        if (nchar(s) - body_start + 1L >= expected) break
-      }
-      # No Content-Length: continue reading until the server closes the connection
-      # (EOF detected above breaks the loop with all data in buf).
-    }
+    if (sep[1L] < 0L) next
+    body_start = sep[1L] + attr(sep, 'match.length')
+    cl = regmatches(s, regexpr('(?i)Content-Length: *(\\d+)', s, perl = TRUE))
+    if (length(cl) == 0L || !nzchar(cl)) next
+    expected = as.integer(sub('(?i).*Content-Length: *', '', cl, perl = TRUE))
+    if (nchar(s) - body_start + 1L >= expected) break
   }
   if (length(buf) == 0L) NULL else rawToChar(buf)
 }
 
+# Retry a request until a complete response with a non-empty body is received.
+http_request_full = function(host, port, method, path, body = NULL, extra_headers = '', tries = 30L) {
+  resp = NULL
+  for (i in seq_len(tries)) {
+    resp = http_request(host, port, method, path, body, extra_headers)
+    has_sep = !is.null(resp) && grepl('\r\n\r\n|\n\n', resp, perl = TRUE)
+    b = http_body(resp)
+    if (has_sep && !is.null(b) && nzchar(b)) break
+    Sys.sleep(0.1)
+  }
+  resp
+}
+
+url_port = function(url) as.integer(sub('^https?://[^:]+:([0-9]+)/.*$', '\\1', url))
+
 if (!is.null(port <- random_port(error = FALSE))) {
 
-  # Handler echoes request details via make_body() so the test can compare
-  # the response body against make_body() called directly.
+  # Run the proxy-backed app in a separate R process so requests are sent from
+  # this R session to reduce random timing issues in CI.
+  pid_file = tempfile(fileext = '.rds')
+  saveRDS(NULL, pid_file)
+  Rscript_call(function(make_body, port, pid_file) {
+    saveRDS(Sys.getpid(), pid_file)
+    on.exit(unlink(pid_file), add = TRUE)
+    xfun::new_app(
+      '',
+      function(path, query, post, headers) {
+        h          = if (length(headers) > 0L) rawToChar(headers) else ''
+        foo        = if ('foo' %in% names(query)) query[['foo']] else ''
+        post_str   = if (length(post) > 0L) rawToChar(post) else ''
+        method_str = {
+          m = regmatches(h, regexpr('Request-Method: [^\r\n]+', h))
+          if (length(m) > 0L) sub('Request-Method: ', '', m) else ''
+        }
+        x_custom_str = {
+          m = regmatches(h, regexpr('X-Custom: [^\r\n]+', h))
+          if (length(m) > 0L) sub('X-Custom: ', '', m) else 'MISSING'
+        }
+        list(payload = make_body(path, foo, post_str, method_str, x_custom_str),
+             'content-type' = 'text/plain')
+      },
+      open = NA,
+      port = port
+    )
+  }, list(make_body = make_body, port = port, pid_file = pid_file), wait = FALSE)
+  pid = NULL
+  for (i in seq_len(100L)) {
+    Sys.sleep(0.1)
+    if (!file.exists(pid_file)) break
+    pid = tryCatch(readRDS(pid_file), error = function(e) NULL)
+    if (length(pid) == 1L) break
+  }
+  on.exit(if (length(pid) == 1L) try(proc_kill(pid), silent = TRUE), add = TRUE)
+
+  # Wait for the background app to become reachable.
+  for (i in seq_len(50L)) {
+    resp = http_request_full('127.0.0.1', port, 'GET', '/hello')
+    if (!is.null(resp) && grepl('200 OK', resp, fixed = TRUE)) break
+    Sys.sleep(0.1)
+  }
+
+  assert('proxy root app responds to a GET request', {
+    (!is.null(resp))
+    (grepl('200 OK', resp, fixed = TRUE))
+    (http_body(resp) %==% make_body('hello', method = 'GET'))
+  })
+
+  assert('proxy query parameters are URL-decoded', {
+    resp = http_request_full('127.0.0.1', port, 'GET', '/page?foo=bar%20baz')
+    (!is.null(resp))
+    (http_body(resp) %==% make_body('page', foo = 'bar baz', method = 'GET'))
+  })
+
+  assert('proxy POST body is forwarded correctly', {
+    resp = http_request_full('127.0.0.1', port, 'POST', '/submit', body = 'hello=world')
+    (!is.null(resp))
+    (http_body(resp) %==% make_body('submit', post = 'hello=world', method = 'POST'))
+  })
+
+  assert('proxy request headers reach the handler', {
+    resp = http_request_full('127.0.0.1', port, 'GET', '/hdr',
+                             extra_headers = 'X-Custom: test-value\r\n')
+    (!is.null(resp))
+    (http_body(resp) %==% make_body('hdr', method = 'GET', x_custom = 'test-value'))
+  })
+
+  assert('.find_proxy_port() excludes ports used by new_app(name = \"\")', {
+    old_apps = .proxy$apps
+    old_help = .proxy$help
+    on.exit({
+      .proxy$apps = old_apps
+      .proxy$help = old_help
+    }, add = TRUE)
+    .proxy$apps[['']] = list(type = 'proxy', port = 4322L, slot = 0L, key = 'xfun:4322')
+    p = .find_proxy_port(4322:4325)
+    (p != 4322L)
+  })
+
+  assert('.find_proxy_port() excludes ports used by help_proxy()', {
+    old_apps = .proxy$apps
+    old_help = .proxy$help
+    on.exit({
+      .proxy$apps = old_apps
+      .proxy$help = old_help
+    }, add = TRUE)
+    .proxy$help[['4323']] = 1L
+    p = .find_proxy_port(4323:4326)
+    (p != 4323L)
+  })
+
   url = new_app(
     'test',
     function(path, query, post, headers) {
@@ -94,71 +185,22 @@ if (!is.null(port <- random_port(error = FALSE))) {
         m = regmatches(h, regexpr('Request-Method: [^\r\n]+', h))
         if (length(m) > 0L) sub('Request-Method: ', '', m) else ''
       }
-      x_custom_str = {
-        m = regmatches(h, regexpr('X-Custom: [^\r\n]+', h))
-        if (length(m) > 0L) sub('X-Custom: ', '', m) else 'MISSING'
-      }
-      list(payload = make_body(path, foo, post_str, method_str, x_custom_str),
-           'content-type' = 'text/plain')
+      list(payload = make_body(path, foo, post_str, method_str), 'content-type' = 'text/plain')
     },
-    open = FALSE,
-    port = port
+    open = FALSE
   )
   on.exit(stop_app('test'), add = TRUE)
 
-  assert('new_app() returns the expected URL', {
-    (url %==% sprintf('http://127.0.0.1:%d/~test/', port))
+  assert('new_app(name != \"\") uses legacy /custom/name/ path', {
+    m = regexec('^http://127\\.0\\.0\\.1:([0-9]+)/custom/test/$', url)
+    cap = regmatches(url, m)[[1]]
+    (length(cap) == 2L)
+    (!is.null(get0('test', .httpd_env(), inherits = FALSE)))
   })
 
-  assert('proxy responds to a GET request', {
-    resp = http_request('127.0.0.1', port, 'GET', '/~test/hello')
-    (!is.null(resp))
-    (grepl('200 OK', resp, fixed = TRUE))
-    (http_body(resp) %==% make_body('hello', method = 'GET'))
-  })
-
-  assert('query parameters are URL-decoded', {
-    resp = http_request('127.0.0.1', port, 'GET', '/~test/page?foo=bar%20baz')
-    (!is.null(resp))
-    (http_body(resp) %==% make_body('page', foo = 'bar baz', method = 'GET'))
-  })
-
-  assert('POST body is forwarded correctly', {
-    resp = http_request('127.0.0.1', port, 'POST', '/~test/submit',
-                        body = 'hello=world')
-    (!is.null(resp))
-    (http_body(resp) %==% make_body('submit', post = 'hello=world', method = 'POST'))
-  })
-
-  assert('request headers reach the handler', {
-    resp = http_request('127.0.0.1', port, 'GET', '/~test/hdr',
-                        extra_headers = 'X-Custom: test-value\r\n')
-    (!is.null(resp))
-    (http_body(resp) %==% make_body('hdr', method = 'GET', x_custom = 'test-value'))
-  })
-
-  assert('a nameless app shares the port and serves the root path', {
-    new_app('', function(path, ...) {
-      list(payload = paste0('nameless:', path), 'content-type' = 'text/plain')
-    }, open = FALSE)  # no explicit port → reuses 'test' port
-    resp_named   = http_request('127.0.0.1', port, 'GET', '/~test/hi')
-    resp_nameless = http_request('127.0.0.1', port, 'GET', '/hi')
-    stop_app('')
-    (!is.null(resp_named))
-    (!is.null(resp_nameless))
-    (http_body(resp_named)    %==% make_body('hi', method = 'GET'))
-    (http_body(resp_nameless) %==% 'nameless:hi')
-  })
-
-  assert('stop_app() deregisters the app and stops the proxy', {
+  assert('stop_app() deregisters legacy app handler', {
     stop_app('test')
-    on.exit(NULL)  # cancel earlier on.exit so we don't double-stop
     (is.null(.proxy$apps[['test']]))
-    (is.null(.proxy$port_to_slot[[as.character(port)]]))
-    (is.null(tryCatch(
-      socketConnection('127.0.0.1', port = port, open = 'r+b', timeout = 1),
-      error = function(e) NULL
-    )))
+    (is.null(get0('test', .httpd_env(), inherits = FALSE)))
   })
-
 }

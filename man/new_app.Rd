@@ -10,11 +10,12 @@ new_app(name, handler, open = interactive(), host = "127.0.0.1", port = NULL)
 stop_app(name = names(.proxy$apps))
 }
 \arguments{
-\item{name}{App name (a character string). Use \code{name = ''} for a nameless
-root app served at \verb{http://host:PORT/}; a non-empty name is served at
-\verb{http://host:PORT/~name/}. Each name must be unique; calling \code{new_app()}
-with an existing name replaces that app. For \code{stop_app()}, a character
-vector of app names to stop; defaults to all running apps.}
+\item{name}{App name (a character string). Use \code{name = ''} to serve the app
+at the root URL \verb{http://host:PORT/} via the proxy. If \code{name} is non-empty,
+the app is served directly by R's internal httpd at \code{/custom/name/}. Each
+name must be unique; calling \code{new_app()} with an existing name replaces
+that app. For \code{stop_app()}, a character vector of app names to stop;
+defaults to all running apps.}
 
 \item{handler}{A function with signature \verb{function(path, query, post, headers)} that handles HTTP requests and returns a response list.}
 
@@ -23,25 +24,27 @@ it. In non-interactive sessions this also controls whether the call
 blocks: passing \code{open = FALSE} explicitly suppresses both browser-opening
 and blocking.}
 
-\item{host}{Bind address for the proxy (\code{"127.0.0.1"} or \code{"0.0.0.0"}).}
+\item{host}{Bind address for the proxy (\code{"127.0.0.1"} or \code{"0.0.0.0"}). Only
+used when \code{name = ''}.}
 
-\item{port}{Candidate proxy ports. When omitted, all apps share the same
-port (the first available one from \code{4321 + 1:30}). Pass an explicit value
-to select a different port for this app; falls back to \code{\link[=random_port]{random_port()}} if
-all candidates are in use by other processes. See \code{\link[=random_port]{random_port()}} to pick
-a port programmatically.}
+\item{port}{Candidate proxy ports when \code{name = ''}. The first available port
+is selected (falling back to \code{\link[=random_port]{random_port()}} if needed). Ignored when
+\code{name != ''}.}
 }
 \value{
 \code{new_app()} returns the app URL invisibly. \code{stop_app()} returns
 nothing.
 }
 \description{
-\code{new_app()} starts a local HTTP proxy for an app, registers a handler, and
-optionally opens the URL in a browser. By default all apps share one proxy
-port; pass explicit \code{ports} to use a different port. \code{stop_app()} deregisters
-one or more apps (and shuts the proxy down when no apps remain on that port).
+\code{new_app()} has two modes:
+
+\itemize{
+\item \code{name = ''}: start an app behind a lightweight proxy at
+\code{http://host:PORT/}, forwarding to R's internal httpd path
+\code{/custom/xfun:PORT/}.
+\item \code{name != ''}: register a legacy app directly on R's internal httpd at
+\code{http://127.0.0.1:BACKEND/custom/name/} (compatible with older versions).
 }
-\details{
-Requests are forwarded to R's internal httpd at
-\verb{http://127.0.0.1:BACKEND/custom/xfun:name:PORT/}.
+
+\code{stop_app()} deregisters one or more running apps.
 }

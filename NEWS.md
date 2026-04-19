@@ -1,6 +1,6 @@
 # CHANGES IN xfun VERSION 0.58
 
-- Now `new_app()` doesn't use R's internal httpd directly, but a lightweight C proxy (using the vendored [picohttpparser](https://github.com/h2o/picohttpparser)) rewrites `http://127.0.0.1:PORT/*` to `https://127.0.0.1:BACKPORT/custom/xfun:/*` where `BACKPORT` is the port used by R's internal httpd, and the app is served at `http://127.0.0.1:PORT`.
+- `new_app()` now uses a lightweight C proxy in front of R's internal httpd: `new_app(name = '')` serves one proxy-backed app per port at `http://127.0.0.1:PORT/`, `new_app(name != '')` keeps legacy direct httpd routing via `/custom/name/` for compatibility. The internal function `xfun:::help_proxy()` can proxy the full help server for LAN access, since the proxy starts at `0.0.0.0` by default.
 
 - Renamed `new_app()`'s argument `ports` to `port`.
 
