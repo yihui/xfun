@@ -6,3 +6,6 @@ src/*.o
 src/*.so
 src/*.dll
 xfun_*.tar.gz
+
+..Rcheck/
+*.Rcheck/

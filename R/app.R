@@ -161,7 +161,7 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 #   the full R httpd server, e.g. on host = "0.0.0.0" for LAN access).
 # passthrough = FALSE (default): rewrite /path to /custom/xfun:PORT/path.
 # host: bind address; "0.0.0.0" to listen on all interfaces.
-# Returns the slot index (>= 0) or -1 on failure.
+# Returns an internal proxy handle, or -1 on failure.
 proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
   port = as.integer(port)
   backend_port = as.integer(backend_port)
@@ -201,7 +201,7 @@ proxy_stop = function(slot) {
 }
 
 # Check if a TCP port is available by attempting to bind a server socket.
-# Uses a C-level function so it works on all R versions (serverSocket() is R >= 4.0).
+# On R >= 4.0 use serverSocket(); otherwise fall back to C code.
 .port_available = function(port) {
   if (exists('serverSocket', mode = 'function', envir = baseenv(), inherits = FALSE)) {
     s = tryCatch(serverSocket(as.integer(port)), error = function(e) NULL)
