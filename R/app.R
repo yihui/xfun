@@ -136,6 +136,11 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 .proxy$apps = list()  # app name → list(type, key, slot?)
 .proxy$help = list()  # help proxy port → slot index
 
+.has_server_socket_support = function() {
+  exists('serverSocket', mode = 'function', envir = baseenv(), inherits = FALSE) &&
+    exists('socketAccept', mode = 'function', envir = baseenv(), inherits = FALSE)
+}
+
 # Find an available proxy port without starting the proxy.
 .proxy_app_ports = function() {
   vapply(Filter(function(x) identical(x$type, 'proxy'), .proxy$apps), `[[`, integer(1), 'port')
@@ -200,7 +205,7 @@ proxy_stop = function(slot) {
 # Check if a TCP port is available by attempting to bind a server socket.
 # On R >= 4.0 use serverSocket(); otherwise fall back to C code.
 .port_available = function(port) {
-  if (exists('serverSocket', mode = 'function', envir = baseenv(), inherits = FALSE)) {
+  if (.has_server_socket_support()) {
     s = tryCatch(serverSocket(as.integer(port)), error = function(e) NULL)
     if (is.null(s)) return(FALSE)
     close(s)
@@ -234,6 +239,7 @@ proxy_stop = function(slot) {
 }
 
 .proxy_connect_host = function(host) {
+  host = as.character(host)[1]
   # server may bind all interfaces (0.0.0.0), but local readiness checks should
   # use loopback for a deterministic self-connection target.
   if (identical(host, '0.0.0.0')) '127.0.0.1' else host
@@ -260,9 +266,7 @@ proxy_stop = function(slot) {
   # serverSocket() binds all interfaces (no host argument), so use it only when
   # we explicitly want a public bind on 0.0.0.0; otherwise keep host-specific
   # binding via socketConnection(server = TRUE).
-  use_server_socket = exists('serverSocket', mode = 'function', envir = baseenv(), inherits = FALSE) &&
-    exists('socketAccept', mode = 'function', envir = baseenv(), inherits = FALSE) &&
-    identical(host, '0.0.0.0')
+  use_server_socket = .has_server_socket_support() && identical(host, '0.0.0.0')
 
   listener = NULL
   if (use_server_socket) {
@@ -351,7 +355,7 @@ proxy_stop = function(slot) {
     if (length(i)) {
       v = sub('^[^:]*:', '', headers[[i[1L]]])
       v = trimws(v)
-      clen = suppressWarnings(as.integer(v))
+      if (grepl('^[0-9]+$', v)) clen = as.integer(v)
     }
     if (is.na(clen) || clen < 0L) clen = 0L
   }
