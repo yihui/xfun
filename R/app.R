@@ -144,10 +144,9 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
   if (is.null(candidates)) candidates = 4321 + 1:30
   exclude = unique(c(as.integer(exclude), .proxy_app_ports(), as.integer(names(.proxy$help))))
   candidates = setdiff(candidates, exclude)
-  tried = c(candidates, random_port(error = FALSE, exclude = c(candidates, exclude)))
-  for (p in tried) {
-    if (!is.na(p) && .port_available(p)) return(as.integer(p))
-  }
+  for (p in candidates) if (.port_available(p)) return(as.integer(p))
+  if (!is.null(p <- random_port(error = FALSE, exclude = c(candidates, exclude))))
+    return(p)
   stop2(
     "No available proxy port found (tried candidates ",
     paste(unique(candidates), collapse = ', '),
@@ -198,6 +197,7 @@ proxy_stop = function(slot) {
 # Probing with a client connection detects any active listener regardless.
 .port_available = function(port) {
   port = as.integer(port)
+  if (is.na(port)) return(FALSE)
   # If a client can connect, something is already listening → not available.
   con = suppressWarnings(tryCatch(
     socketConnection('127.0.0.1', port = port, open = 'r+b', blocking = FALSE, timeout = 0.5),
