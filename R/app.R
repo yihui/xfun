@@ -169,42 +169,24 @@ proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.
   passthrough = isTRUE(passthrough)
   host = as.character(host)[1]
 
-  # Use Rscript_call with --vanilla so the child starts with a clean lib path.
-  # The wrapper captures lib paths and the proxy port as plain data (no xfun
-  # namespace references), then loads xfun at runtime via `:::`.
-  # Setting its environment to baseenv() prevents readRDS() in the child from
-  # loading a stale installed xfun before the lib path is updated.
-  pid_file = tempfile(fileext = '.rds')
-  saveRDS(NULL, pid_file)
-  libs = .libPaths()
-  wrapper = function(port, backend_port, passthrough, host, libs, pid_file) {
-    saveRDS(Sys.getpid(), pid_file)
-    on.exit(unlink(pid_file), add = TRUE)
-    .libPaths(c(libs, .libPaths()))
-    xfun:::.proxy_run(port = port, backend_port = backend_port,
-                      passthrough = passthrough, host = host)
-  }
-  environment(wrapper) = baseenv()
-  Rscript_call(
-    wrapper,
-    list(port = port, backend_port = backend_port, passthrough = passthrough,
-         host = host, libs = libs, pid_file = pid_file),
-    options = '--vanilla', wait = FALSE
+  # Pass the current lib paths to the child process via R_LIBS so it finds the
+  # same version of xfun that is being tested (e.g. testit::test_pkg installs
+  # the package to a temp lib that is in .libPaths() but not in any env var).
+  old_r_libs = Sys.getenv('R_LIBS')
+  Sys.setenv(R_LIBS = paste(.libPaths(), collapse = .Platform$path.sep))
+  on.exit(
+    if (nzchar(old_r_libs)) Sys.setenv(R_LIBS = old_r_libs) else Sys.unsetenv('R_LIBS'),
+    add = TRUE
   )
-  pid = NULL
-  for (i in seq_len(100L)) {
-    Sys.sleep(0.1)
-    if (!file_exists(pid_file)) break  # process exited before writing PID
-    x = readRDS(pid_file)
-    if (length(x) == 1L) { pid = x; break }
-  }
-  if (is.null(pid) || !file_exists(pid_file))
-    stop2("Failed to start proxy on port ", port, ".")
+
+  bg = Rscript_bg(.proxy_run, list(
+    port = port, backend_port = backend_port, passthrough = passthrough, host = host
+  ))
   if (!.proxy_wait_ready(port, host)) {
-    try(proc_kill(pid), silent = TRUE)
+    if (isTRUE(bg$is_alive())) try(proc_kill(bg$pid), silent = TRUE)
     stop2("Failed to start proxy on port ", port, ".")
   }
-  paste0('r:', pid)
+  paste0('r:', bg$pid)
 }
 
 # Stop the proxy instance identified by its slot index.
@@ -283,10 +265,12 @@ proxy_stop = function(slot) {
 .proxy_run = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
   server_socket = get0('serverSocket', baseenv(), mode = 'function', inherits = FALSE)
   socket_accept = get0('socketAccept', baseenv(), mode = 'function', inherits = FALSE)
-  # serverSocket() binds all interfaces (no host argument), so use it only when
-  # we explicitly want a public bind on 0.0.0.0; otherwise keep host-specific
-  # binding via socketConnection(server = TRUE).
-  use_server_socket = is.function(server_socket) && is.function(socket_accept) && identical(host, '0.0.0.0')
+  # Always use serverSocket() when available: it keeps the port bound continuously
+  # across multiple accept() calls, eliminating the gap where a client could get
+  # ECONNREFUSED between two socketConnection(server=TRUE) calls.
+  # serverSocket() binds all interfaces (0.0.0.0); for loopback-only proxies
+  # this is acceptable since the port is ephemeral and access is app-controlled.
+  use_server_socket = is.function(server_socket) && is.function(socket_accept)
 
   listener = NULL
   if (use_server_socket) {
@@ -321,7 +305,7 @@ proxy_stop = function(slot) {
 
   backend = tryCatch(
     socketConnection(
-      host = '127.0.0.1', port = backend_port, open = 'r+b', blocking = TRUE, timeout = 5
+      host = '127.0.0.1', port = backend_port, open = 'r+b', blocking = FALSE, timeout = 5
     ),
     error = function(e) NULL
   )
@@ -340,45 +324,42 @@ proxy_stop = function(slot) {
   ), collapse = '\r\n')
   writeBin(charToRaw(txt), backend)
   if (length(req$body)) writeBin(req$body, backend)
-  flush(backend)
 
-  # Read the response from the backend. R's internal httpd (HTTP/1.0) does not
-  # close the connection after sending its response, so we cannot rely on EOF.
-  # Instead, read the response headers first, parse Content-Length, then read
-  # exactly that many body bytes before returning.
-  resp_buf = raw(0)
-  repeat {
-    x = readBin(backend, raw(), 65536L)
+  # Relay the response. R's internal httpd does not close the connection after
+  # sending an HTTP/1.0 response, so we cannot rely on EOF.  Use non-blocking
+  # I/O with socketSelect() to avoid a permanently-blocking readBin(), and stop
+  # as soon as Content-Length body bytes have been received.
+  buf = raw(0)
+  clen = NA_integer_
+  sep_end = NA_integer_
+  for (i in seq_len(200L)) {  # up to 200 * 0.05 s = 10 s
+    Sys.sleep(0.05)
+    ready = tryCatch(
+      socketSelect(list(backend), write = FALSE, timeout = 0),
+      error = function(e) FALSE
+    )
+    if (!isTRUE(ready[1L])) next
+    x = tryCatch(readBin(backend, raw(), 65536L), error = function(e) raw(0))
     if (!length(x)) break
-    resp_buf = c(resp_buf, x)
-    if (any(diff(which(resp_buf == as.raw(0x0a))) == 1L) ||
-        length(grep('\r\n\r\n|\n\n', rawToChar(resp_buf)))) break
+    buf = c(buf, x)
+    if (is.na(sep_end)) {
+      s = tryCatch(rawToChar(buf), error = function(e) '')
+      m = regexpr('\r\n\r\n|\n\n', s, perl = TRUE)
+      if (m[1L] > 0L) {
+        sep_end = m[1L] + attr(m, 'match.length') - 1L
+        cl_m = regexpr('(?i)content-length:[ \t]*([0-9]+)', s, perl = TRUE)
+        if (cl_m[1L] > 0L) {
+          clen_str = regmatches(s, cl_m)
+          clen = as.integer(trimws(sub('(?i).*:', '', clen_str, perl = TRUE)))
+        }
+      }
+    }
+    if (!is.na(sep_end) && !is.na(clen) && (length(buf) - sep_end) >= clen) break
   }
-  # Locate header/body boundary (\r\n\r\n or \n\n).
-  rs = rawToChar(resp_buf)
-  m = regexpr('\r\n\r\n|\n\n', rs, perl = TRUE)
-  if (m[1L] <= 0L) { writeBin(resp_buf, client); flush(client); return() }
-  sep_end = m[1L] + attr(m, 'match.length') - 1L
-
-  # Parse Content-Length from the response headers.
-  head_str = substring(rs, 1L, sep_end)
-  cm = regexpr('(?i)content-length[ \t]*:[ \t]*([0-9]+)', head_str, perl = TRUE)
-  clen = if (cm[1L] > 0L) {
-    as.integer(regmatches(head_str, cm) |> sub(pattern = '(?i).*:\\s*', replacement = '', perl = TRUE))
-  } else NA_integer_
-
-  # Body bytes already in resp_buf.
-  body_have = length(resp_buf) - sep_end
-  body_need = if (!is.na(clen) && clen > body_have) clen - body_have else 0L
-
-  writeBin(resp_buf, client)
-  while (body_need > 0L) {
-    x = readBin(backend, raw(), min(65536L, body_need))
-    if (!length(x)) break
-    writeBin(x, client)
-    body_need = body_need - length(x)
+  if (length(buf)) {
+    writeBin(buf, client)
+    flush(client)
   }
-  flush(client)
 }
 
 # Parse one HTTP request from a socket connection.
