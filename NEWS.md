@@ -4,7 +4,7 @@
 
 - Renamed `new_app()`'s argument `ports` to `port`.
 
-- Added `random_port()` to find a random available TCP port (e.g., it can be used for the `ports` argument of `new_app()`).
+- Added `random_port()` to find a random available TCP port (e.g., it can be used for the `port` argument of `new_app()`).
 
 - `html_view()` should join the input character vector by `\n`, otherwise only the first element of the vector will be passed to the browser (thanks, @XiangyunHuang, yihui/gglite#15).
 

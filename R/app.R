@@ -160,9 +160,6 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 # passthrough = FALSE (default): rewrite /path to /custom/xfun:PORT/path.
 # host: bind address; "0.0.0.0" to listen on all interfaces.
 proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
-  if (!has_fun('serverSocket') || !has_fun('socketAccept')) {
-    stop2("new_app() requires serverSocket() and socketAccept() (R >= 4.0.0).")
-  }
   port         = as.integer(port)
   backend_port = as.integer(backend_port)
   passthrough  = isTRUE(passthrough)
@@ -197,10 +194,7 @@ proxy_stop = function(slot) {
 # Check if a TCP port is available by attempting to bind a server socket.
 # Requires serverSocket() / socketAccept() (R >= 4.0.0).
 .port_available = function(port) {
-  if (!has_fun('serverSocket') || !has_fun('socketAccept')) {
-    stop2("new_app() requires serverSocket() and socketAccept() (R >= 4.0.0).")
-  }
-  server_socket = get0('serverSocket', baseenv(), mode = 'function', inherits = FALSE)
+  server_socket = base::serverSocket
   s = tryCatch(server_socket(as.integer(port)), error = function(e) NULL)
   if (is.null(s)) return(FALSE)
   close(s)
@@ -252,23 +246,15 @@ proxy_stop = function(slot) {
 
 # Main proxy loop running in a background R process.
 .proxy_run = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
-  server_socket = get0('serverSocket', baseenv(), mode = 'function', inherits = FALSE)
-  socket_accept = get0('socketAccept', baseenv(), mode = 'function', inherits = FALSE)
-  use_server_socket = is.function(server_socket) && is.function(socket_accept)
+  server_socket = base::serverSocket
+  socket_accept = base::socketAccept
 
-  listener = NULL
-  if (use_server_socket) {
-    listener = server_socket(port)
-    on.exit(close(listener), add = TRUE)
-  }
+  listener = server_socket(port)
+  on.exit(close(listener), add = TRUE)
 
   repeat {
     con = tryCatch(
-      if (use_server_socket) {
-        socket_accept(listener, blocking = FALSE, open = 'r+b', timeout = 1)
-      } else {
-        socketConnection(host = host, port = port, server = TRUE, blocking = FALSE, open = 'r+b')
-      },
+      socket_accept(listener, blocking = FALSE, open = 'r+b', timeout = 1),
       error = function(e) NULL
     )
     if (is.null(con)) next

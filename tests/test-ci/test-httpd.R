@@ -81,8 +81,7 @@ http_request_full = function(host, port, method, path, body = NULL, extra_header
 url_port = function(url) as.integer(sub('^https?://[^:]+:([0-9]+)/.*$', '\\1', url))
 
 if (
-  exists('serverSocket', mode = 'function', envir = baseenv(), inherits = FALSE) &&
-  exists('socketAccept', mode = 'function', envir = baseenv(), inherits = FALSE) &&
+  has_fun('serverSocket') && has_fun('socketAccept') &&
   !is.null(port <- random_port(error = FALSE))
 ) {
 
