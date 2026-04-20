@@ -81,32 +81,47 @@ http_request_full = function(host, port, method, path, body = NULL, extra_header
 url_port = function(url) as.integer(sub('^https?://[^:]+:([0-9]+)/.*$', '\\1', url))
 
 if (
-  has_fun('serverSocket') &&
-  has_fun('socketAccept') &&
+  exists('serverSocket', mode = 'function', envir = baseenv(), inherits = FALSE) &&
+  exists('socketAccept', mode = 'function', envir = baseenv(), inherits = FALSE) &&
   !is.null(port <- random_port(error = FALSE))
 ) {
 
-  new_app(
-    '',
-    function(path, query, post, headers) {
-      h          = if (length(headers) > 0L) rawToChar(headers) else ''
-      foo        = if ('foo' %in% names(query)) query[['foo']] else ''
-      post_str   = if (length(post) > 0L) rawToChar(post) else ''
-      method_str = {
-        m = regmatches(h, regexpr('Request-Method: [^\r\n]+', h))
-        if (length(m) > 0L) sub('Request-Method: ', '', m) else ''
-      }
-      x_custom_str = {
-        m = regmatches(h, regexpr('X-Custom: [^\r\n]+', h))
-        if (length(m) > 0L) sub('X-Custom: ', '', m) else 'MISSING'
-      }
-      list(payload = make_body(path, foo, post_str, method_str, x_custom_str),
-           'content-type' = 'text/plain')
-    },
-    open = FALSE,
-    port = port
-  )
-  on.exit(stop_app(''), add = TRUE)
+  # Run the proxy-backed app in a separate R process so requests are sent from
+  # this R session to reduce random timing issues in CI.
+  pid_file = tempfile(fileext = '.rds')
+  saveRDS(NULL, pid_file)
+  Rscript_call(function(make_body, port, pid_file) {
+    saveRDS(Sys.getpid(), pid_file)
+    on.exit(unlink(pid_file), add = TRUE)
+    xfun::new_app(
+      '',
+      function(path, query, post, headers) {
+        h          = if (length(headers) > 0L) rawToChar(headers) else ''
+        foo        = if ('foo' %in% names(query)) query[['foo']] else ''
+        post_str   = if (length(post) > 0L) rawToChar(post) else ''
+        method_str = {
+          m = regmatches(h, regexpr('Request-Method: [^\r\n]+', h))
+          if (length(m) > 0L) sub('Request-Method: ', '', m) else ''
+        }
+        x_custom_str = {
+          m = regmatches(h, regexpr('X-Custom: [^\r\n]+', h))
+          if (length(m) > 0L) sub('X-Custom: ', '', m) else 'MISSING'
+        }
+        list(payload = make_body(path, foo, post_str, method_str, x_custom_str),
+             'content-type' = 'text/plain')
+      },
+      open = NA,
+      port = port
+    )
+  }, list(make_body = make_body, port = port, pid_file = pid_file), wait = FALSE)
+  pid = NULL
+  for (i in seq_len(100L)) {
+    Sys.sleep(0.1)
+    if (!file.exists(pid_file)) break
+    pid = tryCatch(readRDS(pid_file), error = function(e) NULL)
+    if (length(pid) == 1L) break
+  }
+  on.exit(if (length(pid) == 1L) try(proc_kill(pid), silent = TRUE), add = TRUE)
 
   # Wait for the background app to become reachable.
   for (i in seq_len(50L)) {
@@ -163,33 +178,33 @@ if (
     p = .find_proxy_port(4323:4326)
     (p != 4323L)
   })
+
+  url = new_app(
+    'test',
+    function(path, query, post, headers) {
+      h          = if (length(headers) > 0L) rawToChar(headers) else ''
+      foo        = if ('foo' %in% names(query)) query[['foo']] else ''
+      post_str   = if (length(post) > 0L) rawToChar(post) else ''
+      method_str = {
+        m = regmatches(h, regexpr('Request-Method: [^\r\n]+', h))
+        if (length(m) > 0L) sub('Request-Method: ', '', m) else ''
+      }
+      list(payload = make_body(path, foo, post_str, method_str), 'content-type' = 'text/plain')
+    },
+    open = FALSE
+  )
+  on.exit(stop_app('test'), add = TRUE)
+
+  assert('new_app(name != \"\") uses legacy /custom/name/ path', {
+    m = regexec('^http://127\\.0\\.0\\.1:([0-9]+)/custom/test/$', url)
+    cap = regmatches(url, m)[[1]]
+    (length(cap) == 2L)
+    (!is.null(get0('test', .httpd_env(), inherits = FALSE)))
+  })
+
+  assert('stop_app() deregisters legacy app handler', {
+    stop_app('test')
+    (is.null(.proxy$apps[['test']]))
+    (is.null(get0('test', .httpd_env(), inherits = FALSE)))
+  })
 }
-
-url = new_app(
-  'test',
-  function(path, query, post, headers) {
-    h          = if (length(headers) > 0L) rawToChar(headers) else ''
-    foo        = if ('foo' %in% names(query)) query[['foo']] else ''
-    post_str   = if (length(post) > 0L) rawToChar(post) else ''
-    method_str = {
-      m = regmatches(h, regexpr('Request-Method: [^\r\n]+', h))
-      if (length(m) > 0L) sub('Request-Method: ', '', m) else ''
-    }
-    list(payload = make_body(path, foo, post_str, method_str), 'content-type' = 'text/plain')
-  },
-  open = FALSE
-)
-on.exit(stop_app('test'), add = TRUE)
-
-assert('new_app(name != \"\") uses legacy /custom/name/ path', {
-  m = regexec('^http://127\\.0\\.0\\.1:([0-9]+)/custom/test/$', url)
-  cap = regmatches(url, m)[[1]]
-  (length(cap) == 2L)
-  (!is.null(get0('test', .httpd_env(), inherits = FALSE)))
-})
-
-assert('stop_app() deregisters legacy app handler', {
-  stop_app('test')
-  (is.null(.proxy$apps[['test']]))
-  (is.null(get0('test', .httpd_env(), inherits = FALSE)))
-})

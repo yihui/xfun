@@ -159,25 +159,14 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 #   the full R httpd server, e.g. on host = "0.0.0.0" for LAN access).
 # passthrough = FALSE (default): rewrite /path to /custom/xfun:PORT/path.
 # host: bind address; "0.0.0.0" to listen on all interfaces.
-# Returns an internal proxy handle, or -1 on failure.
 proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
   if (!has_fun('serverSocket') || !has_fun('socketAccept')) {
     stop2("new_app() requires serverSocket() and socketAccept() (R >= 4.0.0).")
   }
-  port = as.integer(port)
+  port         = as.integer(port)
   backend_port = as.integer(backend_port)
-  passthrough = isTRUE(passthrough)
-  host = as.character(host)[1]
-
-  # Pass the current lib paths to the child process via R_LIBS so it finds the
-  # same version of xfun that is being tested (e.g. testit::test_pkg installs
-  # the package to a temp lib that is in .libPaths() but not in any env var).
-  old_r_libs = Sys.getenv('R_LIBS')
-  Sys.setenv(R_LIBS = paste(.libPaths(), collapse = .Platform$path.sep))
-  on.exit(
-    if (nzchar(old_r_libs)) Sys.setenv(R_LIBS = old_r_libs) else Sys.unsetenv('R_LIBS'),
-    add = TRUE
-  )
+  passthrough  = isTRUE(passthrough)
+  host         = as.character(host)[1]
 
   bg = Rscript_bg(.proxy_run, list(
     port = port, backend_port = backend_port, passthrough = passthrough, host = host
@@ -189,7 +178,7 @@ proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.
   paste0('r:', bg$pid)
 }
 
-# Stop the proxy instance identified by its slot index.
+# Stop the proxy instance identified by its slot.
 proxy_stop = function(slot) {
   if (is.character(slot) && length(slot) == 1L && startsWith(slot, 'r:')) {
     pid = sub('^r:', '', slot)
@@ -265,11 +254,6 @@ proxy_stop = function(slot) {
 .proxy_run = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
   server_socket = get0('serverSocket', baseenv(), mode = 'function', inherits = FALSE)
   socket_accept = get0('socketAccept', baseenv(), mode = 'function', inherits = FALSE)
-  # Always use serverSocket() when available: it keeps the port bound continuously
-  # across multiple accept() calls, eliminating the gap where a client could get
-  # ECONNREFUSED between two socketConnection(server=TRUE) calls.
-  # serverSocket() binds all interfaces (0.0.0.0); for loopback-only proxies
-  # this is acceptable since the port is ephemeral and access is app-controlled.
   use_server_socket = is.function(server_socket) && is.function(socket_accept)
 
   listener = NULL
@@ -281,9 +265,9 @@ proxy_stop = function(slot) {
   repeat {
     con = tryCatch(
       if (use_server_socket) {
-        socket_accept(listener, blocking = TRUE, open = 'r+b', timeout = 60)
+        socket_accept(listener, blocking = FALSE, open = 'r+b', timeout = 1)
       } else {
-        socketConnection(host = host, port = port, server = TRUE, blocking = TRUE, open = 'r+b')
+        socketConnection(host = host, port = port, server = TRUE, blocking = FALSE, open = 'r+b')
       },
       error = function(e) NULL
     )
@@ -293,20 +277,18 @@ proxy_stop = function(slot) {
   }
 }
 
-# Read a client HTTP request, forward it to backend httpd, and relay response.
+# Read a client request, forward it to backend httpd, and relay the response.
 .proxy_forward = function(client, port, backend_port, passthrough = FALSE) {
   req = .proxy_read_request(client)
   if (is.null(req)) return()
 
-  path = req$path
+  path  = req$path
   path2 = if (isTRUE(passthrough)) path else sprintf('/custom/xfun:%d%s', port, path)
   q_pos = regexpr('\\?', path)[1L]
   query = if (q_pos > 0L) substring(path, q_pos + 1L) else ''
 
   backend = tryCatch(
-    socketConnection(
-      host = '127.0.0.1', port = backend_port, open = 'r+b', blocking = FALSE, timeout = 5
-    ),
+    socketConnection(host = '127.0.0.1', port = backend_port, open = 'r+b', blocking = FALSE, timeout = 5),
     error = function(e) NULL
   )
   if (is.null(backend)) return()
@@ -318,26 +300,15 @@ proxy_stop = function(slot) {
     headers = headers[keep]
   }
   if (nzchar(query)) headers = c(headers, paste0('X-Xfun-Query: ', query))
-
-  txt = paste(c(
-    sprintf('%s %s HTTP/1.0', req$method, path2), headers, '', ''
-  ), collapse = '\r\n')
+  txt = paste(c(sprintf('%s %s HTTP/1.0', req$method, path2), headers, '', ''), collapse = '\r\n')
   writeBin(charToRaw(txt), backend)
   if (length(req$body)) writeBin(req$body, backend)
+  flush(backend)
 
-  # Relay the response. R's internal httpd does not close the connection after
-  # sending an HTTP/1.0 response, so we cannot rely on EOF.  Use non-blocking
-  # I/O with socketSelect() to avoid a permanently-blocking readBin(), and stop
-  # as soon as Content-Length body bytes have been received.
-  buf = raw(0)
-  clen = NA_integer_
-  sep_end = NA_integer_
-  for (i in seq_len(200L)) {  # up to 200 * 0.05 s = 10 s
+  buf = raw(0); clen = NA_integer_; sep_end = NA_integer_
+  for (i in seq_len(200L)) {
     Sys.sleep(0.05)
-    ready = tryCatch(
-      socketSelect(list(backend), write = FALSE, timeout = 0),
-      error = function(e) FALSE
-    )
+    ready = tryCatch(socketSelect(list(backend), write = FALSE, timeout = 0), error = function(e) FALSE)
     if (!isTRUE(ready[1L])) next
     x = tryCatch(readBin(backend, raw(), 65536L), error = function(e) raw(0))
     if (!length(x)) break
@@ -348,38 +319,33 @@ proxy_stop = function(slot) {
       if (m[1L] > 0L) {
         sep_end = m[1L] + attr(m, 'match.length') - 1L
         cl_m = regexpr('(?i)content-length:[ \t]*([0-9]+)', s, perl = TRUE)
-        if (cl_m[1L] > 0L) {
-          clen_str = regmatches(s, cl_m)
-          clen = as.integer(trimws(sub('(?i).*:', '', clen_str, perl = TRUE)))
-        }
+        if (cl_m[1L] > 0L)
+          clen = as.integer(trimws(sub('(?i).*:', '', regmatches(s, cl_m), perl = TRUE)))
       }
     }
     if (!is.na(sep_end) && !is.na(clen) && (length(buf) - sep_end) >= clen) break
   }
-  if (length(buf)) {
-    writeBin(buf, client)
-    flush(client)
-  }
+  if (length(buf)) { writeBin(buf, client); flush(client) }
 }
 
-# Parse one HTTP request from a socket connection.
+# Parse one HTTP request from a non-blocking socket connection.
+# Uses socketSelect() polling so readBin() returns immediately with whatever
+# bytes are available without blocking for the full buffer size.
 .proxy_read_request = function(con) {
-  buf = raw(0)
-  head_end = 0L
-  sep_len = 0L
-  repeat {
-    x = readBin(con, raw(), 65536L)
+  buf = raw(0); head_end = 0L; sep_len = 0L
+  for (i in seq_len(200L)) {  # up to 200 * 0.05 s = 10 s
+    Sys.sleep(0.05)
+    ready = tryCatch(socketSelect(list(con), write = FALSE, timeout = 0), error = function(e) FALSE)
+    if (!isTRUE(ready[1L])) next
+    x = tryCatch(readBin(con, raw(), 65536L), error = function(e) raw(0))
     if (!length(x)) return(NULL)
     buf = c(buf, x)
-    s = rawToChar(buf)
+    s = tryCatch(rawToChar(buf), error = function(e) '')
     m = regexpr('\r\n\r\n|\n\n', s, perl = TRUE)
-    if (m[1L] > 0L) {
-      head_end = m[1L]
-      sep_len = attr(m, 'match.length')
-      break
-    }
+    if (m[1L] > 0L) { head_end = m[1L]; sep_len = attr(m, 'match.length'); break }
     if (length(buf) >= 65536L) return(NULL)
   }
+  if (head_end == 0L) return(NULL)
 
   hs = substring(rawToChar(buf), 1L, head_end + sep_len - 1L)
   hs = sub('\r\n\r\n$|\n\n$', '', hs, perl = TRUE)
@@ -389,28 +355,22 @@ proxy_stop = function(slot) {
   req = strsplit(lines[[1L]], ' ', fixed = TRUE)[[1L]]
   req = req[nzchar(req)]
   if (length(req) < 2L) return(NULL)
-  method = req[[1L]]
-  path = req[[2L]]
-  headers = lines[-1L]
+  method = req[[1L]]; path = req[[2L]]; headers = lines[-1L]
 
   clen = 0L
   if (length(headers)) {
     i = grep('^content-length:', headers, ignore.case = TRUE)
     if (length(i)) {
-      v = sub('^[^:]*:', '', headers[[i[1L]]])
-      v = trimws(v)
+      v = trimws(sub('^[^:]*:', '', headers[[i[1L]]]))
       if (grepl('^[0-9]+$', v)) clen = as.integer(v)
     }
     if (is.na(clen) || clen < 0L) clen = 0L
   }
-  body0 = raw(0)
   body_start = head_end + sep_len
-  if (body_start <= length(buf)) body0 = buf[body_start:length(buf)]
-  if (length(body0) < clen) {
-    body = c(body0, readBin(con, raw(), clen - length(body0)))
-  } else {
-    body = body0[seq_len(clen)]
-  }
+  body0 = if (body_start <= length(buf)) buf[body_start:length(buf)] else raw(0)
+  body = if (length(body0) < clen)
+    c(body0, tryCatch(readBin(con, raw(), clen - length(body0)), error = function(e) raw(0)))
+  else body0[seq_len(clen)]
   list(method = method, path = path, headers = headers, body = body)
 }
 
