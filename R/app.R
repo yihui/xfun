@@ -199,19 +199,15 @@ proxy_stop = function(slot) {
 .port_available = function(port) {
   port = as.integer(port)
   # If a client can connect, something is already listening → not available.
-  con = withCallingHandlers(
-    tryCatch(
-      socketConnection('127.0.0.1', port = port, open = 'r+b', blocking = FALSE, timeout = 0.5),
-      error = function(e) NULL
-    ),
-    warning = function(w) invokeRestart('muffleWarning')
-  )
-  if (!is.null(con)) { try(close(con), silent = TRUE); return(FALSE) }
+  con = suppressWarnings(tryCatch(
+    socketConnection('127.0.0.1', port = port, open = 'r+b', blocking = FALSE, timeout = 0.5),
+    error = function(e) NULL
+  ))
+  if (!is.null(con)) { try_silent(close(con)); return(FALSE) }
   # Confirm we can actually bind the port as a server.
-  s = tryCatch(base::serverSocket(port), error = function(e) NULL)
-  if (is.null(s)) return(FALSE)
-  close(s)
-  TRUE
+  server_socket = base::serverSocket
+  s = tryCatch(server_socket(port), error = function(e) NULL)
+  if (is.null(s)) FALSE else { close(s); TRUE }
 }
 
 # Build an R httpd handler closure.
