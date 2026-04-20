@@ -1,5 +1,7 @@
 #' Create or stop a local web application
 #'
+#' Create a local web application based on R's internal httpd.
+#'
 #' `new_app()` has two modes:
 #'
 #' - `name = ''`: start an app behind a lightweight proxy at
@@ -96,7 +98,6 @@ help_proxy = function(port = NULL, host = '0.0.0.0') {
 #'
 #' Find an available TCP port, starting with `port`, then sampling from
 #' 3000--8000 (excluding ports known to be blocked by Chrome).
-#' Port availability is checked on both `127.0.0.1` and `0.0.0.0`.
 #' @param port Default port to try first.
 #' @param n Number of additional random ports to try.
 #' @param exclude Integer vector of ports to exclude from the search.
