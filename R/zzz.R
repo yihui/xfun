@@ -18,6 +18,12 @@ if (!has_fun('packageDate', asNamespace('utils'))) packageDate = function(...) {
   as.Date(packageDescription(..., fields = 'Date/Publication'))
 }
 
+.onLoad = function(libname, pkgname) {
+  # Register a finalizer so the background proxy is killed if the parent R
+  # session exits without calling stop_app() (e.g., on crash or q()).
+  reg.finalizer(asNamespace(pkgname), function(e) .onUnload(), onexit = TRUE)
+}
+
 .onUnload = function(libpath) {
   if (length(.proxy$apps) > 0L) stop_app()
   if (length(.proxy$help) > 0L) .stop_help_proxy()

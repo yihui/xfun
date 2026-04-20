@@ -134,7 +134,6 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 .proxy = new.env(parent = emptyenv())
 .proxy$apps   = list()  # app name → list(type, key, slot?)
 .proxy$help   = list()  # help proxy port → slot index
-.proxy$guards = list()  # pid (char) → guard env for reg.finalizer
 
 # Find an available proxy port without starting the proxy.
 .proxy_app_ports = function() {
@@ -174,15 +173,6 @@ proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.
     if (isTRUE(bg$is_alive())) try(proc_kill(bg$pid), silent = TRUE)
     stop2("Failed to start proxy on port ", port, ".")
   }
-  # Register a finalizer so the background proxy is killed if the parent R
-  # session exits without calling stop_app() (e.g., on crash or q()).
-  pid = bg$pid
-  if (length(pid) == 1L && !is.na(pid)) {
-    guard = new.env(parent = emptyenv())
-    guard$pid = pid
-    reg.finalizer(guard, function(e) try(proc_kill(e$pid), silent = TRUE), onexit = TRUE)
-    .proxy$guards[[as.character(pid)]] = guard
-  }
   paste0('r:', bg$pid)
 }
 
@@ -190,12 +180,8 @@ proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.
 proxy_stop = function(slot) {
   if (is.character(slot) && length(slot) == 1L && startsWith(slot, 'r:')) {
     pid = sub('^r:', '', slot)
-    if (grepl('^[0-9]+$', pid)) {
-      try(proc_kill(as.integer(pid)), silent = TRUE)
-      .proxy$guards[[pid]] = NULL  # drop the finalizer guard
-    }
+    if (grepl('^[0-9]+$', pid)) try_silent(proc_kill(as.integer(pid)))
   }
-  invisible(NULL)
 }
 
 # Coerce body/headers-like argument to a raw vector.
