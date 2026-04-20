@@ -12,7 +12,7 @@ stop_app(name = names(.proxy$apps))
 \arguments{
 \item{name}{App name (a character string). Use \code{name = ''} to serve the app
 at the root URL \verb{http://host:PORT/} via the proxy. If \code{name} is non-empty,
-the app is served directly by R's internal httpd at \code{/custom/name/}. Each
+the app is served directly by R's internal httpd at \verb{/custom/name/}. Each
 name must be unique; calling \code{new_app()} with an existing name replaces
 that app. For \code{stop_app()}, a character vector of app names to stop;
 defaults to all running apps.}
@@ -36,14 +36,16 @@ is selected (falling back to \code{\link[=random_port]{random_port()}} if needed
 nothing.
 }
 \description{
+Create a local web application based on R's internal httpd.
+}
+\details{
 \code{new_app()} has two modes:
-
 \itemize{
 \item \code{name = ''}: start an app behind a lightweight proxy at
-\code{http://host:PORT/}, forwarding to R's internal httpd path
-\code{/custom/xfun:PORT/}.
+\verb{http://host:PORT/}, forwarding to R's internal httpd path
+\verb{/custom/xfun:PORT/}.
 \item \code{name != ''}: register a legacy app directly on R's internal httpd at
-\code{http://127.0.0.1:BACKEND/custom/name/} (compatible with older versions).
+\verb{http://127.0.0.1:BACKEND/custom/name/} (compatible with older versions).
 }
 
 \code{stop_app()} deregisters one or more running apps.

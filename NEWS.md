@@ -1,10 +1,10 @@
 # CHANGES IN xfun VERSION 0.58
 
-- `new_app()` now uses a lightweight C proxy in front of R's internal httpd: `new_app(name = '')` serves one proxy-backed app per port at `http://127.0.0.1:PORT/`, `new_app(name != '')` keeps legacy direct httpd routing via `/custom/name/` for compatibility. The internal function `xfun:::help_proxy()` can proxy the full help server for LAN access, since the proxy starts at `0.0.0.0` by default.
+- `new_app()` now uses a lightweight proxy in front of R's internal httpd: `new_app(name = '')` serves one proxy-backed app per port at `http://127.0.0.1:PORT/`, `new_app(name != '')` keeps legacy direct httpd routing via `/custom/name/` for compatibility. The internal function `xfun:::help_proxy()` can proxy the full help server for LAN access, since the proxy starts at `0.0.0.0` by default.
 
 - Renamed `new_app()`'s argument `ports` to `port`.
 
-- Added `random_port()` to find a random available TCP port (e.g., it can be used for the `ports` argument of `new_app()`).
+- Added `random_port()` to find a random available TCP port (e.g., it can be used for the `port` argument of `new_app()`).
 
 - `html_view()` should join the input character vector by `\n`, otherwise only the first element of the vector will be passed to the browser (thanks, @XiangyunHuang, yihui/gglite#15).
 

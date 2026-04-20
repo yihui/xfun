@@ -1,5 +1,7 @@
 #' Create or stop a local web application
 #'
+#' Create a local web application based on R's internal httpd.
+#'
 #' `new_app()` has two modes:
 #'
 #' - `name = ''`: start an app behind a lightweight proxy at
@@ -37,14 +39,13 @@ new_app = function(
   # Replace any existing app with the same name.
   if (name %in% names(.proxy$apps)) stop_app(name)
 
-  if (identical(name, '')) {
+  if (name == '') {
     port = .find_proxy_port(port, names(.proxy$help))
     slot = proxy_start(as.integer(port), as.integer(backend), host = host)
-    if (slot < 0L) stop2("Failed to start proxy on port ", port, ".")
     key = paste0('xfun:', port)
     assign(key, .make_app_handler(paste0('/custom/xfun:', port), handler, getwd()), envir = .httpd_env())
     .proxy$apps[[name]] = list(type = 'proxy', slot = slot, key = key, port = port)
-    url_host = if (identical(host, '0.0.0.0')) '127.0.0.1' else host
+    url_host = if (host == '0.0.0.0') '127.0.0.1' else host
     url = sprintf('http://%s:%d/', url_host, port)
   } else {
     key = as.character(name)
@@ -56,7 +57,7 @@ new_app = function(
   if (isTRUE(open)) open = getOption('viewer', browseURL)
   if (is.function(open)) open(url)
 
-  if (!interactive() && !identical(open, FALSE)) {
+  if (!interactive() && !isFALSE(open)) {
     on.exit(stop_app(name), add = TRUE)
     message('Serving at ', url, ' (press Ctrl+C to stop)')
     tryCatch(
@@ -76,7 +77,7 @@ stop_app = function(name = names(.proxy$apps)) {
     app = .proxy$apps[[idx]]
     rm_vars(app$key, .httpd_env())
     .proxy$apps[[idx]] = NULL
-    if (identical(app$type, 'proxy')) proxy_stop(app$slot)
+    if (app$type == 'proxy') proxy_stop(app$slot)
   }
 }
 
@@ -87,7 +88,6 @@ help_proxy = function(port = NULL, host = '0.0.0.0') {
   old = .proxy$help[[as.character(p2)]]
   if (!is.null(old)) proxy_stop(old)
   slot = proxy_start(as.integer(p2), as.integer(p1), TRUE, host)
-  if (slot < 0L) stop2("Failed to start help proxy on port ", p2, ".")
   .proxy$help[[as.character(p2)]] = slot
   u = sprintf('http://127.0.0.1:%d/doc/html/index.html', p2)
   message('Proxy started at ', u)
@@ -98,7 +98,6 @@ help_proxy = function(port = NULL, host = '0.0.0.0') {
 #'
 #' Find an available TCP port, starting with `port`, then sampling from
 #' 3000--8000 (excluding ports known to be blocked by Chrome).
-#' Port availability is checked on both `127.0.0.1` and `0.0.0.0`.
 #' @param port Default port to try first.
 #' @param n Number of additional random ports to try.
 #' @param exclude Integer vector of ports to exclude from the search.
@@ -138,17 +137,16 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 
 # Find an available proxy port without starting the proxy.
 .proxy_app_ports = function() {
-  vapply(Filter(function(x) identical(x$type, 'proxy'), .proxy$apps), `[[`, integer(1), 'port')
+  vapply(Filter(function(x) x$type == 'proxy', .proxy$apps), `[[`, integer(1), 'port')
 }
 
 .find_proxy_port = function(candidates = NULL, exclude = integer()) {
   if (is.null(candidates)) candidates = 4321 + 1:30
   exclude = unique(c(as.integer(exclude), .proxy_app_ports(), as.integer(names(.proxy$help))))
   candidates = setdiff(candidates, exclude)
-  tried = c(candidates, random_port(error = FALSE, exclude = c(candidates, exclude)))
-  for (p in tried) {
-    if (!is.na(p) && .port_available(p)) return(as.integer(p))
-  }
+  for (p in candidates) if (.port_available(p)) return(as.integer(p))
+  if (!is.null(p <- random_port(error = FALSE, exclude = c(candidates, exclude))))
+    return(p)
   stop2(
     "No available proxy port found (tried candidates ",
     paste(unique(candidates), collapse = ', '),
@@ -161,15 +159,28 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 #   the full R httpd server, e.g. on host = "0.0.0.0" for LAN access).
 # passthrough = FALSE (default): rewrite /path to /custom/xfun:PORT/path.
 # host: bind address; "0.0.0.0" to listen on all interfaces.
-# Returns the slot index (>= 0) or -1 on failure.
 proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
-  .Call(C_proxy_start, as.integer(port), as.integer(backend_port),
-        isTRUE(passthrough), as.character(host))
+  port         = as.integer(port)
+  backend_port = as.integer(backend_port)
+  passthrough  = isTRUE(passthrough)
+  host         = as.character(host)[1]
+
+  bg = Rscript_bg(.proxy_run, list(
+    port = port, backend_port = backend_port, passthrough = passthrough, host = host
+  ))
+  if (!.proxy_wait_ready(port, host)) {
+    if (isTRUE(bg$is_alive())) try(proc_kill(bg$pid), silent = TRUE)
+    stop2("Failed to start proxy on port ", port, ".")
+  }
+  paste0('r:', bg$pid)
 }
 
-# Stop the proxy instance identified by its slot index.
+# Stop the proxy instance identified by its slot.
 proxy_stop = function(slot) {
-  .Call(C_proxy_stop, as.integer(slot))
+  if (is.character(slot) && length(slot) == 1L && startsWith(slot, 'r:')) {
+    pid = sub('^r:', '', slot)
+    if (grepl('^[0-9]+$', pid)) try_silent(proc_kill(as.integer(pid)))
+  }
 }
 
 # Coerce body/headers-like argument to a raw vector.
@@ -179,10 +190,24 @@ proxy_stop = function(slot) {
   }
 }
 
-# Check if a TCP port is available by attempting to bind a server socket.
-# Uses a C-level function so it works on all R versions (serverSocket() is R >= 4.0).
+# Check if a TCP port is truly available: nothing must be listening on it, and
+# we must be able to bind a server socket.  The serverSocket() bind alone is
+# insufficient because some servers (e.g. httpuv) use SO_REUSEADDR/SO_REUSEPORT,
+# allowing a second bind to succeed even when they already hold the port.
+# Probing with a client connection detects any active listener regardless.
 .port_available = function(port) {
-  isTRUE(.Call(C_port_available, as.integer(port)))
+  port = as.integer(port)
+  if (is.na(port)) return(FALSE)
+  # If a client can connect, something is already listening → not available.
+  con = suppressWarnings(tryCatch(
+    socketConnection('127.0.0.1', port = port, open = 'r+b', blocking = FALSE, timeout = 0.5),
+    error = function(e) NULL
+  ))
+  if (!is.null(con)) { try_silent(close(con)); return(FALSE) }
+  # Confirm we can actually bind the port as a server.
+  server_socket = base::serverSocket
+  s = tryCatch(server_socket(port), error = function(e) NULL)
+  if (is.null(s)) FALSE else { close(s); TRUE }
 }
 
 # Build an R httpd handler closure.
@@ -202,6 +227,146 @@ proxy_stop = function(slot) {
     proxy_stop(.proxy$help[[p]])
     .proxy$help[[p]] = NULL
   }
+}
+
+.proxy_connect_host = function(host) {
+  host = as.character(host)[1]
+  # server may bind all interfaces (0.0.0.0), but local readiness checks should
+  # use loopback for a deterministic self-connection target.
+  if (host == '0.0.0.0') '127.0.0.1' else host
+}
+
+# Poll until the proxy port is accepting connections (or give up after timeout).
+.proxy_wait_ready = function(port, host, tries = 100L, delay = 0.1) {
+  host = .proxy_connect_host(host)
+  for (i in seq_len(tries)) {
+    con = tryCatch(
+      socketConnection(host = host, port = port, open = 'r+b', blocking = TRUE, timeout = 1),
+      error = function(e) NULL
+    )
+    if (!is.null(con)) {
+      close(con)
+      return(TRUE)
+    }
+    Sys.sleep(delay)
+  }
+  FALSE
+}
+
+# Main proxy loop running in a background R process.
+.proxy_run = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
+  server_socket = base::serverSocket
+  socket_accept = base::socketAccept
+
+  listener = server_socket(port)
+  on.exit(close(listener), add = TRUE)
+
+  repeat {
+    con = tryCatch(
+      socket_accept(listener, blocking = FALSE, open = 'r+b', timeout = 1),
+      error = function(e) NULL
+    )
+    if (is.null(con)) next
+    try_silent(.proxy_forward(con, port, backend_port, passthrough))
+    try_silent(close(con))
+  }
+}
+
+# Read a client request, forward it to backend httpd, and relay the response.
+.proxy_forward = function(client, port, backend_port, passthrough = FALSE) {
+  req = .proxy_read_request(client)
+  if (is.null(req)) return()
+
+  path  = req$path
+  path2 = if (isTRUE(passthrough)) path else sprintf('/custom/xfun:%d%s', port, path)
+  q_pos = regexpr('\\?', path)[1L]
+  query = if (q_pos > 0L) substring(path, q_pos + 1L) else ''
+
+  backend = tryCatch(
+    socketConnection(host = '127.0.0.1', port = backend_port, open = 'r+b', blocking = FALSE, timeout = 5),
+    error = function(e) NULL
+  )
+  if (is.null(backend)) return()
+  on.exit(try(close(backend), silent = TRUE), add = TRUE)
+
+  headers = req$headers
+  if (length(headers)) {
+    keep = !grepl('^(connection|keep-alive|proxy-connection):', headers, ignore.case = TRUE)
+    headers = headers[keep]
+  }
+  if (nzchar(query)) headers = c(headers, paste0('X-Xfun-Query: ', query))
+  txt = paste(c(sprintf('%s %s HTTP/1.0', req$method, path2), headers, '', ''), collapse = '\r\n')
+  writeBin(charToRaw(txt), backend)
+  if (length(req$body)) writeBin(req$body, backend)
+  flush(backend)
+
+  buf = raw(0); clen = NA_integer_; sep_end = NA_integer_
+  for (i in seq_len(200L)) {
+    Sys.sleep(0.05)
+    ready = tryCatch(socketSelect(list(backend), write = FALSE, timeout = 0), error = function(e) FALSE)
+    if (!isTRUE(ready[1L])) next
+    x = tryCatch(readBin(backend, raw(), 65536L), error = function(e) raw(0))
+    if (!length(x)) break
+    buf = c(buf, x)
+    if (is.na(sep_end)) {
+      s = tryCatch(rawToChar(buf), error = function(e) '')
+      m = regexpr('\r\n\r\n|\n\n', s, perl = TRUE)
+      if (m[1L] > 0L) {
+        sep_end = m[1L] + attr(m, 'match.length') - 1L
+        cl_m = regexpr('(?i)content-length:[ \t]*([0-9]+)', s, perl = TRUE)
+        if (cl_m[1L] > 0L)
+          clen = as.integer(trimws(sub('(?i).*:', '', regmatches(s, cl_m), perl = TRUE)))
+      }
+    }
+    if (!is.na(sep_end) && !is.na(clen) && (length(buf) - sep_end) >= clen) break
+  }
+  if (length(buf)) { writeBin(buf, client); flush(client) }
+}
+
+# Parse one HTTP request from a non-blocking socket connection.
+# Uses socketSelect() polling so readBin() returns immediately with whatever
+# bytes are available without blocking for the full buffer size.
+.proxy_read_request = function(con) {
+  buf = raw(0); head_end = 0L; sep_len = 0L
+  for (i in seq_len(200L)) {  # up to 200 * 0.05 s = 10 s
+    Sys.sleep(0.05)
+    ready = tryCatch(socketSelect(list(con), write = FALSE, timeout = 0), error = function(e) FALSE)
+    if (!isTRUE(ready[1L])) next
+    x = tryCatch(readBin(con, raw(), 65536L), error = function(e) raw(0))
+    if (!length(x)) return(NULL)
+    buf = c(buf, x)
+    s = tryCatch(rawToChar(buf), error = function(e) '')
+    m = regexpr('\r\n\r\n|\n\n', s, perl = TRUE)
+    if (m[1L] > 0L) { head_end = m[1L]; sep_len = attr(m, 'match.length'); break }
+    if (length(buf) >= 65536L) return(NULL)
+  }
+  if (head_end == 0L) return(NULL)
+
+  hs = substring(rawToChar(buf), 1L, head_end + sep_len - 1L)
+  hs = sub('\r\n\r\n$|\n\n$', '', hs, perl = TRUE)
+  lines = strsplit(hs, '\r\n|\n', perl = TRUE)[[1L]]
+  if (!length(lines)) return(NULL)
+
+  req = strsplit(lines[[1L]], ' ', fixed = TRUE)[[1L]]
+  req = req[nzchar(req)]
+  if (length(req) < 2L) return(NULL)
+  method = req[[1L]]; path = req[[2L]]; headers = lines[-1L]
+
+  clen = 0L
+  if (length(headers)) {
+    i = grep('^content-length:', headers, ignore.case = TRUE)
+    if (length(i)) {
+      v = trimws(sub('^[^:]*:', '', headers[[i[1L]]]))
+      if (grepl('^[0-9]+$', v)) clen = as.integer(v)
+    }
+    if (is.na(clen) || clen < 0L) clen = 0L
+  }
+  body_start = head_end + sep_len
+  body0 = if (body_start <= length(buf)) buf[body_start:length(buf)] else raw(0)
+  body = if (length(body0) < clen)
+    c(body0, tryCatch(readBin(con, raw(), clen - length(body0)), error = function(e) raw(0)))
+  else body0[seq_len(clen)]
+  list(method = method, path = path, headers = headers, body = body)
 }
 
 # Parse the X-Xfun-Query header (added by the proxy) into a named, URL-decoded
