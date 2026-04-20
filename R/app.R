@@ -132,8 +132,9 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 
 # Internal proxy state.
 .proxy = new.env(parent = emptyenv())
-.proxy$apps = list()  # app name → list(type, key, slot?)
-.proxy$help = list()  # help proxy port → slot index
+.proxy$apps   = list()  # app name → list(type, key, slot?)
+.proxy$help   = list()  # help proxy port → slot index
+.proxy$guards = list()  # pid (char) → guard env for reg.finalizer
 
 # Find an available proxy port without starting the proxy.
 .proxy_app_ports = function() {
@@ -173,6 +174,15 @@ proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.
     if (isTRUE(bg$is_alive())) try(proc_kill(bg$pid), silent = TRUE)
     stop2("Failed to start proxy on port ", port, ".")
   }
+  # Register a finalizer so the background proxy is killed if the parent R
+  # session exits without calling stop_app() (e.g., on crash or q()).
+  pid = bg$pid
+  if (length(pid) == 1L && !is.na(pid)) {
+    guard = new.env(parent = emptyenv())
+    guard$pid = pid
+    reg.finalizer(guard, function(e) try(proc_kill(e$pid), silent = TRUE), onexit = TRUE)
+    .proxy$guards[[as.character(pid)]] = guard
+  }
   paste0('r:', bg$pid)
 }
 
@@ -180,7 +190,10 @@ proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.
 proxy_stop = function(slot) {
   if (is.character(slot) && length(slot) == 1L && startsWith(slot, 'r:')) {
     pid = sub('^r:', '', slot)
-    if (grepl('^[0-9]+$', pid)) try(proc_kill(as.integer(pid)), silent = TRUE)
+    if (grepl('^[0-9]+$', pid)) {
+      try(proc_kill(as.integer(pid)), silent = TRUE)
+      .proxy$guards[[pid]] = NULL  # drop the finalizer guard
+    }
   }
   invisible(NULL)
 }
@@ -192,11 +205,24 @@ proxy_stop = function(slot) {
   }
 }
 
-# Check if a TCP port is available by attempting to bind a server socket.
-# Requires serverSocket() / socketAccept() (R >= 4.0.0).
+# Check if a TCP port is truly available: nothing must be listening on it, and
+# we must be able to bind a server socket.  The serverSocket() bind alone is
+# insufficient because some servers (e.g. httpuv) use SO_REUSEADDR/SO_REUSEPORT,
+# allowing a second bind to succeed even when they already hold the port.
+# Probing with a client connection detects any active listener regardless.
 .port_available = function(port) {
-  server_socket = base::serverSocket
-  s = tryCatch(server_socket(as.integer(port)), error = function(e) NULL)
+  port = as.integer(port)
+  # If a client can connect, something is already listening → not available.
+  con = withCallingHandlers(
+    tryCatch(
+      socketConnection('127.0.0.1', port = port, open = 'r+b', blocking = FALSE, timeout = 0.5),
+      error = function(e) NULL
+    ),
+    warning = function(w) invokeRestart('muffleWarning')
+  )
+  if (!is.null(con)) { try(close(con), silent = TRUE); return(FALSE) }
+  # Confirm we can actually bind the port as a server.
+  s = tryCatch(base::serverSocket(port), error = function(e) NULL)
   if (is.null(s)) return(FALSE)
   close(s)
   TRUE
