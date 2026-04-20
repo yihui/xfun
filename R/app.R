@@ -39,13 +39,13 @@ new_app = function(
   # Replace any existing app with the same name.
   if (name %in% names(.proxy$apps)) stop_app(name)
 
-  if (identical(name, '')) {
+  if (name == '') {
     port = .find_proxy_port(port, names(.proxy$help))
     slot = proxy_start(as.integer(port), as.integer(backend), host = host)
     key = paste0('xfun:', port)
     assign(key, .make_app_handler(paste0('/custom/xfun:', port), handler, getwd()), envir = .httpd_env())
     .proxy$apps[[name]] = list(type = 'proxy', slot = slot, key = key, port = port)
-    url_host = if (identical(host, '0.0.0.0')) '127.0.0.1' else host
+    url_host = if (host == '0.0.0.0') '127.0.0.1' else host
     url = sprintf('http://%s:%d/', url_host, port)
   } else {
     key = as.character(name)
@@ -57,7 +57,7 @@ new_app = function(
   if (isTRUE(open)) open = getOption('viewer', browseURL)
   if (is.function(open)) open(url)
 
-  if (!interactive() && !identical(open, FALSE)) {
+  if (!interactive() && !isFALSE(open)) {
     on.exit(stop_app(name), add = TRUE)
     message('Serving at ', url, ' (press Ctrl+C to stop)')
     tryCatch(
@@ -77,7 +77,7 @@ stop_app = function(name = names(.proxy$apps)) {
     app = .proxy$apps[[idx]]
     rm_vars(app$key, .httpd_env())
     .proxy$apps[[idx]] = NULL
-    if (identical(app$type, 'proxy')) proxy_stop(app$slot)
+    if (app$type == 'proxy') proxy_stop(app$slot)
   }
 }
 
@@ -132,12 +132,12 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 
 # Internal proxy state.
 .proxy = new.env(parent = emptyenv())
-.proxy$apps   = list()  # app name → list(type, key, slot?)
-.proxy$help   = list()  # help proxy port → slot index
+.proxy$apps = list()  # app name → list(type, key, slot?)
+.proxy$help = list()  # help proxy port → slot index
 
 # Find an available proxy port without starting the proxy.
 .proxy_app_ports = function() {
-  vapply(Filter(function(x) identical(x$type, 'proxy'), .proxy$apps), `[[`, integer(1), 'port')
+  vapply(Filter(function(x) x$type == 'proxy', .proxy$apps), `[[`, integer(1), 'port')
 }
 
 .find_proxy_port = function(candidates = NULL, exclude = integer()) {
@@ -233,7 +233,7 @@ proxy_stop = function(slot) {
   host = as.character(host)[1]
   # server may bind all interfaces (0.0.0.0), but local readiness checks should
   # use loopback for a deterministic self-connection target.
-  if (identical(host, '0.0.0.0')) '127.0.0.1' else host
+  if (host == '0.0.0.0') '127.0.0.1' else host
 }
 
 # Poll until the proxy port is accepting connections (or give up after timeout).
@@ -267,8 +267,8 @@ proxy_stop = function(slot) {
       error = function(e) NULL
     )
     if (is.null(con)) next
-    try(.proxy_forward(con, port, backend_port, passthrough), silent = TRUE)
-    try(close(con), silent = TRUE)
+    try_silent(.proxy_forward(con, port, backend_port, passthrough))
+    try_silent(close(con))
   }
 }
 
