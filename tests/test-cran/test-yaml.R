@@ -72,6 +72,18 @@ assert('taml_load() works with tabs indent', {
   (taml_load(yaml_tabs, envir = FALSE)[[c('d', 'e')]] %==% expression(1 + 1))
 })
 
+assert('taml_load() works with non-uniform indent (siblings at same level)', {
+  x = 'runs:
+  steps:
+      name: Install R
+      with:
+        use-public-rspm: true'
+  res = taml_load(x)
+  (res %==% list(runs = list(steps = list(
+    name = 'Install R', with = list(`use-public-rspm` = TRUE)
+  ))))
+})
+
 assert('yaml_load() works with a complex output', {
   expected = list(
     output = list(
