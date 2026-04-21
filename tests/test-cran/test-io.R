@@ -101,3 +101,54 @@ assert('read_all() reads and concatenates files', {
   (length(res2) %==% 8L)
   unlink(c(f1, f2))
 })
+
+assert('gsub_dir() and gsub_ext() replace patterns in files within a dir', {
+  d = tempfile()
+  dir.create(d)
+  f1 = file.path(d, 'a.txt')
+  f2 = file.path(d, 'b.R')
+  writeLines('hello world', f1)
+  writeLines('foo bar', f2)
+  gsub_dir('world', 'R', dir = d, fixed = TRUE)
+  (readLines(f1) %==% 'hello R')
+  (readLines(f2) %==% 'foo bar')  # unchanged
+  # gsub_ext only processes files with specified extension
+  gsub_ext('R', 'bar', 'BAR', dir = d, fixed = TRUE)
+  (readLines(f2) %==% 'foo BAR')
+  unlink(d, recursive = TRUE)
+})
+
+assert('lazy_save() and lazy_load() round-trip objects', {
+  d = tempdir()
+  path = file.path(d, 'lazy-test-')
+  x = 1:10
+  y = list(a = 'hello')
+  lazy_save(c('x', 'y'), path)
+  # verify index file exists
+  (file.exists(paste0(path, '0.rds')))
+  # load into new env
+  e = new.env(parent = emptyenv())
+  lazy_load(path, envir = e)
+  (e$x %==% x)
+  (e$y %==% y)
+  unlink(list.files(d, pattern = '^lazy-test-', full.names = TRUE))
+})
+
+assert('write_utf8() handles NULL input', {
+  f = tempfile()
+  write_utf8(NULL, f)
+  (read_utf8(f) %==% character(0))
+  unlink(f)
+})
+
+assert('gsub_file() with rw_error=FALSE does not stop on read errors', {
+  # a non-existent file should return invisible with rw_error=FALSE
+  f = tempfile()  # doesn't exist
+  result = gsub_file(f, 'a', 'b', rw_error = FALSE)
+  (is.null(result))
+})
+
+assert('io_method() returns a list method as-is', {
+  m = list(name = 'custom', save = saveRDS, load = readRDS)
+  (io_method(m, '.') %==% m)
+})

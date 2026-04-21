@@ -46,3 +46,11 @@ assert('cache_exec() uses cache on second call', {
   # r2 should come from cache, so they should be identical
   (r1 %==% r2)
 })
+
+assert('rand_n() returns integers in [1, M]', {
+  x = rand_n(100, 6)
+  (length(x) %==% 100L)
+  (x >= 1)
+  (x <= 6)
+  (is.numeric(x))
+})

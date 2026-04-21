@@ -95,3 +95,71 @@ assert('msg_cat() prints messages suppressibly', {
   out = capture.output(msg_cat('world'))
   (out %==% 'world')
 })
+
+assert('%|% returns x if non-empty, otherwise y', {
+  (('hello' %|% 'world') %==% 'hello')
+  ((character(0) %|% 'fallback') %==% 'fallback')
+  ((NULL %|% 'fallback') %==% 'fallback')
+  ((1:3 %|% 99) %==% 1:3)
+})
+
+assert('stop2() and warning2() do not include the call', {
+  err = tryCatch(stop2('test error'), error = identity)
+  (conditionMessage(err) %==% 'test error')
+  (is.null(err$call))
+  wrn = tryCatch(warning2('test warn'), warning = identity)
+  (conditionMessage(wrn) %==% 'test warn')
+  (is.null(wrn$call))
+})
+
+assert('gsubi() performs case-insensitive substitution', {
+  (gsubi('hello', 'Hi', 'Hello World') %==% 'Hi World')
+  (gsubi('world', 'R', 'hello WORLD') %==% 'hello R')
+})
+
+assert('retry() retries a failing function', {
+  i = 0L
+  # succeeds on the 2nd call
+  res = retry(function() { i <<- i + 1L; if (i < 2L) stop('fail'); i }, .times = 3, .pause = 0)
+  (res %==% 2L)
+  # fails all .times times and stops
+  (has_error(retry(function() stop('always'), .times = 2, .pause = 0)))
+})
+
+assert('handle_error() calls handler and shows message on error', {
+  msgs = c()
+  tryCatch(
+    withCallingHandlers(
+      handle_error(stop('oops'), function(loc) c('caught', loc)),
+      message = function(m) {
+        msgs <<- c(msgs, conditionMessage(m)); invokeRestart('muffleMessage')
+      }
+    ),
+    error = function(e) NULL
+  )
+  (any(grepl('caught', msgs)))
+})
+
+assert('is_windows/unix/macos/linux/arm64 return logical(1)', {
+  (is.logical(is_windows()) && length(is_windows()) == 1L)
+  (is.logical(is_unix()) && length(is_unix()) == 1L)
+  (is.logical(is_macos()) && length(is_macos()) == 1L)
+  (is.logical(is_linux()) && length(is_linux()) == 1L)
+  (is.logical(is_arm64()) && length(is_arm64()) == 1L)
+  # exactly one of windows / (unix && macos) / (unix && linux) / other unix is true
+  (is_windows() || is_unix())
+})
+
+assert('set_envvar() errors on unnamed or partially unnamed vars', {
+  (has_error(set_envvar(c(1, 2))))        # unnamed
+  (has_error(set_envvar(c(A = '1', '')))  # partial names
+  )
+})
+
+assert('tree() produces a character tree diagram', {
+  x = list(a = 1, b = list(c = 2, d = 3))
+  out = tree(x)
+  (inherits(out, 'xfun_raw_string'))
+  (is.character(out))
+  (length(out) > 0)
+})
