@@ -21,6 +21,6 @@ If a URL is redirected, query the new location via \code{\link[=curlGetHeaders]{
 otherwise return the original URL.
 }
 \examples{
-u = "https://tinytex.yihui.org"  # redirected to https://yihui.org/tinytex/
-if (url_accessible(u)) url_destination(u)
+u = "https://cran.r-project.org/package=xfun"
+url_destination(u)  # redirected to canonical URL
 }
