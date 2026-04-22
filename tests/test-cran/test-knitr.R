@@ -12,6 +12,15 @@ assert('csv_options() parses chunk options to a list', {
       alist(label = 'abc-function', fig.path = "foo/bar-"))
   (has_error(csv_options('a,b')))
   (has_error(csv_options('a,b,c=qwer')))
+  # empty options string: returns an empty list (no label)
+  (length(csv_options('')) %==% 0L)
+  # trailing comma: empty option is removed, only named args kept
+  res = csv_options('a, b=1,')
+  (res$label %==% 'a')
+  (res$b %==% 1)
+  (length(res) %==% 2L)
+  # invalid R syntax in options triggers error with a message
+  (has_error(csv_options('a=1+')))
 })
 
 assert('divide_chunk() parses YAML-style chunk options', {
@@ -43,4 +52,31 @@ assert('divide_chunk() returns code unchanged when no option comments', {
   res = divide_chunk('r', code)
   (is.null(res$options))
   (res$code %==% code)
+})
+
+assert('divide_chunk() falls back to #| for non-R engines', {
+  # js uses //| but falls back to #| when strict=FALSE
+  js_like = c('#| echo: true', 'console.log(1)')
+  res = divide_chunk('js', js_like, use_yaml = FALSE)
+  (isTRUE(res$options$echo))
+  (res$code %==% 'console.log(1)')
+  # with strict=TRUE, #| for a non-# engine is an error
+  (has_error(divide_chunk('js', js_like, strict = TRUE, use_yaml = FALSE)))
+})
+
+assert('divide_chunk() handles block-comment engines (s2 != empty)', {
+  # C engine uses /*| */ style: s2 != ''
+  c_like = c('/*| echo: true */', 'int x = 1;')
+  res = divide_chunk('c', c_like, use_yaml = FALSE)
+  (isTRUE(res$options$echo))
+  (res$code %==% 'int x = 1;')
+})
+
+assert('divide_chunk() strips leading blank line from code', {
+  # a blank line immediately after the options block is removed from code
+  yaml_like = c('#| echo: true', '', '1 + 1')
+  res = divide_chunk('r', yaml_like, use_yaml = FALSE)
+  (isTRUE(res$options$echo))
+  (res$code %==% '1 + 1')  # blank line stripped
+  (length(res$src) %==% 2L)  # blank line moved to src
 })

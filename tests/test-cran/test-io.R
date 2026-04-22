@@ -40,6 +40,13 @@ assert('empty files produce character() via file_string()', {
   (file_string(tmp) %==% raw_string(character()))
 })
 
+assert('file_string() concatenates non-empty file lines with newlines', {
+  f = tempfile()
+  write_utf8(c('a', 'b', 'c'), f)
+  (file_string(f) %==% raw_string('a\nb\nc'))
+  unlink(f)
+})
+
 assert('grep_sub() matches elements and do substitution on them', {
   (grep_sub('a([b]+)c', 'a\\U\\1c', c('abc', 'abbbc', 'addc', '123'), perl = TRUE) %==%
      c('aBc', 'aBBBc'))
@@ -74,6 +81,10 @@ assert('process_file() applies a function to file contents', {
   unlink(f)
 })
 
+assert('process_file() returns transformed result when file is missing', {
+  (process_file(fun = toupper, x = 'hello') %==% 'HELLO')
+})
+
 assert('sort_file() sorts lines in a file', {
   f = tempfile()
   write_utf8(c('b', 'a', 'c'), f)
@@ -87,6 +98,15 @@ assert('gsub_file() replaces patterns in a file', {
   writeLines(c('hello', 'world'), f)
   gsub_file(f, 'world', 'R', fixed = TRUE)
   (readLines(f) %==% c('hello', 'R'))
+  unlink(f)
+})
+
+assert('gsub_file() skips file silently when rw_error=FALSE and read fails', {
+  # a file with invalid UTF-8 content cannot be read; with rw_error=FALSE it is silently skipped
+  f = tempfile()
+  writeBin(as.raw(c(0x68, 0x65, 0x6c, 0x6c, 0xc0, 0x80)), f)  # invalid UTF-8 bytes
+  result = gsub_file(f, 'a', 'b', rw_error = FALSE)
+  (is.null(result))
   unlink(f)
 })
 
@@ -115,6 +135,9 @@ assert('gsub_dir() and gsub_ext() replace patterns in files within a dir', {
   # gsub_ext only processes files with specified extension
   gsub_ext('R', 'bar', 'BAR', dir = d, fixed = TRUE)
   (readLines(f2) %==% 'foo BAR')
+  # filter by mimetype: only text files
+  gsub_dir('R', 'REPLACED', dir = d, fixed = TRUE, mimetype = '^text/')
+  (readLines(f1) %==% 'hello REPLACED')
   unlink(d, recursive = TRUE)
 })
 

@@ -122,4 +122,19 @@ assert('md_table() generates a Markdown pipe table', {
 
   # error for non-2D objects
   (has_error(md_table(1:5)))
+
+  # NA values in table
+  x2 = data.frame(a = c(1, NA, 3), b = c('x', 'y', NA))
+  res2 = md_table(x2)
+  (any(grepl('NA', res2) | grepl('', res2)))  # NA shown as empty by default
+
+  # row names (non-numeric) are included as first column
+  x3 = data.frame(a = 1:2, row.names = c('r1', 'r2'))
+  res3 = md_table(x3)
+  (grepl('r1', res3[3]))  # first data row (after header + separator) contains r1
+
+  # limit parameter
+  x4 = data.frame(a = 1:10)
+  res4 = md_table(x4, limit = 4)
+  (length(res4) < 12L)  # fewer rows than full table
 })

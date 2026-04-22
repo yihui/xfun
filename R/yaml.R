@@ -71,6 +71,16 @@ taml_load = function(x, envir = parent.frame()) {
   res = list()
   r = '^(\\s*)(.+?):($|\\s+.*)'
   x = split_lines(x)
+  # skip array items (lines starting with `- `) and their indented children
+  keep = rep(TRUE, length(x))
+  array_ind = -1L
+  for (i in seq_along(x)) {
+    ind = nchar(sub('^(\\s*).*', '\\1', x[i]))
+    if (array_ind >= 0L && ind > array_ind) { keep[i] = FALSE; next }
+    if (array_ind >= 0L && ind <= array_ind) array_ind = -1L
+    if (grepl('^\\s*- ', x[i])) { array_ind = ind; keep[i] = FALSE }
+  }
+  x = x[keep]
   x = x[grep(r, x)]
   x = x[grep('^\\s*#', x, invert = TRUE)]  # comments
   if (length(x) == 0) return(res)
