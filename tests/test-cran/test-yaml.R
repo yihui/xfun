@@ -84,6 +84,39 @@ assert('taml_load() works with non-uniform indent (varying indent sizes)', {
   ))))
 })
 
+assert('taml_load() ignores array items (- ) and their indented children', {
+  # simple block sequence: items with no colon (already filtered by regex)
+  (taml_load('a:\n  - b\n  - c') %==% list(a = list()))
+  # block sequence items with sub-keys must also be ignored
+  x = 'runs:\n  using: composite\n  steps:\n    - name: foo\n      uses: bar\n      with:\n        key: val\n    - name: baz\n'
+  res = taml_load(x)
+  (res %==% list(runs = list(using = 'composite', steps = list())))
+  # action.yml-style: inputs are kept, steps array items are dropped
+  action_yml = '
+name: Build site
+description: Build a site.
+inputs:
+  site-dir:
+    description: Directory of the site source
+    default: site
+runs:
+  using: composite
+  steps:
+    - name: Install R
+      uses: r-lib/actions/setup-r@HEAD
+      with:
+        use-public-rspm: true
+    - name: Build site
+      shell: bash
+      run: Rscript -e "litedown::fuse_site()"
+'
+  res = taml_load(action_yml)
+  (res$name %==% 'Build site')
+  (res$inputs[['site-dir']]$default %==% 'site')
+  (res$runs$using %==% 'composite')
+  (res$runs$steps %==% list())  # array items ignored
+})
+
 assert('yaml_load() works with a complex output', {
   expected = list(
     output = list(
@@ -117,6 +150,8 @@ assert('yaml_value() returns float for non-integer numerics', {
   res = taml_load('a: 1.5')
   (res %==% list(a = 1.5))
   (is.double(res$a))
+  # empty array [] returns NULL (yaml_value line 156)
+  (taml_load('a: []') %==% list(a = NULL))
 })
 
 assert('taml_file() reads YAML from a file', {

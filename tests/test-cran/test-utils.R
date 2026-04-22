@@ -82,6 +82,8 @@ assert('html_tag() generates correct HTML', {
   # html_value content should not be escaped
   (c(html_tag('p', html_value('<b>bold</b>'))) %==% '<p><b>bold</b></p>')
   (has_error(html_tag('p', .attrs = list(1))))
+  # NULL attribute value: only the attribute name is emitted
+  (c(html_tag('input', type = 'checkbox', checked = NULL)) %==% '<input type="checkbox" checked />')
 })
 
 assert('format_bytes() formats byte counts', {
@@ -162,4 +164,27 @@ assert('tree() produces a character tree diagram', {
   (inherits(out, 'xfun_raw_string'))
   (is.character(out))
   (length(out) > 0)
+})
+
+assert('connect_pipes() fills vertical pipes in tree diagrams', {
+  # early return for m < 3 (too few rows)
+  (connect_pipes(c('|- a', '  ')) %==% c('|- a', '  '))
+  # pipe connection: blank rows between two |-, first column gets filled with '|'
+  x = c('|- a', '  ', '  ', '|- c')
+  res = connect_pipes(x)
+  (substr(res[2], 1, 1) %==% '|')
+  (substr(res[3], 1, 1) %==% '|')
+  # k is cleared when a non-matching cell is found (line 272 path)
+  x2 = c('|- a', '  ', 'xy', '|- c')
+  res2 = connect_pipes(x2)
+  (substr(res2[2], 1, 1) %==% ' ')
+  # k is cleared when last row reached with all spaces (line 267 path)
+  x3 = c('|- a', '  ', '  ', '  ')
+  res3 = connect_pipes(x3)
+  (substr(res3[2], 1, 1) %==% ' ')
+})
+
+assert('func_name() returns the name of the calling function', {
+  f = function() func_name(sys.nframe())
+  (f() %==% 'f')
 })

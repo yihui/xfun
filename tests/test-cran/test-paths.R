@@ -143,3 +143,19 @@ assert('file_rename() works', {
   setwd(owd)
   unlink(tmp_dir, recursive = TRUE)
 })
+
+assert('rename_seq() returns renamed file patterns', {
+  dir.create(tmp_dir <- tempfile())
+  owd = setwd(tmp_dir)
+  # no matching files -> returns character(0)
+  (rename_seq() %==% character(0))
+  # create some files matching the pattern
+  file.create(c('01-foo.Rmd', '02-bar.Rmd', '03-baz.Rmd'))
+  res = rename_seq()
+  (length(res) %==% 3L)
+  (inherits(res, 'xfun_rename_seq'))
+  # print method should work without error
+  capture.output(print(res))
+  setwd(owd)
+  unlink(tmp_dir, recursive = TRUE)
+})

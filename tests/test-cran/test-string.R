@@ -68,6 +68,11 @@ assert('split_source() puts lines of the same expression into a list element', {
   ))
 })
 
+assert('split_source() returns list with input for empty input', {
+  # empty input (length < 1) should return list(x) immediately
+  (split_source(character(0)) %==% list(character(0)))
+})
+
 assert('split_source() should signal an error for incomplete code', {
   (has_error(split_source('1+1+')))
   (has_error(split_source(c('1+1', '1+1+'))))
@@ -125,12 +130,16 @@ assert('pair_chars() checks balanced paired characters', {
   (has_warning(pair_chars(c('\u201chello.'))))
   # wrong chars length errors
   (has_error(pair_chars('text', chars = c('\u201c'))))
-  # file mode
+  # file mode: file content unchanged (quotes are already balanced)
   f = tempfile()
   writeLines(c('\u201chello\u201d', '\u201cworld\u201d'), f)
   pair_chars(file = f)
   (read_utf8(f) %==% c('\u201chello\u201d', '\u201cworld\u201d'))
-  unlink(f)
+  # file mode: content changed (mismatched quotes get replaced)
+  f2 = tempfile()
+  writeLines(c('\u201chello\u201d', '\u2018world\u2018'), f2)  # second line has wrong closing quote
+  has_warning(pair_chars(file = f2))
+  unlink(c(f, f2))
 })
 
 assert('html_content() resolves HTML content recursively', {
@@ -155,6 +164,10 @@ assert('numbers_to_words() handles more cases', {
   # float with decimal part
   (n2w(1.5) %==% 'one point five')
   (n2w(3.14) %==% 'three point one four')
+  # round tens like 30, 40, 50 (x_cs[2] == 0 branch in convert_2)
+  (n2w(30) %==% 'thirty')
+  (n2w(40) %==% 'forty')
+  (n2w(50) %==% 'fifty')
 })
 
 assert('encrypt() and decrypt() are inverses', {
