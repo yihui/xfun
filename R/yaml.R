@@ -135,14 +135,14 @@ taml_save = function(x, path = NULL, indent = '  ') {
 indent_level = function(x) {
   N = nchar(x)
   stack = -1L
-  result = integer(length(N))
+  res = integer(length(N))
   for (i in seq_along(N)) {
     n = N[i]
-    while (stack[length(stack)] >= n) stack = stack[-length(stack)]
-    result[i] = length(stack) - 1L
+    while (tail(stack, 1) >= n) stack = stack[-length(stack)]
+    res[i] = length(stack) - 1L
     stack = c(stack, n)
   }
-  result
+  res
 }
 
 # only support logical, numeric, character values (both scalar and [] arrays),
