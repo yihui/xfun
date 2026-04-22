@@ -102,3 +102,63 @@ assert('decimal_dot() forces dot as the decimal separator', {
   options(old)  # restore OutDec
   (r %==% '1.234')
 })
+
+assert('strip_blank() removes blank elements from both ends', {
+  (strip_blank(character(0)) %==% character(0))
+  (strip_blank(c('', 'a', 'b', '')) %==% c('a', 'b'))
+  (strip_blank(c('', '  ', 'a', '', 'b', '', '')) %==% c('a', '', 'b'))
+  (strip_blank(c('a', 'b')) %==% c('a', 'b'))
+  (strip_blank(c('', '')) %==% character(0))
+})
+
+assert('query_params() creates URL query strings', {
+  (query_params() %==% '')
+  (query_params(a = 1, b = 'foo') %==% '?a=1&b=foo')
+  (query_params(.list = list(x = 'bar')) %==% '?x=bar')
+})
+
+assert('pair_chars() checks balanced paired characters', {
+  # balanced quotes
+  x = c('He said \u201chello\u201d.', 'No quotes here.')
+  (pair_chars(x) %==% x)
+  # unbalanced quotes produce a warning
+  (has_warning(pair_chars(c('\u201chello.'))))
+  # wrong chars length errors
+  (has_error(pair_chars('text', chars = c('\u201c'))))
+  # file mode
+  f = tempfile()
+  writeLines(c('\u201chello\u201d', '\u201cworld\u201d'), f)
+  pair_chars(file = f)
+  (read_utf8(f) %==% c('\u201chello\u201d', '\u201cworld\u201d'))
+  unlink(f)
+})
+
+assert('html_content() resolves HTML content recursively', {
+  # list with mixed html and plain text
+  result = html_content(list('hello', html_value('<b>world</b>')))
+  (result %==% c(html_escape('hello'), '<b>world</b>'))
+})
+
+assert('numbers_to_words() handles more cases', {
+  # non-numeric input errors
+  (has_error(n2w('abc')))
+  # value >= 1e15 errors
+  (has_error(n2w(1e15)))
+  # 10-19 range (x_cs[1] == 1)
+  (n2w(10) %==% 'ten')
+  (n2w(15) %==% 'fifteen')
+  (n2w(19) %==% 'nineteen')
+  # x00 pattern (100, 200, ...) and x0x (101, 201, ...)
+  (n2w(100) %==% 'one hundred')
+  (n2w(200) %==% 'two hundred')
+  (n2w(101) %==% 'one hundred one')
+  # float with decimal part
+  (n2w(1.5) %==% 'one point five')
+  (n2w(3.14) %==% 'three point one four')
+})
+
+assert('encrypt() and decrypt() are inverses', {
+  key = 'fedcba9876543210'
+  x = 'hello'
+  (decrypt(encrypt(x, key), key) %==% x)
+})

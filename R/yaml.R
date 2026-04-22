@@ -23,7 +23,7 @@ yaml_load = function(
     function(loc) {
       s = geterrmessage()
       r = 'line (\\d+), column (\\d+)'
-      m = regmatches(s, regexec(r, s, perl = TRUE))[[1]]
+      m = regmatches(s, regexec(r, s))[[1]]
       if (length(m) < 3) return()
       m = as.integer(m[-1])  # c(row, col)
       if (loc != '') loc = paste(' at lines', loc)
@@ -133,8 +133,16 @@ taml_save = function(x, path = NULL, indent = '  ') {
 }
 
 indent_level = function(x) {
-  N = nchar(x); n = N[N > 0]
-  if (length(n) == 0) N else ceiling(N / min(n))
+  N = nchar(x)
+  stack = -1L
+  res = integer(length(N))
+  for (i in seq_along(N)) {
+    n = N[i]
+    while (tail(stack, 1) >= n) stack = stack[-length(stack)]
+    res[i] = length(stack) - 1L
+    stack = c(stack, n)
+  }
+  res
 }
 
 # only support logical, numeric, character values (both scalar and [] arrays),

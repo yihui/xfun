@@ -47,3 +47,16 @@ assert('json_vector() converts atomic vectors to JSON', {
   # NA becomes null
   (json_vector(c('a', NA_character_), to_array = TRUE) %==% '["a", null]')
 })
+
+assert('json_atomic() handles Date, POSIXct, and factor', {
+  d = as.Date('2024-01-15')
+  (json_atomic(d) %==% 'new Date("2024-01-15")')
+  f = factor(c('a', 'b', 'a'))
+  (json_atomic(f) %==% '["a", "b", "a"]')
+})
+
+assert('.tojson() handles arrays', {
+  m = matrix(1:4, nrow = 2)
+  out = .tojson(m)
+  (grepl('\\[', out))  # should produce nested arrays
+})

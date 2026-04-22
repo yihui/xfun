@@ -17,6 +17,13 @@ assert('rand_unit() returns 0 values for n = 0', {
   (length(rand_unit(0, seed = 1)) %==% 0L)
 })
 
+assert('rand_n() returns integers in [1, M]', {
+  x = rand_n(100, 6)
+  (length(x) %==% 100L)
+  (x >= 1)
+  (x <= 6)
+})
+
 assert('md5() computes checksums', {
   (is.character(md5(1:10)))
   (nchar(md5(1:10)) %==% 32L)
