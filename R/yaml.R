@@ -71,21 +71,24 @@ taml_load = function(x, envir = parent.frame()) {
   res = list()
   r = '^(\\s*)(.+?):($|\\s+.*)'
   x = split_lines(x)
-  # skip array items (lines starting with `- `) and their indented children
-  keep = rep(TRUE, length(x))
-  array_ind = -1L
-  for (i in seq_along(x)) {
-    ind = nchar(sub('^(\\s*).*', '\\1', x[i]))
-    if (array_ind >= 0L && ind > array_ind) { keep[i] = FALSE; next }
-    if (array_ind >= 0L && ind <= array_ind) array_ind = -1L
-    if (grepl('^\\s*- ', x[i])) { array_ind = ind; keep[i] = FALSE }
-  }
-  x = x[keep]
   x = x[grep(r, x)]
   x = x[grep('^\\s*#', x, invert = TRUE)]  # comments
   if (length(x) == 0) return(res)
   lvl = gsub(r, '\\1', x)  # indentation level
-  lvl = indent_level(lvl)
+  # skip array items (lines starting with `- `) and their indented children
+  keep = rep(TRUE, length(x))
+  array_ind = -1
+  for (i in seq_along(x)) {
+    ind = nchar(lvl[i])
+    if (array_ind >= 0) {
+      if (ind > array_ind) { keep[i] = FALSE; next }
+      array_ind = -1
+    }
+    if (grepl('^\\s*- ', x[i])) { array_ind = ind; keep[i] = FALSE }
+  }
+  x = x[keep]
+  if (length(x) == 0) return(res)
+  lvl = indent_level(lvl[keep])
   key = gsub(r, '\\2', x)
   val = gsub('^\\s*|\\s*$', '', gsub(r, '\\3', x))
   keys = NULL
