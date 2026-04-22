@@ -1,0 +1,241 @@
+        -:    0:Source:base64.c
+        -:    0:Graph:./base64.gcno
+        -:    0:Data:./base64.gcda
+        -:    0:Runs:12
+        -:    1:#include <stdlib.h>
+        -:    2:#include <R.h>
+        -:    3:#include <Rdefines.h>
+        -:    4:#include <Rversion.h>
+        -:    5:
+        -:    6:const char base64_table[65] = {
+        -:    7:  'A','B','C','D','E','F','G','H',
+        -:    8:  'I','J','K','L','M','N','O','P',
+        -:    9:  'Q','R','S','T','U','V','W','X',
+        -:   10:  'Y','Z','a','b','c','d','e','f',
+        -:   11:  'g','h','i','j','k','l','m','n',
+        -:   12:  'o','p','q','r','s','t','u','v',
+        -:   13:  'w','x','y','z','0','1','2','3',
+        -:   14:  '4','5','6','7','8','9','+','/',
+        -:   15:  '%'
+        -:   16:};
+        -:   17:
+        -:   18:const char padding = '=';
+        -:   19:const unsigned char upadding = '=';
+        -:   20:
+       84:   21:void base64_encode_impl(
+        -:   22:  const unsigned char* input,
+        -:   23:  const R_xlen_t input_len,
+        -:   24:  char* output,
+        -:   25:  const R_xlen_t output_len
+        -:   26:) {
+       84:   27:  R_xlen_t input_len_left = input_len;
+       84:   28:  R_xlen_t i1 = 0;
+       84:   29:  R_xlen_t i2 = 0;
+     5426:   30:  while(input_len_left > 2) {
+     5342:   31:    output[i2++] = base64_table[input[i1] / 4];
+     5342:   32:    output[i2++] = base64_table[16 * (input[i1] % 4) + input[ i1 + 1 ] / 16];
+     5342:   33:    output[i2++] = base64_table[4 * (input [ i1 + 1] % 16) + input[i1 + 2] / 64];
+     5342:   34:    output[i2++] = base64_table[input[i1 + 2] % 64];
+     5342:   35:    i1 += 3;
+     5342:   36:    input_len_left -= 3;
+        -:   37:  }
+       84:   38:  if (input_len_left) {
+       58:   39:    output[i2++] = base64_table[input[i1] / 4];
+       58:   40:    if (input_len_left > 1) {
+       28:   41:      output[i2++] = base64_table[16 * (input[i1] % 4) + input[ i1 + 1 ] / 16];
+       28:   42:      output[i2++] = base64_table[4 * (input [i1 + 1] % 16)];
+       28:   43:      output[i2++] = padding;
+        -:   44:    } else {
+       30:   45:      output[i2++] = base64_table[16 * (input[i1] % 4)];
+       30:   46:      output[i2++] = padding;
+       30:   47:      output[i2++] = padding;
+        -:   48:
+        -:   49:    }
+        -:   50:  }
+       84:   51:}
+        -:   52:
+        -:   53:static const short base64_reverse_table[256] = {
+        -:   54:  -2, -2, -2, -2, -2, -2, -2, -2,
+        -:   55:  -2, -1, -1, -2, -2, -1, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
+        -:   56:  -2, -2, -2, -2, -2, -2, -1, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, 62,
+        -:   57:  -2, -2, -2, 63, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -2, -2, -2, -2,
+        -:   58:  -2, -2, -2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+        -:   59:  17, 18, 19, 20, 21, 22, 23, 24, 25, -2, -2, -2, -2, -2, -2, 26, 27, 28,
+        -:   60:  29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46,
+        -:   61:  47, 48, 49, 50, 51, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
+        -:   62:  -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
+        -:   63:  -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
+        -:   64:  -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
+        -:   65:  -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
+        -:   66:  -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
+        -:   67:  -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2,
+        -:   68:  -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2
+        -:   69:};
+        -:   70:
+       44:   71:int base64_decode_impl(
+        -:   72:    const unsigned char* input,
+        -:   73:    R_xlen_t input_len,
+        -:   74:    unsigned char* output,
+        -:   75:    R_xlen_t* poutput_len
+        -:   76:) {
+       44:   77:  R_xlen_t output_len = *poutput_len;
+     6940:   78:  for (R_xlen_t i = 0;i < output_len;i++) {
+     6896:   79:    output[i] = 0;
+        -:   80:  }
+       44:   81:  int ch = 0;
+       44:   82:  R_xlen_t i = 0, j = 0, k = 0;
+     6940:   83:  while(input_len-- > 0) {
+     6896:   84:    ch = *input++;
+     6896:   85:    if (ch == padding) {
+       48:   86:      if (*input != upadding && (i % 4) == 1) {
+    #####:   87:        return 1;
+        -:   88:      }
+       48:   89:      continue;
+        -:   90:    }
+     6848:   91:    ch = base64_reverse_table[ch];
+    6848*:   92:    if (ch == -1) {
+    #####:   93:      continue;
+        -:   94:    }
+     6848:   95:    else if (ch == -2) {
+    #####:   96:      return 1;
+        -:   97:    }
+     6848:   98:    switch (i % 4) {
+     1724:   99:    case 0 : {
+     1724:  100:      output[j] = ch << 2;
+     1724:  101:      break;
+        -:  102:    }
+     1724:  103:    case 1 : {
+     1724:  104:      output[j++] |= ch >> 4;
+     1724:  105:      if (j < output_len) output[j] = (ch & 0x0f) << 4;
+     1724:  106:      break;
+        -:  107:    }
+     1706:  108:    case 2 : {
+     1706:  109:      output[j++] |= ch >> 2;
+     1706:  110:      if (j < output_len) output[j] = (ch & 0x03) << 6;
+     1706:  111:      break;
+        -:  112:    }
+     1694:  113:    case 3 : {
+     1694:  114:      output[j++] |= ch;
+     1694:  115:      break;
+        -:  116:    }
+        -:  117:    }
+     6848:  118:    i++;
+        -:  119:  }
+       44:  120:  k = j;
+       44:  121:  if (ch == padding ) {
+       30:  122:    switch (i % 4) {
+    #####:  123:    case 1 : {
+    #####:  124:    return 1;
+        -:  125:  }
+       18:  126:    case 2 : k++;
+       30:  127:    case 3 : if (k < output_len) output[k] = 0;
+        -:  128:    }
+        -:  129:  }
+       44:  130:  *poutput_len = j;
+       44:  131:  return 0;
+        -:  132:}
+        -:  133:
+       84:  134:SEXP base64_enc(SEXP input) {
+       84:  135:  int rv = 0;
+        -:  136:  // get input
+        -:  137:  R_xlen_t input_len;
+        -:  138:#if defined(R_VERSION) && R_VERSION >= R_Version(3,0,0)
+       84:  139:  input_len = XLENGTH(input);
+        -:  140:#else
+        -:  141:  input_len = LENGTH(input);
+        -:  142:#endif
+       84:  143:  R_xlen_t output_len = input_len / 3 * 4;
+       84:  144:  if (input_len % 3) {
+       58:  145:    output_len += 4;
+        -:  146:  }
+       84:  147:  unsigned char *input_content = (unsigned char*) RAW(input);
+        -:  148:  // declare output
+        -:  149:  // allocate memory
+       84:  150:  SEXP result = PROTECT(NEW_CHARACTER(1));
+       84:  151:  if (result) { // check if memory is allocated successfully
+       84:  152:    char* result_content = (char*) malloc(output_len + 1);
+       84:  153:    if (result_content) { // check if memory is allocated successfully
+       84:  154:      base64_encode_impl(input_content, input_len, result_content, output_len);
+       84:  155:      result_content[output_len] = 0;
+       84:  156:      SET_STRING_ELT(result, 0, mkChar(result_content));
+       84:  157:      free(result_content);
+        -:  158:    } else {
+    #####:  159:      rv = 2;
+        -:  160:    }
+        -:  161:  } else {
+    #####:  162:    rv = 1;
+        -:  163:  }
+       84:  164:  UNPROTECT(1);
+       84:  165:  switch (rv) {
+    #####:  166:  case 1 : {
+    #####:  167:    error("Failed to allocate memory for result");
+        -:  168:    break;
+        -:  169:  }
+    #####:  170:  case 2 : {
+    #####:  171:    error("Failed to allocate memory for result_content");
+        -:  172:    break;
+        -:  173:  }
+       84:  174:  default : { }
+        -:  175:  }
+       84:  176:  return result;
+        -:  177:}
+        -:  178:
+       46:  179:SEXP base64_dec(SEXP input) {
+       46:  180:  int rv = 0;
+        -:  181:  R_xlen_t input_len;
+       46:  182:  SEXP result = R_NilValue;
+        -:  183:#if defined(R_VERSION) && R_VERSION >= R_Version(3,0,0)
+       46:  184:  input_len = XLENGTH(input);
+        -:  185:#else
+        -:  186:  input_len = LENGTH(input);
+        -:  187:#endif
+       46:  188:  if (input_len != 1 || TYPEOF(input) != STRSXP) {
+    #####:  189:    rv = 1;
+        -:  190:  } else {
+       46:  191:    SEXP input_char = STRING_ELT(input, 0);
+       46:  192:    const unsigned char* input_p = (unsigned char*) CHAR(input_char);
+       46:  193:    const R_xlen_t input_str_size = strlen((const char*) input_p);
+       46:  194:    if (input_str_size % 4 != 0) {
+        2:  195:      rv = 2;
+        -:  196:    } else {
+       44:  197:      R_xlen_t output_len = input_str_size;
+       44:  198:      unsigned char* result_content = malloc(output_len);
+       44:  199:      if (result_content) {
+       44:  200:        if (base64_decode_impl(
+        -:  201:            input_p,
+        -:  202:            input_str_size,
+        -:  203:            result_content,
+        -:  204:            &output_len
+        -:  205:        ) != 0) {
+    #####:  206:          rv = 2;
+        -:  207:        } else {
+       44:  208:          result = PROTECT(NEW_RAW(output_len));
+       44:  209:          unsigned char* presult = RAW_POINTER(result);
+     5168:  210:          for (R_xlen_t i = 0;i < output_len;i++) {
+     5124:  211:            presult[i] = result_content[i];
+        -:  212:          }
+       44:  213:          UNPROTECT(1);
+        -:  214:        }
+       44:  215:        free(result_content);
+        -:  216:      } else {
+    #####:  217:        rv = 3;
+    #####:  218:        result = R_NilValue;
+        -:  219:      }
+        -:  220:    }
+        -:  221:  }
+       46:  222:  switch (rv) {
+    #####:  223:  case 1 : {
+    #####:  224:    error("The input should be a character vector with length 1");
+        -:  225:    break;
+        -:  226:  }
+        2:  227:  case 2 : {
+        2:  228:    error("The input string is not a valid base64 encoded string");
+        -:  229:    break;
+        -:  230:  }
+    #####:  231:  case 3 : {
+    #####:  232:    error("Failed to allocate memory for result");
+        -:  233:    break;
+        -:  234:  }
+        -:  235:  }
+       44:  236:  return result;
+        -:  237:}

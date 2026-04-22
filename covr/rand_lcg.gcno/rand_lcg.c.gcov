@@ -1,0 +1,26 @@
+        -:    0:Source:rand_lcg.c
+        -:    0:Graph:./rand_lcg.gcno
+        -:    0:Data:./rand_lcg.gcda
+        -:    0:Runs:12
+        -:    1:#include <R.h>
+        -:    2:#include <Rinternals.h>
+        -:    3:#include <stdint.h> // for uint64_t
+        -:    4:
+       10:    5:SEXP rand_lcg(SEXP n, SEXP seed, SEXP a, SEXP c, SEXP m) {
+       10:    6:  int len = asInteger(n);
+       10:    7:  uint64_t s = (uint64_t) asReal(seed);
+       10:    8:  uint64_t A = (uint64_t) asReal(a);
+       10:    9:  uint64_t C = (uint64_t) asReal(c);
+       10:   10:  uint64_t M = (uint64_t) asReal(m);
+        -:   11:
+       10:   12:  SEXP result = PROTECT(allocVector(REALSXP, len));
+       10:   13:  double *x = REAL(result);
+        -:   14:
+      450:   15:  for (int i = 0; i < len; i++) {
+      440:   16:    s = (A * s + C) % M;
+      440:   17:    x[i] = (double) s;
+        -:   18:  }
+        -:   19:
+       10:   20:  UNPROTECT(1);
+       10:   21:  return result;
+        -:   22:}
