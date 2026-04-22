@@ -13,7 +13,7 @@ if (loadable('yaml')) assert('yaml_load() shows helpful error message on invalid
     ),
     error = function(e) NULL
   )
-  (length(msgs) > 0 && any(grepl('Failed to parse YAML', msgs)))
+  (gsub('^Failed to parse YAML:.*', '', msgs) %==% '')
 })
 
 # test yaml_load() error handler when location info is present
