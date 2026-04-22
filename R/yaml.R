@@ -23,7 +23,7 @@ yaml_load = function(
     function(loc) {
       s = geterrmessage()
       r = 'line (\\d+), column (\\d+)'
-      m = regmatches(s, regexec(r, s, perl = TRUE))[[1]]
+      m = regmatches(s, regexec(r, s))[[1]]
       if (length(m) < 3) return()
       m = as.integer(m[-1])  # c(row, col)
       if (loc != '') loc = paste(' at lines', loc)
