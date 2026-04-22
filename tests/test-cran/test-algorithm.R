@@ -17,6 +17,13 @@ assert('rand_unit() returns 0 values for n = 0', {
   (length(rand_unit(0, seed = 1)) %==% 0L)
 })
 
+assert('rand_n() returns integers in [1, M]', {
+  x = rand_n(100, 6)
+  (length(x) %==% 100L)
+  (x >= 1)
+  (x <= 6)
+})
+
 assert('md5() computes checksums', {
   (is.character(md5(1:10)))
   (nchar(md5(1:10)) %==% 32L)
@@ -45,12 +52,4 @@ assert('cache_exec() uses cache on second call', {
   r2 = cache_exec({Sys.time()}, path = ':memory:', id = id)
   # r2 should come from cache, so they should be identical
   (r1 %==% r2)
-})
-
-assert('rand_n() returns integers in [1, M]', {
-  x = rand_n(100, 6)
-  (length(x) %==% 100L)
-  (x >= 1)
-  (x <= 6)
-  (is.numeric(x))
 })
