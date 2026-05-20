@@ -40,7 +40,7 @@ assert('pkg_load() with error = TRUE stops on missing package', {
   (has_error(pkg_load('#nonexistent#pkg', error = TRUE)))
 })
 
-assert('pkg_attach() with message = FALSE suppresses messages', {
+if (getRversion() >= '3.3.0') assert('pkg_attach() with message = FALSE suppresses messages', {
   out = capture.output(type = 'message', pkg_attach('stats', message = FALSE))
   (length(out) %==% 0L)
 })
