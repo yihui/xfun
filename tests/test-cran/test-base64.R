@@ -52,6 +52,15 @@ assert('base64_uri() returns proper data type', {
   (!grepl('[.]svg$', f) || strsplit(base64_uri(f), split = ';')[[1]][1] %==% 'data:image/svg+xml')
 })
 
+assert('base64_encode_r() handles all remainder cases (n mod 3)', {
+  # n mod 3 == 1 (e.g., 1 byte): 1 data byte -> 2 base64 chars + "=="
+  (base64_encode_r(as.raw(0xff)) %==% base64_encode(as.raw(0xff)))
+  # n mod 3 == 2 (e.g., 2 bytes): 2 data bytes -> 3 base64 chars + "="
+  (base64_encode_r(as.raw(1:2)) %==% base64_encode(as.raw(1:2)))
+  # n mod 3 == 0 (e.g., 3 bytes): no padding
+  (base64_encode_r(as.raw(1:3)) %==% base64_encode(as.raw(1:3)))
+})
+
 assert('mime_type() returns correct types', {
   if (loadable('mime')) {
     f = tempfile(fileext = '.png'); file.create(f)
