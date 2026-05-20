@@ -94,8 +94,9 @@ assert('format_bytes() formats byte counts', {
 assert('msg_cat() prints messages suppressibly', {
   out = capture.output(suppressMessages(msg_cat('hello')))
   (length(out) %==% 0L)
-  out = capture.output(msg_cat('world'))
-  (out %==% 'world')
+  # msg_cat() signals a message condition with the correct content
+  msg = tryCatch(msg_cat('world'), message = function(m) conditionMessage(m))
+  (msg %==% 'world')
 })
 
 assert('%|% returns x if non-empty, otherwise y', {
