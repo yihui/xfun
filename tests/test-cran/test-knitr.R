@@ -80,3 +80,19 @@ assert('divide_chunk() strips leading blank line from code', {
   (res$code %==% '1 + 1')  # blank line stripped
   (length(res$src) %==% 2L)  # blank line moved to src
 })
+
+assert('divide_chunk() when all lines are option comments', {
+  # all lines match #| so n2 = length(code)
+  all_opts = c('#| echo: true', '#| eval: false')
+  res = divide_chunk('r', all_opts, use_yaml = FALSE)
+  (isTRUE(res$options$echo))
+  (isFALSE(res$options$eval))
+  (length(res$code) %==% 0L)
+})
+
+assert('divide_chunk() normalizes id field to label', {
+  yaml_like = c('#| id: my-chunk', '1 + 1')
+  res = divide_chunk('r', yaml_like, use_yaml = FALSE)
+  (res$options$label %==% 'my-chunk')
+  (is.null(res$options$id))
+})

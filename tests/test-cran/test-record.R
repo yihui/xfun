@@ -154,3 +154,28 @@ assert('record_print.default() captures print output', {
   (is.character(out))
   (any(grepl('1 2 3', out)))
 })
+
+assert('format() markdown output includes fenced blocks for messages/warnings', {
+  res = record(c('message("hi")', 'warning("yo")'), message = TRUE, warning = TRUE)
+  md = format(res, to = 'markdown')
+  (any(grepl('```', md)))
+  (any(grepl('[.]message', md)))
+  (any(grepl('[.]warning', md)))
+})
+
+assert('format() html output for messages and errors', {
+  res = record('stop("boom")', error = TRUE)
+  html = format(res, to = 'html')
+  (any(grepl('class="error"', html)))
+  (any(grepl('boom', html)))
+})
+
+assert('record() with error = NA halts on error', {
+  (has_error(record('stop("fail")', error = NA)))
+})
+
+assert('record() with message = NA does not capture messages', {
+  res = record('message("pass through")', message = NA)
+  cls = sapply(res, function(x) sub('record_', '', class(x)))
+  (!('message' %in% cls))
+})
