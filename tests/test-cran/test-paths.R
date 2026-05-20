@@ -156,6 +156,116 @@ assert('rename_seq() returns renamed file patterns', {
   (inherits(res, 'xfun_rename_seq'))
   # print method should work without error
   capture.output(print(res))
+  # dry_run = FALSE actually renames
+  file.create(c('01-x.Rmd', '02-y.Rmd'))
+  rename_seq(pattern = '^[0-9]+-[xy][.]Rmd$', dry_run = FALSE)
+  (all(file.exists(c('1-x.Rmd', '2-y.Rmd'))))
   setwd(owd)
   unlink(tmp_dir, recursive = TRUE)
+})
+
+assert('existing_files() with first = TRUE works', {
+  f = tempfile(); writeLines('test', f)
+  (existing_files(f, first = TRUE) %==% f)
+  unlink(f)
+  (has_error(existing_files(c('nonexistent1', 'nonexistent2'), first = TRUE)))
+  (existing_files(c('nonexistent1', 'nonexistent2'), first = TRUE, error = FALSE) %==% character(0))
+  (has_error(existing_files('nonexistent', first = TRUE, error = 'Custom error msg')))
+})
+
+assert('is_web_path() detects web paths', {
+  (is_web_path(c('https://www.r-project.org', 'http://example.com',
+    'ftp://files.example.com', 'ftps://secure.example.com')))
+  (!is_web_path(c('www.r-project.org', '/local/path', 'relative/path')))
+})
+
+assert('is_rel_path() is the negation of is_abs_path()', {
+  (is_rel_path('foo.txt'))
+  (!is_rel_path(tempdir()))
+})
+
+assert('with_ext() removes extensions when ext is empty string', {
+  (with_ext(c('a.txt', 'b.R'), '') %==% c('a', 'b'))
+})
+
+assert('relative_path() edge cases', {
+  (has_error(relative_path('/tmp/some/file.txt', '/different/dir', use.. = FALSE)))
+  d = normalize_path(tempdir())
+  (relative_path(d, d) %==% '.')
+})
+
+assert('relative_path() with .. works across sibling directories', {
+  d = tempfile(); dir.create(d)
+  a = file.path(d, 'a'); dir.create(a)
+  b = file.path(d, 'b'); dir.create(b)
+  f = file.path(a, 'file.txt'); file.create(f)
+  res = relative_path(f, b)
+  (grepl('\\.\\.', res))
+  unlink(d, recursive = TRUE)
+})
+
+assert('R_logo() finds an existing logo', {
+  logo = R_logo()
+  (length(logo) %==% 1L)
+  (file.exists(logo))
+})
+
+assert('all_files() lists files recursively', {
+  d = tempfile(); dir.create(d)
+  sub = file.path(d, 'sub'); dir.create(sub)
+  file.create(file.path(d, 'a.txt'))
+  file.create(file.path(sub, 'b.R'))
+  res = all_files('[.]R$', dir = d)
+  (length(res) %==% 1L)
+  (grepl('b.R$', res))
+  unlink(d, recursive = TRUE)
+})
+
+assert('magic_path() finds a file recursively in subdirs', {
+  d = tempfile(); dir.create(d)
+  sub = file.path(d, 'a', 'b'); dir.create(sub, recursive = TRUE)
+  f = file.path(sub, 'target.txt'); writeLines('found', f)
+  res = magic_path('target.txt', root = d, relative = FALSE)
+  (same_path(res, f))
+  unlink(d, recursive = TRUE)
+})
+
+assert('magic_path() errors when file not found and error = TRUE', {
+  d = tempfile(); dir.create(d)
+  (has_error(magic_path('nonexistent.txt', root = d, error = TRUE)))
+  unlink(d, recursive = TRUE)
+})
+
+assert('magic_path() returns input path when not found and error = FALSE', {
+  d = tempfile(); dir.create(d)
+  (magic_path('nonexistent.txt', root = d, error = FALSE) %==% 'nonexistent.txt')
+  unlink(d, recursive = TRUE)
+})
+
+assert('magic_path() errors or warns on multiple matches', {
+  d = tempfile(); dir.create(d)
+  sub1 = file.path(d, 'a'); dir.create(sub1)
+  sub2 = file.path(d, 'b'); dir.create(sub2)
+  file.create(file.path(sub1, 'dup.txt'))
+  file.create(file.path(sub2, 'dup.txt'))
+  (has_error(magic_path('dup.txt', root = d, error = TRUE)))
+  res = suppressMessages(magic_path('dup.txt', root = d, error = FALSE))
+  (file.exists(res))
+  unlink(d, recursive = TRUE)
+})
+
+assert('from_root() errors when root is NULL', {
+  (has_error(from_root('foo.R', root = NULL)))
+})
+
+assert('from_root() returns relative path from project root', {
+  d = tempfile(); dir.create(d)
+  writeLines('Package: testpkg', file.path(d, 'DESCRIPTION'))
+  sub = file.path(d, 'R'); dir.create(sub)
+  file.create(file.path(sub, 'code.R'))
+  owd = setwd(sub)
+  res = from_root('R', 'code.R', root = d)
+  (res %==% 'code.R')
+  setwd(owd)
+  unlink(d, recursive = TRUE)
 })

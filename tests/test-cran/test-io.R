@@ -175,3 +175,49 @@ assert('io_method() returns a list method as-is', {
   m = list(name = 'custom', save = saveRDS, load = readRDS)
   (io_method(m, '.') %==% m)
 })
+
+assert('write_utf8() to empty string prints to stdout', {
+  out = capture.output(write_utf8(c('hello', 'world'), ''))
+  (out %==% c('hello', 'world'))
+})
+
+assert('append_utf8() with sort = FALSE does not sort', {
+  f = tempfile()
+  write_utf8(c('b', 'a'), f)
+  append_utf8('c', f, sort = FALSE)
+  (read_utf8(f) %==% c('b', 'a', 'c'))
+  unlink(f)
+})
+
+assert('read_all() with constant before/after works', {
+  f1 = tempfile(); f2 = tempfile()
+  write_utf8('line1', f1)
+  write_utf8('line2', f2)
+  res = read_all(c(f1, f2), before = '/*', after = '*/')
+  (as.character(res) %==% c('/*', 'line1', '*/', '/*', 'line2', '*/'))
+  unlink(c(f1, f2))
+})
+
+assert('process_file() does not write when content is unchanged', {
+  f = tempfile()
+  write_utf8('hello', f)
+  mtime1 = file.mtime(f)
+  Sys.sleep(0.1)
+  process_file(f, identity)
+  (file.mtime(f) %==% mtime1)
+  unlink(f)
+})
+
+assert('gsub_file() errors on unreadable file with rw_error = TRUE', {
+  (has_error(gsub_file(tempfile(), 'a', 'b', rw_error = TRUE)))
+})
+
+assert('gsub_files() processes multiple files', {
+  f1 = tempfile(); f2 = tempfile()
+  writeLines('hello world', f1)
+  writeLines('world hello', f2)
+  gsub_files(c(f1, f2), 'world', 'R', fixed = TRUE)
+  (readLines(f1) %==% 'hello R')
+  (readLines(f2) %==% 'R hello')
+  unlink(c(f1, f2))
+})

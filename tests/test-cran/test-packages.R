@@ -32,6 +32,25 @@ assert('pkg_available() checks if a package with a version is available', {
 assert('base_pkgs() returns base package names', {
   pkgs = base_pkgs()
   (is.character(pkgs))
-  ('base' %in% pkgs)
-  ('stats' %in% pkgs)
+  (c('base', 'stats', 'utils', 'methods', 'tools') %in% pkgs)
+  (length(pkgs) >= 10)
+})
+
+assert('pkg_load() with error = TRUE stops on missing package', {
+  (has_error(pkg_load('#nonexistent#pkg', error = TRUE)))
+})
+
+assert('pkg_attach() with message = FALSE suppresses messages', {
+  out = capture.output(type = 'message', pkg_attach('stats', message = FALSE))
+  (length(out) %==% 0L)
+})
+
+assert('loadable() with strict = FALSE checks .packages(TRUE)', {
+  (loadable('base', strict = FALSE))
+  (!loadable('#nonexistent#', strict = FALSE))
+})
+
+assert('pkg_available() with version constraint works', {
+  (pkg_available('base', '0.0.1'))
+  (!pkg_available('base', '999.999.999'))
 })

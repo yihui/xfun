@@ -51,3 +51,18 @@ assert('base64_uri() returns proper data type', {
   f = R_logo()
   (!grepl('[.]svg$', f) || strsplit(base64_uri(f), split = ';')[[1]][1] %==% 'data:image/svg+xml')
 })
+
+assert('mime_type() returns correct types', {
+  if (loadable('mime')) {
+    f = tempfile(fileext = '.png'); file.create(f)
+    (mime_type(f) %==% 'image/png')
+    unlink(f)
+  }
+})
+
+assert('mime_type() without mime package uses system command', {
+  f = tempfile(fileext = '.css'); writeLines('body {}', f)
+  m = mime_type(f, use_mime = FALSE)
+  (is.character(m) && nchar(m) > 0)
+  unlink(f)
+})
