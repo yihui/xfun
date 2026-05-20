@@ -118,10 +118,11 @@ taml_save = function(x, path = NULL, indent = '  ') {
 }
 
 .taml_save = function(x, indent = '  ', level = 1) {
+  str2 = function(x) one_string(capture.output(str(x)))
   if (is.list(x)) {
     nms = names(x)
     if (is.null(nms)) {
-      str(x); stop('Lists must be named')
+      stop('Lists must be named:\n', str2(x))
     }
     val = lapply(x, function(z) {
       if (!is.list(z)) .taml_save(z) else {
@@ -139,7 +140,7 @@ taml_save = function(x, path = NULL, indent = '  ') {
     } else if (is.numeric(x) || is.character(x)) {
       if (!is.numeric(x) && length(x)) x = paste0('"', x, '"')
     } else {
-      str(x); stop("Unsupported data type ('", class(x)[1], "')")
+      stop("Unsupported data type ('", class(x)[1], "'):\n", str2(x))
     }
     if (length(x) == 1 && !asis) x else paste0('[', paste(x, collapse = ', '), ']')
   }
