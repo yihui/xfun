@@ -89,7 +89,8 @@ if (
   # this R session to reduce random timing issues in CI.
   pid_file = tempfile(fileext = '.rds')
   saveRDS(NULL, pid_file)
-  Rscript_call(function(make_body, port, pid_file) {
+  Rscript_call(function(make_body, port, pid_file, libs) {
+    .libPaths(libs)
     saveRDS(Sys.getpid(), pid_file)
     on.exit(unlink(pid_file), add = TRUE)
     xfun::new_app(
@@ -112,7 +113,7 @@ if (
       open = NA,
       port = port
     )
-  }, list(make_body = make_body, port = port, pid_file = pid_file), wait = FALSE)
+  }, list(make_body = make_body, port = port, pid_file = pid_file, libs = .libPaths()), wait = FALSE)
   pid = NULL
   for (i in seq_len(100L)) {
     Sys.sleep(0.1)
