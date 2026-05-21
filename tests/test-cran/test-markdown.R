@@ -156,6 +156,21 @@ assert('md_table() with newlines, NA, digits, and pipes', {
   (any(grepl('\\\\[|]', md_table(x))))
 })
 
+assert('md_table() escapes special Markdown characters', {
+  x = data.frame(a = '<TaskRegr:mtcars[0]>', stringsAsFactors = FALSE)
+  res = md_table(x, escape = TRUE)
+  (any(grepl('\\\\<', res)))
+  (any(grepl('\\\\\\[', res)))
+  # escape by column name
+  x = data.frame(a = '*bold*', b = '*bold*', stringsAsFactors = FALSE)
+  res = md_table(x, escape = 'a')
+  (any(grepl('\\\\[*]', res)))
+  # column b should not be escaped
+  (grepl('\\*bold\\*\\|$', res[3]))
+  # escape = FALSE (default) does not escape
+  (!any(grepl('\\\\<', md_table(data.frame(a = '<x>'), escape = FALSE))))
+})
+
 assert('md_table() with column limit', {
   x = as.data.frame(matrix(1:20, nrow = 2))
   (any(grepl('[.][.][.]', md_table(x, limit = c(0, 4)))))

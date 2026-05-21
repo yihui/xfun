@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.58
 
+- `md_table()` gained a new argument `escape` to backslash-escape special Markdown characters in table cells, which prevents content like `<foo:bar>` from being interpreted as links (thanks, @tdhock, yihui/litedown#131). It can be `TRUE` (all columns), a vector of column names/indices (selective), or set globally via `options(xfun.md_table.escape = TRUE)`.
+
 - Fixed `taml_load()` failing on YAML with non-uniform indentation (e.g., child items indented by a different number of spaces than the minimum unit).
 
 - `taml_load()` now ignores block sequence items (lines starting with `- `) and their indented children, since arrays written in this YAML block syntax are not supported by `taml_load()`.

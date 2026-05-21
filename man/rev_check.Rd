@@ -35,7 +35,7 @@ be checked. If there are no packages to be rechecked, all reverse
 dependencies will be checked.}
 
 \item{ignore}{A vector of package names to be ignored in \command{R CMD
-  check}. If this argument is missing and a file \file{00ignore} exists, the
+check}. If this argument is missing and a file \file{00ignore} exists, the
 file will be read as a character vector and passed to this argument.}
 
 \item{update}{Whether to update all packages before the check.}

@@ -280,13 +280,21 @@ zip = function(name, ...) {
 #'   smaller than the number of rows, the data in the middle will be omitted. If
 #'   it is of length 2, the second number will be used to limit the number of
 #'   columns. Zero and negative values are ignored.
+#' @param escape Whether to backslash-escape special Markdown characters
+#'   (\verb{\\`, *, _, [, ], <, >, ~, \\}) in table cells. This prevents cell
+#'   content from being interpreted as Markdown (e.g., `<foo:bar>` being treated
+#'   as a link). It can take a logical value (`TRUE` means all columns and
+#'   `FALSE` means none), or a vector of column indices or names to escape
+#'   selectively. The default is `FALSE`.
 #' @return A character vector.
 #' @seealso [knitr::kable()] (which supports more features)
 #' @export
 #' @examples
 #' xfun::md_table(head(iris))
 #' xfun::md_table(mtcars, limit = c(10, 6))
-md_table = function(x, digits = NULL, na = NULL, newline = NULL, limit = NULL) {
+#' xfun::md_table(data.frame(x = 'Hello <world>', y = 1), escape = TRUE)
+#' xfun::md_table(data.frame(x = 'Hello <world>', y = 1), escape = 'x')
+md_table = function(x, digits = NULL, na = NULL, newline = NULL, limit = NULL, escape = NULL) {
   if (length(d <- dim(x)) != 2)
     stop('xfun::md_table() only supports 2-dimensional objects.')
   if (d[2] == 0) return(character())
@@ -327,6 +335,14 @@ md_table = function(x, digits = NULL, na = NULL, newline = NULL, limit = NULL) {
     }
     d = dim(x)
     if (d[2] == 0) return(character())
+  }
+  escape = escape %||% getOption('xfun.md_table.escape', FALSE)
+  if (!isFALSE(escape)) {
+    cols = if (isTRUE(escape)) seq_len(ncol(x)) else {
+      if (is.character(escape)) match(escape, colnames(x)) else escape
+    }
+    cols = cols[!is.na(cols)]
+    for (j in cols) x[, j] = gsub('([][\\\\`*_<>~])', '\\\\\\1', x[, j])
   }
   cn = colnames(x) %||% rep(' ', d[2])  # table header
   a = ifelse(num, '--:', '---')  # alignment

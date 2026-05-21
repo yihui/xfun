@@ -28,7 +28,7 @@ means the original image files will be overwritten.}
 
 \item{quiet}{Whether to suppress detailed information about the compression,
 which is of the form \samp{input.png (10 Kb) ==> output.png (5 Kb, 50\%);
-  compression count: 42}. The percentage after \code{output.png} stands for
+compression count: 42}. The percentage after \code{output.png} stands for
 the compression ratio, and the compression count shows the number of
 compressions used for the current month.}
 

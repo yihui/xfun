@@ -4,7 +4,14 @@
 \alias{md_table}
 \title{Generate a simple Markdown pipe table}
 \usage{
-md_table(x, digits = NULL, na = NULL, newline = NULL, limit = NULL)
+md_table(
+  x,
+  digits = NULL,
+  na = NULL,
+  newline = NULL,
+  limit = NULL,
+  escape = NULL
+)
 }
 \arguments{
 \item{x}{A 2-dimensional object (e.g., a matrix or data frame).}
@@ -23,6 +30,13 @@ tables do not support line breaks in cells). The default is a space.}
 smaller than the number of rows, the data in the middle will be omitted. If
 it is of length 2, the second number will be used to limit the number of
 columns. Zero and negative values are ignored.}
+
+\item{escape}{Whether to backslash-escape special Markdown characters
+(\verb{\\`, *, _, [, ], <, >, ~, \\}) in table cells. This prevents cell
+content from being interpreted as Markdown (e.g., \verb{<foo:bar>} being treated
+as a link). It can take a logical value (\code{TRUE} means all columns and
+\code{FALSE} means none), or a vector of column indices or names to escape
+selectively. The default is \code{FALSE}.}
 }
 \value{
 A character vector.
@@ -37,6 +51,8 @@ The default argument values can be set via global options with the prefix
 \examples{
 xfun::md_table(head(iris))
 xfun::md_table(mtcars, limit = c(10, 6))
+xfun::md_table(data.frame(x = "Hello <world>", y = 1), escape = TRUE)
+xfun::md_table(data.frame(x = "Hello <world>", y = 1), escape = "x")
 }
 \seealso{
 \code{\link[knitr:kable]{knitr::kable()}} (which supports more features)

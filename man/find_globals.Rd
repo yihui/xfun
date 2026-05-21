@@ -20,7 +20,7 @@ A character vector of the variable names. If the source code contains
 syntax errors, an empty character vector will be returned.
 }
 \description{
-Use \code{\link[codetools:findGlobals]{codetools::findGlobals()}} and \code{\link[codetools:codetools]{codetools::findLocalsList()}} to find
+Use \code{\link[codetools:findGlobals]{codetools::findGlobals()}} and \code{\link[codetools:findLocalsList]{codetools::findLocalsList()}} to find
 global and local variables in a piece of code. Global variables are defined
 outside the code, and local variables are created inside the code.
 }
