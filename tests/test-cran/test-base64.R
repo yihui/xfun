@@ -72,6 +72,6 @@ assert('mime_type() returns correct types', {
 assert('mime_type() without mime package uses system command', {
   f = tempfile(fileext = '.css'); writeLines('body {}', f)
   m = mime_type(f, use_mime = FALSE)
-  (is.character(m) && nchar(m) > 0)
+  (m %==% 'text/css')
   unlink(f)
 })

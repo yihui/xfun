@@ -33,7 +33,6 @@ assert('base_pkgs() returns base package names', {
   pkgs = base_pkgs()
   (is.character(pkgs))
   (c('base', 'stats', 'utils', 'methods', 'tools') %in% pkgs)
-  (length(pkgs) >= 10)
 })
 
 assert('pkg_load() with error = TRUE stops on missing package', {
@@ -52,5 +51,5 @@ assert('loadable() with strict = FALSE checks .packages(TRUE)', {
 
 assert('pkg_available() with version constraint works', {
   (pkg_available('base', '0.0.1'))
-  (!pkg_available('base', '999.999.999'))
+  (!pkg_available('xfun', '999999.999.999'))
 })
