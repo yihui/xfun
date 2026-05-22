@@ -1792,7 +1792,7 @@ VignetteBuilder: litedown
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.0.0
 NeedsCompilation: yes
-Packaged: 2026-05-22 23:05:50 UTC; runner
+Packaged: 2026-05-22 23:13:32 UTC; runner
 Author: Yihui Xie [aut, cre, cph] (ORCID:
     &lt;https://orcid.org/0000-0003-0645-5666&gt;, URL: https://yihui.org),
   Wush Wu [ctb],
@@ -1801,7 +1801,7 @@ Author: Yihui Xie [aut, cre, cph] (ORCID:
   Salim Brüggemann [ctb] (ORCID: &lt;https://orcid.org/0000-0002-5329-5987&gt;),
   Christophe Dervieux [ctb]
 Maintainer: Yihui Xie &lt;xie@yihui.name&gt;
-Built: R 4.6.0; aarch64-apple-darwin23; 2026-05-22 23:05:50 UTC; unix
+Built: R 4.6.0; aarch64-apple-darwin23; 2026-05-22 23:13:33 UTC; unix
 </code></pre>
 <h2 id="sec:man-find_globals"><span class="section-number main-number">31</span> Find global/local variables in R code</h2>
 <h3 id="sec:description_31" class="unnumbered unlisted">Description</h3>
@@ -2171,8 +2171,8 @@ in_dir(tempdir(), {
     list.files()
 })
 </code></pre>
-<pre><code>#&gt; [1] &quot;/private/var/folders/p8/qyz0lmpd2mld64f_f4c66y4c0000gn/T/RtmphLZgAi&quot;
-#&gt; [1] &quot;file1196477e2b01&quot;
+<pre><code>#&gt; [1] &quot;/private/var/folders/tb/y368xp_x10s3ty1b_mtl5mxr0000gn/T/RtmpA0xF1l&quot;
+#&gt; [1] &quot;file4427774b3ed&quot;
 </code></pre>
 <h2 id="sec:man-install_dir"><span class="section-number main-number">39</span> Install a source package from a directory</h2>
 <h3 id="sec:description_39" class="unnumbered unlisted">Description</h3>
@@ -3747,8 +3747,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 <h3 id="sec:examples_54" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">rand_unit(10)
 </code></pre>
-<pre><code>#&gt;  [1] 0.81717020 0.64538612 0.60945856 0.95917531 0.10482948 0.17064812
-#&gt;  [7] 0.65317082 0.97205385 0.68856841 0.05133881
+<pre><code>#&gt;  [1] 0.82323711 0.16100974 0.86019467 0.28219889 0.85156254 0.63487811
+#&gt;  [7] 0.29384656 0.75632330 0.57101807 0.09502996
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = 0)
 </code></pre>
@@ -3760,8 +3760,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = Sys.getpid())
 </code></pre>
-<pre><code>#&gt;  [1] 0.05848661 0.37759637 0.74478371 0.69647144 0.01668568 0.01062828
-#&gt;  [7] 0.02638583 0.25006651 0.96100293 0.08072282
+<pre><code>#&gt;  [1] 0.22665836 0.85671344 0.03981371 0.48563686 0.07976788 0.80818118
+#&gt;  [7] 0.08537396 0.61059760 0.51413110 0.97276122
 </code></pre>
 <h2 id="sec:man-random_port"><span class="section-number main-number">70</span> Find a random available TCP port</h2>
 <h3 id="sec:description_70" class="unnumbered unlisted">Description</h3>
@@ -4512,11 +4512,14 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; $headers$host
 #&gt; [1] &quot;mockhttp.org&quot;
 #&gt; 
+#&gt; $headers$`x-forwarded-for`
+#&gt; [1] &quot;13.105.117.180,172.71.167.145,34.54.181.112&quot;
+#&gt; 
 #&gt; $headers$`user-agent`
 #&gt; [1] &quot;R/4.6.0 R (4.6.0 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;9fff783eeebafa66-LAX&quot;
+#&gt; [1] &quot;9fff83a1fab8e7cf-DFW&quot;
 #&gt; 
 #&gt; $headers$accept
 #&gt; [1] &quot;*/*&quot;
@@ -4525,7 +4528,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;cloudflare; loops=1&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.49.250&quot;
+#&gt; [1] &quot;13.105.117.180&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
@@ -4533,11 +4536,8 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
 #&gt; 
-#&gt; $headers$`x-forwarded-for`
-#&gt; [1] &quot;13.105.49.250,172.64.217.151,34.54.181.112&quot;
-#&gt; 
 #&gt; $headers$`x-cloud-trace-context`
-#&gt; [1] &quot;734316ae380fd2fcea3ff0cdbe92eaeb/14217353493420654995&quot;
+#&gt; [1] &quot;5dc90cd6843d33f38fc7aef7d251a739/7791767172901042672&quot;
 #&gt; 
 #&gt; $headers$`x-forwarded-proto`
 #&gt; [1] &quot;https&quot;
@@ -4546,10 +4546,10 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;1.1 google&quot;
 #&gt; 
 #&gt; $headers$traceparent
-#&gt; [1] &quot;00-734316ae380fd2fcea3ff0cdbe92eaeb-c54e2faced7f4193-00&quot;
+#&gt; [1] &quot;00-5dc90cd6843d33f38fc7aef7d251a739-6c21eaf61150f9f0-00&quot;
 #&gt; 
 #&gt; $headers$forwarded
-#&gt; [1] &quot;for=\&quot;172.64.217.151\&quot;;proto=https&quot;
+#&gt; [1] &quot;for=\&quot;172.71.167.145\&quot;;proto=https&quot;
 #&gt; 
 #&gt; $headers$`accept-encoding`
 #&gt; [1] &quot;gzip, br&quot;
@@ -4560,7 +4560,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
 <pre><code class="language-r">xfun::rest_api_raw(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
-<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;x-forwarded-for&quot;:&quot;13.105.49.250,104.22.17.237,34.54.181.112&quot;,&quot;user-agent&quot;:&quot;R/4.6.0 R (4.6.0 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;cf-ray&quot;:&quot;9fff783f78292a0c-SJC&quot;,&quot;accept&quot;:&quot;*/*&quot;,&quot;cdn-loop&quot;:&quot;cloudflare; loops=1&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.49.250&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;x-cloud-trace-context&quot;:&quot;bcdc490596f4b4a0b8f28242b288e26d/1967468238774557175&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;via&quot;:&quot;1.1 google&quot;,&quot;traceparent&quot;:&quot;00-bcdc490596f4b4a0b8f28242b288e26d-1b4dd9f0670559f7-00&quot;,&quot;forwarded&quot;:&quot;for=\&quot;104.22.17.237\&quot;;proto=https&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;},&quot;queryParams&quot;:{}}
+<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;x-forwarded-for&quot;:&quot;13.105.117.180,172.71.167.145,34.54.181.112&quot;,&quot;user-agent&quot;:&quot;R/4.6.0 R (4.6.0 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;cf-ray&quot;:&quot;9fff83a2bcc52e17-DFW&quot;,&quot;accept&quot;:&quot;*/*&quot;,&quot;cdn-loop&quot;:&quot;cloudflare; loops=1&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.117.180&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;x-cloud-trace-context&quot;:&quot;1ed1369acf0680418fc7aef7d251ae8d/17577771210623313809&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;via&quot;:&quot;1.1 google&quot;,&quot;traceparent&quot;:&quot;00-1ed1369acf0680418fc7aef7d251ae8d-f3f0c9c8f84a6791-00&quot;,&quot;forwarded&quot;:&quot;for=\&quot;172.71.167.145\&quot;;proto=https&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;},&quot;queryParams&quot;:{}}
 </code></pre>
 <pre><code class="language-r"># send the request with an auth header
 xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPEN SESAME!&quot;)
@@ -4570,10 +4570,10 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;mockhttp.org&quot;
 #&gt; 
 #&gt; $headers$`x-forwarded-for`
-#&gt; [1] &quot;13.105.49.250,104.22.17.237,34.54.181.112&quot;
+#&gt; [1] &quot;13.105.117.180,172.71.167.145,34.54.181.112&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;9fff783ffdf7a249-SJC&quot;
+#&gt; [1] &quot;9fff83a36929e7d7-DFW&quot;
 #&gt; 
 #&gt; $headers$`user-agent`
 #&gt; [1] &quot;R/4.6.0 R (4.6.0 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;
@@ -4588,7 +4588,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;cloudflare; loops=1&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.49.250&quot;
+#&gt; [1] &quot;13.105.117.180&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
@@ -4597,7 +4597,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
 #&gt; 
 #&gt; $headers$`x-cloud-trace-context`
-#&gt; [1] &quot;166d3090b931c33db8f28242b288ef78/9569129100816208272&quot;
+#&gt; [1] &quot;dae2b9a65b80039b8fc7aef7d251aa64/606945663371943285&quot;
 #&gt; 
 #&gt; $headers$`x-forwarded-proto`
 #&gt; [1] &quot;https&quot;
@@ -4606,10 +4606,10 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;1.1 google&quot;
 #&gt; 
 #&gt; $headers$traceparent
-#&gt; [1] &quot;00-166d3090b931c33db8f28242b288ef78-84cc6037c000d190-00&quot;
+#&gt; [1] &quot;00-dae2b9a65b80039b8fc7aef7d251aa64-086c4ddd773f9d75-00&quot;
 #&gt; 
 #&gt; $headers$forwarded
-#&gt; [1] &quot;for=\&quot;104.22.17.237\&quot;;proto=https&quot;
+#&gt; [1] &quot;for=\&quot;172.71.167.145\&quot;;proto=https&quot;
 #&gt; 
 #&gt; $headers$`accept-encoding`
 #&gt; [1] &quot;gzip, br&quot;
@@ -4635,7 +4635,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$core$reset
-#&gt; [1] 1779494769
+#&gt; [1] 1779495236
 #&gt; 
 #&gt; 
 #&gt; $resources$search
@@ -4649,7 +4649,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 30
 #&gt; 
 #&gt; $resources$search$reset
-#&gt; [1] 1779491229
+#&gt; [1] 1779491696
 #&gt; 
 #&gt; 
 #&gt; $resources$graphql
@@ -4663,7 +4663,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$graphql$reset
-#&gt; [1] 1779494769
+#&gt; [1] 1779495236
 #&gt; 
 #&gt; 
 #&gt; $resources$integration_manifest
@@ -4677,7 +4677,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$integration_manifest$reset
-#&gt; [1] 1779494769
+#&gt; [1] 1779495236
 #&gt; 
 #&gt; 
 #&gt; $resources$source_import
@@ -4691,7 +4691,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$source_import$reset
-#&gt; [1] 1779491229
+#&gt; [1] 1779491696
 #&gt; 
 #&gt; 
 #&gt; $resources$code_scanning_upload
@@ -4705,7 +4705,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$code_scanning_upload$reset
-#&gt; [1] 1779494769
+#&gt; [1] 1779495236
 #&gt; 
 #&gt; 
 #&gt; $resources$code_scanning_autofix
@@ -4719,7 +4719,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_scanning_autofix$reset
-#&gt; [1] 1779491229
+#&gt; [1] 1779491696
 #&gt; 
 #&gt; 
 #&gt; $resources$actions_runner_registration
@@ -4733,7 +4733,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10000
 #&gt; 
 #&gt; $resources$actions_runner_registration$reset
-#&gt; [1] 1779494769
+#&gt; [1] 1779495236
 #&gt; 
 #&gt; 
 #&gt; $resources$scim
@@ -4747,7 +4747,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15000
 #&gt; 
 #&gt; $resources$scim$reset
-#&gt; [1] 1779494769
+#&gt; [1] 1779495236
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_snapshots
@@ -4761,7 +4761,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_snapshots$reset
-#&gt; [1] 1779491229
+#&gt; [1] 1779491696
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_sbom
@@ -4775,7 +4775,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_sbom$reset
-#&gt; [1] 1779491229
+#&gt; [1] 1779491696
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log
@@ -4789,7 +4789,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$audit_log$reset
-#&gt; [1] 1779494769
+#&gt; [1] 1779495236
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log_streaming
@@ -4803,7 +4803,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15
 #&gt; 
 #&gt; $resources$audit_log_streaming$reset
-#&gt; [1] 1779494769
+#&gt; [1] 1779495236
 #&gt; 
 #&gt; 
 #&gt; $resources$code_search
@@ -4817,7 +4817,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_search$reset
-#&gt; [1] 1779491229
+#&gt; [1] 1779491696
 #&gt; 
 #&gt; 
 #&gt; 
@@ -4832,7 +4832,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $rate$reset
-#&gt; [1] 1779494769
+#&gt; [1] 1779495236
 </code></pre>
 <h2 id="sec:man-retry"><span class="section-number main-number">80</span> Retry calling a function for a number of times</h2>
 <h3 id="sec:description_80" class="unnumbered unlisted">Description</h3>
@@ -5142,7 +5142,7 @@ diagnostics.
 </code></pre>
 <pre><code>R version 4.6.0 (2026-04-24)
 Platform: aarch64-apple-darwin23
-Running under: macOS Sequoia 15.7.7
+Running under: macOS Sequoia 15.7.4
 
 Locale: en_US.UTF-8 / en_US.UTF-8 / en_US.UTF-8 / C / en_US.UTF-8 / en_US.UTF-8
 
@@ -5156,7 +5156,7 @@ Package version:
 </code></pre>
 <pre><code>R version 4.6.0 (2026-04-24)
 Platform: aarch64-apple-darwin23
-Running under: macOS Sequoia 15.7.7
+Running under: macOS Sequoia 15.7.4
 
 Locale: en_US.UTF-8 / en_US.UTF-8 / en_US.UTF-8 / C / en_US.UTF-8 / en_US.UTF-8
 
@@ -5374,17 +5374,17 @@ formed by concatenating wrapped strings by <code>\n</code>.
 x = rep(paste(x, collapse = &quot;&quot;), 2)
 strwrap(x, width = 30)
 </code></pre>
-<pre><code>#&gt;  [1] &quot;i ob sn nsd c qdf b d s emtk&quot;  &quot;gr dv zgsqhz idb xio wr pkfex&quot;
-#&gt;  [3] &quot;uv pp oc z x eat nq yrz u v&quot;   &quot;yu k hg k quzvv fvct zai t pc&quot;
-#&gt;  [5] &quot;u t sr bbmavisrr m kp w ieh n&quot; &quot;fx&quot;                           
-#&gt;  [7] &quot;i ob sn nsd c qdf b d s emtk&quot;  &quot;gr dv zgsqhz idb xio wr pkfex&quot;
-#&gt;  [9] &quot;uv pp oc z x eat nq yrz u v&quot;   &quot;yu k hg k quzvv fvct zai t pc&quot;
-#&gt; [11] &quot;u t sr bbmavisrr m kp w ieh n&quot; &quot;fx&quot;                           
+<pre><code>#&gt;  [1] &quot;nzsy t evl zh r hmxubv pel mk&quot; &quot;jbe tl x noaidausoscj owk p&quot;  
+#&gt;  [3] &quot;outygh t q houu wk y cog j&quot;    &quot;mctzf mv y fv dn ss qej kq l&quot; 
+#&gt;  [5] &quot;fyrgz sv p g i on ac x f v&quot;    &quot;bpps qm v o fyk c kai far&quot;    
+#&gt;  [7] &quot;nzsy t evl zh r hmxubv pel mk&quot; &quot;jbe tl x noaidausoscj owk p&quot;  
+#&gt;  [9] &quot;outygh t q houu wk y cog j&quot;    &quot;mctzf mv y fv dn ss qej kq l&quot; 
+#&gt; [11] &quot;fyrgz sv p g i on ac x f v&quot;    &quot;bpps qm v o fyk c kai far&quot;    
 </code></pre>
 <pre><code class="language-r">xfun::str_wrap(x, width = 30)  # same length as x
 </code></pre>
-<pre><code>#&gt; [1] &quot;i ob sn nsd c qdf b d s emtk\ngr dv zgsqhz idb xio wr pkfex\nuv pp oc z x eat nq yrz u v\nyu k hg k quzvv fvct zai t pc\nu t sr bbmavisrr m kp w ieh n\nfx&quot;
-#&gt; [2] &quot;i ob sn nsd c qdf b d s emtk\ngr dv zgsqhz idb xio wr pkfex\nuv pp oc z x eat nq yrz u v\nyu k hg k quzvv fvct zai t pc\nu t sr bbmavisrr m kp w ieh n\nfx&quot;
+<pre><code>#&gt; [1] &quot;nzsy t evl zh r hmxubv pel mk\njbe tl x noaidausoscj owk p\noutygh t q houu wk y cog j\nmctzf mv y fv dn ss qej kq l\nfyrgz sv p g i on ac x f v\nbpps qm v o fyk c kai far&quot;
+#&gt; [2] &quot;nzsy t evl zh r hmxubv pel mk\njbe tl x noaidausoscj owk p\noutygh t q houu wk y cog j\nmctzf mv y fv dn ss qej kq l\nfyrgz sv p g i on ac x f v\nbpps qm v o fyk c kai far&quot;
 </code></pre>
 <h2 id="sec:man-strict_list"><span class="section-number main-number">90</span> Strict lists</h2>
 <h3 id="sec:description_90" class="unnumbered unlisted">Description</h3>
