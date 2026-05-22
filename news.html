@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="generator" content="litedown 0.9.9">
+<title>News</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.44/css/default.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.44/css/article.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.44/css/copy-button.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.44/css/heading-anchor.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.44/css/pages.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.44/css/site.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.17.0/dist/katex.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.44/css/prism-xcode.min.css">
+</head>
+<body>
+<nav><p><a href="index.html">Home</a>
+<a href="articles.html">Articles</a>
+<a href="manual.html">Manual</a>
+<a href="news.html">News</a>
+<a href="playground/">Playground</a></p></nav>
+<div class="frontmatter">
+<div class="title"><h1>News</h1></div>
+</div>
+<div class="body">
+<div id="TOC">
+<ul>
+<li><a href="#sec:xfun-0-58">xfun 0.58</a></li>
+<li><a href="#sec:xfun-0-57">xfun 0.57</a></li>
+<li><a href="#sec:xfun-0-56">xfun 0.56</a></li>
+<li><a href="#sec:xfun-0-55">xfun 0.55</a></li>
+<li><a href="#sec:xfun-0-54">xfun 0.54</a></li>
+<li><a href="#sec:xfun-0-53">xfun 0.53</a></li>
+<li><a href="#sec:xfun-0-52">xfun 0.52</a></li>
+<li><a href="#sec:xfun-0-51">xfun 0.51</a></li>
+<li><a href="#sec:xfun-0-50">xfun 0.50</a></li>
+<li><a href="#sec:xfun-0-49">xfun 0.49</a></li>
+<li><a href="#sec:xfun-0-48">xfun 0.48</a></li>
+<li><a href="#sec:xfun-0-47">xfun 0.47</a></li>
+<li><a href="#sec:xfun-0-46">xfun 0.46</a></li>
+<li><a href="#sec:xfun-0-45">xfun 0.45</a></li>
+<li><a href="#sec:xfun-0-44">xfun 0.44</a></li>
+<li><a href="#sec:xfun-0-43">xfun 0.43</a></li>
+<li><a href="#sec:xfun-0-42">xfun 0.42</a></li>
+<li><a href="#sec:xfun-0-41">xfun 0.41</a></li>
+<li><a href="#sec:xfun-0-40">xfun 0.40</a></li>
+<li><a href="#sec:xfun-0-39">xfun 0.39</a></li>
+<li><a href="#sec:xfun-0-38">xfun 0.38</a></li>
+<li><a href="#sec:xfun-0-37">xfun 0.37</a></li>
+<li><a href="#sec:xfun-0-36">xfun 0.36</a></li>
+<li><a href="#sec:xfun-0-35">xfun 0.35</a></li>
+<li><a href="#sec:xfun-0-34">xfun 0.34</a></li>
+<li><a href="#sec:xfun-0-33">xfun 0.33</a></li>
+<li><a href="#sec:xfun-0-32">xfun 0.32</a></li>
+<li><a href="#sec:xfun-0-31">xfun 0.31</a></li>
+<li><a href="#sec:xfun-0-30">xfun 0.30</a></li>
+<li><a href="#sec:xfun-0-29">xfun 0.29</a></li>
+<li><a href="#sec:xfun-0-28">xfun 0.28</a></li>
+<li><a href="#sec:xfun-0-27">xfun 0.27</a></li>
+<li><a href="#sec:xfun-0-26">xfun 0.26</a></li>
+<li><a href="#sec:xfun-0-25">xfun 0.25</a></li>
+<li><a href="#sec:xfun-0-24">xfun 0.24</a></li>
+<li><a href="#sec:xfun-0-23">xfun 0.23</a>
+<ul>
+<li><a href="#sec:new-features_1">NEW FEATURES</a></li>
+<li><a href="#sec:bug-fixes_1">BUG FIXES</a></li>
+<li><a href="#sec:minor-changes_1">MINOR CHANGES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-22">xfun 0.22</a>
+<ul>
+<li><a href="#sec:new-features_2">NEW FEATURES</a></li>
+<li><a href="#sec:major-changes">MAJOR CHANGES</a></li>
+<li><a href="#sec:minor-changes_2">MINOR CHANGES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-21">xfun 0.21</a>
+<ul>
+<li><a href="#sec:new-features_3">NEW FEATURES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-20">xfun 0.20</a>
+<ul>
+<li><a href="#sec:new-features_4">NEW FEATURES</a></li>
+<li><a href="#sec:bug-fixes_2">BUG FIXES</a></li>
+<li><a href="#sec:minor-changes_3">MINOR CHANGES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-19">xfun 0.19</a>
+<ul>
+<li><a href="#sec:new-features_5">NEW FEATURES</a></li>
+<li><a href="#sec:minor-changes_4">MINOR CHANGES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-18">xfun 0.18</a>
+<ul>
+<li><a href="#sec:new-features_6">NEW FEATURES</a></li>
+<li><a href="#sec:minor-changes_5">MINOR CHANGES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-17">xfun 0.17</a>
+<ul>
+<li><a href="#sec:new-features_7">NEW FEATURES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-16">xfun 0.16</a></li>
+<li><a href="#sec:xfun-0-15">xfun 0.15</a>
+<ul>
+<li><a href="#sec:new-features_8">NEW FEATURES</a></li>
+<li><a href="#sec:bug-fixes_3">BUG FIXES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-14">xfun 0.14</a>
+<ul>
+<li><a href="#sec:new-features_9">NEW FEATURES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-13">xfun 0.13</a>
+<ul>
+<li><a href="#sec:new-features_10">NEW FEATURES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-12">xfun 0.12</a>
+<ul>
+<li><a href="#sec:new-features_11">NEW FEATURES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-11">xfun 0.11</a>
+<ul>
+<li><a href="#sec:bug-fixes_4">BUG FIXES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-10">xfun 0.10</a>
+<ul>
+<li><a href="#sec:new-features_12">NEW FEATURES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-9">xfun 0.9</a>
+<ul>
+<li><a href="#sec:new-features_13">NEW FEATURES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-8">xfun 0.8</a>
+<ul>
+<li><a href="#sec:minor-changes_6">MINOR CHANGES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-7">xfun 0.7</a>
+<ul>
+<li><a href="#sec:minor-changes_7">MINOR CHANGES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-6">xfun 0.6</a>
+<ul>
+<li><a href="#sec:new-features_14">NEW FEATURES</a></li>
+<li><a href="#sec:bug-fixes_5">BUG FIXES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-5">xfun 0.5</a>
+<ul>
+<li><a href="#sec:new-features_15">NEW FEATURES</a></li>
+<li><a href="#sec:bug-fixes_6">BUG FIXES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-4">xfun 0.4</a>
+<ul>
+<li><a href="#sec:new-features_16">NEW FEATURES</a></li>
+<li><a href="#sec:minor-changes_8">MINOR CHANGES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-3">xfun 0.3</a>
+<ul>
+<li><a href="#sec:new-features_17">NEW FEATURES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-2">xfun 0.2</a>
+<ul>
+<li><a href="#sec:new-features_18">NEW FEATURES</a></li>
+</ul>
+</li>
+<li><a href="#sec:xfun-0-1">xfun 0.1</a>
+<ul>
+<li><a href="#sec:new-features_19">NEW FEATURES</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<h2 id="sec:xfun-0-58" class="unnumbered">xfun 0.58</h2>
+<ul>
+<li>
+<p><code>md_table()</code> gained a new argument <code>escape</code> to backslash-escape special Markdown characters in table cells, which prevents content like <code>&lt;foo:bar&gt;</code> from being interpreted as links (thanks, <a href="https://github.com/tdhock">@tdhock</a>, <a href="https://github.com/yihui/litedown/issues/131">yihui/litedown#131</a>). It can be <code>TRUE</code> (all columns), a vector of column names/indices (selective), or set globally via <code>options(xfun.md_table.escape = TRUE)</code>.</p>
+</li>
+<li>
+<p>Fixed <code>taml_load()</code> failing on YAML with non-uniform indentation (e.g., child items indented by a different number of spaces than the minimum unit).</p>
+</li>
+<li>
+<p><code>taml_load()</code> now ignores block sequence items (lines starting with <code>- </code>) and their indented children, since arrays written in this YAML block syntax are not supported by <code>taml_load()</code>.</p>
+</li>
+<li>
+<p><code>new_app()</code> now uses a lightweight proxy in front of R’s internal httpd: <code>new_app(name = '')</code> serves one proxy-backed app per port at <code>http://127.0.0.1:PORT/</code>, <code>new_app(name != '')</code> keeps legacy direct httpd routing via <code>/custom/name/</code> for compatibility. The internal function <code>xfun:::help_proxy()</code> can proxy the full help server for LAN access, since the proxy starts at <code>0.0.0.0</code> by default.</p>
+</li>
+<li>
+<p>Renamed <code>new_app()</code>’s argument <code>ports</code> to <code>port</code>.</p>
+</li>
+<li>
+<p>Added <code>random_port()</code> to find a random available TCP port (e.g., it can be used for the <code>port</code> argument of <code>new_app()</code>).</p>
+</li>
+<li>
+<p><code>html_view()</code> should join the input character vector by <code>\n</code>, otherwise only the first element of the vector will be passed to the browser (thanks, <a href="https://github.com/XiangyunHuang">@XiangyunHuang</a>, <a href="https://github.com/yihui/gglite/issues/15">yihui/gglite#15</a>).</p>
+</li>
+<li>
+<p><code>tojson()</code> will convert length 1 columns to arrays, too. Previously, such columns were converted to scalars, e.g., <code>data.frame(x = 1)</code> would be converted to <code>{&quot;x&quot;: 1}</code> instead of <code>{&quot;x&quot;: [1]}</code>. This makes sure data frame columns are always arrays in JSON.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-57" class="unnumbered">xfun 0.57</h2>
+<ul>
+<li>
+<p>Added a new function <code>js()</code> to mark a character string as literal JavaScript code so that <code>tojson()</code> will not quote it.</p>
+</li>
+<li>
+<p>Added a new function <code>tab_content</code> to create custom tab content from a character vector for <code>tabset()</code>.</p>
+</li>
+<li>
+<p>Fixed a bottleneck in <code>xfun::record()</code> when the code prints a huge amount of output (thanks, <a href="https://github.com/idavydov">@idavydov</a>, <a href="https://github.com/quarto-dev/quarto-cli/issues/14156">quarto-dev/quarto-cli#14156</a>).</p>
+</li>
+<li>
+<p>Added an argument <code>sync</code> to <code>submit_cran()</code> to prevent package authors from forgetting to pull from remote before submitting a package.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-56" class="unnumbered">xfun 0.56</h2>
+<ul>
+<li>
+<p>Removed the deprecated <code>xfun::attr()</code>. Please use <code>xfun::attr2()</code> instead.</p>
+</li>
+<li>
+<p><code>github_releases(tag = 'latest')</code> is more accurate now.</p>
+</li>
+<li>
+<p>Renamed the argument <code>url</code> to <code>input</code> in <code>browser_print()</code>.</p>
+</li>
+<li>
+<p>Removed support for <strong>qs</strong> (which has been removed from CRAN) in <code>cache_exec()</code>, <code>cache_rds()</code>, <code>lazy_save()</code>, and <code>lazy_load()</code>.</p>
+</li>
+<li>
+<p><code>rev_check()</code> can download reverse dependency tarballs in parallel via <code>options(xfun.rev_check.download_cores = n)</code> (default <code>parallel::detectCores()</code>).</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-55" class="unnumbered">xfun 0.55</h2>
+<ul>
+<li>
+<p><code>record(error = TRUE)</code> will trim the error message by removing the uninformative part <code>in eval(expr, envir)</code> in the message (thanks, <a href="https://github.com/ThomasSoeiro">@ThomasSoeiro</a>, <a href="https://github.com/yihui/litedown/issues/109">yihui/litedown#109</a>).</p>
+</li>
+<li>
+<p><code>record()</code> will capture error messages generated from <code>try()</code> (thanks, <a href="https://github.com/ThomasSoeiro">@ThomasSoeiro</a>, <a href="https://github.com/yihui/litedown/issues/110">yihui/litedown#110</a>).</p>
+</li>
+<li>
+<p>Added support for the <strong>qs2</strong> package in <code>cache_exec()</code> and <code>cache_rds()</code> since the <strong>qs</strong> package will be deprecated.</p>
+</li>
+<li>
+<p>Added <code>browser_print()</code> as a simple wrapper function to call a headless browser to print a web page to PDF/PNG/JPEG.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-54" class="unnumbered">xfun 0.54</h2>
+<ul>
+<li><code>record()</code> tries not to records empty plots triggered as side-effects by functions like <code>grid::convertUnit()</code> (thanks, <a href="https://github.com/yjunechoe">@yjunechoe</a>, <a href="https://github.com/yihui/litedown/issues/96">yihui/litedown#96</a>). However, the underlying technique is not robust enough to deal with all cases. In case certain undesired plots still get recorded, you can filter them out via the new argument of <code>record()</code>, <code>dev.keep</code>, which can take indices to determine which plots to keep. For example, <code>dev.keep = -1</code> means to remove the first plot.</li>
+</ul>
+<h2 id="sec:xfun-0-53" class="unnumbered">xfun 0.53</h2>
+<ul>
+<li>
+<p>Error messages captured by <code>record()</code> include the calls that triggered the errors now. Error messages from <code>rlang::abort()</code> are also better formatted.</p>
+</li>
+<li>
+<p>ANSI sequences are disabled via <code>options(cli.num_colors = 1)</code> in <code>record()</code> to make sure pure text output is captured.</p>
+</li>
+<li>
+<p>Skip printing data.table objects in <code>record()</code> if <code>data.table::shouldPrint()</code> returns <code>FALSE</code> (thanks, <a href="https://github.com/TimTaylor">@TimTaylor</a>, <a href="https://github.com/yihui/xfun/issues/105">#105</a>).</p>
+</li>
+<li>
+<p><code>cache_rds()</code> supports reading/writing cache with the <strong>qs</strong> package now (thanks, <a href="https://github.com/cheny36">@cheny36</a>, <a href="https://github.com/yihui/xfun/issues/104">#104</a>).</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-52" class="unnumbered">xfun 0.52</h2>
+<ul>
+<li>
+<p><code>xfun::attr()</code> is deprecated (to avoid masking <code>base::attr()</code>). Please use <code>xfun::attr2()</code> or <code>base::attr(exact = TRUE)</code> instead.</p>
+</li>
+<li>
+<p>Added an argument <code>date</code> to <code>pkg_bib()</code> to optionally include the date of retrieval in the bib entries (thanks, <a href="https://github.com/HedvigS">@HedvigS</a>, <a href="https://github.com/yihui/xfun/issues/99">#99</a>).</p>
+</li>
+<li>
+<p>Added a new function <code>url_destination()</code> to get the destination of a redirected URL.</p>
+</li>
+<li>
+<p>Added a new function <code>rand_unit()</code> to generate pseudo-random numbers on <code>[0, 1)</code> based on a linear congruential generator.</p>
+</li>
+<li>
+<p>Fixed a bug in <code>taml_load()</code> that would convert character values in arrays to lowercase.</p>
+</li>
+<li>
+<p>Added arguments <code>strict</code> and <code>...</code> to <code>divide_chunk()</code> (thanks, <a href="https://github.com/cderv">@cderv</a>, <a href="https://github.com/yihui/knitr/issues/2225">yihui/knitr#2225</a>).</p>
+</li>
+<li>
+<p>The function <code>cache_rds()</code> is no longer recommended. Please consider using <code>cache_exec()</code> instead (thanks, <a href="https://github.com/lenz99">@lenz99</a>, <a href="https://github.com/yihui/xfun/issues/100">#100</a>).</p>
+</li>
+<li>
+<p>Removed the <code>solaris</code> argument from <code>upload_win_builder()</code>.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-51" class="unnumbered">xfun 0.51</h2>
+<ul>
+<li>
+<p><code>tojson()</code> supports more types of data now, and will indent sub-elements for lists. See the help page <a href="https://pkg.yihui.org/xfun/manual.html#sec:man-tojson"><code>?xfun::tojson</code></a> for details.</p>
+</li>
+<li>
+<p>Updated the default API key for <code>upload_imgur()</code> since the previous default key stopped working for some reason (thanks, <a href="https://github.com/camille-s">@camille-s</a> <a href="https://github.com/jennybc">@jennybc</a>, <a href="https://github.com/yihui/xfun/issues/97">#97</a>).</p>
+</li>
+<li>
+<p><code>upload_imgur()</code> shows the error message instead of the error code when it fails to upload the image, which is more informative.</p>
+</li>
+<li>
+<p><code>download_file()</code> returns the path of the file downloaded instead of the command status code now.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-50" class="unnumbered">xfun 0.50</h2>
+<ul>
+<li>
+<p>The function <code>isFALSE()</code> has been removed from this package. The deprecation notice was given two years ago: <a href="https://yihui.org/en/2023/02/xfun-isfalse/">https://yihui.org/en/2023/02/xfun-isfalse/</a></p>
+</li>
+<li>
+<p>Added a new function <code>tabset()</code> to represent a list with a tabset. The representation is similar to <code>str()</code>, but uses a visual form.</p>
+</li>
+<li>
+<p>Factored out the function <code>taml_load()</code> and exported it (TAML is a tiny subset of YAML). Also added a new function <code>taml_save()</code> to convert simple lists to YAML.</p>
+</li>
+<li>
+<p>The <code>print</code> argument of <code>record()</code> can accept non-function values now, in which case <code>print()</code> (or <code>show()</code> for S4 objects) will be used as the print function.</p>
+</li>
+<li>
+<p>The <code>record()</code> results can also be formatted to Markdown via <code>format(record(), to = 'markdown')</code>.</p>
+</li>
+<li>
+<p>Moved <code>knitr::combine_words()</code> into this package as <code>xfun::join_words()</code>. The former has become a simple wrapper of the latter.</p>
+</li>
+<li>
+<p>Similarly, moved <code>knitr::write_bib()</code> into this package as <code>xfun::pkg_bib()</code>.</p>
+</li>
+<li>
+<p>Moved the internal function <code>str_wrap()</code> from <strong>knitr</strong> and exported it as <code>xfun::str_wrap()</code>.</p>
+</li>
+<li>
+<p>Exported the internal <code>find_globals()</code> and <code>find_locals()</code> functions.</p>
+</li>
+<li>
+<p><code>md_table()</code> escapes <code>|</code> in the table to <code>\|</code> instead of <code>&amp;#124;</code> now.</p>
+</li>
+<li>
+<p><code>yaml_load(use_yaml = FALSE)</code> allows for indenting sub-fields by any number of spaces now (thanks, <a href="https://github.com/J-Moravec">@J-Moravec</a>, <a href="https://github.com/yihui/xfun/issues/95">#95</a>). Previously, one level of indentation must use exactly 2 spaces.</p>
+</li>
+<li>
+<p><code>divide_chunk()</code> no longer requires every line of chunk options to be commented out when the engine uses a pair of comment delimiters (such as <code>/*</code> and <code>*/</code> for CSS) instead of a single comment character. It suffices to use the opening delimiter at the beginning and closing delimiter at the end, e.g.,</p>
+<pre><code class="language-md">```{css}
+/*| echo=FALSE,
+    label='foo' */
+```
+</code></pre>
+<p>Previously, every line must be commented out like:</p>
+<pre><code class="language-md">```{css}
+/*| echo=FALSE, */
+/*| label='foo' */
+```
+</code></pre>
+</li>
+</ul>
+<h2 id="sec:xfun-0-49" class="unnumbered">xfun 0.49</h2>
+<ul>
+<li>
+<p>Added an argument <code>use_block = FALSE</code> to <code>protect_math()</code>. When <code>use_block = TRUE</code>, a <code>$$ $$</code> expression that spans across multiple lines will be protected in a code block.</p>
+</li>
+<li>
+<p><code>protect_math()</code> will ignore <code>$ $</code> if there are backticks after the opening <code>$</code> or before the closing <code>$</code>, e.g., <code>$`this is not math`$</code>.</p>
+</li>
+<li>
+<p><code>protect_math()</code> allows for parentheses <code>()</code> around math expressions now, e.g., <code>(\(x\))</code> was previously not recognized but is recognized now (thanks, <a href="https://github.com/AlbertLei">@AlbertLei</a>, <a href="https://github.com/yihui/litedown/issues/34">yihui/litedown#34</a>).</p>
+</li>
+<li>
+<p><code>record()</code> works with <code>quote()</code> now (thanks, <a href="https://github.com/ben-schwen">@ben-schwen</a>, <a href="https://github.com/yihui/litedown/issues/38">yihui/litedown#38</a>).</p>
+</li>
+<li>
+<p><code>html_escape()</code> will not escape double quotes (i.e., convert <code>&quot;</code>” to <code>&amp;quot;</code>) by default, and the conversion will be done only for <code>html_escape(attr = TRUE)</code>.</p>
+</li>
+<li>
+<p>The arguments <code>before</code> and <code>after</code> of <code>read_all()</code> can take functions of two arguments now, with the second argument being the content of each file.</p>
+</li>
+<li>
+<p>Added an argument <code>start</code> to <code>make_fence()</code>.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-48" class="unnumbered">xfun 0.48</h2>
+<ul>
+<li>
+<p>Added utilities for HTML tags: <code>html_tag()</code>, <code>html_escape()</code>, <code>html_escape()</code>, and <code>html_view()</code>. Removed the soft dependency on the <strong>htmltools</strong> package accordingly.</p>
+</li>
+<li>
+<p><code>base_pkgs()</code> is faster now: it calls <code>tools::standard_package_names()</code> if the function exists (R &gt;= 4.4.0), otherwise it just returns a constant vector of base package names (thanks, <a href="https://github.com/arnaudgallou">@arnaudgallou</a>, <a href="https://github.com/yihui/xfun/issues/91">#91</a>).</p>
+</li>
+<li>
+<p>Added a function <code>mime_type()</code> to obtain the MIME types of files via <code>mime::guess_type()</code> if <strong>mime</strong> is installed, otherwise it will call <code>tools:::mime_type()</code>, and fall back to using a system command (e.g., <code>file --mime-type</code>) to obtain the types.</p>
+</li>
+<li>
+<p>Added a function <code>file_rename()</code> to deal with <code>file.rename()</code> failures by calling <code>file.copy()</code> (thanks, <a href="https://github.com/Giqles">@Giqles</a> <a href="https://github.com/katrinabrock">@katrinabrock</a>, <a href="https://github.com/rstudio/bookdown/issues/804">rstudio/bookdown#804</a>).</p>
+</li>
+<li>
+<p><code>new_app()</code> will use <code>utils::browseURL()</code> to open the app if <code>options('viewer')</code> is not configured (thanks, <a href="https://github.com/AlbertLei">@AlbertLei</a>, <a href="https://github.com/yihui/litedown/issues/29">yihui/litedown#29</a>).</p>
+</li>
+<li>
+<p>Added a method <code>record_print.record_asis()</code> to return the object as is.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-47" class="unnumbered">xfun 0.47</h2>
+<ul>
+<li>
+<p>Added functions <code>lazy_save()</code> and <code>lazy_load()</code> to save objects to files and lazy-load them.</p>
+</li>
+<li>
+<p>Fixed a bug in <code>record(dev = svglite::svglite)</code> that misplaced plots when low-level plot functions are used (thanks, <a href="https://github.com/liao961120">@liao961120</a>, <a href="https://github.com/yihui/litedown/issues/17">yihui/litedown#17</a>).</p>
+</li>
+<li>
+<p>Specified the lowest R version required (v3.2.0) for this package.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-46" class="unnumbered">xfun 0.46</h2>
+<ul>
+<li>
+<p><code>md_table()</code> should add a vertical ellipsis to row names when rows are truncated by the <code>limit</code> argument.</p>
+</li>
+<li>
+<p><code>session_info()</code> recognizes Positron now (thanks, <a href="https://github.com/chuxinyuan">@chuxinyuan</a>, <a href="https://github.com/yihui/xfun/issues/89">#89</a>).</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-45" class="unnumbered">xfun 0.45</h2>
+<ul>
+<li>
+<p>For <code>record()</code> with <code>verbose = 1</code> or <code>2</code>, invisible <code>NULL</code> is no longer printed.</p>
+</li>
+<li>
+<p><code>Rscript_call()</code> will show the actual error message (if an error occurred) during calling the function in a new R session.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-44" class="unnumbered">xfun 0.44</h2>
+<ul>
+<li>
+<p>Added a function <code>cache_exec()</code> to cache the execution of an expression either in memory or on disk. It is much more general and flexible than <code>cache_rds()</code>. For example, it supports custom reading/writing methods for cache files, and can load locally created variables in the expression while loading cache.</p>
+</li>
+<li>
+<p>Added an argument <code>cache</code> to <code>record()</code> to make it possible to enable caching.</p>
+</li>
+<li>
+<p>Added arguments <code>message</code> and <code>warning</code> to <code>record()</code> to decide whether messages and warnings should be recorded.</p>
+</li>
+<li>
+<p>Changed the default value of the argument <code>error</code> of <code>record()</code> from <code>FALSE</code> to <code>NA</code>. Now <code>FALSE</code> means to suppress error messages, and <code>NA</code> means to throw errors normally. This is for consistency with the <code>message</code> and <code>warning</code> arguments.</p>
+</li>
+<li>
+<p>Added an S3 generic function <code>record_print()</code>, which is similar to <code>knitr::knit_print()</code> but for the purpose of printing visible values in <code>record()</code>.</p>
+</li>
+<li>
+<p>The <code>record()</code> function gained new arguments <code>print</code> and <code>print.args</code> to support custom printing functions and arguments.</p>
+</li>
+<li>
+<p>Added a function <code>md_table()</code>, which is a minimal Markdown table generator.</p>
+</li>
+<li>
+<p>Exported the internal function <code>md5()</code> to calculate the MD5 checksums of R objects. The function is essentially a workaround for <code>tools::md5sum()</code> (see <a href="https://github.com/HenrikBengtsson/Wishlist-for-R/issues/21">HenrikBengtsson/Wishlist-for-R#21</a>).</p>
+</li>
+<li>
+<p>For <code>fenced_block()</code>, a space is added between the backticks and the language name, e.g., <code>```r</code> has become <code>``` r</code> now. This will affect snapshot tests based on Markdown (<a href="https://github.com/yihui/knitr-examples/commit/931e0a2">an example</a>).</p>
+</li>
+<li>
+<p>Added a shorthand <code>fenced_div()</code> for <code>fenced_block(char = ':')</code>.</p>
+</li>
+<li>
+<p><code>write_utf8()</code> returns the <code>con</code> argument (typically a file path) now. Previously, it returns <code>NULL</code>.</p>
+</li>
+<li>
+<p>Added an experimental function <code>new_app()</code> to create a local web application.</p>
+</li>
+<li>
+<p>The returned value of <code>yaml_body()</code> contains a new element <code>lines</code> in the list indicating the line numbers of YAML metadata if exists.</p>
+</li>
+<li>
+<p>Removed the <code>skip</code> argument from <code>split_source()</code>.</p>
+</li>
+<li>
+<p>For <code>split_source(line_number = TRUE)</code>, the attribute name for line numbers in the returned value was changed from <code>line_start</code> (a single starting line number) to <code>lines</code> (both the starting and ending numbers).</p>
+</li>
+<li>
+<p>Fixed an edge case in <code>prose_index()</code>, in which inline code was incorrectly recognized as a code block fence.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-43" class="unnumbered">xfun 0.43</h2>
+<ul>
+<li>
+<p>Added a function <code>upload_imgur()</code>, which was adapted from <code>knitr::imgur_upload()</code>. The latter will call the former in the future. <code>xfun::upload_imgur()</code> allows users to choose whether to use the system command <code>curl</code> or the R package <strong>curl</strong> to upload the image. It also has a new argument <code>include_xml</code> to specify whether the XML response needs to be included in the returned value.</p>
+</li>
+<li>
+<p>Added a function <code>fenced_block()</code> to create a fenced block in Markdown (thanks, <a href="https://github.com/cderv">@cderv</a>, <a href="https://github.com/yihui/knitr/issues/2331">yihui/knitr#2331</a>). The block can be either a code block or a fenced Div.</p>
+</li>
+<li>
+<p>Fixed a bug in <code>xfun::record()</code> when the argument <code>verbose = 1</code> or <code>2</code>.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-42" class="unnumbered">xfun 0.42</h2>
+<ul>
+<li>
+<p><code>isFALSE()</code> has been fully deprecated for R &gt;= 3.5.0, and will be completely removed from this package in the future (<a href="https://yihui.org/en/2023/02/xfun-isfalse/">https://yihui.org/en/2023/02/xfun-isfalse/</a>).</p>
+</li>
+<li>
+<p>Added a function <code>record()</code> to run R code and record the results, which is similar to <code>evaluate::evaluate()</code> but less sophisticated and technically simpler. One major difference is that <code>xfun::record()</code> records plots directly to files instead of saving them as display lists.</p>
+</li>
+<li>
+<p><code>yaml_load()</code> gained an <code>envir</code> argument, which can be used to specify the environment to evaluate R expressions in YAML (i.e., expressions written after <code>!expr</code> or <code>!r</code>). This is not straightforward in the upstream <strong>yaml</strong> package (thanks, <a href="https://github.com/viking">@viking</a>, <a href="https://github.com/vubiostat/r-yaml/issues/54">vubiostat/r-yaml#54</a>).</p>
+</li>
+<li>
+<p><code>yaml_body()</code> gained the <code>...</code> argument to pass more arguments to <code>yaml_load()</code>.</p>
+</li>
+<li>
+<p><code>split_source()</code> gained a <code>merge_comments</code> argument to merge consecutive lines of comments into the next code block, a <code>line_number</code> argument to store the line number of each expression in the returned value, and a <code>skip</code> argument to skip the rest of the code when the skip token is found.</p>
+</li>
+<li>
+<p><code>check_old_package()</code> has been vectorized, i.e., the arguments <code>name</code> and <code>version</code> can take vectors now.</p>
+</li>
+<li>
+<p>Factored out the code for parsing chunk options and dividing a chunk into chunk options and chunk body from <strong>knitr</strong> to this package as functions <code>csv_options()</code> and <code>divide_chunk()</code>, respectively. They will be used by <strong>knitr</strong> and other packages in future.</p>
+</li>
+<li>
+<p>Added a function <code>decimal_dot()</code> to evaluate an expression after forcing <code>options(OutDec = '.')</code> and <code>Sys.setlocale(LC_NUMERIC = 'C')</code> (for <a href="https://github.com/rstudio/rmarkdown/issues/2525">rstudio/rmarkdown#2525</a>).</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-41" class="unnumbered">xfun 0.41</h2>
+<ul>
+<li>
+<p><code>process_file()</code> will write to the file only if the processed text is different with the input text. This is to avoid writing files unnecessarily.</p>
+</li>
+<li>
+<p><code>session_info()</code> will remove extra blank lines (thanks, <a href="https://github.com/chuxinyuan">@chuxinyuan</a>, <a href="https://github.com/yihui/xfun/issues/82">#82</a>) and also omit the time zone info.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-40" class="unnumbered">xfun 0.40</h2>
+<ul>
+<li>
+<p><code>number_to_words()</code> supports decimal numbers now (thanks, <a href="https://github.com/harshvardhaniimi">@harshvardhaniimi</a>, <a href="https://github.com/yihui/xfun/issues/80">#80</a>).</p>
+</li>
+<li>
+<p><code>is_ascii()</code> is more robust now (thanks, <a href="https://github.com/bastistician">@bastistician</a>, <a href="https://github.com/yihui/xfun/issues/81">#81</a>).</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-39" class="unnumbered">xfun 0.39</h2>
+<ul>
+<li>
+<p>Fixed a bug that <code>protect_math()</code> fails to protect the starting <code>$$</code> that has leading white spaces.</p>
+</li>
+<li>
+<p>Added a function <code>strip_html()</code> to remove HTML tags and comments from text.</p>
+</li>
+<li>
+<p>The function <code>alnum_id()</code> will remove HTML tags and comments from text (using <code>strip_html()</code>) before converting it to an ID string.</p>
+</li>
+<li>
+<p>Added a function <code>env_option()</code> to retrieve an option value from <code>options()</code>. If the option does not exist there, check the environment variables. This provides a way for users to set an option via either <code>options()</code> or an environment variable.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-38" class="unnumbered">xfun 0.38</h2>
+<ul>
+<li>
+<p>Added an object <code>download_cache</code>, which is a list of methods to download a URL, cache the result, retrieve the result from the cache, and clear the cache.</p>
+</li>
+<li>
+<p>Added an argument <code>default</code> to <code>url_filename()</code> to provide a default filename when it cannot be determined from the URL.</p>
+</li>
+<li>
+<p>Added a function <code>yaml_load()</code> to read YAML data when the <strong>yaml</strong> package is not available. It only supports a limited number of data types and is supposed to be used as a fallback method. See the help page <code>?xfun::yaml_load</code> for details.</p>
+</li>
+<li>
+<p>Added a function <code>yaml_body()</code> to split a document into YAML metadata and the body.</p>
+</li>
+<li>
+<p><code>is_arm64()</code> also supports Linux now (thanks, <a href="https://github.com/eitsupi">@eitsupi</a>, <a href="https://github.com/yihui/xfun/issues/74">#74</a>).</p>
+</li>
+<li>
+<p><code>is_blank()</code> returns a logical vector of the same length as the input vector now, indicating if each element of the input is blank. Previously it returns a logical scalar indicating whether <em>all</em> elements are blank. If you want the old behavior, you can use <code>all(is_blank())</code>.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-37" class="unnumbered">xfun 0.37</h2>
+<ul>
+<li>
+<p>Added a function <code>is_arm64()</code> to test the CPU type (thanks, <a href="https://github.com/AlbanSagouis">@AlbanSagouis</a>, <a href="https://github.com/yihui/xfun/issues/72">#72</a>).</p>
+</li>
+<li>
+<p>Started deprecating <code>xfun::isFALSE()</code> in favor of <code>base::isFALSE()</code> for R &gt;= 3.5.0 (thanks, <a href="https://github.com/mmaechler">@mmaechler</a>, <a href="https://github.com/yihui/xfun/issues/66">#66</a>); <code>isFALSE()</code> will eventually be removed from <strong>xfun</strong> when we do not need to support R &lt; 3.5.0.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-36" class="unnumbered">xfun 0.36</h2>
+<ul>
+<li>Added a new argument <code>resolve_symlink</code> to <code>normalize_path()</code> to get the absolute paths of symlinks without resolving them (with <code>resolve_symlink = FALSE</code>).</li>
+</ul>
+<h2 id="sec:xfun-0-35" class="unnumbered">xfun 0.35</h2>
+<ul>
+<li>
+<p>Added a new argument <code>token</code> to <code>protect_math()</code> to optionally include a token around math expressions.</p>
+</li>
+<li>
+<p><code>base64_uri()</code> relies less on the <strong>mime</strong> package now. For some common file extensions (e.g., <code>.jpg</code>/<code>.png</code>), this function knows their MIME types.</p>
+</li>
+<li>
+<p><code>stringsAsStrings()</code> has been removed from this package.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-34" class="unnumbered">xfun 0.34</h2>
+<ul>
+<li>
+<p>Added a new function <code>alnum_id()</code> to generate ID strings from a character vector.</p>
+</li>
+<li>
+<p>The function <code>stringsAsStrings()</code> has been deprecated.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-33" class="unnumbered">xfun 0.33</h2>
+<ul>
+<li>
+<p>Reverted the change for <a href="https://github.com/yihui/xfun/issues/68">#68</a>: the characters <code>-+!_#</code> are no longer accepted by default in filename extensions, since they are relatively rare and caused a breakage in <a href="https://github.com/rstudio/bookdown/issues/1369">rstudio/bookdown#1369</a>. If you wish to allow for these characters, you may use the new <code>extra</code> argument in <code>file_ext()</code> and related functions, e.g., <code>xfun::file_ext(x, extra = '-+!_#')</code>.</p>
+</li>
+<li>
+<p>The function <code>stringsAsStrings()</code> will be deprecated in a future release of <strong>xfun</strong>, because the global option <code>stringsAsFactors = FALSE</code> has become the default in base R since 4.0.0.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-32" class="unnumbered">xfun 0.32</h2>
+<ul>
+<li>
+<p>Added a function <code>shrink_images()</code> to shrink images to a maximum width using the <strong>magick</strong> package (thanks, <a href="https://github.com/apreshill">@apreshill</a>, <a href="https://github.com/rstudio/blogdown/issues/614">rstudio/blogdown#614</a>).</p>
+</li>
+<li>
+<p>Added a function <code>tinify_dir()</code> as a wrapper of <code>tinify()</code> to compress images under a directory.</p>
+</li>
+<li>
+<p><code>file_ext()</code> supports more file extensions now, such as <code>.c++</code>, <code>.FB2K-COMPONENT</code>, and so on (thanks, <a href="https://github.com/tentacles-from-outer-space">@tentacles-from-outer-space</a>, <a href="https://github.com/yihui/xfun/issues/68">#68</a>).</p>
+</li>
+<li>
+<p>Fixed the issue that <code>xfun::base_pkgs()</code> could hang R (thanks, <a href="https://github.com/mmaechler">@mmaechler</a>, <a href="https://github.com/yihui/xfun/issues/66">#66</a>).</p>
+</li>
+<li>
+<p>The <code>...</code> argument in <code>dir_create()</code> was not passed to <code>dir.create()</code>.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-31" class="unnumbered">xfun 0.31</h2>
+<ul>
+<li>
+<p><code>github_releases(use_jsonlite = FALSE)</code> supports R versions below 4.1.0 now.</p>
+</li>
+<li>
+<p><code>session_info()</code> silently drops empty package names now (thanks, <a href="https://github.com/phargarten2">@phargarten2</a>, <a href="https://github.com/yihui/xfun/issues/65">#65</a>).</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-30" class="unnumbered">xfun 0.30</h2>
+<ul>
+<li>
+<p>Added a new function <code>is_blank()</code> (previously existed in <strong>knitr</strong>) to test if all elements of a character vector are blank (white spaces or empty strings).</p>
+</li>
+<li>
+<p>Added a new argument <code>error = TRUE</code> to <code>existing_files()</code>.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-29" class="unnumbered">xfun 0.29</h2>
+<ul>
+<li>
+<p><code>github_releases()</code> can fetch all releases (tags) of a Github repo now.</p>
+</li>
+<li>
+<p>Added an argument <code>.error</code> to <code>download_file()</code> so that users can customize the error message when the download fails.</p>
+</li>
+<li>
+<p>Added functions <code>rest_api_raw()</code> and <code>rest_api()</code> to get data from a REST API; also added the function <code>github_api()</code> to get data from the Github API based on <code>rest_api_raw()</code>.</p>
+</li>
+<li>
+<p>Added a wrapper function <code>system3()</code> based on <code>system2()</code> to mark the character output of <code>system2()</code> as UTF-8 if appropriate.</p>
+</li>
+<li>
+<p>Added a function <code>existing_files()</code> to return file paths that exist (a shorthand of <code>x[file.exists(x)]</code>).</p>
+</li>
+<li>
+<p>Added a function <code>read_all()</code> to read multiple files and concatenate the content into a character vector.</p>
+</li>
+<li>
+<p><code>url_accessible()</code> uses <code>curlGetHeaders()</code> by default (instead of <code>download_file()</code>) to test if a URL is accessible when the <strong>curl</strong> package is not available.</p>
+</li>
+<li>
+<p>When <code>options(xfun.rev_check.compare = FALSE)</code>, <code>rev_check()</code> will run <code>R CMD check</code> on reverse dependencies against a source package but not the CRAN version of this package. By default, this option is <code>TRUE</code>, meaning that <code>R CMD check</code> will run against both versions of the package.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-28" class="unnumbered">xfun 0.28</h2>
+<ul>
+<li>
+<p>Added a new function <code>url_accessible()</code> to test if a URL can be downloaded.</p>
+</li>
+<li>
+<p>Added a new function <code>try_error()</code> to try an expression and see if it throws an error.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-27" class="unnumbered">xfun 0.27</h2>
+<ul>
+<li>
+<p>Exported and documented the function <code>xfun::base_pkgs()</code> (to return base R package names).</p>
+</li>
+<li>
+<p>Changed the default value of the <code>status_only</code> argument of <code>compare_Rcheck()</code> from <code>FALSE</code> to <code>TRUE</code>.</p>
+</li>
+<li>
+<p>Added new functions <code>crandalf_check()</code> and <code>crandalf_results()</code> for checking (especially large numbers of) reverse dependencies of packages via <a href="https://github.com/yihui/crandalf"><strong>crandalf</strong></a>.</p>
+</li>
+<li>
+<p>Added new functions <code>append_utf8()</code> and <code>append_unique()</code> based on <code>read_utf8()</code> and <code>write_utf8()</code> to append content to files or connections.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-26" class="unnumbered">xfun 0.26</h2>
+<ul>
+<li>
+<p>The <code>windows_only</code> argument of <code>native_encode()</code> has been removed. Now <code>native_encode()</code> only tries the conversion to native encoding on platforms where <code>l10n_info()[['UTF-8']]</code> does not return <code>TRUE</code>.</p>
+</li>
+<li>
+<p>Added a <code>solaris</code> argument to <code>upload_win_builder()</code>.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-25" class="unnumbered">xfun 0.25</h2>
+<ul>
+<li>
+<p>Fixed a bug in <code>broken_packages()</code> (thanks, <a href="https://github.com/PythonCoderUnicorn">@PythonCoderUnicorn</a>, <a href="https://github.com/rstudio/rmarkdown/issues/1990">rstudio/rmarkdown#1990</a>).</p>
+</li>
+<li>
+<p>Added a <code>files</code> argument to <code>optipng()</code> so that users can specify the list of PNG files instead of running <code>optipng</code> on a whole directory.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-24" class="unnumbered">xfun 0.24</h2>
+<ul>
+<li>
+<p>Exported the internal function <code>broken_packages()</code> to reinstall broken R packages.</p>
+</li>
+<li>
+<p>Fixed the bug in <code>proj_root()</code> <a href="https://github.com/yihui/xfun/issues/54">#54</a> (thanks, <a href="https://github.com/clarkliming">@clarkliming</a>).</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-23" class="unnumbered">xfun 0.23</h2>
+<h3 id="sec:new-features_1" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>
+<p>Added a <code>tinify()</code> function to compress PNG/JPEG images via <a href="https://tinypng.com/developers">the Tinify API</a>.</p>
+</li>
+<li>
+<p>Added a <code>news2md()</code> function to convert package news to the Markdown format. This is mainly for converting the plain-text <code>NEWS</code> file and the <code>NEWS.Rd</code> file to <code>NEWS.md</code>.</p>
+</li>
+<li>
+<p>Added a <code>format_bytes()</code> function to format numbers of bytes using a specified unit, e.g., <code>1024</code> can be formatted as <code>1 Kb</code>.</p>
+</li>
+<li>
+<p>When using <code>pkg_load2()</code> in an <strong>renv</strong> project, it will use <code>renv::install()</code> to install missing packages by default to take advantage of <strong>renv</strong>’s caching feature (thanks, <a href="https://github.com/chunyunma">@chunyunma</a> <a href="https://github.com/cderv">@cderv</a>, <a href="https://github.com/yihui/xfun/issues/52">#52</a>).</p>
+</li>
+<li>
+<p><code>upload_win_builder()</code> no longer requires the system command <code>curl</code> to be available; if <code>curl</code> is not available, the R package <strong>curl</strong> will be used instead, which means this R package must be installed. In addition to uploading to the <code>ftp</code> server of win-builder, it’s also possible to upload to <a href="https://win-builder.r-project.org/upload.aspx">https://win-builder.r-project.org/upload.aspx</a>: call <code>upload_win_builder(..., server = 'https')</code>. This change was made so that it would be possible to continue to upload to win-builder in case it should stop supporting <code>ftp</code> (CRAN has discouraged package authors from using <code>ftp://</code>).</p>
+</li>
+</ul>
+<h3 id="sec:bug-fixes_1" class="unnumbered">BUG FIXES</h3>
+<ul>
+<li>Backticks are added to math environments by mistake when <code>\begin{}</code> and <code>\end{}</code> do not match (thanks, <a href="https://github.com/oliviergimenez">@oliviergimenez</a>, <a href="https://github.com/yihui/xfun/issues/51">#51</a>).</li>
+</ul>
+<h3 id="sec:minor-changes_1" class="unnumbered">MINOR CHANGES</h3>
+<ul>
+<li>
+<p>The argument <code>src</code> was renamed to <code>pkg</code> in <code>install_dir()</code>.</p>
+</li>
+<li>
+<p>The argument <code>file</code> of <code>upload_win_builder()</code> defaults to <code>pkg_build()</code> now, i.e., by default, it will build a source package and upload it, so you do not need to build the package separately.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-22" class="unnumbered">xfun 0.22</h2>
+<h3 id="sec:new-features_2" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>
+<p><code>relative_path()</code> is vectorized now.</p>
+</li>
+<li>
+<p>Added a new function <code>retry()</code> to retry calling a function for a number of times in case of errors.</p>
+</li>
+<li>
+<p>Added a new function <code>sort_file()</code>, which is a shorthand for <code>process_file(fun = sort)</code> to sort the lines in a text file.</p>
+</li>
+</ul>
+<h3 id="sec:major-changes" class="unnumbered">MAJOR CHANGES</h3>
+<ul>
+<li>The argument <code>FUN</code> was renamed to <code>fun</code> in <code>process_file()</code>.</li>
+</ul>
+<h3 id="sec:minor-changes_2" class="unnumbered">MINOR CHANGES</h3>
+<ul>
+<li>Inside <code>download_file()</code>, the <code>timeout</code> option in <code>options()</code> is set to 3600 seconds when it takes the default value of 60 seconds, which may not be enough for downloading large files (thanks, <a href="https://github.com/matthewgson">@matthewgson</a>, <a href="https://github.com/yihui/tinytex/issues/286">yihui/tinytex#286</a>).</li>
+</ul>
+<h2 id="sec:xfun-0-21" class="unnumbered">xfun 0.21</h2>
+<h3 id="sec:new-features_3" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>
+<p>Added a new function <code>pkg_available()</code> to test if a package with a minimal version is available (thanks, <a href="https://github.com/cderv">@cderv</a>, <a href="https://github.com/yihui/xfun/issues/45">#45</a>).</p>
+</li>
+<li>
+<p>Added a new function <code>set_envvar()</code> to set environment variables and return their old values, so they could be restored later.</p>
+</li>
+<li>
+<p>Added a new function <code>exit_call()</code> to call a function when a parent function exits.</p>
+</li>
+<li>
+<p>Exported the internal function <code>read_bin()</code>.</p>
+</li>
+<li>
+<p>Added an argument <code>verbose</code> to <code>bg_process()</code>.</p>
+</li>
+<li>
+<p><code>Rscript_call()</code> gains an <code>options</code> argument to pass command-line options to <code>Rscript</code> (thanks, <a href="https://github.com/cderv">@cderv</a>, <a href="https://github.com/yihui/xfun/issues/48">#48</a>).</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-20" class="unnumbered">xfun 0.20</h2>
+<h3 id="sec:new-features_4" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>
+<p>Added a function <code>msg_cat()</code> to generate a message with <code>cat()</code>. See the help page <code>?xfun::msg_cat</code> for more information.</p>
+</li>
+<li>
+<p>Added a function <code>mark_dirs()</code> to mark directories with a trailing slash in a vector of paths to differentiate them from normal filenames (#44).</p>
+</li>
+</ul>
+<h3 id="sec:bug-fixes_2" class="unnumbered">BUG FIXES</h3>
+<ul>
+<li>
+<p><code>xfun::proc_kill()</code> failed to work on *nix.</p>
+</li>
+<li>
+<p><code>xfun::del_empty_dir()</code> failed to delete empty dirs.</p>
+</li>
+<li>
+<p><code>xfun::file_string()</code> preserves emptiness (thanks, <a href="https://github.com/MichaelChirico">@MichaelChirico</a>, <a href="https://github.com/yihui/xfun/issues/38">#38</a>).</p>
+</li>
+<li>
+<p><code>xfun::raw_string()</code> preserves the class(es) of the input now (thanks, <a href="https://github.com/MichaelChirico">@MichaelChirico</a>, <a href="https://github.com/yihui/xfun/issues/40">#40</a>).</p>
+</li>
+</ul>
+<h3 id="sec:minor-changes_3" class="unnumbered">MINOR CHANGES</h3>
+<ul>
+<li>Exported the function <code>dir_create()</code>.</li>
+</ul>
+<h2 id="sec:xfun-0-19" class="unnumbered">xfun 0.19</h2>
+<h3 id="sec:new-features_5" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>
+<p>Added functions <code>bg_process()</code> to run a command in a background process, and <code>proc_kill()</code> to kill a process.</p>
+</li>
+<li>
+<p>Added a function <code>del_empty_dir()</code> to delete a directory if it is empty.</p>
+</li>
+<li>
+<p>Added functions <code>is_abs_path()</code> and <code>is_rel_path()</code> to check if paths are absolute or relative.</p>
+</li>
+<li>
+<p>Added a function <code>is_sub_path()</code> to test if a path is under a directory.</p>
+</li>
+<li>
+<p>Added a function <code>is_web_path()</code> to test if a path is a web path that starts with <code>http://</code> or <code>https://</code> or <code>ftp://</code> or <code>ftps://</code>.</p>
+</li>
+<li>
+<p>Documented and exported the previously internal functions <code>dir_exists()</code> and <code>file_exists()</code> (thanks, <a href="https://github.com/cderv">@cderv</a>, <a href="https://github.com/yihui/xfun/issues/36">#36</a>).</p>
+</li>
+<li>
+<p>Added a function <code>dir_create()</code> to create a directory recursively by default when it does not exist.</p>
+</li>
+<li>
+<p>Added an argument <code>fail</code> to <code>Rscript_call()</code> to allow users to customize the error message when an error occurred in calling the function in a new R session.</p>
+</li>
+</ul>
+<h3 id="sec:minor-changes_4" class="unnumbered">MINOR CHANGES</h3>
+<ul>
+<li><code>file_ext()</code>, <code>sans_ext()</code>, and <code>with_ext()</code> no longer use <code>tools::file_ext()</code> or <code>tools::file_path_sans_ext()</code>, but provide a slightly different implementation. They treat <code>tar.(gz|bz2|xz)</code> and <code>nb.html</code> as file extensions, and also allow extensions to contain a trailing <code>~</code> or <code>#</code>.</li>
+</ul>
+<h2 id="sec:xfun-0-18" class="unnumbered">xfun 0.18</h2>
+<h3 id="sec:new-features_6" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>
+<p>Added a function <code>grep_sub()</code> to perform replacement with <code>gsub()</code> on elements matched from <code>grep()</code>.</p>
+</li>
+<li>
+<p>Added a function <code>github_releases()</code> to obtain the tags from the Github releases of a repo.</p>
+</li>
+<li>
+<p>Added a function <code>bump_version()</code> to increase the last digit of version numbers by one.</p>
+</li>
+<li>
+<p>Moved a function <code>process_file()</code> from the <strong>blogdown</strong> package to this package, and documented it.</p>
+</li>
+<li>
+<p>Added a function <code>valid_syntax()</code> to check if an R code fragment is syntactically valid. This function was moved from the <strong>highr</strong> package.</p>
+</li>
+<li>
+<p>Added a function <code>url_filename()</code> to extract filenames from URLs. This function is used by <code>download_file()</code> to determine the default output filename.</p>
+</li>
+<li>
+<p>Added a function <code>do_once()</code> to perform a task once in an R session.</p>
+</li>
+<li>
+<p>Added a function <code>proj_root()</code> to find the root directory of a project. Currently it only supports R package projects and RStudio projects by default.</p>
+</li>
+<li>
+<p>Added a function <code>relative_path()</code> to calculate the relative path of a path relative to a directory.</p>
+</li>
+<li>
+<p>Added a function <code>from_root()</code>, which is similar to <code>here::here()</code> but returns a relative path instead of an absolute path.</p>
+</li>
+<li>
+<p>Added a function <code>magic_path()</code> that, given an incomplete input path, tries to find the actual path recursively under subdirectories of a root directory. For example, users may only provide a base filename, and <code>magic_path()</code> will look for this file under subdirectories and return the actual path if it is found.</p>
+</li>
+</ul>
+<h3 id="sec:minor-changes_5" class="unnumbered">MINOR CHANGES</h3>
+<ul>
+<li>Now <code>download_file()</code> tries the download method <code>winnet</code> first (previously it was <code>libcurl</code>) on Windows (thanks, <a href="https://github.com/cderv">@cderv</a>, <a href="https://github.com/yihui/xfun/issues/33">#33</a>).</li>
+</ul>
+<h2 id="sec:xfun-0-17" class="unnumbered">xfun 0.17</h2>
+<h3 id="sec:new-features_7" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>
+<p>Supports <code>xfun::pkg_attach(packages, install = &quot;pak&quot;)</code>, i.e., use <code>pak::pkg_install()</code> to install a package when it is not installed (thanks, <a href="https://github.com/GitHunter0">@GitHunter0</a>, <a href="https://github.com/yihui/xfun/issues/32">#32</a>).</p>
+</li>
+<li>
+<p>Added a new function <code>xfun::split_source()</code> to split lines of R source code into minimal complete expressions. This function was moved from the <strong>highr</strong> package.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-16" class="unnumbered">xfun 0.16</h2>
+<ul>
+<li>Added a new function <code>base64_decode()</code> to decode data from the base64 encoding (thanks, <a href="https://github.com/wush978">@wush978</a>, <a href="https://github.com/yihui/xfun/issues/31">#31</a>).</li>
+</ul>
+<h2 id="sec:xfun-0-15" class="unnumbered">xfun 0.15</h2>
+<h3 id="sec:new-features_8" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>
+<p>Added a new function <code>tree()</code>, which is based on <code>str()</code> in base R, but changes the output of <code>str()</code> into a tree diagram to make it easier to understand nested data structures.</p>
+</li>
+<li>
+<p>Added a new function <code>base64_encode()</code> to encode data into the base64 encoding (thanks, <a href="https://github.com/wush978">@wush978</a>, <a href="https://github.com/yihui/xfun/issues/27">#27</a>).</p>
+</li>
+<li>
+<p>Added a new function <code>base64_uri()</code> to generate the Data URI (or Data URL) for a file.</p>
+</li>
+</ul>
+<h3 id="sec:bug-fixes_3" class="unnumbered">BUG FIXES</h3>
+<ul>
+<li>Fenced code blocks commented out in <code>&lt;!-- --&gt;</code> are not longer recognized as code blocks but prose (thanks, <a href="https://github.com/jarauh">@jarauh</a>, <a href="https://github.com/yihui/xfun/issues/25">#25</a>).</li>
+</ul>
+<h2 id="sec:xfun-0-14" class="unnumbered">xfun 0.14</h2>
+<h3 id="sec:new-features_9" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>The <code>cache_rds()</code> function can invalidate the cache automatically when the code passed to its <code>expr</code> argument has changed. Two new arguments, <code>hash</code> and <code>clean</code> were added to this function to make it more useful and powerful. See the help page <code>?xfun::cache_rds()</code> for more information.</li>
+</ul>
+<h2 id="sec:xfun-0-13" class="unnumbered">xfun 0.13</h2>
+<h3 id="sec:new-features_10" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>
+<p>Added a new function <code>cache_rds()</code> to cache an R expression to a <code>*.rds</code> file.</p>
+</li>
+<li>
+<p>Added a new function <code>Rscript_call()</code> to call a function (with arguments) in a new R session via the command <code>Rscript</code>.</p>
+</li>
+<li>
+<p>The <code>recheck</code> argument of <code>rev_check()</code> can take a vector of package names, and only these packages will be checked. See <code>?xfun::rev_check</code> for more details.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-12" class="unnumbered">xfun 0.12</h2>
+<h3 id="sec:new-features_11" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>Added a new function <code>split_lines()</code>.</li>
+</ul>
+<h2 id="sec:xfun-0-11" class="unnumbered">xfun 0.11</h2>
+<h3 id="sec:bug-fixes_4" class="unnumbered">BUG FIXES</h3>
+<ul>
+<li><code>read_utf8()</code> will read the file with <code>options(encoding = 'native.enc')</code> and ignore user’s setting such as <code>options(encoding = 'UTF-8')</code> (#21).</li>
+</ul>
+<h2 id="sec:xfun-0-10" class="unnumbered">xfun 0.10</h2>
+<h3 id="sec:new-features_12" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>Added the function <code>as_strict_list()</code> to convert an existing object to a strict list without wrapping it in another list if the object already is of type list (in contrast to how <code>strict_list()</code> behaves) (thanks, <a href="https://github.com/salim-b">@salim-b</a>, <a href="https://github.com/yihui/xfun/issues/20">#20</a>).</li>
+</ul>
+<h2 id="sec:xfun-0-9" class="unnumbered">xfun 0.9</h2>
+<h3 id="sec:new-features_13" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>Added a function <code>rename_seq()</code> to rename files to add an incremental numeric prefix to the filenames, e.g., rename <code>a.txt</code>, <code>b.txt</code>, <code>c.txt</code> to <code>1-a.txt</code>, <code>2-b.txt</code>, <code>3-c.txt</code>.</li>
+</ul>
+<h2 id="sec:xfun-0-8" class="unnumbered">xfun 0.8</h2>
+<h3 id="sec:minor-changes_6" class="unnumbered">MINOR CHANGES</h3>
+<ul>
+<li><code>xfun::write_utf8(NULL)</code> is equivalent to <code>xfun::write_utf8(character(0))</code> now (thanks, <a href="https://github.com/schloerke">@schloerke</a>, <a href="https://github.com/yihui/knitr/issues/1714">yihui/knitr#1714</a>).</li>
+</ul>
+<h2 id="sec:xfun-0-7" class="unnumbered">xfun 0.7</h2>
+<h3 id="sec:minor-changes_7" class="unnumbered">MINOR CHANGES</h3>
+<ul>
+<li><code>loadable()</code> is quiet with R 3.6.0 (<a href="https://stat.ethz.ch/pipermail/r-devel/2019-May/077774.html">https://stat.ethz.ch/pipermail/r-devel/2019-May/077774.html</a>).</li>
+</ul>
+<h2 id="sec:xfun-0-6" class="unnumbered">xfun 0.6</h2>
+<h3 id="sec:new-features_14" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>Added the <code>...</code> argument to <code>same_path()</code> to pass additional arguments to <code>normalize_path()</code>.</li>
+</ul>
+<h3 id="sec:bug-fixes_5" class="unnumbered">BUG FIXES</h3>
+<ul>
+<li>The <code>warn</code> argument in <code>prose_index()</code> failed to suppress warnings.</li>
+</ul>
+<h2 id="sec:xfun-0-5" class="unnumbered">xfun 0.5</h2>
+<h3 id="sec:new-features_15" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>
+<p>Added functions <code>upload_ftp()</code> and <code>upload_win_builder()</code> to upload files to FTP servers.</p>
+</li>
+<li>
+<p>Added a function <code>stringsAsStrings()</code> (see its help page for details).</p>
+</li>
+<li>
+<p>Added an argument <code>warn</code> to <code>prose_index()</code> to suppress the warning when code fences are not balanced.</p>
+</li>
+</ul>
+<h3 id="sec:bug-fixes_6" class="unnumbered">BUG FIXES</h3>
+<ul>
+<li>Fixed the bug that <code>prose_index()</code> recognizes double backticks as code fences (thanks, <a href="https://github.com/shrektan">@shrektan</a>, <a href="https://github.com/yihui/xfun/issues/14">#14</a> <a href="https://github.com/yihui/xfun/issues/15">#15</a>).</li>
+</ul>
+<h2 id="sec:xfun-0-4" class="unnumbered">xfun 0.4</h2>
+<h3 id="sec:new-features_16" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>
+<p>Added functions <code>embed_file()</code>, <code>embed_dir()</code>, and <code>embed_files()</code> to embed files in an HTML output file (e.g., from R Markdown), so that the files can be directly downloaded from the web browser. One use case is to call one of these functions in an R code chunk of an Rmd document to embed the Rmd source document or data files in the HTML output, so readers can download them.</p>
+</li>
+<li>
+<p>Added a new argument <code>message</code> to <code>pkg_attach()</code>, so you can suppress package startup messages via <code>xfun::pkg_attach(..., message = FALSE)</code> or set the global option <code>options(xfun.pkg_attach.message = FALSE)</code> (thanks, <a href="https://github.com/wch">@wch</a>, <a href="https://github.com/yihui/knitr/issues/1583">yihui/knitr#1583</a>).</p>
+</li>
+</ul>
+<h3 id="sec:minor-changes_8" class="unnumbered">MINOR CHANGES</h3>
+<ul>
+<li>
+<p>The argument <code>rw_error</code> was moved from <code>gsub_dir()</code> to <code>gsub_file()</code> (<code>gsub_dir(rw_error = ...)</code> will still work).</p>
+</li>
+<li>
+<p><code>is_ascii()</code> now returns <code>NA</code> for <code>NA_character_</code> (thanks, <a href="https://github.com/shrektan">@shrektan</a>, <a href="https://github.com/yihui/xfun/issues/8">#8</a> <a href="https://github.com/yihui/xfun/issues/9">#9</a>).</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-3" class="unnumbered">xfun 0.3</h2>
+<h3 id="sec:new-features_17" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>
+<p>Added a new functions <code>download_file()</code> to try various methods to download a file.</p>
+</li>
+<li>
+<p>Added a new function <code>is_ascii()</code> to test if a character vector only consists of ASCII characters.</p>
+</li>
+<li>
+<p>Added a new function <code>numbers_to_words()</code> to convert numbers to English words (thanks, <a href="https://github.com/daijiang">@daijiang</a>, <a href="https://github.com/yihui/xfun/issues/3">#3</a>).</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-2" class="unnumbered">xfun 0.2</h2>
+<h3 id="sec:new-features_18" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>
+<p>Added a <code>new_session</code> argument to <code>loadable()</code>.</p>
+</li>
+<li>
+<p>Added new functions <code>gsub_file()</code>, <code>gsub_files()</code>, <code>gsub_dir()</code>, and <code>gsub_ext()</code> to replace strings in files.</p>
+</li>
+<li>
+<p>Added new functions <code>Rscript</code> and <code>Rcmd</code> as wrappers of <code>system2('Rscript')</code> and <code>system2('R', 'CMD')</code>, respectively.</p>
+</li>
+<li>
+<p>Added a new function <code>install_dir()</code> to install a source package from a directory.</p>
+</li>
+<li>
+<p>Added a new function <code>file_string()</code> to read a text file (encoded in UTF-8) and return its content a single character string (lines concatenated by <code>\n</code>).</p>
+</li>
+<li>
+<p>Added a new function <code>raw_string()</code> to print a character vector in its “raw” form using <code>cat(..., sep = '\n')</code> instead of <code>print()</code>, because the latter may introduce <code>[1]</code>, “extra” double quotes, and escape sequences, which are not very human-readable.</p>
+</li>
+<li>
+<p>Added a new function <code>session_info()</code> as an alternative to <code>sessionInfo()</code>.</p>
+</li>
+<li>
+<p>Added a new function <code>rev_check()</code> to run <code>R CMD check</code> on the reverse dependencies of a package, and a corresponding helper function <code>compare_Rcheck()</code> for showing the differences in logs with the CRAN version and the current version of the package, respectively.</p>
+</li>
+<li>
+<p>Added new functions for dealing with Markdown text: <code>prose_index()</code> returns the line indices of text that is prose (not code blocks), and <code>protect_math()</code> protects math expressions in Markdown in backticks.</p>
+</li>
+<li>
+<p>Added an <code>error</code> argument to <code>read_utf8()</code> to signal an error if the file is not encoded in UTF-8.</p>
+</li>
+</ul>
+<h2 id="sec:xfun-0-1" class="unnumbered">xfun 0.1</h2>
+<h3 id="sec:new-features_19" class="unnumbered">NEW FEATURES</h3>
+<ul>
+<li>
+<p><code>attr()</code> as an abbreviation of <code>base::attr(exact = TRUE)</code>.</p>
+</li>
+<li>
+<p><code>file_ext()</code>, <code>sans_ext()</code>, and <code>with_ext()</code> to manipulate extensions in filenames.</p>
+</li>
+<li>
+<p><code>in_dir()</code> to evaluate an R expression in a directory.</p>
+</li>
+<li>
+<p><code>isFALSE()</code> as an abbreviation of <code>identical(x, FALSE)</code>.</p>
+</li>
+<li>
+<p><code>is_windows()</code>, <code>is_macos()</code>, <code>is_linux()</code>, and <code>is_unix()</code> to test operating systems.</p>
+</li>
+<li>
+<p><code>native_encode()</code> to try to encode a character vector in the native encoding.</p>
+</li>
+<li>
+<p><code>normalize_path()</code> as an abbreviation of <code>normalizePath(winslash = '/', mustWork = FALSE)</code>.</p>
+</li>
+<li>
+<p><code>optipng()</code> to run the command <code>optipng</code> to optimize all PNG files under a directory.</p>
+</li>
+<li>
+<p><code>parse_only()</code> parses R code without keeping the source references.</p>
+</li>
+<li>
+<p><code>pkg_attach()</code> and <code>pkg_load()</code> to attach and load a vector of packages, respectively (and optionally, install the missing packages).</p>
+</li>
+<li>
+<p><code>read_utf8()</code> and <code>write_utf8()</code> to read and write UTF-8 files, respectively.</p>
+</li>
+<li>
+<p><code>same_path()</code> to test if two paths are the same.</p>
+</li>
+<li>
+<p><code>strict_list()</code> is a version of <code>list()</code> that disables partial matching of the <code>$</code> operator.</p>
+</li>
+<li>
+<p><code>tojson()</code> is a simple JSON serializer.</p>
+</li>
+<li>
+<p><code>try_silent()</code> is an abbreviation of <code>try(silent = TRUE)</code>.</p>
+</li>
+</ul>
+</div>
+<footer><div class="flex-col">
+<p>Developed by <a href="https://yihui.org">Yihui Xie</a></p>
+<p>Site built with <a href="https://github.com/yihui/litedown">litedown</a> v0.9.9</p>
+</div></footer>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.44/js/sidenotes.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.44/js/appendix.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.44/js/toc-highlight.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.44/js/copy-button.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.44/js/heading-anchor.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.44/js/pages.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/combine/npm/katex@0.17.0/dist/katex.min.js,npm/katex@0.17.0/dist/contrib/auto-render.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.44/js/render-katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+</body>
+</html>
