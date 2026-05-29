@@ -221,4 +221,23 @@ if (
     (!is.null(.proxy$apps[['my-app']]))
     (!is.null(get0('my-app', .httpd_env(), inherits = FALSE)))
   })
+
+  d = tempfile(); dir.create(d)
+  writeLines('hello', file.path(d, 'a.txt'))
+  url = serve_dir(d, name = 'serve-dir-test', open = FALSE)
+  on.exit({ stop_app('serve-dir-test'); unlink(d, recursive = TRUE) }, add = TRUE)
+
+  assert('serve_dir() registers an app and returns its URL', {
+    (grepl('/custom/serve-dir-test/$', url))
+    (!is.null(.proxy$apps[['serve-dir-test']]))
+    handler = get0('serve-dir-test', .httpd_env(), inherits = FALSE)
+    (!is.null(handler))
+    # request for the served file
+    r = handler('/custom/serve-dir-test/a.txt')
+    (basename(r$file) %==% 'a.txt')
+    # request for the directory listing
+    r = handler('/custom/serve-dir-test/')
+    (r$`content-type` %==% 'text/html')
+    (grepl('a.txt', r$payload))
+  })
 }

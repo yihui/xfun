@@ -16,6 +16,8 @@
 
 - `html_view()` gained a new argument `name` to customize the app name passed to `new_app()` (defaults to `'xfun-html'`).
 
+- Added a new function `serve_dir()` to serve a static directory of files via `new_app()`, similar to `servr::httd()` and Python's `http.server` module. If `index.html` is found under the directory, it will be served; otherwise a directory listing is shown.
+
 - `tojson()` will convert length 1 columns to arrays, too. Previously, such columns were converted to scalars, e.g., `data.frame(x = 1)` would be converted to `{"x": 1}` instead of `{"x": [1]}`. This makes sure data frame columns are always arrays in JSON.
 
 # CHANGES IN xfun VERSION 0.57
