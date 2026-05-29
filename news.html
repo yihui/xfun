@@ -213,6 +213,9 @@
 <p><code>html_view()</code> gained a new argument <code>name</code> to customize the app name passed to <code>new_app()</code> (defaults to <code>'xfun-html'</code>).</p>
 </li>
 <li>
+<p>Added a new function <code>serve_dir()</code> to serve a static directory of files via <code>new_app()</code>, similar to <code>servr::httd()</code> and Python’s <code>http.server</code> module. If <code>index.html</code> is found under the directory, it will be served; otherwise a directory listing is shown.</p>
+</li>
+<li>
 <p><code>tojson()</code> will convert length 1 columns to arrays, too. Previously, such columns were converted to scalars, e.g., <code>data.frame(x = 1)</code> would be converted to <code>{&quot;x&quot;: 1}</code> instead of <code>{&quot;x&quot;: [1]}</code>. This makes sure data frame columns are always arrays in JSON.</p>
 </li>
 </ul>
