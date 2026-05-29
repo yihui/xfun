@@ -10,8 +10,7 @@ R CMD build .
 R CMD INSTALL *_*.tar.gz
 
 # Test the package
-cd tests
-Rscript *.R
+Rscript tests/*.R
 ```
 
 Tests are typically in `tests/testit/test-*.R` (for each `R/foo.R`, there is a
@@ -89,28 +88,23 @@ Always send a pull request, unless you are told otherwise. For each PR:
     corresponding tests. If you add or fix a function, add assertions in the
     test file that cover the new or fixed behavior. Tests are the first place to
     catch regressions and errors.
-2.  **Always re-roxygenize**: Run `Rd2roxygen::rab()` after changing any
+2.  **Always re-roxygenize**: Run `Rd2roxygen::rab('.')` after changing any
     roxygen documentation to update man files
 3.  **MANDATORY: `R CMD check` before `git push`**: You MUST run a comprehensive
     `R CMD check` successfully before submitting ANY code changes.
-4.  **MANDATORY: Wait for CI to be green**: After pushing code, you MUST wait
-    for GitHub Actions CI to complete successfully before claiming the task is
-    done. Do not wait more than 5 minutes for any single CI job; if it hasn't
-    finished, skip it and continue your work. Fix problems in CI as soon as any
-    job has failed instead of waiting for all jobs to finish.
-5.  **MANDATORY: Merge latest main before pushing**: Before pushing to a branch
+4.  **MANDATORY: Merge latest main before pushing**: Before pushing to a branch
     or PR, always pull and merge the latest main branch. If there are merge
     conflicts, resolve them before pushing.
-6.  **Bump version in PRs**: Bump the patch version number in DESCRIPTION once
+5.  **Bump version in PRs**: Bump the patch version number in DESCRIPTION once
     per PR (on the first commit or when you first make changes), not on every
     commit to the PR
-7.  **Never commit irrelevant files**: Don't run `git add .` blindly, as that
+6.  **Never commit irrelevant files**: Don't run `git add .` blindly, as that
     might add irrelevant files such as generated output or other artifacts. In
     particular, after building/checking the package, clean up these possible
     generated artifacts: `rm -rf *.tar.gz *.Rcheck/ tests/R-lib-*`. Only add the
     ones you modified or created explicitly. Normally changes generated
     automatically by roxygen2 are the only exception (they should be committed).
-8.  **Update NEWS.md**: When making changes, make sure to update `NEWS.md`
+7.  **Update NEWS.md**: When making changes, make sure to update `NEWS.md`
     accordingly to document what changed. The first heading in NEWS.md always
     represents the dev version and must be of the form `# PKG x.y` where PKG is
     the package name and x.y is the next version to be released to CRAN (note:
