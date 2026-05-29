@@ -1,15 +1,5 @@
 library(testit)
 
-assert('redirect() builds a redirect response', {
-  r = redirect('/foo/')
-  (r$`status code` %==% 301L)
-  (r$header %==% 'Location: /foo/')
-  (r$`content-type` %==% 'text/html')
-  r2 = redirect('/404.html', 302L)
-  (r2$`status code` %==% 302L)
-  (r2$header %==% 'Location: /404.html')
-})
-
 assert('html_doc() wraps content in an HTML document', {
   x = html_doc('<p>hi</p>', 'My Title')
   (any(grepl('<!DOCTYPE html>', x)))
@@ -30,7 +20,7 @@ assert('fileinfo_table() builds a directory listing table', {
   (any(grepl('sub/', tbl)))
 })
 
-assert('.serve_path() serves files, dirs, and 404s', {
+assert('resolve_path() classifies files, dirs, redirects, and 404s', {
   d = tempfile(); dir.create(d)
   on.exit(unlink(d, recursive = TRUE))
   writeLines('hello', file.path(d, 'a.txt'))
@@ -40,50 +30,70 @@ assert('.serve_path() serves files, dirs, and 404s', {
 
   in_dir(d, {
     # root with index.html
-    r = .serve_path('.')
-    (basename(r$file) %==% 'index.html')
+    r = resolve_path('.')
+    (r$action %==% 'file')
+    (basename(r$path) %==% 'index.html')
 
     # explicit file
-    r = .serve_path('a.txt')
-    (basename(r$file) %==% 'a.txt')
+    r = resolve_path('a.txt')
+    (r$action %==% 'file')
+    (basename(r$path) %==% 'a.txt')
 
-    # directory without trailing slash redirects
-    r = .serve_path('sub')
-    (r$`status code` %==% 301L)
-    (r$header %==% 'Location: sub/')
+    # directory without trailing slash → caller redirects
+    r = resolve_path('sub')
+    (r$action %==% 'add-slash')
 
     # directory listing (trailing slash, no index.html)
-    r = .serve_path('sub/')
-    (r$`content-type` %==% 'text/html')
-    (grepl('Index of', r$payload))
-    (grepl('b.txt', r$payload))
+    r = resolve_path('sub/')
+    (r$action %==% 'payload')
+    (r$mime %==% 'text/html')
+    (grepl('Index of', r$body))
+    (grepl('b.txt', r$body))
 
-    # missing file gives 404
-    r = .serve_path('missing.txt')
-    (r$`status code` %==% 404L)
-    (grepl('Not found', r$payload))
+    # missing file gives 404 payload
+    r = resolve_path('missing.txt')
+    (r$action %==% 'payload')
+    (r$status %==% 404L)
+    (grepl('Not found', r$body))
 
     # favicon.ico falls back to R's built-in
-    r = .serve_path('favicon.ico')
-    (basename(r$file) %==% 'favicon.ico')
-    (r$`content-type` %==% 'image/x-icon')
+    r = resolve_path('favicon.ico')
+    (r$action %==% 'file')
+    (basename(r$path) %==% 'favicon.ico')
+    (r$mime %==% 'image/x-icon')
 
-    # custom 404.html redirect for page-like requests
+    # custom 404.html → caller redirects
     writeLines('<h1>404</h1>', '404.html')
-    r = .serve_path('nope.html')
-    (r$`status code` %==% 302L)
-    (r$header %==% 'Location: /404.html')
+    r = resolve_path('nope.html')
+    (r$action %==% '404-redirect')
   })
 })
 
-assert('.serve_dir_handler() resolves paths under the served dir', {
+assert('.resolve_path_to_httpd() maps to R httpd response shape', {
   d = tempfile(); dir.create(d)
   on.exit(unlink(d, recursive = TRUE))
   writeLines('hi', file.path(d, 'a.txt'))
-  h = .serve_dir_handler(normalizePath(d))
-  r = h('a.txt')
-  (basename(r$file) %==% 'a.txt')
-  # query/post/headers are accepted but ignored for static serving
-  r = h('a.txt', query = c(foo = 'bar'), post = NULL, headers = NULL)
-  (basename(r$file) %==% 'a.txt')
+  dir.create(file.path(d, 'sub'))
+
+  in_dir(d, {
+    # file response
+    r = .resolve_path_to_httpd('a.txt')
+    (basename(r$file) %==% 'a.txt')
+
+    # add-slash → 301 with Location header
+    r = .resolve_path_to_httpd('sub')
+    (r$`status code` %==% 301L)
+    (grepl('^Location: /sub/$', r$header))
+
+    # 404 payload
+    r = .resolve_path_to_httpd('missing.txt')
+    (r$`status code` %==% 404L)
+    (r$`content-type` %==% 'text/plain')
+
+    # 404.html redirect
+    writeLines('x', '404.html')
+    r = .resolve_path_to_httpd('nope.html')
+    (r$`status code` %==% 302L)
+    (r$header %==% 'Location: /404.html')
+  })
 })

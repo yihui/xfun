@@ -13,60 +13,66 @@
 #' xfun::serve_dir(tempdir())
 serve_dir = function(dir = '.', name = 'xfun-dir', ...) {
   dir = normalizePath(dir, mustWork = TRUE)
-  new_app(name, .serve_dir_handler(dir), ...)
-}
-
-# Build a handler for new_app() that serves files under `dir`. Returns a
-# function with the new_app() handler signature: function(path, query, post,
-# headers). The response shape is R's internal httpd shape (a list with
-# `payload` or `file`, `content-type`, and optionally `header`/`status code`).
-.serve_dir_handler = function(dir) {
-  function(path, query = NULL, post = NULL, headers = NULL) {
-    in_dir(dir, .serve_path(path))
+  handler = function(path, query = NULL, post = NULL, headers = NULL) {
+    in_dir(dir, .resolve_path_to_httpd(path))
   }
+  new_app(name, handler, ...)
 }
 
-# Resolve a request path under the current working directory and build a
-# response. `path` is the request path relative to the served directory; the
-# caller must have already chdir-ed to that directory.
-.serve_path = function(path) {
+# Resolve a request path under the current working directory and return a
+# neutral intermediate response. This is the shared core used by both
+# `xfun::serve_dir()` (mapped to R's internal httpd shape) and
+# `servr:::serve_dir()` (mapped to the httpuv shape). The `action` field is
+# one of:
+#   'file'         — list(action, path = <abs>, mime)
+#   'payload'      — list(action, body = <text>, mime, status)
+#   'add-slash'    — caller redirects to its own request URL + '/'
+#   '404-redirect' — caller redirects to '/404.html' (if such a file exists)
+resolve_path = function(path) {
   if (path == '' || path == '/') path = '.'
   if (file_test('-d', path)) {
-    # ensure a trailing slash so relative links inside resolve correctly
-    if (path != '.' && !grepl('/$', path)) return(redirect(sprintf('%s/', path)))
+    # ensure a trailing slash so relative links inside the dir resolve correctly
+    if (path != '.' && !grepl('/$', path)) return(list(action = 'add-slash'))
     idx = file.path(path, 'index.html')
-    if (file_exists(idx)) return(list(
-      file = normalizePath(idx), `content-type` = mime_type(idx)
-    ))
+    if (file_exists(idx))
+      return(list(action = 'file', path = normalizePath(idx), mime = mime_type(idx)))
     title = html_escape(path)
     info = file.info(list.files(path, all.files = TRUE, full.names = TRUE))
-    body = c(sprintf('<h1>Index of %s</h1>', title), fileinfo_table(info))
-    return(list(
-      payload = one_string(html_doc(body, title)), `content-type` = 'text/html'
+    body = one_string(html_doc(
+      c(sprintf('<h1>Index of %s</h1>', title), fileinfo_table(info)), title
     ))
+    return(list(action = 'payload', body = body, mime = 'text/html', status = 200L))
   }
   if (!file_exists(path)) {
     if (path == 'favicon.ico') return(list(
-      file = file.path(R.home('doc'), 'html', 'favicon.ico'),
-      `content-type` = 'image/x-icon'
+      action = 'file', path = file.path(R.home('doc'), 'html', 'favicon.ico'),
+      mime = 'image/x-icon'
     ))
-    # redirect to a custom 404.html if it exists and request looks like a page
+    # redirect to a custom 404.html if it exists and the request looks like a page
     if (file_exists('404.html') && grepl('(/|[.]html)$', path, ignore.case = TRUE))
-      return(redirect('/404.html', 302L))
+      return(list(action = '404-redirect'))
     return(list(
-      payload = paste('Not found:', path), `content-type` = 'text/plain',
-      `status code` = 404L
+      action = 'payload', body = paste('Not found:', path),
+      mime = 'text/plain', status = 404L
     ))
   }
-  list(file = normalizePath(path), `content-type` = mime_type(path))
+  list(action = 'file', path = normalizePath(path), mime = mime_type(path))
 }
 
-# Build a response that redirects to `dest` with the given HTTP status.
-redirect = function(dest, status = 301L) {
-  list(
+# Map the neutral response to R's internal httpd response shape.
+.resolve_path_to_httpd = function(path) {
+  r = resolve_path(path)
+  redir = function(dest, status) list(
     payload = sprintf('Redirect to <a href="%s">%s</a>', dest, dest),
     `content-type` = 'text/html', header = paste0('Location: ', dest),
     `status code` = as.integer(status)
+  )
+  switch(
+    r$action,
+    file = list(file = r$path, `content-type` = r$mime),
+    payload = list(payload = r$body, `content-type` = r$mime, `status code` = r$status),
+    `add-slash` = redir(sprintf('%s/', sub('^/?', '/', path)), 301L),
+    `404-redirect` = redir('/404.html', 302L)
   )
 }
 
