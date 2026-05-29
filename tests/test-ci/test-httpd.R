@@ -207,4 +207,18 @@ if (
     (is.null(.proxy$apps[['test']]))
     (is.null(get0('test', .httpd_env(), inherits = FALSE)))
   })
+
+  assert('html_view() uses default name "xfun-html"', {
+    html_view('<p>hi</p>', open = FALSE)
+    on.exit(stop_app('xfun-html'), add = TRUE)
+    (!is.null(.proxy$apps[['xfun-html']]))
+    (!is.null(get0('xfun-html', .httpd_env(), inherits = FALSE)))
+  })
+
+  assert('html_view() accepts a custom name', {
+    html_view('<p>hi</p>', name = 'my-app', open = FALSE)
+    on.exit(stop_app('my-app'), add = TRUE)
+    (!is.null(.proxy$apps[['my-app']]))
+    (!is.null(get0('my-app', .httpd_env(), inherits = FALSE)))
+  })
 }

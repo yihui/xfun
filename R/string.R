@@ -457,6 +457,7 @@ html_value = function(x) structure(x, class = .html_class2, lang = '.html')
 
 #' @param attr Whether to escape `"`, `\r`, and `\n` (which should be escaped
 #'   for tag attributes).
+#' @param name The app name passed to [new_app()].
 #' @rdname html_tag
 #' @export
 #' @examples
@@ -477,8 +478,8 @@ html_escape = function(x, attr = FALSE) {
 
 #' @rdname html_tag
 #' @export
-html_view = function(x, ...) {
-  new_app('xfun-html', function(path, ...) {
+html_view = function(x, name = 'xfun-html', ...) {
+  new_app(name, function(path, ...) {
     if (dir_exists(path)) list(payload = if (path == '.') one_string(x) else path) else {
       list(file = normalizePath(path), `content-type` = mime_type(path))
     }

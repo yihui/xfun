@@ -13,7 +13,7 @@ html_value(x)
 
 html_escape(x, attr = FALSE)
 
-html_view(x, ...)
+html_view(x, name = "xfun-html", ...)
 }
 \arguments{
 \item{.name}{The tag name.}
@@ -34,6 +34,8 @@ attributes. For \code{html_view()}, other arguments to be passed to \code{\link[
 
 \item{attr}{Whether to escape \verb{"}, \verb{\\r}, and \verb{\\n} (which should be escaped
 for tag attributes).}
+
+\item{name}{The app name passed to \code{\link[=new_app]{new_app()}}.}
 }
 \value{
 A character string.

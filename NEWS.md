@@ -14,6 +14,8 @@
 
 - `html_view()` should join the input character vector by `\n`, otherwise only the first element of the vector will be passed to the browser (thanks, @XiangyunHuang, yihui/gglite#15).
 
+- `html_view()` gained a new argument `name` to customize the app name passed to `new_app()` (defaults to `'xfun-html'`).
+
 - `tojson()` will convert length 1 columns to arrays, too. Previously, such columns were converted to scalars, e.g., `data.frame(x = 1)` would be converted to `{"x": 1}` instead of `{"x": [1]}`. This makes sure data frame columns are always arrays in JSON.
 
 # CHANGES IN xfun VERSION 0.57
