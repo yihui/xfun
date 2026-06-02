@@ -12,3 +12,4 @@ xfun_*.tar.gz
 
 *.Rcheck/
 tests/R-lib-*/
+.positai

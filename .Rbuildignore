@@ -4,3 +4,6 @@
 ^\.github$
 ^README\.md$
 ^NEWS\.md$
+^\.positai$
+^\.claude$
+^CLAUDE\.md$
