@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<meta name="generator" content="litedown 0.9.9">
+<meta name="generator" content="litedown 0.9.10">
 <title>An Introduction to xfun</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.45/css/default.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.45/css/article.min.css">
@@ -14,7 +14,7 @@
 <div class="title"><h1>An Introduction to xfun</h1></div>
 <div class="subtitle"><h2>A Collection of Miscellaneous Functions</h2></div>
 <div class="author"><h2>Yihui Xie</h2></div>
-<div class="date"><h3>2026-05-29</h3></div>
+<div class="date"><h3>2026-06-02</h3></div>
 </div>
 <div class="body">
 <div id="TOC">
@@ -115,7 +115,7 @@ COPYRIGHT HOLDER: Yihui Xie
 <pre><code>[1] &quot;YEAR: 2018-2026\nCOPYRIGHT HOLDER: Yihui Xie&quot;
 </code></pre>
 <h2 id="sec:get-the-data-uri-of-a-file"><span class="section-number main-number">4</span> Get the data URI of a file</h2>
-<p>Files can be encoded into base64 strings via <code>base64_uri()</code>. This is a common technique to embed arbitrary files in HTML documents (which is <a href="https://yihui.org/rmarkdown-cookbook/embed-file.html">what <code>xfun::embed_file()</code> does</a> and it is based on <code>base64_uri()</code>).</p>
+<p>Files can be encoded into base64 strings via <code>base64_uri()</code>. This is a common technique to embed arbitrary files in HTML documents (which is <a href="https://pkg.yihui.org/rmarkdown-cookbook/embed-file.html">what <code>xfun::embed_file()</code> does</a> and it is based on <code>base64_uri()</code>).</p>
 <pre><code class="language-r">f = system.file(&quot;LICENSE&quot;, package = &quot;xfun&quot;)
 xfun::base64_uri(f)
 </code></pre>
@@ -260,7 +260,7 @@ library(tinytex)
 <pre><code>#&gt; [1] &quot;nine hundred ninety-nine trillion, nine hundred ninety-nine billion, nine hundred ninety-nine million, nine hundred ninety-nine thousand, nine hundred ninety-nine&quot;
 </code></pre>
 <h2 id="sec:cache-an-r-expression-to-disk-or-in-memory"><span class="section-number main-number">13</span> Cache an R expression to disk or in memory</h2>
-<p>Since <strong>xfun</strong> v0.44, you are recommended to use the function <a href="https://pkg.yihui.org/xfun/manual.html#sec:man-cache_exec"><code>cache_exec()</code></a>, which provides a simple yet flexible caching mechanism. See <a href="https://yihui.org/litedown/#sec:option-cache">https://yihui.org/litedown/#sec:option-cache</a> for how it works. Previously, <code>cache_rds()</code> was mentioned here but it is no longer recommended (see <a href="https://github.com/yihui/xfun/issues/100">#100</a>).</p>
+<p>Since <strong>xfun</strong> v0.44, you are recommended to use the function <a href="https://pkg.yihui.org/xfun/manual.html#sec:man-cache_exec"><code>cache_exec()</code></a>, which provides a simple yet flexible caching mechanism. See <a href="https://pkg.yihui.org/litedown/book/">https://pkg.yihui.org/litedown/book/</a> for how it works. Previously, <code>cache_rds()</code> was mentioned here but it is no longer recommended (see <a href="https://github.com/yihui/xfun/issues/100">#100</a>).</p>
 <h2 id="sec:check-reverse-dependencies-of-a-package"><span class="section-number main-number">14</span> Check reverse dependencies of a package</h2>
 <p>Running <code>R CMD check</code> on the reverse dependencies of <strong>knitr</strong> and <strong>rmarkdown</strong> is my least favorite thing in developing R packages, because the numbers of their reverse dependencies are huge. The function <code>rev_check()</code> reflects some of my past experience in this process. I think I have automated it as much as possible, and made it as easy as possible to discover possible new problems introduced by the current version of the package (compared to the CRAN version). Finally I can just sit back and let it run.</p>
 <h2 id="sec:input-a-character-vector-into-the-rstudio-source-editor"><span class="section-number main-number">15</span> Input a character vector into the RStudio source editor</h2>
@@ -277,7 +277,7 @@ Running under: macOS Sequoia 15.7.7
 Locale: en_US.UTF-8 / en_US.UTF-8 / en_US.UTF-8 / C / en_US.UTF-8 / en_US.UTF-8
 
 Package version:
-  litedown_0.9.9 tinytex_0.59   xfun_0.57.11  
+  litedown_0.9.10 tinytex_0.59    xfun_0.58.1    
 
 </code></pre>
 </div>
