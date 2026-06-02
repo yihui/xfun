@@ -30,7 +30,8 @@ to the file specified by the \code{path}.
 }
 \description{
 TAML is a tiny subset of YAML. See
-\url{https://yihui.org/litedown/#sec:yaml-syntax} for its specifications.
+\url{https://pkg.yihui.org/litedown/book/#sec:yaml-syntax} for its
+specifications.
 }
 \examples{
 (res = taml_load("a: 1"))

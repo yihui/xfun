@@ -38,7 +38,8 @@ yaml_load = function(
 #' A simple YAML reader and writer
 #'
 #' TAML is a tiny subset of YAML. See
-#' <https://yihui.org/litedown/#sec:yaml-syntax> for its specifications.
+#' <https://pkg.yihui.org/litedown/book/#sec:yaml-syntax> for its
+#' specifications.
 #' @param x For `taml_load()`, a character vector of the YAML content. For
 #'   `taml_save()`, a list to be converted to YAML.
 #' @param path A file path to read from or write to.

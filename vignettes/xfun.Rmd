@@ -75,7 +75,7 @@ as.character(xfun::file_string(f))  # essentially a character string
 
 ## Get the data URI of a file
 
-Files can be encoded into base64 strings via `base64_uri()`. This is a common technique to embed arbitrary files in HTML documents (which is [what `xfun::embed_file()` does](https://yihui.org/rmarkdown-cookbook/embed-file.html) and it is based on `base64_uri()`).
+Files can be encoded into base64 strings via `base64_uri()`. This is a common technique to embed arbitrary files in HTML documents (which is [what `xfun::embed_file()` does](https://pkg.yihui.org/rmarkdown-cookbook/embed-file.html) and it is based on `base64_uri()`).
 
 ```{r}
 f = system.file("LICENSE", package = "xfun")
@@ -212,7 +212,7 @@ n2w(1e+15 - 1)
 
 ## Cache an R expression to disk or in memory
 
-Since **xfun** v0.44, you are recommended to use the function [`cache_exec()`](https://pkg.yihui.org/xfun/manual.html#sec:man-cache_exec), which provides a simple yet flexible caching mechanism. See https://yihui.org/litedown/#sec:option-cache for how it works. Previously, `cache_rds()` was mentioned here but it is no longer recommended (see [#100](https://github.com/yihui/xfun/issues/100)).
+Since **xfun** v0.44, you are recommended to use the function [`cache_exec()`](https://pkg.yihui.org/xfun/manual.html#sec:man-cache_exec), which provides a simple yet flexible caching mechanism. See https://pkg.yihui.org/litedown/book/ for how it works. Previously, `cache_rds()` was mentioned here but it is no longer recommended (see [#100](https://github.com/yihui/xfun/issues/100)).
 
 ## Check reverse dependencies of a package
 

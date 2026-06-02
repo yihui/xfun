@@ -65,8 +65,8 @@
 #'   loaded and returned (other local variables will also be lazy-loaded into
 #'   the current environment as a side-effect). If cache does not exist, the
 #'   expression is executed and its value is returned.
-#' @references See <https://yihui.org/litedown/#sec:option-cache> for how it
-#'   works and an application in \pkg{litedown}.
+#' @references See <https://pkg.yihui.org/litedown/book/#sec:option-cache> for
+#'   how it works and an application in \pkg{litedown}.
 #' @export
 #' @examples
 #' # the first run takes about 1 second
