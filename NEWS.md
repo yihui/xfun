@@ -1,3 +1,6 @@
+# CHANGES IN xfun VERSION 0.59
+
+
 # CHANGES IN xfun VERSION 0.58
 
 - `md_table()` gained a new argument `escape` to backslash-escape special Markdown characters in table cells, which prevents content like `<foo:bar>` from being interpreted as links (thanks, @tdhock, yihui/litedown#131). It can be `TRUE` (all columns), a vector of column names/indices (selective), or set globally via `options(xfun.md_table.escape = TRUE)`.
