@@ -51,6 +51,12 @@ assert('json_vector() converts atomic vectors to JSON', {
 assert('json_atomic() handles Date, POSIXct, and factor', {
   d = as.Date('2024-01-15')
   (json_atomic(d) %==% 'new Date("2024-01-15")')
+  # Date/POSIXt in data.frames (I() must not trigger format.AsIs truncation)
+  t = as.POSIXct(c('2024-01-15 09:30:00', '2024-01-15 17:45:00'), tz = 'UTC')
+  (.tojson(data.frame(t = t)) %==%
+    '{\n  "t": [new Date("2024-01-15 09:30:00"), new Date("2024-01-15 17:45:00")]\n}')
+  # single-row Date data.frame still produces an array
+  (.tojson(data.frame(d = d)) %==% '{\n  "d": [new Date("2024-01-15")]\n}')
   f = factor(c('a', 'b', 'a'))
   (json_atomic(f) %==% '["a", "b", "a"]')
 })
