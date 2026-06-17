@@ -69,3 +69,56 @@ assert('find_globals() handles language input', {
   e$z = 99
   (find_globals(quote(y <- z + 1), e) %==% 'z')
 })
+
+assert('md5() returns consistent checksums', {
+  x1 = 1; x2 = 1:10; x3 = seq(1, 10)
+  m = md5(x1, x2, x3)
+  (length(m) %==% 3L)
+  (is.character(m))
+  (nchar(m) %==% c(32L, 32L, 32L))
+  # x2 and x3 are identical sequences
+  (m[2] %==% m[3])
+  # named arguments
+  mn = md5(a = x1, b = x2)
+  (names(mn) %==% c('a', 'b'))
+})
+
+assert('md5_one() produces a 32-character hex string', {
+  h = md5_one(42)
+  (is.character(h) && nchar(h) %==% 32L)
+  # same object same hash
+  (md5_one(42) %==% md5_one(42))
+  # different objects different hashes
+  (md5_one(42) != md5_one(43))
+})
+
+assert('cache_exec() with vars argument lazy-loads locals on cache hit', {
+  # first run: populates cache
+  r1 = cache_exec({
+    local_var = 123
+    local_var
+  }, path = ':memory:', id = 'vars-lazy-test', vars = 'local_var')
+  (r1 %==% 123)
+  # second run: hits cache and lazy-loads local_var into the calling env
+  r2 = cache_exec({
+    local_var = 123
+    local_var
+  }, path = ':memory:', id = 'vars-lazy-test', vars = 'local_var')
+  (r2 %==% 123)
+  # local_var should have been lazy-loaded into the current environment
+  (local_var %==% 123)
+})
+
+assert('cache_code() cleans up hash dict when path is NULL', {
+  # seed the dict with a fake hash for 'x', then call cache_code with path = NULL
+  assign('x', 'fakehash', envir = .cache_dict)
+  (exists('x', envir = .cache_dict, inherits = FALSE))
+  cache_code(quote(x <- 1), parent.frame(), config = list(path = NULL, vars = 'x'))
+  # the stale entry should have been removed
+  (!exists('x', envir = .cache_dict, inherits = FALSE))
+})
+
+assert('find_globals() returns character(0) when no globals exist', {
+  e = new.env(parent = emptyenv())
+  (find_globals('y = 1 + 1', e) %==% character(0))
+})

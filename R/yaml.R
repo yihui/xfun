@@ -184,7 +184,7 @@ yaml_value = function(x, envir = parent.frame()) {
 }
 
 # convert true/false/na to boolean
-yaml_bool = function(x) all(grepl('^true|false|na$', x))
+yaml_bool = function(x) all(grepl('^(true|false|na)$', x))
 # remove optional quotes for strings
 yaml_unquote = function(x) gsub('^["\']|["\']$', '', x)
 

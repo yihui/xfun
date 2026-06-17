@@ -205,6 +205,24 @@ assert('taml_save() writes to a file when path is provided', {
   unlink(f)
 })
 
+assert('yaml_bool() only matches exact boolean words (regression: ^true|false|na$ was parsed wrong)', {
+  # bug: '^true|false|na$' is '(^true)|(false)|(na$)', so 'extrafalse' matched 'false'
+  (yaml_bool('true'))
+  (yaml_bool('false'))
+  (yaml_bool('na'))
+  (!yaml_bool('extrafalse'))   # contains 'false' but is not 'false'
+  (!yaml_bool('trueblue'))     # starts with 'true' but is not 'true'
+  (!yaml_bool('final'))        # ends in 'na' but is not 'na'
+  (!yaml_bool('banana'))       # contains 'na' but is not 'na'
+  # vector: all elements must be boolean words
+  (yaml_bool(c('true', 'false', 'na')))
+  (!yaml_bool(c('true', 'maybe')))
+  # taml_load must not treat 'extrafalse' as boolean
+  (taml_load('key: extrafalse') %==% list(key = 'extrafalse'))
+  (taml_load('key: trueblue') %==% list(key = 'trueblue'))
+  (taml_load('key: banana') %==% list(key = 'banana'))
+})
+
 assert('yaml_body() splits YAML front matter from body', {
   doc = c('---', 'title: Hello', 'output: html', '---', '', 'Content here.')
   res = yaml_body(doc)

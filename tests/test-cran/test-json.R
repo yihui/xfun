@@ -44,8 +44,9 @@ assert('json_vector() converts atomic vectors to JSON', {
   (json_vector(c('a', 'b'), to_array = TRUE) %==% '["a", "b"]')
   (json_vector(c('a', 'b'), to_array = FALSE) %==% c('"a"', '"b"'))
   (json_vector(1:3, to_array = TRUE, quote = FALSE) %==% '[1, 2, 3]')
-  # NA becomes null
+  # NA becomes null (character and numeric)
   (json_vector(c('a', NA_character_), to_array = TRUE) %==% '["a", null]')
+  (json_vector(c(1, NA, 3), to_array = TRUE, quote = FALSE) %==% '[1, null, 3]')
 })
 
 assert('json_atomic() handles Date, POSIXct, and factor', {
@@ -65,4 +66,20 @@ assert('.tojson() handles arrays', {
   m = matrix(1:4, nrow = 2)
   out = .tojson(m)
   (grepl('\\[', out))  # should produce nested arrays
+})
+
+assert('json_vector() escapes control characters in strings', {
+  # newline, backspace, formfeed, carriage return, tab must all be escaped
+  (json_vector('\n', to_array = FALSE) %==% '"\\n"')
+  (json_vector('\b', to_array = FALSE) %==% '"\\b"')
+  (json_vector('\f', to_array = FALSE) %==% '"\\f"')
+  (json_vector('\r', to_array = FALSE) %==% '"\\r"')
+  (json_vector('\t', to_array = FALSE) %==% '"\\t"')
+  # backslash and double-quote must be escaped (via quote_string)
+  (json_vector('a\\b', to_array = FALSE) %==% '"a\\\\b"')
+  (json_vector('say "hi"', to_array = FALSE) %==% '"say \\"hi\\""')
+})
+
+assert('quote_string() returns character(0) for empty input', {
+  (quote_string(character(0)) %==% character(0))
 })

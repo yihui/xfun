@@ -175,3 +175,43 @@ assert('encrypt() and decrypt() are inverses', {
   x = 'hello'
   (decrypt(encrypt(x, key), key) %==% x)
 })
+
+assert('n2w() handles large numbers and trillion range', {
+  (n2w(1e12) %==% 'one trillion')
+  (n2w(1e9) %==% 'one billion')
+  (n2w(1e6) %==% 'one million')
+  (n2w(1000) %==% 'one thousand')
+  (n2w(1e14) %==% 'one hundred trillion')
+  # number just below the limit
+  (is.character(n2w(1e15 - 1)))
+})
+
+assert('n2w() handles vectors and zero correctly', {
+  (n2w(0:3) %==% c('zero', 'one', 'two', 'three'))
+})
+
+assert('join_words() with length-1 input and oxford_comma edge cases', {
+  jw = function(...) unclass(join_words(...))
+  # single word
+  (jw('hello') %==% 'hello')
+  # oxford comma with sep not ending in space
+  (jw(c('a', 'b', 'c'), sep = ', ', and = ' and ', oxford_comma = TRUE) %==% 'a, b, and c')
+  (jw(c('a', 'b', 'c'), sep = ', ', and = ' and ', oxford_comma = FALSE) %==% 'a, b and c')
+  rm(list = 'jw')
+})
+
+assert('split_lines() handles \\r\\n line endings', {
+  # CRLF should be split the same as LF
+  (split_lines('a\r\nb') %==% c('a', 'b'))
+  (split_lines('a\r\nb\r\n') %==% c('a', 'b', ''))
+})
+
+assert('alnum_id() strips HTML tags before generating ID', {
+  (alnum_id('<h1>Hello <strong>world</strong>!') %==% 'hello-world')
+})
+
+assert('strip_html() handles multiline-like patterns and nested tags', {
+  (strip_html('<!-- comment --><b>text</b>') %==% 'text')
+  # nested tags
+  (strip_html('<div><p>hello</p></div>') %==% 'hello')
+})

@@ -189,3 +189,45 @@ assert('func_name() returns the name of the calling function', {
   f = function() func_name(sys.nframe())
   (f() %==% 'f')
 })
+
+assert('exit_call() registers on.exit in the specified parent frame', {
+  e = new.env(parent = emptyenv()); e$cleaned = FALSE
+  inner = function() {
+    # n=1: register in inner() itself (exits when inner returns)
+    exit_call(function() e$cleaned = TRUE, n = 1)
+  }
+  inner()
+  (e$cleaned)
+
+  # n=2 (default): register on.exit in the caller of the function that called exit_call
+  e2 = new.env(parent = emptyenv()); e2$cleaned = FALSE
+  inner2 = function() exit_call(function() e2$cleaned = TRUE, n = 2)
+  outer2 = function() { inner2() }
+  outer2()
+  (e2$cleaned)
+})
+
+assert('format_bytes() formats various byte sizes', {
+  (format_bytes(c(1, 1024, 1e6, 1e9)) %==% c('1 bytes', '1 Kb', '976.6 Kb', '953.7 Mb'))
+})
+
+assert('gsubf() does fixed-string substitution', {
+  (gsubf('a.b', 'X', 'a.b c a.b') %==% 'X c X')
+  # should NOT treat '.' as regex wildcard
+  (gsubf('a.b', 'X', 'axb') %==% 'axb')
+})
+
+assert('parse_only() on empty character returns empty expression', {
+  (parse_only(character(0)) %==% expression())
+})
+
+assert('try_error() handles warnings gracefully (does not return TRUE for warnings)', {
+  # a warning is not an error
+  (!try_error(warning('just a warning')))
+})
+
+assert('pkg_file() returns the path to a file in the xfun package', {
+  p = pkg_file('DESCRIPTION')
+  (file.exists(p))
+  (grepl('xfun', p, fixed = TRUE))
+})
