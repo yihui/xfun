@@ -81,6 +81,7 @@ json_atomic = function(x, to_array = NA) {
   if (is.factor(x)) x = as.character(x)
   if (is.logical(x)) x = tolower(as.character(x))
   if (inherits(x, c('Date', 'POSIXct', 'POSIXt'))) {
+    if (asis) class(x) = setdiff(class(x), 'AsIs')
     x = sprintf('new Date("%s")', format(x, tz = 'UTC'))
     use_quote = FALSE
   }
