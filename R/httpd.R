@@ -44,7 +44,9 @@ resolve_path = function(path) {
     return(list(action = 'payload', body = body, mime = 'text/html', status = 200L))
   }
   if (!file_exists(path)) {
-    if (path == 'favicon.ico') return(list(
+    # callers may pass the request path with a leading './' (e.g. servr's
+    # serve_dir()), so match on the basename instead of the exact string
+    if (basename(path) == 'favicon.ico') return(list(
       action = 'file', path = file.path(R.home('doc'), 'html', 'favicon.ico'),
       mime = 'image/x-icon'
     ))
