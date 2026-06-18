@@ -189,7 +189,12 @@
 </div>
 <h2 id="sec:xfun-0-59" class="unnumbered">xfun 0.59</h2>
 <ul>
-<li>Fixed a regex bug in the internal <code>yaml_bool()</code> function where the pattern <code>'^true|false|na$'</code> was incorrectly parsed as <code>(^true)|(false)|(na$)</code>, causing values like <code>'extrafalse'</code> or <code>'trueblue'</code> to be treated as booleans in <code>taml_load()</code>.</li>
+<li>
+<p>Removed the outdated note about Chrome’s 2MB file size limit from the <code>embed_file()</code> documentation, since modern browsers (Chrome, Firefox, Safari) all support data URIs well over 100MB now (thanks, <a href="https://github.com/grst">@grst</a>, <a href="https://github.com/yihui/xfun/issues/23">#23</a>).</p>
+</li>
+<li>
+<p>Fixed a regex bug in the internal <code>yaml_bool()</code> function where the pattern <code>'^true|false|na$'</code> was incorrectly parsed as <code>(^true)|(false)|(na$)</code>, causing values like <code>'extrafalse'</code> or <code>'trueblue'</code> to be treated as booleans in <code>taml_load()</code>.</p>
+</li>
 </ul>
 <h2 id="sec:xfun-0-58" class="unnumbered">xfun 0.58</h2>
 <ul>
