@@ -416,7 +416,7 @@ crandalf_check = function(pkg, size = 400, jobs = Inf, which = 'all') {
     git_co(c('-b', b))
     file.create('recheck')
     git(c('add', 'recheck'))
-    git(c('commit', '-m', shQuote(paste('Revcheck', pkg))))
+    git(c('commit', '-m', paste('Revcheck', pkg)))
     git('push')
     message(
       'Please create a pull request from the branch ', b,
@@ -450,9 +450,9 @@ crandalf_check = function(pkg, size = 400, jobs = Inf, which = 'all') {
     message('Batch ', k)
     writeLines(p, 'recheck')
     git(c('add', 'recheck'))
-    git(c('commit', '-m', shQuote(paste(
+    git(c('commit', '-m', paste(
       c(id, 'checking:', head(p, 3), '...'), collapse = ' '
-    ))))
+    )))
     git('push')
     Sys.sleep(10)
     k = k + 1
@@ -549,7 +549,7 @@ crandalf_merge = function(pkg) {
   git_co('main')
   append_unique(x3, f3)
   find_missing_latex()
-  git(c('commit', '-m', shQuote('add more latex packages'), f3))
+  git(c('commit', '-m', 'add more latex packages', f3))
   git('push')
 
   git_co(paste0('check-', pkg))
