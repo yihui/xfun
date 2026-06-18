@@ -4,6 +4,8 @@
 
 - Match favicon.ico request by basename in `resolve_path()` (thanks, @remlapmot, #120).
 
+- Added a new function `post_release()` to perform post-CRAN-release routine tasks (e.g., tag the release, bump the version, push to the remote repository, and create a GitHub release).
+
 - `system3()` now errors on non-zero exit codes.
 
 - Removed the outdated note about Chrome's 2MB file size limit from the `embed_file()` documentation, since modern browsers (Chrome, Firefox, Safari) all support data URIs well over 100MB now (thanks, @grst, #23).

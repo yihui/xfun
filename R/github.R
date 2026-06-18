@@ -76,17 +76,27 @@ github_releases2 = function(repo, tag = '', pattern = '[^"&]+') {
 github_api = function(
   endpoint, token = '', params = list(), headers = NULL, raw = !loadable('jsonlite')
 ) {
-  token = c(token, unname(Sys.getenv(envs <- c('GITHUB_PAT', 'GITHUB_TOKEN', 'GH_TOKEN'))))
-  token = if (length(token <-  token[token != ''])) token[1] else ''
+  token = c(token, github_token())
+  token = if (length(token <- token[token != ''])) token[1] else ''
   names(token) = 'token'
   error = TRUE
-  on.exit(if (error && token == '') message(
-    'You may need to save a GitHub personal access token in one of the ',
-    'environment variables: ', paste(envs, collapse = ', ')
-  ))
+  on.exit(if (error) github_token(NA, token))
   res = rest_api_raw('https://api.github.com', endpoint, token, params, headers)
   error = FALSE
   if (raw) res else jsonlite::fromJSON(res, FALSE)
+}
+
+# the environment variables to check for a GitHub personal access token
+github_envs = c('GITHUB_PAT', 'GITHUB_TOKEN', 'GH_TOKEN')
+
+github_token = function(error = FALSE, token = unname(Sys.getenv(github_envs))) {
+  if (length(token <- token[token != ''])) return(token[1])
+  msg = c(
+    'You may need to save a GitHub personal access token in one of the ',
+    'environment variables: ', paste(github_envs, collapse = ', ')
+  )
+  if (is.na(error)) message(msg) else if (error) stop(msg)
+  ''
 }
 
 git = function(...) {
@@ -97,7 +107,7 @@ git = function(...) {
     env = set_envvar(c(HOME = Sys.getenv('USERPROFILE')))
     on.exit(set_envvar(env), add = TRUE)
   }
-  system2('git', ...)
+  system3('git', ...)
 }
 
 git_co = function(args = NULL, ...) {
@@ -127,9 +137,82 @@ git_pull_current <- function() {
 
 gh = function(...) {
   if (Sys.which('gh') == '') stop('GitHub CLI not found: https://cli.github.com')
-  system2('gh', ...)
+  system3('gh', ...)
 }
 
 gh_run = function(..., repo = NA) {
   gh(c(if (!is.na(repo)) c('-R', repo), 'run', ...), stdout = TRUE)
+}
+
+#' Perform post-CRAN-release routine tasks
+#'
+#' After a CRAN release is accepted, commit and tag the release, bump the
+#' package version to the next patch dev version, prepend a new header to
+#' \file{NEWS.md}, push to the remote repository, and create a GitHub release
+#' with the news items of this version.
+#'
+#' The version number \samp{X.Y} is extracted from the \samp{Version} field in
+#' \file{DESCRIPTION}. For example, if the current version is \samp{0.58}, the
+#' repo will be tagged as \samp{v0.58}. The patch version is then bumped to
+#' \samp{0.58.1}, and a new header is prepended to \file{NEWS.md}.
+#' @export
+post_release = function() {
+  desc = read.dcf('DESCRIPTION')
+  pkg = desc[, 'Package']
+  ver = desc[, 'Version']
+
+  if (!grepl('^\\d+\\.\\d+$', ver)) stop(
+    'Cannot parse version ', ver, ' from DESCRIPTION (expected X.Y format)'
+  )
+  ver_next = bump_version(ver)
+
+  # Step 1: commit all current changes
+  message('Committing CRAN release v', ver, ' ...')
+  git(c('commit', '-a', '-m', sprintf('CRAN release v%s', ver)))
+
+  # Step 2: tag
+  message('Tagging v', ver, ' ...')
+  git(c('tag', sprintf('v%s', ver)))
+
+  # Step 3: bump patch version and prepend NEWS.md
+  process_file('DESCRIPTION', function(x) {
+    ver_line = grep('^Version:\\s+', x)
+    x[ver_line] = sprintf('Version: %s', paste0(ver, '.1'))
+    x
+  })
+
+  process_file('NEWS.md', function(x) {
+    c(sprintf('# CHANGES IN %s VERSION %s\n\n', pkg, ver_next), x)
+  })
+
+  message('Committing the start of the next version ...')
+  git(c('commit', '-a', '-m', 'start the next version'))
+
+  # Step 4: push with tags
+  message('Pushing to remote ...')
+  git(c('push', '--tags', 'origin', 'HEAD'))
+
+  # Step 5: create GitHub release
+  github_token(TRUE)
+
+  news = trimws(read_utf8('NEWS.md'))
+  hdr = sprintf('# CHANGES IN %s VERSION %s', pkg, ver)
+  i = which(hdr == news)
+  if (length(i) == 0) stop('Cannot find the header ', hdr, ' in NEWS.md')
+  # find the next version header
+  j = grep('^# CHANGES IN ', news)
+  j = j[j > i]
+  end = if (length(j) > 0) j[1] - 1 else length(news)
+  items = strip_blank(news[(i + 1):end])
+
+  f = tempfile()
+  writeLines(items, f)
+  on.exit(unlink(f), add = TRUE)
+
+  gh(c(
+    'release', 'create', sprintf('v%s', ver),
+    '--title', sprintf('%s %s', pkg, ver), '--notes-file', f)
+  )
+
+  invisible()
 }
