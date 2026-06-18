@@ -196,6 +196,12 @@
 <p>Match favicon.ico request by basename in <code>resolve_path()</code> (thanks, <a href="https://github.com/remlapmot">@remlapmot</a>, <a href="https://github.com/yihui/xfun/issues/120">#120</a>).</p>
 </li>
 <li>
+<p>Added a new function <code>post_release()</code> to perform post-CRAN-release routine tasks (e.g., tag the release, bump the version, push to the remote repository, and create a GitHub release).</p>
+</li>
+<li>
+<p><code>system3()</code> now errors on non-zero exit codes.</p>
+</li>
+<li>
 <p>Removed the outdated note about Chrome’s 2MB file size limit from the <code>embed_file()</code> documentation, since modern browsers (Chrome, Firefox, Safari) all support data URIs well over 100MB now (thanks, <a href="https://github.com/grst">@grst</a>, <a href="https://github.com/yihui/xfun/issues/23">#23</a>).</p>
 </li>
 <li>
