@@ -222,9 +222,6 @@ block_attr = function(attrs) {
 #'   `embed_files()`, arguments passed to `embed_file()`.
 #' @note Windows users may need to install Rtools to obtain the \command{zip}
 #'   command to use `embed_dir()` and `embed_files()`.
-#'
-#'   Internet Explorer does not support downloading embedded files. Chrome has a
-#'   2MB limit on the file size.
 #' @return An HTML tag \samp{<a>} with the appropriate attributes.
 #' @export
 #' @examples
