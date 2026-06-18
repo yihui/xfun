@@ -186,9 +186,11 @@ assert('protect_math() does not touch code blocks', {
 
 assert('protect_math() handles \\begin/\\end environments', {
   x = c('\\begin{equation}', 'x = y', '\\end{equation}')
-  res = protect_math(x)
-  (grepl('^`', res[1]))
-  (grepl('`$', res[3]))
+  (protect_math(x) %==% c('`\\begin{equation}', 'x = y', '\\end{equation}`'))
+
+  # nested environments: only outermost should be protected (#57)
+  x = c('\\begin{equation}', '\\begin{cases}', 'x = y', '\\end{cases}', '\\end{equation}')
+  (protect_math(x) %==% c('`\\begin{equation}', '\\begin{cases}', 'x = y', '\\end{cases}', '\\end{equation}`'))
 })
 
 assert('block_attr() works', {

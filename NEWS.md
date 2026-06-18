@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.59
 
+- `protect_math()` now correctly handles nested LaTeX environments (e.g., `\begin{cases}` inside `\begin{equation}`). Previously, inner environments were individually wrapped in backticks, which broke MathJax rendering (thanks, @N0rbert, #57).
+
 - Removed the outdated note about Chrome's 2MB file size limit from the `embed_file()` documentation, since modern browsers (Chrome, Firefox, Safari) all support data URIs well over 100MB now (thanks, @grst, #23).
 
 - Fixed a regex bug in the internal `yaml_bool()` function where the pattern `'^true|false|na$'` was incorrectly parsed as `(^true)|(false)|(na$)`, causing values like `'extrafalse'` or `'trueblue'` to be treated as booleans in `taml_load()`.
