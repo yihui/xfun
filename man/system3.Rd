@@ -2,25 +2,26 @@
 % Please edit documentation in R/command.R
 \name{system3}
 \alias{system3}
-\title{Run \code{system2()} and mark its character output as UTF-8 if appropriate}
+\title{A customized wrapper for \code{system2()}}
 \usage{
-system3(...)
+system3(command, args = character(), ...)
 }
 \arguments{
-\item{...}{Passed to \code{\link[=system2]{system2()}}.}
+\item{command, args, ...}{Passed to \code{\link[=system2]{system2()}}. Note that \code{args} will always
+be quoted with \code{\link[=shQuote]{shQuote()}} before passing to \code{system2()}, so you don't need
+to quote it yourself.}
 }
 \value{
 The value returned by \code{system2()}.
 }
 \description{
-This is a wrapper function based on \code{system2()}. If \code{system2()}
-returns character output (e.g., with the argument \code{stdout = TRUE}),
-check if the output is encoded in UTF-8. If it is, mark it with UTF-8
-explicitly.
+If \code{system2()} returns character output (e.g., with the argument \code{stdout = TRUE}), check if the output is encoded in UTF-8. If it is, mark it with UTF-8
+explicitly. If it returns an integer, treat it as an error code and throw an
+error if it is non-zero.
 }
 \examples{\dontshow{if (interactive()) \{}
-a = shQuote(c("-e", "print(intToUtf8(c(20320, 22909)))"))
-x2 = system2("Rscript", a, stdout = TRUE)
+a = c("-e", "print(intToUtf8(c(20320, 22909)))")
+x2 = system2("Rscript", shQuote(a), stdout = TRUE)
 Encoding(x2)  # unknown
 
 x3 = xfun::system3("Rscript", a, stdout = TRUE)

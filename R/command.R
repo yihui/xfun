@@ -1,26 +1,31 @@
-#' Run `system2()` and mark its character output as UTF-8 if appropriate
+#' A customized wrapper for `system2()`
 #'
-#' This is a wrapper function based on `system2()`. If `system2()`
-#' returns character output (e.g., with the argument `stdout = TRUE`),
-#' check if the output is encoded in UTF-8. If it is, mark it with UTF-8
-#' explicitly.
-#' @param ... Passed to [system2()].
+#' If `system2()` returns character output (e.g., with the argument `stdout =
+#' TRUE`), check if the output is encoded in UTF-8. If it is, mark it with UTF-8
+#' explicitly. If it returns an integer, treat it as an error code and throw an
+#' error if it is non-zero.
+#' @param command,args,... Passed to [system2()]. Note that `args` will always
+#'   be quoted with [shQuote()] before passing to `system2()`, so you don't need
+#'   to quote it yourself.
 #' @return The value returned by `system2()`.
 #' @export
 #' @examplesIf interactive()
-#' a = shQuote(c('-e', 'print(intToUtf8(c(20320, 22909)))'))
-#' x2 = system2('Rscript', a, stdout = TRUE)
+#' a = c('-e', 'print(intToUtf8(c(20320, 22909)))')
+#' x2 = system2('Rscript', shQuote(a), stdout = TRUE)
 #' Encoding(x2)  # unknown
 #'
 #' x3 = xfun::system3('Rscript', a, stdout = TRUE)
 #' # encoding of x3 should be UTF-8 if the current locale is UTF-8
 #' !l10n_info()[['UTF-8']] || Encoding(x3) == 'UTF-8'  # should be TRUE
-system3 = function(...) {
-  res = system2(...)
+system3 = function(command, args = character(), ...) {
+  res = system2(command, shQuote(args), ...)
   if (is.character(res)) {
     if (all(is_utf8(res))) Encoding(res) = 'UTF-8'
   }
-  if (is.integer(res) && res == 0) invisible(res) else res
+  if (is.integer(res)) {
+     if (res != 0) stop("command '", command, "' failed with code: ", res, call. = FALSE)
+     invisible(res)
+  } else res
 }
 
 #' Run OptiPNG on all PNG files under a directory
