@@ -193,6 +193,9 @@
 <p><code>protect_math()</code> now correctly handles nested LaTeX environments (e.g., <code>\begin{cases}</code> inside <code>\begin{equation}</code>). Previously, inner environments were individually wrapped in backticks, which broke MathJax rendering (thanks, <a href="https://github.com/N0rbert">@N0rbert</a>, <a href="https://github.com/yihui/xfun/issues/57">#57</a>).</p>
 </li>
 <li>
+<p>Match favicon.ico request by basename in <code>resolve_path()</code> (thanks, <a href="https://github.com/remlapmot">@remlapmot</a>, <a href="https://github.com/yihui/xfun/issues/120">#120</a>).</p>
+</li>
+<li>
 <p>Removed the outdated note about Chrome’s 2MB file size limit from the <code>embed_file()</code> documentation, since modern browsers (Chrome, Firefox, Safari) all support data URIs well over 100MB now (thanks, <a href="https://github.com/grst">@grst</a>, <a href="https://github.com/yihui/xfun/issues/23">#23</a>).</p>
 </li>
 <li>
