@@ -41,9 +41,15 @@ new_app = function(
 
   if (name == '') {
     port = .find_proxy_port(port, names(.proxy$help))
-    slot = proxy_start(as.integer(port), as.integer(backend), host = host)
     key = paste0('xfun:', port)
+    # register the backend handler before starting the proxy, so the proxy never
+    # forwards a request to a not-yet-registered handler (R's httpd would return
+    # its "httpd error" page, with a 200 status, during that window)
     assign(key, .make_app_handler(paste0('/custom/xfun:', port), handler, getwd()), envir = .httpd_env())
+    slot = tryCatch(
+      proxy_start(as.integer(port), as.integer(backend), host = host),
+      error = function(e) { rm_vars(key, .httpd_env()); stop(e) }
+    )
     .proxy$apps[[name]] = list(type = 'proxy', slot = slot, key = key, port = port)
     url_host = if (host == '0.0.0.0') '127.0.0.1' else host
     url = sprintf('http://%s:%d/', url_host, port)
