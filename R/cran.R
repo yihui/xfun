@@ -111,7 +111,8 @@ pkg_maintainers = function(pkgs) {
 submit_cran = function(file = pkg_build(), comment = '', sync = TRUE) {
   if (sync) git_pull_current()
   # check if there are any problematic URLs (I often forget this)
-  if (loadable('urlchecker')) getFromNamespace('url_update', 'urlchecker')()
+  if (loadable('urlchecker')) getFromNamespace('url_update', 'urlchecker')() else
+    message('The urlchecker package is not available. URL checks skipped.')
 
   # if the tarball is automatically created, delete it after submission
   if (missing(file)) on.exit(file.remove(file), add = TRUE)
