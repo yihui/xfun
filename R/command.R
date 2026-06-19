@@ -4,7 +4,9 @@
 #' TRUE`), check if the output is encoded in UTF-8. If it is, mark it with UTF-8
 #' explicitly. If it returns an integer, treat it as an error code and throw an
 #' error if it is non-zero.
-#' @param command,args,... Passed to [system2()].
+#' @param command,args,... Passed to [system2()]. Note that `args` will always
+#'   be quoted with [shQuote()] before passing to `system2()`, so you don't need
+#'   to quote it yourself.
 #' @return The value returned by `system2()`.
 #' @export
 #' @examplesIf interactive()
@@ -16,7 +18,7 @@
 #' # encoding of x3 should be UTF-8 if the current locale is UTF-8
 #' !l10n_info()[['UTF-8']] || Encoding(x3) == 'UTF-8'  # should be TRUE
 system3 = function(command, args = character(), ...) {
-  res = system2(command, args, ...)
+  res = system2(command, shQuote(args), ...)
   if (is.character(res)) {
     if (all(is_utf8(res))) Encoding(res) = 'UTF-8'
   }
