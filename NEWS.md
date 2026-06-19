@@ -1,3 +1,6 @@
+# CHANGES IN xfun VERSION 0.60
+
+
 # CHANGES IN xfun VERSION 0.59
 
 - `protect_math()` now correctly handles nested LaTeX environments (e.g., `\begin{cases}` inside `\begin{equation}`). Previously, inner environments were individually wrapped in backticks, which broke MathJax rendering (thanks, @N0rbert, #57).
