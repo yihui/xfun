@@ -123,10 +123,15 @@ if (
   }
   on.exit(if (length(pid) == 1L) try(proc_kill(pid), silent = TRUE), add = TRUE)
 
-  # Wait for the background app to become reachable.
+  # Wait for the background app to become reachable. Require the expected body,
+  # not just a 200 status: R's internal httpd serves its "httpd error" page with
+  # a 200 status during the brief window before the handler is registered, so a
+  # status-only check could lock in that error page as `resp`.
+  want = make_body('hello', method = 'GET')
   for (i in seq_len(50L)) {
     resp = http_request_full('127.0.0.1', port, 'GET', '/hello')
-    if (!is.null(resp) && grepl('200 OK', resp, fixed = TRUE)) break
+    if (!is.null(resp) && grepl('200 OK', resp, fixed = TRUE) &&
+        identical(http_body(resp), want)) break
     Sys.sleep(0.1)
   }
 
