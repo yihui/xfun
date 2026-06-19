@@ -7,9 +7,7 @@
 system3(command, args = character(), ...)
 }
 \arguments{
-\item{command, args, ...}{Passed to \code{\link[=system2]{system2()}}. Note that \code{args} will always
-be quoted with \code{\link[=shQuote]{shQuote()}} before passing to \code{system2()}, so you don't need
-to quote it yourself.}
+\item{command, args, ...}{Passed to \code{\link[=system2]{system2()}}.}
 }
 \value{
 The value returned by \code{system2()}.
