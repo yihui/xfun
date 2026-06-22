@@ -267,12 +267,30 @@ proxy_stop = function(slot) {
   listener = server_socket(port)
   on.exit(close(listener), add = TRUE)
 
+  # Exit when the backend httpd is gone (e.g., parent R process died).
+  n_fail = 0L
+  backend_alive = function() {
+    con = suppressWarnings(tryCatch(
+      socketConnection('127.0.0.1', port = backend_port, open = 'r+b',
+                       blocking = TRUE, timeout = 1),
+      error = function(e) NULL
+    ))
+    if (is.null(con)) return(FALSE)
+    close(con)
+    TRUE
+  }
+
   repeat {
     con = tryCatch(
       socket_accept(listener, blocking = FALSE, open = 'r+b', timeout = 1),
       error = function(e) NULL
     )
-    if (is.null(con)) next
+    if (is.null(con)) {
+      n_fail = n_fail + 1L
+      if (n_fail >= 5L && !backend_alive()) break
+      next
+    }
+    n_fail = 0L
     try_silent(.proxy_forward(con, port, backend_port, passthrough))
     try_silent(close(con))
   }

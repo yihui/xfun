@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.60
 
+- The reverse-proxy process started by `new_app(name = '')` now self-terminates when its backend httpd becomes unreachable (e.g., the parent R process exits), preventing orphaned background processes (thanks, @remlapmot, #122).
 
 # CHANGES IN xfun VERSION 0.59
 
