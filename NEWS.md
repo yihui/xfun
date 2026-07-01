@@ -2,6 +2,8 @@
 
 - The reverse-proxy process started by `new_app(name = '')` now self-terminates when its backend httpd becomes unreachable (e.g., the parent R process exits), preventing orphaned background processes (thanks, @remlapmot, #122).
 
+- `post_release()` now also accepts version numbers in the `X.Y.0` format. The NEWS.md header format is auto-detected from the existing file, so packages using formats other than `# CHANGES IN PKG VERSION X.Y` (e.g., `# PKG X.Y`) are handled correctly.
+
 # CHANGES IN xfun VERSION 0.59
 
 - `protect_math()` now correctly handles nested LaTeX environments (e.g., `\begin{cases}` inside `\begin{equation}`). Previously, inner environments were individually wrapped in backticks, which broke MathJax rendering (thanks, @N0rbert, #57).

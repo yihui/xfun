@@ -13,8 +13,9 @@ package version to the next patch dev version, prepend a new header to
 with the news items of this version.
 }
 \details{
-The version number \samp{X.Y} is extracted from the \samp{Version} field in
-\file{DESCRIPTION}. For example, if the current version is \samp{0.58}, the
-repo will be tagged as \samp{v0.58}. The patch version is then bumped to
-\samp{0.58.1}, and a new header is prepended to \file{NEWS.md}.
+The version number \code{X.Y} or \code{X.Y.0} is extracted from the \code{Version} field in
+\file{DESCRIPTION}. For example, if the current version is \code{0.58} (or
+\verb{0.58.0}), the repo will be tagged as \code{v0.58} (or \code{v0.58.0}). The patch
+version is then bumped to \verb{0.58.1}, and a new header for the next minor
+version \code{0.59} (or \verb{0.59.0}) is prepended to \file{NEWS.md}.
 }

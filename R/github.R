@@ -144,6 +144,14 @@ gh_run = function(..., repo = NA) {
   gh(c(if (!is.na(repo)) c('-R', repo), 'run', ...), stdout = TRUE)
 }
 
+# Detect the sprintf template for NEWS.md headers from existing content.
+# Falls back to '# CHANGES IN %s VERSION %s' when format cannot be inferred.
+news_tpl = function(news, pkg, ver) {
+  h1 = grep('^# ', news, value = TRUE)[1]
+  tpl = sub(sprintf('\\b%s\\b', ver), '%s', sub(sprintf('\\b%s\\b', pkg), '%s', h1))
+  if (grepl('%s.*%s', tpl)) tpl else '# CHANGES IN %s VERSION %s'
+}
+
 #' Perform post-CRAN-release routine tasks
 #'
 #' After a CRAN release is accepted, commit and tag the release, bump the
@@ -151,24 +159,30 @@ gh_run = function(..., repo = NA) {
 #' \file{NEWS.md}, push to the remote repository, and create a GitHub release
 #' with the news items of this version.
 #'
-#' The version number \samp{X.Y} is extracted from the \samp{Version} field in
-#' \file{DESCRIPTION}. For example, if the current version is \samp{0.58}, the
-#' repo will be tagged as \samp{v0.58}. The patch version is then bumped to
-#' \samp{0.58.1}, and a new header is prepended to \file{NEWS.md}.
+#' The version number `X.Y` or `X.Y.0` is extracted from the `Version` field in
+#' \file{DESCRIPTION}. For example, if the current version is `0.58` (or
+#' `0.58.0`), the repo will be tagged as `v0.58` (or `v0.58.0`). The patch
+#' version is then bumped to `0.58.1`, and a new header for the next minor
+#' version `0.59` (or `0.59.0`) is prepended to \file{NEWS.md}.
 #' @export
 post_release = function() {
   desc = read.dcf('DESCRIPTION')
   pkg = desc[, 'Package']
   ver = desc[, 'Version']
 
-  if (!grepl('^\\d+\\.\\d+$', ver)) stop(
-    'Cannot parse version ', ver, ' from DESCRIPTION (expected X.Y format)'
-  )
-  ver_next = bump_version(ver)
+  vers = release_versions(ver)
+  ver_next = vers$next_ver
+  ver_patch = vers$patch
 
-  # Step 1: commit all current changes
-  message('Committing CRAN release v', ver, ' ...')
-  git(c('commit', '-a', '-m', sprintf('CRAN release v%s', ver)))
+  # Step 1: commit all current changes (only if Version was modified)
+  ver_in_head = system3(
+    'git', c('show', 'HEAD:DESCRIPTION'), stdout = TRUE, stderr = FALSE
+  )
+  ver_in_head = trimws(grep_sub('^Version:\\s+(.*)', '\\1', ver_in_head))
+  if (!identical(ver_in_head, ver)) {
+    message('Committing CRAN release v', ver, ' ...')
+    git(c('commit', '-a', '-m', sprintf('CRAN release v%s', ver)))
+  }
 
   # Step 2: tag
   message('Tagging v', ver, ' ...')
@@ -177,13 +191,19 @@ post_release = function() {
   # Step 3: bump patch version and prepend NEWS.md
   process_file('DESCRIPTION', function(x) {
     ver_line = grep('^Version:\\s+', x)
-    x[ver_line] = sprintf('Version: %s', paste0(ver, '.1'))
+    x[ver_line] = sprintf('Version: %s', ver_patch)
     x
   })
 
-  process_file('NEWS.md', function(x) {
-    c(sprintf('# CHANGES IN %s VERSION %s\n\n', pkg, ver_next), x)
-  })
+  news = trimws(read_utf8('NEWS.md'))
+  tpl = news_tpl(news, pkg, ver)
+  news_hdr = function(v) sprintf(tpl, pkg, v)
+
+  process_file('NEWS.md', function(x) c(paste0(news_hdr(ver_next), '\n\n'), x))
+
+  hdr = news_hdr(ver)
+  i = which(hdr == news)
+  if (length(i) == 0) stop('Cannot find the header "', hdr, '" in NEWS.md')
 
   message('Committing the start of the next version ...')
   git(c('commit', '-a', '-m', 'start the next version'))
@@ -194,13 +214,7 @@ post_release = function() {
 
   # Step 5: create GitHub release
   github_token(TRUE)
-
-  news = trimws(read_utf8('NEWS.md'))
-  hdr = sprintf('# CHANGES IN %s VERSION %s', pkg, ver)
-  i = which(hdr == news)
-  if (length(i) == 0) stop('Cannot find the header ', hdr, ' in NEWS.md')
-  # find the next version header
-  j = grep('^# CHANGES IN ', news)
+  j = grep('^# ', news)
   j = j[j > i]
   end = if (length(j) > 0) j[1] - 1 else length(news)
   items = strip_blank(news[(i + 1):end])

@@ -314,6 +314,17 @@ bump_version = function(x) {
   x
 }
 
+# Given a CRAN release version (X.Y or X.Y.0), return list(next_ver, patch)
+# where next_ver is the next NEWS header version and patch is the new dev version.
+release_versions = function(ver) {
+  if (!grepl(r <- '^(\\d+\\.\\d+)(\\.0)?$', ver)) stop(
+    'Cannot parse version ', ver, ' from DESCRIPTION (expected X.Y or X.Y.0 format)'
+  )
+  v = as.numeric_version(ver)
+  v[[1, 2]] = v[[1, 2]] + 1
+  list(next_ver = as.character(v), patch = sub(r, '\\1.1', ver))
+}
+
 #' Fix pairs of characters in a file
 #'
 #' For example, the curly braces may be wrong (the opening and closing braces
