@@ -18,6 +18,9 @@ if (!has_fun('packageDate', asNamespace('utils'))) packageDate = function(...) {
   as.Date(packageDescription(..., fields = 'Date/Publication'))
 }
 
+if (!'timeout' %in% names(formals(system2)))
+  system2 = function(..., timeout = 0) base::system2(...)
+
 .onLoad = function(libname, pkgname) {
   # Register a finalizer so the background proxy is killed if the parent R
   # session exits without calling stop_app() (e.g., on crash or q()).
