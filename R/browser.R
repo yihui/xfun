@@ -68,8 +68,9 @@ browser_dom = function(input, output = NULL, fragment = FALSE, browser = NULL) {
   args = c(browser_args(), '--dump-dom', '--log-level=3', input)
   html = system2(browser, args, stdout = TRUE, stderr = FALSE)
   if (!is.null(attr2(html, 'status'))) stop('Failed to dump DOM.')
-  html = gsub('<script[^>]*>.*?</script>', '', one_string(html))
-  if (fragment) html = trimws(gsub('^.*?<body[^>]*>|</body>.*$', '', html))
+  html = gsub('\\s*<script[^>]*>(?s).*?</script>\\s*', '', one_string(html), perl = TRUE)
+  if (fragment)
+    html = gsub('^(?s).*?<body[^>]*>\\s*|\\s*</body>(?s).*$', '', html, perl = TRUE)
   if (is.null(output)) raw_string(html) else write_utf8(html, output)
 }
 
