@@ -92,7 +92,7 @@ browser_dom = function(
   }
   if (!is.null(attr2(html, 'status'))) stop('Failed to dump DOM.')
   html = gsub('<script[^>]*>.*?</script>', '', one_string(html))
-  if (fragment) html = gsub('.*?<body[^>]*>\\s*|\\s*</body>.*', '', html)
+  if (fragment) html = trimws(gsub('^.*?<body[^>]*>|</body>.*$', '', html))
   if (is.null(output)) raw_string(html) else write_utf8(html, output)
 }
 
