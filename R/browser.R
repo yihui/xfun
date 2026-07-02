@@ -69,7 +69,7 @@ browser_dom = function(
 ) {
   browser = check_browser(browser)
   mac = is_macos()
-  args = c(browser_args(!mac), '--dump-dom', '--log-level=3', if (mac) input else shQuote(input))
+  args = c(browser_args(!mac), '--dump-dom', '--log-level=3', quote2(input, !mac))
   html = if (file.size(input) == 0) character() else if (mac) {
     # On macOS, Chrome does not exit after --dump-dom (unlike Linux), so we
     # must run it in the background and kill it after reading the output.
@@ -104,9 +104,9 @@ check_browser = function(browser) {
 }
 
 browser_args = function(quote = TRUE) c(
-  proxy_args(), if (is_windows()) '--no-sandbox', '--headless',
+  proxy_args(quote), if (is_windows()) '--no-sandbox', '--headless',
   '--no-first-run', '--no-default-browser-check', '--hide-scrollbars',
-  (if (quote) shQuote else identity)(paste0('--user-data-dir=', tempfile()))
+  quote2(paste0('--user-data-dir=', tempfile()), quote)
 )
 
 find_browser = function() {
@@ -140,13 +140,13 @@ find_browser = function() {
   )
 }
 
-proxy_args = function() {
+proxy_args = function(quote) {
   x = Sys.getenv(c('https_proxy', 'HTTPS_PROXY', 'http_proxy', 'HTTP_PROXY'))
   x = x[x != '']
   if (length(x) == 0) return()
   c(
     paste0('--proxy-server=', x[1]),
-    shQuote(paste0('--proxy-bypass-list=', paste(no_proxy(), collapse = ';')))
+    quote2(paste0('--proxy-bypass-list=', paste(no_proxy(), collapse = ';')), quote)
   )
 }
 
@@ -155,3 +155,5 @@ no_proxy = function() {
   x = c('localhost', '127.0.0.1', x)
   unique(x)
 }
+
+quote2 = function(x, quote) if (quote) shQuote(x) else x
