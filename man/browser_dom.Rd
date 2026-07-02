@@ -4,7 +4,13 @@
 \alias{browser_dom}
 \title{Execute JavaScript on an HTML page via a headless browser and dump the DOM}
 \usage{
-browser_dom(input, output = NULL, fragment = FALSE, browser = NULL)
+browser_dom(
+  input,
+  output = NULL,
+  fragment = FALSE,
+  browser = NULL,
+  timeout = 300
+)
 }
 \arguments{
 \item{input}{Path or URL to the HTML page.}
@@ -20,6 +26,8 @@ full HTML document.}
 option \code{options(xfun.browser = )} or environment variable \code{R_XFUN_BROWSER}
 to the path of the browser, or simply pass the path to the \code{browser}
 argument.}
+
+\item{timeout}{Timeout in seconds.}
 }
 \value{
 If \code{output} is \code{NULL}, the rendered HTML as a character string;

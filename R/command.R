@@ -130,7 +130,7 @@ Rscript_bg = function(fun, args = list(), timeout = 10) {
   if (!file_exists(pid)) return(res)
 
   t0 = Sys.time()
-  while (difftime(Sys.time(), t0, units = 'secs') < timeout) {
+  while (!is_timeout(t0, timeout)) {
     Sys.sleep(.1)
     if (!file_exists(pid)) return(res)
     if (length(id <- readRDS(pid)) == 1) break
@@ -259,7 +259,7 @@ bg_process = function(
     }
 
     t0 = Sys.time(); id = NULL; timeout = getOption('xfun.bg_process.timeout', 30)
-    while (difftime(Sys.time(), t0, units = 'secs') < timeout) {
+    while (!is_timeout(t0, timeout)) {
       if (length(id <- get_pid()) > 0) break
     }
 
@@ -268,12 +268,14 @@ bg_process = function(
     system2(command, args, timeout = timeout)  # see what the error is
     throw_error(' in ', timeout, ' second(s)')
   } else {
+    if (isFALSE(verbose)) verbose = '/dev/null'
     pid = tempfile(); on.exit(unlink(pid), add = TRUE)
     code = paste(c(
-      shQuote(c(command, args)), if (!verbose) '> /dev/null', '& echo $! >', shQuote(pid)
+      shQuote(c(command, args)), if (is.character(verbose)) paste('>', verbose),
+      '& echo $! >', shQuote(pid)
     ), collapse = ' ')
     system2('sh', c('-c', shQuote(code)))
-    return(check_pid(readLines(pid)))
+    check_pid(readLines(pid))
   }
 }
 

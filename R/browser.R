@@ -51,6 +51,7 @@ browser_print = function(
 #'   HTML is returned as a character string.
 #' @param fragment Whether to return only the inner body content instead of the
 #'   full HTML document.
+#' @param timeout Timeout in seconds.
 #' @inheritParams browser_print
 #' @return If `output` is `NULL`, the rendered HTML as a character string;
 #'   otherwise the `output` path (invisibly).
@@ -63,12 +64,35 @@ browser_print = function(
 #'   '</body></html>'
 #' ), f)
 #' xfun::browser_dom(f)
-browser_dom = function(input, output = NULL, fragment = FALSE, browser = NULL) {
+browser_dom = function(
+  input, output = NULL, fragment = FALSE, browser = NULL, timeout = 300
+) {
   browser = check_browser(browser)
-  args = c(browser_args(), '--dump-dom', shQuote(input))
-  html = system2(browser, args, stdout = TRUE, stderr = FALSE)
+  mac = is_macos()
+  args = c(browser_args(!mac), '--dump-dom', '--log-level=3', if (mac) input else shQuote(input))
+  html = if (file.size(input) == 0) character() else if (mac) {
+    # On macOS, Chrome does not exit after --dump-dom (unlike Linux), so we
+    # must run it in the background and kill it after reading the output.
+    tmp = tempfile()
+    on.exit(unlink(tmp), add = TRUE)
+    pid = bg_process(browser, args, shQuote(tmp))
+    on.exit(proc_kill(pid), add = TRUE)
+    # Wait for Chrome to dump the DOM (up to 30 seconds)
+    t0 = Sys.time(); s0 = -1
+    while (TRUE) {
+      if (is_timeout(t0, timeout)) stop('Failed to finish in ', timeout, ' secs.')
+      Sys.sleep(.5)
+      s1 = file.size(tmp)
+      if (!is.na(s1) && s1 > 0 && s0 == s1) break  # exit when file size stops growing
+      s0 = s1
+    }
+    read_utf8(tmp)
+  } else {
+    system2(browser, args, stdout = TRUE, stderr = FALSE, timeout = timeout)
+  }
+  if (!is.null(attr2(html, 'status'))) stop('Failed to dump DOM.')
   html = gsub('<script[^>]*>.*?</script>', '', one_string(html))
-  if (fragment) html = gsub('.*?<body[^>]*>\\s*(.*?)\\s*</body>.*', '\\1', html)
+  if (fragment) html = gsub('.*?<body[^>]*>\\s*|\\s*</body>.*', '', html)
   if (is.null(output)) raw_string(html) else write_utf8(html, output)
 }
 
@@ -79,10 +103,10 @@ check_browser = function(browser) {
   browser
 }
 
-browser_args = function() c(
+browser_args = function(quote = TRUE) c(
   proxy_args(), if (is_windows()) '--no-sandbox', '--headless',
   '--no-first-run', '--no-default-browser-check', '--hide-scrollbars',
-  shQuote(paste0('--user-data-dir=', tempfile()))
+  (if (quote) shQuote else identity)(paste0('--user-data-dir=', tempfile()))
 )
 
 find_browser = function() {

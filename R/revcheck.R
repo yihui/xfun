@@ -207,9 +207,7 @@ rev_check = function(
     }
 
     # timeout; package not checked
-    if (difftime(Sys.time(), t0, units = 'secs') > tt) {
-      return(setNames(2L, p))
-    }
+    if (is_timeout(t0, tt)) return(setNames(2L, p))
 
     check_it = function(args = NULL, ...) {
       system2(

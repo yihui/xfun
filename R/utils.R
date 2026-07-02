@@ -323,3 +323,7 @@ handle_error = function(
 rm_vars = function(x, envir, ...) {
   rm(list = intersect(x, ls(envir, all.names = TRUE)), envir = envir, ...)
 }
+
+is_timeout = function(t0, timeout) {
+  difftime(Sys.time(), t0, units = 'secs') > timeout
+}
