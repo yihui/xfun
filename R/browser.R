@@ -51,7 +51,6 @@ browser_print = function(
 #'   HTML is returned as a character string.
 #' @param fragment Whether to return only the inner body content instead of the
 #'   full HTML document.
-#' @param timeout Timeout in seconds.
 #' @inheritParams browser_print
 #' @return If `output` is `NULL`, the rendered HTML as a character string;
 #'   otherwise the `output` path (invisibly).
@@ -64,14 +63,10 @@ browser_print = function(
 #'   '</body></html>'
 #' ), f)
 #' xfun::browser_dom(f)
-browser_dom = function(
-  input, output = NULL, fragment = FALSE, browser = NULL, timeout = 300
-) {
+browser_dom = function(input, output = NULL, fragment = FALSE, browser = NULL) {
   browser = check_browser(browser)
   args = c(browser_args(), '--dump-dom', '--log-level=3', input)
-  html = if (file.size(input) == 0) character() else {
-    system2(browser, args, stdout = TRUE, stderr = FALSE, timeout = timeout)
-  }
+  html = system2(browser, args, stdout = TRUE, stderr = FALSE)
   if (!is.null(attr2(html, 'status'))) stop('Failed to dump DOM.')
   html = gsub('<script[^>]*>.*?</script>', '', one_string(html))
   if (fragment) html = trimws(gsub('^.*?<body[^>]*>|</body>.*$', '', html))
