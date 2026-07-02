@@ -1,5 +1,9 @@
 # CHANGES IN xfun VERSION 0.60
 
+- Added a new function `browser_dom()` to execute JavaScript on an HTML page via a headless browser and return (or save) the rendered DOM as HTML.
+
+- Fixed a bug in `browser_print()` where proxy bypass lists containing semicolons were not properly quoted, causing shell interpretation errors. Also added `--user-data-dir` to avoid profile lock conflicts with running browser instances.
+
 - The reverse-proxy process started by `new_app(name = '')` now self-terminates when its backend httpd becomes unreachable (e.g., the parent R process exits), preventing orphaned background processes (thanks, @remlapmot, #122).
 
 - `post_release()` now also accepts version numbers in the `X.Y.0` format. The NEWS.md header format is auto-detected from the existing file, so packages using formats other than `# CHANGES IN PKG VERSION X.Y` (e.g., `# PKG X.Y`) are handled correctly.

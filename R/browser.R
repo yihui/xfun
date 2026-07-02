@@ -24,10 +24,9 @@
 #' xfun::browser_print('https://www.r-project.org')
 browser_print = function(
   input, output = '.pdf', args = 'default', window_size = c(1280, 1024),
-  browser = env_option('xfun.browser', find_browser())
+  browser = NULL
 ) {
-  if (!file.exists(browser)) browser = Sys.which(browser)
-  if (!utils::file_test('-x', browser)) stop('The browser is not executable: ', browser)
+  browser = check_browser(browser)
   if (sans_ext(output) == '') output = with_ext(url_filename(input), output)
   to_pdf = tolower(file_ext(output)) == 'pdf'
   if (!to_pdf && !grepl('--window-size=', args))
@@ -43,9 +42,47 @@ browser_print = function(
   output
 }
 
+#' Execute JavaScript on an HTML page via a headless browser and dump the DOM
+#'
+#' Load an HTML page in a headless browser (Chromium/Chrome/Edge), execute all
+#' JavaScript on it, and return (or save) the rendered DOM as HTML.
+#' @param input Path or URL to the HTML page.
+#' @param output An optional output file path. If not provided, the rendered
+#'   HTML is returned as a character string.
+#' @param fragment Whether to return only the inner body content instead of the
+#'   full HTML document.
+#' @inheritParams browser_print
+#' @return If `output` is `NULL`, the rendered HTML as a character string;
+#'   otherwise the `output` path (invisibly).
+#' @export
+#' @examplesIf interactive()
+#' f = tempfile(fileext = '.html')
+#' writeLines(c(
+#'   '<html><body><div id="out"></div>',
+#'   '<script>document.getElementById("out").textContent = "hello";</script>',
+#'   '</body></html>'
+#' ), f)
+#' xfun::browser_dom(f)
+browser_dom = function(input, output = NULL, fragment = FALSE, browser = NULL) {
+  browser = check_browser(browser)
+  args = c(browser_args(), '--dump-dom', shQuote(input))
+  html = system2(browser, args, stdout = TRUE, stderr = FALSE)
+  html = gsub('<script[^>]*>.*?</script>', '', one_string(html))
+  if (fragment) html = gsub('.*?<body[^>]*>\\s*(.*?)\\s*</body>.*', '\\1', html)
+  if (is.null(output)) raw_string(html) else write_utf8(html, output)
+}
+
+check_browser = function(browser) {
+  if (is.null(browser)) browser = env_option('xfun.browser', find_browser())
+  if (!file.exists(browser)) browser = Sys.which(browser)
+  if (!utils::file_test('-x', browser)) stop('The browser is not executable: ', browser)
+  browser
+}
+
 browser_args = function() c(
   proxy_args(), if (is_windows()) '--no-sandbox', '--headless',
-  '--no-first-run', '--no-default-browser-check', '--hide-scrollbars'
+  '--no-first-run', '--no-default-browser-check', '--hide-scrollbars',
+  shQuote(paste0('--user-data-dir=', tempfile()))
 )
 
 find_browser = function() {
@@ -85,7 +122,7 @@ proxy_args = function() {
   if (length(x) == 0) return()
   c(
     paste0('--proxy-server=', x[1]),
-    paste0('--proxy-bypass-list=', paste(no_proxy(), collapse = ';'))
+    shQuote(paste0('--proxy-bypass-list=', paste(no_proxy(), collapse = ';')))
   )
 }
 
