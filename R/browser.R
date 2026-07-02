@@ -68,29 +68,8 @@ browser_dom = function(
   input, output = NULL, fragment = FALSE, browser = NULL, timeout = 300
 ) {
   browser = check_browser(browser)
-  mac = is_macos()
-  args = c(
-    browser_args(!mac), quote2(paste0('--user-data-dir=', tempfile()), !mac),
-    '--dump-dom', '--log-level=3', quote2(input, !mac)
-  )
-  html = if (file.size(input) == 0) character() else if (mac) {
-    # On macOS, Chrome does not exit after --dump-dom (unlike Linux), so we
-    # must run it in the background and kill it after reading the output.
-    tmp = tempfile()
-    on.exit(unlink(tmp), add = TRUE)
-    pid = bg_process(browser, args, shQuote(tmp))
-    on.exit(proc_kill(pid), add = TRUE)
-    # Wait for Chrome to dump the DOM (up to 30 seconds)
-    t0 = Sys.time(); s0 = -1
-    while (TRUE) {
-      if (is_timeout(t0, timeout)) stop('Failed to finish in ', timeout, ' secs.')
-      Sys.sleep(.5)
-      s1 = file.size(tmp)
-      if (!is.na(s1) && s1 > 0 && s0 == s1) break  # exit when file size stops growing
-      s0 = s1
-    }
-    read_utf8(tmp)
-  } else {
+  args = c(browser_args(), '--dump-dom', '--log-level=3', input)
+  html = if (file.size(input) == 0) character() else {
     system2(browser, args, stdout = TRUE, stderr = FALSE, timeout = timeout)
   }
   if (!is.null(attr2(html, 'status'))) stop('Failed to dump DOM.')
@@ -106,8 +85,8 @@ check_browser = function(browser) {
   browser
 }
 
-browser_args = function(quote = TRUE) c(
-  proxy_args(quote), if (is_windows()) '--no-sandbox', '--headless',
+browser_args = function() c(
+  proxy_args(), if (is_windows()) '--no-sandbox', '--headless',
   '--no-first-run', '--no-default-browser-check', '--hide-scrollbars'
 )
 
@@ -142,13 +121,13 @@ find_browser = function() {
   )
 }
 
-proxy_args = function(quote) {
+proxy_args = function() {
   x = Sys.getenv(c('https_proxy', 'HTTPS_PROXY', 'http_proxy', 'HTTP_PROXY'))
   x = x[x != '']
   if (length(x) == 0) return()
   c(
     paste0('--proxy-server=', x[1]),
-    quote2(paste0('--proxy-bypass-list=', paste(no_proxy(), collapse = ';')), quote)
+    shQuote(paste0('--proxy-bypass-list=', paste(no_proxy(), collapse = ';')))
   )
 }
 
@@ -158,4 +137,3 @@ no_proxy = function() {
   unique(x)
 }
 
-quote2 = function(x, quote) if (quote) shQuote(x) else x
