@@ -69,7 +69,10 @@ browser_dom = function(
 ) {
   browser = check_browser(browser)
   mac = is_macos()
-  args = c(browser_args(!mac), '--dump-dom', '--log-level=3', quote2(input, !mac))
+  args = c(
+    browser_args(!mac), quote2(paste0('--user-data-dir=', tempfile()), !mac),
+    '--dump-dom', '--log-level=3', quote2(input, !mac)
+  )
   html = if (file.size(input) == 0) character() else if (mac) {
     # On macOS, Chrome does not exit after --dump-dom (unlike Linux), so we
     # must run it in the background and kill it after reading the output.
@@ -105,8 +108,7 @@ check_browser = function(browser) {
 
 browser_args = function(quote = TRUE) c(
   proxy_args(quote), if (is_windows()) '--no-sandbox', '--headless',
-  '--no-first-run', '--no-default-browser-check', '--hide-scrollbars',
-  quote2(paste0('--user-data-dir=', tempfile()), quote)
+  '--no-first-run', '--no-default-browser-check', '--hide-scrollbars'
 )
 
 find_browser = function() {
