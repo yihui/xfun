@@ -29,7 +29,7 @@ browser_print = function(
   browser = check_browser(browser)
   if (sans_ext(output) == '') output = with_ext(url_filename(input), output)
   to_pdf = tolower(file_ext(output)) == 'pdf'
-  if (!to_pdf && !grepl('--window-size=', args))
+  if (!to_pdf && !any(grepl('--window-size=', args)))
     args = c(args, paste0('--window-size=', paste(window_size, collapse = ',')))
   if ('default' %in% args) {
     args = setdiff(c(
@@ -104,12 +104,14 @@ find_browser = function() {
       res[1]
     },
     unix = {
+      app_path = function(app) sprintf('/Applications/%s.app/Contents/MacOS/%s', app, app)
       for (i in c(
-        '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
-        'google-chrome', 'chromium-browser', 'chromium', 'google-chrome-stable')) {
+        app_path(c('Google Chrome', 'Microsoft Edge')),
+        'google-chrome', 'chromium-browser', 'chromium', 'google-chrome-stable',
+        'microsoft-edge-stable', 'microsoft-edge')) {
         if ((res <- Sys.which(i)) != '') break
       }
-      if (res == '') stop('Cannot find Chromium or Google Chrome')
+      if (res == '') stop('Cannot find Chromium, Google Chrome, or Edge')
       res
     },
     stop('Your platform is not supported')
