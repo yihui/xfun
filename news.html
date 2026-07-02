@@ -191,6 +191,12 @@
 <h2 id="sec:xfun-0-60" class="unnumbered">xfun 0.60</h2>
 <ul>
 <li>
+<p>Added a new function <code>browser_dom()</code> to execute JavaScript on an HTML page via a headless browser and return (or save) the rendered DOM as HTML.</p>
+</li>
+<li>
+<p>Fixed a bug in <code>browser_print()</code> where proxy bypass lists containing semicolons were not properly quoted, causing shell interpretation errors. Also added <code>--user-data-dir</code> to avoid profile lock conflicts with running browser instances.</p>
+</li>
+<li>
 <p>The reverse-proxy process started by <code>new_app(name = '')</code> now self-terminates when its backend httpd becomes unreachable (e.g., the parent R process exits), preventing orphaned background processes (thanks, <a href="https://github.com/remlapmot">@remlapmot</a>, <a href="https://github.com/yihui/xfun/issues/122">#122</a>).</p>
 </li>
 <li>
