@@ -28,7 +28,7 @@ assert('browser_dom() saves to output file', {
 assert('browser_dom(fragment = TRUE) returns body content only', {
   f = tempfile(fileext = '.html')
   on.exit(unlink(f), add = TRUE)
-  writeLines('<html><head><title>test</title></head><body><p>content</p></body></html>', f)
+  writeLines('<html><head><title>test</title></head>\n<body>\n <p>content\n</p>\t\n</body></html>', f)
   res = browser_dom(f, fragment = TRUE)
-  (unclass(res) %==% '<p>content</p>')
+  (unclass(res) %==% '<p>content\n</p>')
 })
