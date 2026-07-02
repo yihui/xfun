@@ -9,7 +9,7 @@ browser_print(
   output = ".pdf",
   args = "default",
   window_size = c(1280, 1024),
-  browser = env_option("xfun.browser", find_browser())
+  browser = NULL
 )
 }
 \arguments{

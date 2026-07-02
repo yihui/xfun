@@ -24,10 +24,9 @@
 #' xfun::browser_print('https://www.r-project.org')
 browser_print = function(
   input, output = '.pdf', args = 'default', window_size = c(1280, 1024),
-  browser = env_option('xfun.browser', find_browser())
+  browser = NULL
 ) {
-  if (!file.exists(browser)) browser = Sys.which(browser)
-  if (!utils::file_test('-x', browser)) stop('The browser is not executable: ', browser)
+  browser = check_browser(browser)
   if (sans_ext(output) == '') output = with_ext(url_filename(input), output)
   to_pdf = tolower(file_ext(output)) == 'pdf'
   if (!to_pdf && !grepl('--window-size=', args))
@@ -43,9 +42,71 @@ browser_print = function(
   output
 }
 
-browser_args = function() c(
-  proxy_args(), if (is_windows()) '--no-sandbox', '--headless',
-  '--no-first-run', '--no-default-browser-check', '--hide-scrollbars'
+#' Execute JavaScript on an HTML page via a headless browser and dump the DOM
+#'
+#' Load an HTML page in a headless browser (Chromium/Chrome/Edge), execute all
+#' JavaScript on it, and return (or save) the rendered DOM as HTML.
+#' @param input Path or URL to the HTML page.
+#' @param output An optional output file path. If not provided, the rendered
+#'   HTML is returned as a character string.
+#' @param fragment Whether to return only the inner body content instead of the
+#'   full HTML document.
+#' @param timeout Timeout in seconds.
+#' @inheritParams browser_print
+#' @return If `output` is `NULL`, the rendered HTML as a character string;
+#'   otherwise the `output` path (invisibly).
+#' @export
+#' @examplesIf interactive()
+#' f = tempfile(fileext = '.html')
+#' writeLines(c(
+#'   '<html><body><div id="out"></div>',
+#'   '<script>document.getElementById("out").textContent = "hello";</script>',
+#'   '</body></html>'
+#' ), f)
+#' xfun::browser_dom(f)
+browser_dom = function(
+  input, output = NULL, fragment = FALSE, browser = NULL, timeout = 300
+) {
+  browser = check_browser(browser)
+  mac = is_macos()
+  args = c(browser_args(!mac), '--dump-dom', '--log-level=3', quote2(input, !mac))
+  html = if (file.size(input) == 0) character() else if (mac) {
+    # On macOS, Chrome does not exit after --dump-dom (unlike Linux), so we
+    # must run it in the background and kill it after reading the output.
+    tmp = tempfile()
+    on.exit(unlink(tmp), add = TRUE)
+    pid = bg_process(browser, args, shQuote(tmp))
+    on.exit(proc_kill(pid), add = TRUE)
+    # Wait for Chrome to dump the DOM (up to 30 seconds)
+    t0 = Sys.time(); s0 = -1
+    while (TRUE) {
+      if (is_timeout(t0, timeout)) stop('Failed to finish in ', timeout, ' secs.')
+      Sys.sleep(.5)
+      s1 = file.size(tmp)
+      if (!is.na(s1) && s1 > 0 && s0 == s1) break  # exit when file size stops growing
+      s0 = s1
+    }
+    read_utf8(tmp)
+  } else {
+    system2(browser, args, stdout = TRUE, stderr = FALSE, timeout = timeout)
+  }
+  if (!is.null(attr2(html, 'status'))) stop('Failed to dump DOM.')
+  html = gsub('<script[^>]*>.*?</script>', '', one_string(html))
+  if (fragment) html = trimws(gsub('^.*?<body[^>]*>|</body>.*$', '', html))
+  if (is.null(output)) raw_string(html) else write_utf8(html, output)
+}
+
+check_browser = function(browser) {
+  if (is.null(browser)) browser = env_option('xfun.browser', find_browser())
+  if (!file.exists(browser)) browser = Sys.which(browser)
+  if (!utils::file_test('-x', browser)) stop('The browser is not executable: ', browser)
+  browser
+}
+
+browser_args = function(quote = TRUE) c(
+  proxy_args(quote), if (is_windows()) '--no-sandbox', '--headless',
+  '--no-first-run', '--no-default-browser-check', '--hide-scrollbars',
+  quote2(paste0('--user-data-dir=', tempfile()), quote)
 )
 
 find_browser = function() {
@@ -79,13 +140,13 @@ find_browser = function() {
   )
 }
 
-proxy_args = function() {
+proxy_args = function(quote) {
   x = Sys.getenv(c('https_proxy', 'HTTPS_PROXY', 'http_proxy', 'HTTP_PROXY'))
   x = x[x != '']
   if (length(x) == 0) return()
   c(
     paste0('--proxy-server=', x[1]),
-    paste0('--proxy-bypass-list=', paste(no_proxy(), collapse = ';'))
+    quote2(paste0('--proxy-bypass-list=', paste(no_proxy(), collapse = ';')), quote)
   )
 }
 
@@ -94,3 +155,5 @@ no_proxy = function() {
   x = c('localhost', '127.0.0.1', x)
   unique(x)
 }
+
+quote2 = function(x, quote) if (quote) shQuote(x) else x
