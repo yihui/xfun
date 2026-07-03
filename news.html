@@ -191,6 +191,9 @@
 <h2 id="sec:xfun-0-60" class="unnumbered">xfun 0.60</h2>
 <ul>
 <li>
+<p><code>tojson()</code> now serializes <code>Inf</code>/<code>-Inf</code> as <code>Infinity</code>/<code>-Infinity</code> (valid JavaScript literals) instead of the bare R tokens <code>Inf</code>/<code>-Inf</code> which are invalid in both JSON and JS.</p>
+</li>
+<li>
 <p>Added a new function <code>browser_dom()</code> to execute JavaScript on an HTML page via a headless browser and return (or save) the rendered DOM as HTML.</p>
 </li>
 <li>
