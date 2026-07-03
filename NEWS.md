@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.60
 
+- `tojson()` now serializes `Inf`/`-Inf` as `Infinity`/`-Infinity` (valid JavaScript literals) instead of the bare R tokens `Inf`/`-Inf` which are invalid in both JSON and JS.
+
 - Added a new function `browser_dom()` to execute JavaScript on an HTML page via a headless browser and return (or save) the rendered DOM as HTML.
 
 - Fixed a bug in `browser_print()` where proxy bypass lists containing semicolons were not properly quoted, causing shell interpretation errors. Also added `--user-data-dir` to avoid profile lock conflicts with running browser instances.

@@ -47,6 +47,9 @@ assert('json_vector() converts atomic vectors to JSON', {
   # NA becomes null (character and numeric)
   (json_vector(c('a', NA_character_), to_array = TRUE) %==% '["a", null]')
   (json_vector(c(1, NA, 3), to_array = TRUE, quote = FALSE) %==% '[1, null, 3]')
+  # Inf/-Inf become Infinity/-Infinity (valid JS)
+  (json_vector(c(1, Inf, -Inf), to_array = TRUE, quote = FALSE) %==% '[1, Infinity, -Infinity]')
+  (json_vector(c(Inf, NA), to_array = TRUE, quote = FALSE) %==% '[Infinity, null]')
 })
 
 assert('json_atomic() handles Date, POSIXct, and factor', {

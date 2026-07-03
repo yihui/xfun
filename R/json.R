@@ -102,6 +102,8 @@ json_vector = function(x, to_array = FALSE, quote = TRUE) {
     x = gsub('\f', '\\\\f', x)
     x = gsub('\r', '\\\\r', x)
     x = gsub('\t', '\\\\t', x)
+  } else if (is.numeric(x)) {
+    x = ifelse(is.infinite(x), ifelse(x > 0, 'Infinity', '-Infinity'), x)
   }
   x[i] = 'null'
   if (to_array) paste0('[', paste(x, collapse = ', '), ']') else x
