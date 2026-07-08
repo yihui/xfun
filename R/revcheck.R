@@ -279,6 +279,8 @@ clean_log = function() {
   x = grep('^\\s*\\[\\d+%] Downloaded \\d+ bytes...\\s*$', x, invert = TRUE, value = TRUE)
   # delete lines of the form "address 0x1067143eb, cause 'illegal opcode'"
   x = grep("address 0x[[:xdigit:]]+, cause '[^']+'", x, invert = TRUE, value = TRUE)
+  # delete lines of the form "* current time: 2026-07-07 14:49:46 UTC"
+  x = grep('^[*] current time: ', x, invert = TRUE, value = TRUE)
   x = recheck_vig(x)
   x = tail(x, -2)
   writeLines(x, l)  # remove the first 2 lines (log dir name and R version)
