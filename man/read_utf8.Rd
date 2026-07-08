@@ -7,7 +7,7 @@
 \alias{append_unique}
 \title{Read / write files encoded in UTF-8}
 \usage{
-read_utf8(con, error = FALSE)
+read_utf8(con, error = FALSE, binary = FALSE)
 
 write_utf8(text, con, ...)
 
@@ -20,6 +20,15 @@ append_unique(text, con, sort = function(x) base::sort(unique(x)))
 
 \item{error}{Whether to signal an error when non-UTF8 characters are detected
 (if \code{FALSE}, only a warning message is issued).}
+
+\item{binary}{Whether to read the file via a binary-mode connection. On
+Windows, \code{\link[=readLines]{readLines()}} on a text-mode connection (the default) treats a
+\code{Ctrl+Z} byte (\verb{\\x1a}) as end-of-file and silently truncates the file
+(e.g., self-contained HTML embedding the PNG signature
+\verb{\\x89PNG\\r\\n\\x1a\\n} in JavaScript). Set \code{binary = TRUE} to read the whole
+file regardless of \code{Ctrl+Z} bytes (this has a small overhead and is only
+necessary on Windows). This argument is only used when \code{con} is a file
+path.}
 
 \item{text}{A character vector (will be converted to UTF-8 via \code{\link[=enc2utf8]{enc2utf8()}}).}
 

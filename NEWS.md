@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.60
 
+- `read_utf8()` gained a new argument `binary` (defaulting to `FALSE`). On Windows, `readLines()` on a text-mode connection treats a `Ctrl+Z` byte (`\x1a`) as end-of-file and silently truncates files that contain this byte (e.g., self-contained HTML files that embed the PNG signature `\x89PNG\r\n\x1a\n` in JavaScript). Setting `binary = TRUE` reads the file via a binary-mode connection, which reads the whole file regardless of `Ctrl+Z` bytes (thanks, @dmurdoch, rstudio/bookdown#1523).
+
 - `tojson()` now serializes `Inf`/`-Inf` as `Infinity`/`-Infinity` (valid JavaScript literals) instead of the bare R tokens `Inf`/`-Inf` which are invalid in both JSON and JS.
 
 - Added a new function `browser_dom()` to execute JavaScript on an HTML page via a headless browser and return (or save) the rendered DOM as HTML.

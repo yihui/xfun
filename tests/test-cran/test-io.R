@@ -34,6 +34,19 @@ assert('read/write_utf8() works', {
   has_error(read_utf8(mixed_file2, error = TRUE))
 })
 
+assert('read_utf8(binary = TRUE) preserves Ctrl+Z bytes and trailing content', {
+  # a Ctrl+Z (\x1a) byte embedded in a line; on Windows, a text-mode connection
+  # would treat it as end-of-file and drop this line's tail and all lines after
+  f = tempfile()
+  writeBin(charToRaw('head\nx\x1ay\ntail\n'), f)
+
+  # binary mode reads the whole file and keeps the \x1a byte
+  (read_utf8(f, binary = TRUE) %==% c('head', 'x\x1ay', 'tail'))
+  (grepl('\x1a', read_utf8(f, binary = TRUE)[2]))
+
+  unlink(f)
+})
+
 assert('empty files produce character() via file_string()', {
   tmp = tempfile()
   writeLines(character(), tmp)

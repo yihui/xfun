@@ -11,13 +11,27 @@
 #' @param con A connection or a file path.
 #' @param error Whether to signal an error when non-UTF8 characters are detected
 #'   (if `FALSE`, only a warning message is issued).
+#' @param binary Whether to read the file via a binary-mode connection. On
+#'   Windows, [readLines()] on a text-mode connection (the default) treats a
+#'   `Ctrl+Z` byte (`\x1a`) as end-of-file and silently truncates the file
+#'   (e.g., self-contained HTML embedding the PNG signature
+#'   `\x89PNG\r\n\x1a\n` in JavaScript). Set `binary = TRUE` to read the whole
+#'   file regardless of `Ctrl+Z` bytes (this has a small overhead and is only
+#'   necessary on Windows). This argument is only used when `con` is a file
+#'   path.
 #' @param text A character vector (will be converted to UTF-8 via [enc2utf8()]).
 #' @param ... Other arguments passed to [writeLines()] (except `useBytes`, which
 #'   is `TRUE` in `write_utf8()`).
 #' @return `read_utf8()` returns a character vector of the file content;
 #'   `write_utf8()` returns the `con` argument (invisibly).
 #' @export
-read_utf8 = function(con, error = FALSE) {
+read_utf8 = function(con, error = FALSE, binary = FALSE) {
+  # Reading via a binary connection avoids readLines() treating a Ctrl+Z byte
+  # (\x1a) as end-of-file on Windows (see the 'binary' argument documentation).
+  f = if (is.character(con)) con  # remember the file path for the message below
+  if (is.character(con) && binary) {
+    con = file(con, 'rb', encoding = 'UTF-8'); on.exit(close(con), add = TRUE)
+  }
   # users may have set options(encoding = 'UTF-8'), which usually won't help but
   # will bring more trouble than good, so we reset this option temporarily
   opts = options(encoding = 'native.enc'); on.exit(options(opts), add = TRUE)
@@ -25,7 +39,7 @@ read_utf8 = function(con, error = FALSE) {
   i = invalid_utf8(x)
   n = length(i)
   if (n > 0) (if (error) stop else warning)(
-    if (is.character(con)) c('The file ', con, ' is not encoded in UTF-8. '),
+    if (!is.null(f)) c('The file ', f, ' is not encoded in UTF-8. '),
     'These lines contain invalid UTF-8 characters: ',
     paste(c(head(i), if (n > 6) '...'), collapse = ', ')
   )
