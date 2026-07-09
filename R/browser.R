@@ -83,7 +83,10 @@ check_browser = function(browser) {
 
 browser_args = function() c(
   proxy_args(), if (is_windows()) '--no-sandbox', '--headless',
-  '--no-first-run', '--no-default-browser-check', '--hide-scrollbars'
+  '--no-first-run', '--no-default-browser-check', '--hide-scrollbars',
+  # avoid spawning the component/CRX URL fetcher, which leaves temp files
+  # (e.g., 'com.google.Chrome.chromecrx_chrome_url_fetcher_*') behind
+  '--disable-background-networking', '--disable-component-update'
 )
 
 find_browser = function() {
