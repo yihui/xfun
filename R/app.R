@@ -138,8 +138,8 @@ random_port = function(port = 4321L, n = 20L, exclude = NULL, error = TRUE) {
 
 # Internal proxy state.
 .proxy = new.env(parent = emptyenv())
-.proxy$apps = list()  # app name → list(type, key, slot?)
-.proxy$help = list()  # help proxy port → slot index
+.proxy$apps = list()  # app name -> list(type, key, slot?)
+.proxy$help = list()  # help proxy port -> slot index
 
 # Find an available proxy port without starting the proxy.
 .proxy_app_ports = function() {
@@ -204,7 +204,7 @@ proxy_stop = function(slot) {
 .port_available = function(port) {
   port = as.integer(port)
   if (is.na(port)) return(FALSE)
-  # If a client can connect, something is already listening → not available.
+  # If a client can connect, something is already listening -> not available.
   con = suppressWarnings(tryCatch(
     socketConnection('127.0.0.1', port = port, open = 'r+b', blocking = FALSE, timeout = 0.5),
     error = function(e) NULL
