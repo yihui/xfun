@@ -61,9 +61,11 @@ assert('is_abs_path() recognizes absolute paths on Windows and *nix', {
   (!is_abs_path('test/mydir/'))
   (!is_abs_path('foo__files/'))
   (is_rel_path('foo__files/'))
+  # '~' is absolute on all platforms (path.expand() maps it to the home dir)
+  (is_abs_path('~/foo'))
   (is_abs_path(if (.Platform$OS.type == 'windows') {
     c('D:\\abc', '\\\\netdrive\\somewhere', 'C:/foo', '/foo', '\\foo')
-  } else c('/abc/def', '~/foo')))
+  } else '/abc/def'))
 })
 
 assert('del_empty_dir() correctly deletes empty dirs', {

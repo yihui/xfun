@@ -268,8 +268,8 @@ get_subpath = function(p, n1, n2) {
 #'
 #' On Unix, check if the paths start with \file{/} or \file{~} (if they do, they
 #' are absolute paths). On Windows, check if the paths start with a drive letter
-#' (e.g., \file{C:}), a (back)slash (e.g., \file{/foo}), or a UNC prefix (e.g.,
-#' \file{\\\\host\\share}).
+#' (e.g., \file{C:}), a (back)slash (e.g., \file{/foo}), a UNC prefix (e.g.,
+#' \file{\\\\host\\share}), or \file{~}.
 #' @param x A vector of paths.
 #' @return A logical vector.
 #' @export
@@ -279,7 +279,7 @@ get_subpath = function(p, n1, n2) {
 is_abs_path = function(x) {
   # test is purely syntactic: don't touch the filesystem (normalizePath() can
   # drop trailing slashes and fail to recognize certain dirs on Windows, #127)
-  grepl(if (is_unix()) '^[/~]' else '^([a-zA-Z]:|[/\\\\])', x)
+  grepl(if (is_unix()) '^[/~]' else '^([a-zA-Z]:|[/\\\\~])', x)
 }
 
 #' @rdname is_abs_path
