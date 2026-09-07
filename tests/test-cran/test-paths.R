@@ -54,16 +54,11 @@ assert('url_filename() returns the file names in URLs', {
 })
 
 assert('is_abs_path() recognizes absolute paths on Windows and *nix', {
-  (!is_abs_path('abc/def'))
-  # a trailing slash must not change the result (#127); a purely syntactic test
-  # also works for non-existent or hard-to-normalize dirs (e.g., '*__files')
-  (!is_abs_path('abc/def/'))
-  (!is_abs_path('test/mydir/'))
-  (!is_abs_path('foo__files/'))
-  (is_rel_path('foo__files/'))
+  # a trailing slash must not change the result (#127)
+  (is_rel_path(c('abc/def', 'abc/def/', 'test/mydir/', 'foo__files/')))
   # '~' is absolute on all platforms (path.expand() maps it to the home dir)
   (is_abs_path('~/foo'))
-  (is_abs_path(if (.Platform$OS.type == 'windows') {
+  (is_abs_path(if (is_windows()) {
     c('D:\\abc', '\\\\netdrive\\somewhere', 'C:/foo', '/foo', '\\foo')
   } else '/abc/def'))
 })

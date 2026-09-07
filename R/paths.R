@@ -277,8 +277,6 @@ get_subpath = function(p, n1, n2) {
 #' xfun::is_abs_path(c('C:/foo', 'foo.txt', '/Users/john/', tempdir()))
 #' xfun::is_rel_path(c('C:/foo', 'foo.txt', '/Users/john/', tempdir()))
 is_abs_path = function(x) {
-  # test is purely syntactic: don't touch the filesystem (normalizePath() can
-  # drop trailing slashes and fail to recognize certain dirs on Windows, #127)
   grepl(if (is_unix()) '^[/~]' else '^([a-zA-Z]:|[/\\\\~])', x)
 }
 
