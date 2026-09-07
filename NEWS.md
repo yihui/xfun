@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.61
 
+- `is_abs_path()` (and hence `is_rel_path()`) now tests paths purely syntactically instead of normalizing them on the filesystem. On Windows, `normalizePath()` could drop a trailing slash, which made a relative path like `test/mydir/` be misclassified as absolute (thanks, @pitakakariki, #127).
 
 # CHANGES IN xfun VERSION 0.60
 

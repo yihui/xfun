@@ -17,9 +17,9 @@ A logical vector.
 }
 \description{
 On Unix, check if the paths start with \file{/} or \file{~} (if they do, they
-are absolute paths). On Windows, check if a path remains the same (via
-\code{\link[=same_path]{same_path()}}) if it is prepended with \file{./} (if it does, it is a
-relative path).
+are absolute paths). On Windows, check if the paths start with a drive letter
+(e.g., \file{C:}), a (back)slash (e.g., \file{/foo}), a UNC prefix (e.g.,
+\file{\\\\host\\share}), or \file{~}.
 }
 \examples{
 xfun::is_abs_path(c("C:/foo", "foo.txt", "/Users/john/", tempdir()))

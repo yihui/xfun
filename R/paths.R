@@ -267,9 +267,9 @@ get_subpath = function(p, n1, n2) {
 #' Test if paths are relative or absolute
 #'
 #' On Unix, check if the paths start with \file{/} or \file{~} (if they do, they
-#' are absolute paths). On Windows, check if a path remains the same (via
-#' [xfun::same_path()]) if it is prepended with \file{./} (if it does, it is a
-#' relative path).
+#' are absolute paths). On Windows, check if the paths start with a drive letter
+#' (e.g., \file{C:}), a (back)slash (e.g., \file{/foo}), a UNC prefix (e.g.,
+#' \file{\\\\host\\share}), or \file{~}.
 #' @param x A vector of paths.
 #' @return A logical vector.
 #' @export
@@ -277,7 +277,7 @@ get_subpath = function(p, n1, n2) {
 #' xfun::is_abs_path(c('C:/foo', 'foo.txt', '/Users/john/', tempdir()))
 #' xfun::is_rel_path(c('C:/foo', 'foo.txt', '/Users/john/', tempdir()))
 is_abs_path = function(x) {
-  if (is_unix()) grepl('^[/~]', x) else !same_path(x, file.path('.', x))
+  grepl(if (is_unix()) '^[/~]' else '^([a-zA-Z]:|[/\\\\~])', x)
 }
 
 #' @rdname is_abs_path
