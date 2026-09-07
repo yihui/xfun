@@ -51,16 +51,6 @@ code_lines_regex = function(x) {
   idx
 }
 
-# find lines via commonmark (accurate but gregexpr()/substring() are slow)
-code_lines_cmark = function(x) {
-  xml = commonmark::markdown_xml(x, sourcepos = TRUE)
-  r = '(?<=<code_block sourcepos=")(\\d+):\\d+-(\\d+):\\d+(?=")'
-  m = gregexpr(r, xml, perl = TRUE)[[1]]
-  if (all(m < 0)) return()
-  s = attr2(m, 'capture.start'); l = attr2(m, 'capture.length')
-  as.integer(substring(xml, s, s + l - 1))
-}
-
 #' Protect math expressions in pairs of backticks in Markdown
 #'
 #' For Markdown renderers that do not support LaTeX math, we need to protect
