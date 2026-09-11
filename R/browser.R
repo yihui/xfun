@@ -34,6 +34,9 @@ browser_print = function(
   if ('default' %in% args) {
     args = setdiff(c(
       args, browser_args(),
+      # Chromium otherwise stamps the date, page title, and file path into the
+      # PDF's header and footer, which is just noise for programmatic printing.
+      if (to_pdf) '--no-pdf-header-footer',
       sprintf('--%s="%s"', if (to_pdf) 'print-to-pdf' else 'screenshot', normalize_path(output)),
       shQuote(input)
     ), 'default')
