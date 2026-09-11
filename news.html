@@ -190,7 +190,12 @@
 </div>
 <h2 id="sec:xfun-0-61" class="unnumbered">xfun 0.61</h2>
 <ul>
-<li><code>is_abs_path()</code> (and hence <code>is_rel_path()</code>) now tests paths purely syntactically instead of normalizing them on the filesystem. On Windows, <code>normalizePath()</code> could drop a trailing slash, which made a relative path like <code>test/mydir/</code> be misclassified as absolute (thanks, <a href="https://github.com/pitakakariki">@pitakakariki</a>, <a href="https://github.com/yihui/xfun/issues/127">#127</a>).</li>
+<li>
+<p><code>is_abs_path()</code> (and hence <code>is_rel_path()</code>) now tests paths purely syntactically instead of normalizing them on the filesystem. On Windows, <code>normalizePath()</code> could drop a trailing slash, which made a relative path like <code>test/mydir/</code> be misclassified as absolute (thanks, <a href="https://github.com/pitakakariki">@pitakakariki</a>, <a href="https://github.com/yihui/xfun/issues/127">#127</a>).</p>
+</li>
+<li>
+<p><code>browser_print()</code> now passes <code>--no-pdf-header-footer</code> by default when printing to PDF (with the default <code>args</code>), so the printed PDF no longer carries the date, page title, and file path in its header and footer.</p>
+</li>
 </ul>
 <h2 id="sec:xfun-0-60" class="unnumbered">xfun 0.60</h2>
 <ul>
