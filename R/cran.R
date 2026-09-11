@@ -122,8 +122,13 @@ submit_cran = function(file = pkg_build(), comment = '', sync = TRUE) {
   on.exit(unlink(d, recursive = TRUE), add = TRUE)
   desc = file.path(gsub('_.*', '', basename(file)), 'DESCRIPTION')
   untar(file, desc, exdir = d)
+  # confirm the submission
+  desc = read.dcf(file.path(d, desc))
+  if (interactive() && readline(
+    sprintf('Submit %s v%s to CRAN? [y/n] ', desc[1, 'Package'], desc[1, 'Version'])
+  ) == 'n') stop('Submission cancelled.')
   # name and email of maintainer
-  info = read.dcf(file.path(d, desc), fields = 'Maintainer')[1, 1]
+  info = desc[1, 'Maintainer']
   info = unlist(strsplit(info, '( <|>)'))
 
   # read submission comments from cran-comments.md if exists
