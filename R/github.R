@@ -176,7 +176,7 @@ post_release = function() {
 
   desc = read.dcf('DESCRIPTION')
   pkg = desc[, 'Package']
-  ver = desc[, 'Version']
+  ver = unname(desc[, 'Version'])
 
   vers = release_versions(ver)
   ver_next = vers$next_ver
