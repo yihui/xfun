@@ -40,9 +40,8 @@ browser_print = function(
     ), 'default')
   }
   args = c(args, sprintf(
-    '--%s="%s"', if (to_pdf) 'print-to-pdf' else 'screenshot',
-    normalize_path(output)), shQuote(input)
-  )
+    '--%s="%s"', if (to_pdf) 'print-to-pdf' else 'screenshot', normalize_path(output)
+  ), shQuote(input))
   if (system2(browser, args, stderr = FALSE) != 0) stop('Failed to print to ', output)
   output
 }
