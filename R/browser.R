@@ -9,8 +9,8 @@
 #' @param args Command-line arguments to be passed to the headless browser. The
 #'   default arguments can be found in `xfun:::browser_args()`. You may pass
 #'   additional arguments on top of these via, e.g., `c('default',
-#'   '--no-pdf-header-footer')`, or completely override the default arguments by
-#'   providing a vector of other arguments.
+#'   '--force-device-scale-factor=2')`, or completely override the default
+#'   arguments by providing a vector of other arguments.
 #' @param window_size The browser window size when taking a PNG/JPEG screenshot.
 #'   Ignored when printing to PDF.
 #' @param browser Path to the web browser. By default, the browser is found via
@@ -34,10 +34,14 @@ browser_print = function(
   if ('default' %in% args) {
     args = setdiff(c(
       args, browser_args(),
-      sprintf('--%s="%s"', if (to_pdf) 'print-to-pdf' else 'screenshot', normalize_path(output)),
-      shQuote(input)
+      # Chromium otherwise stamps the date, page title, and file path into the
+      # PDF's header and footer, which is just noise for programmatic printing.
+      if (to_pdf) '--no-pdf-header-footer'
     ), 'default')
   }
+  args = c(args, sprintf(
+    '--%s="%s"', if (to_pdf) 'print-to-pdf' else 'screenshot', normalize_path(output)
+  ), shQuote(input))
   if (system2(browser, args, stderr = FALSE) != 0) stop('Failed to print to ', output)
   output
 }

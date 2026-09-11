@@ -2,6 +2,8 @@
 
 - `is_abs_path()` (and hence `is_rel_path()`) now tests paths purely syntactically instead of normalizing them on the filesystem. On Windows, `normalizePath()` could drop a trailing slash, which made a relative path like `test/mydir/` be misclassified as absolute (thanks, @pitakakariki, #127).
 
+- `browser_print()` now passes `--no-pdf-header-footer` by default when printing to PDF (with the default `args`), so the printed PDF no longer carries the date, page title, and file path in its header and footer.
+
 # CHANGES IN xfun VERSION 0.60
 
 - `read_utf8()` gained a new argument `binary` (defaulting to `FALSE`). On Windows, `readLines()` on a text-mode connection treats a `Ctrl+Z` byte (`\x1a`) as end-of-file and silently truncates files that contain this byte (e.g., self-contained HTML files that embed the PNG signature `\x89PNG\r\n\x1a\n` in JavaScript). Setting `binary = TRUE` reads the file via a binary-mode connection, which reads the whole file regardless of `Ctrl+Z` bytes (thanks, @dmurdoch, rstudio/bookdown#1523).

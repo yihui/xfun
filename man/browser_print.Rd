@@ -21,8 +21,8 @@ filename will be inferred from \code{url} via \code{\link[=url_filename]{url_fil
 
 \item{args}{Command-line arguments to be passed to the headless browser. The
 default arguments can be found in \code{xfun:::browser_args()}. You may pass
-additional arguments on top of these via, e.g., \code{c('default', '--no-pdf-header-footer')}, or completely override the default arguments by
-providing a vector of other arguments.}
+additional arguments on top of these via, e.g., \code{c('default', '--force-device-scale-factor=2')}, or completely override the default
+arguments by providing a vector of other arguments.}
 
 \item{window_size}{The browser window size when taking a PNG/JPEG screenshot.
 Ignored when printing to PDF.}
