@@ -4,6 +4,8 @@
 
 - `browser_print()` now passes `--no-pdf-header-footer` by default when printing to PDF (with the default `args`), so the printed PDF no longer carries the date, page title, and file path in its header and footer.
 
+- Clarified in the documentation of `upload_imgur()` that using it as \pkg{knitr}'s `upload.fun` makes the output self-contained only in the sense that images are loaded from imgur.com (so no local image files are needed), which is distinct from the stricter offline self-containedness provided by base64-encoding images via the output format's `self_contained` option (thanks, @kendavidn, yihui/knitr#2118).
+
 # CHANGES IN xfun VERSION 0.60
 
 - `read_utf8()` gained a new argument `binary` (defaulting to `FALSE`). On Windows, `readLines()` on a text-mode connection treats a `Ctrl+Z` byte (`\x1a`) as end-of-file and silently truncates files that contain this byte (e.g., self-contained HTML files that embed the PNG signature `\x89PNG\r\n\x1a\n` in JavaScript). Setting `binary = TRUE` reads the file via a binary-mode connection, which reads the whole file regardless of `Ctrl+Z` bytes (thanks, @dmurdoch, rstudio/bookdown#1523).
