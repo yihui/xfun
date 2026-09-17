@@ -1287,7 +1287,7 @@ perform the task or see the message again in the current R session. Set
 <h3 id="sec:examples_15" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">do_once(message(&quot;Today's date is &quot;, Sys.Date()), &quot;xfun.date.reminder&quot;)
 </code></pre>
-<pre><code class="language-plain message">#&gt; Today's date is 2026-09-16
+<pre><code class="language-plain message">#&gt; Today's date is 2026-09-17
 #&gt; You will not see this message again in this R session. If you never want to see this message, you may set options(xfun.date.reminder = FALSE) in your .Rprofile.
 </code></pre>
 <pre><code class="language-r"># if you run it again, it will not emit the message again
@@ -1842,7 +1842,7 @@ VignetteBuilder: litedown
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.1.0
 NeedsCompilation: yes
-Packaged: 2026-09-16 19:11:23 UTC; runner
+Packaged: 2026-09-17 22:53:21 UTC; runner
 Author: Yihui Xie [aut, cre, cph] (ORCID:
     &lt;https://orcid.org/0000-0003-0645-5666&gt;, URL: https://yihui.org),
   Wush Wu [ctb],
@@ -1851,7 +1851,7 @@ Author: Yihui Xie [aut, cre, cph] (ORCID:
   Salim Brüggemann [ctb] (ORCID: &lt;https://orcid.org/0000-0002-5329-5987&gt;),
   Christophe Dervieux [ctb]
 Maintainer: Yihui Xie &lt;xie@yihui.name&gt;
-Built: R 4.6.1; aarch64-apple-darwin23; 2026-09-16 19:11:25 UTC; unix
+Built: R 4.6.1; aarch64-apple-darwin23; 2026-09-17 22:53:22 UTC; unix
 </code></pre>
 <h2 id="sec:man-find_globals"><span class="section-number main-number">32</span> Find global/local variables in R code</h2>
 <h3 id="sec:description_32" class="unnumbered unlisted">Description</h3>
@@ -2226,8 +2226,8 @@ in_dir(tempdir(), {
     list.files()
 })
 </code></pre>
-<pre><code>#&gt; [1] &quot;/private/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/Rtmp7QVIF3&quot;
-#&gt; [1] &quot;file128e534fbb60&quot;      &quot;file128e79a100f8.html&quot;
+<pre><code>#&gt; [1] &quot;/private/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/RtmpDerjVL&quot;
+#&gt; [1] &quot;file519e590dc0cb.html&quot; &quot;file519e6e97ea96&quot;     
 </code></pre>
 <h2 id="sec:man-install_dir"><span class="section-number main-number">40</span> Install a source package from a directory</h2>
 <h3 id="sec:description_40" class="unnumbered unlisted">Description</h3>
@@ -3533,7 +3533,7 @@ packages.
 #&gt;   title = {xfun: Supporting Functions for Packages Maintained by Yihui Xie},
 #&gt;   author = {Yihui Xie},
 #&gt;   year = {2026},
-#&gt;   note = {R package version 0.61.1 (retrieved 2026-09-16)},
+#&gt;   note = {R package version 0.61.1 (retrieved 2026-09-17)},
 #&gt;   url = {https://github.com/yihui/xfun},
 #&gt; }
 </code></pre>
@@ -3820,8 +3820,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 <h3 id="sec:examples_55" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">rand_unit(10)
 </code></pre>
-<pre><code>#&gt;  [1] 0.96064448 0.08010664 0.71042602 0.64067526 0.75737756 0.39563836
-#&gt;  [7] 0.43336190 0.29405340 0.29746525 0.66882127
+<pre><code>#&gt;  [1] 0.25622301 0.47538728 0.18400325 0.82948175 0.59345316 0.90583980
+#&gt;  [7] 0.14357503 0.05602202 0.86075704 0.66065699
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = 0)
 </code></pre>
@@ -3833,8 +3833,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = Sys.getpid())
 </code></pre>
-<pre><code>#&gt;  [1] 0.06170844 0.14606459 0.96573137 0.91298075 0.58668524 0.27642922
-#&gt;  [7] 0.92122005 0.31537448 0.94996978 0.46366801
+<pre><code>#&gt;  [1] 0.27143921 0.49344705 0.86484024 0.49090941 0.27246346 0.64372887
+#&gt;  [7] 0.13978354 0.50219672 0.07045653 0.26313251
 </code></pre>
 <h2 id="sec:man-random_port"><span class="section-number main-number">72</span> Find a random available TCP port</h2>
 <h3 id="sec:description_72" class="unnumbered unlisted">Description</h3>
@@ -4597,13 +4597,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;mockhttp.org&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.124&quot;
+#&gt; [1] &quot;13.105.49.124&quot;
 #&gt; 
 #&gt; $headers$`x-forwarded-proto`
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a3c22e29acba2a56&quot;
+#&gt; [1] &quot;a3cbb0ecdcf5172e&quot;
 #&gt; 
 #&gt; $headers$`accept-encoding`
 #&gt; [1] &quot;gzip, br&quot;
@@ -4615,7 +4615,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.124&quot;
+#&gt; [1] &quot;13.105.49.124&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
@@ -4629,7 +4629,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
 <pre><code class="language-r">xfun::rest_api_raw(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
-<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;x-real-ip&quot;:&quot;13.105.117.124&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;cf-ray&quot;:&quot;a3c22e2cda5dbffc&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;accept&quot;:&quot;*/*&quot;,&quot;user-agent&quot;:&quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.117.124&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;},&quot;queryParams&quot;:{}}
+<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;x-real-ip&quot;:&quot;13.105.49.124&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;cf-ray&quot;:&quot;a3cbb0f00942df26&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;accept&quot;:&quot;*/*&quot;,&quot;user-agent&quot;:&quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.49.124&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;},&quot;queryParams&quot;:{}}
 </code></pre>
 <pre><code class="language-r"># send the request with an auth header
 xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPEN SESAME!&quot;)
@@ -4639,13 +4639,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;mockhttp.org&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.124&quot;
+#&gt; [1] &quot;13.105.49.124&quot;
 #&gt; 
 #&gt; $headers$`x-forwarded-proto`
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a3c22e2f2a3d405d&quot;
+#&gt; [1] &quot;a3cbb0f1eff289cc&quot;
 #&gt; 
 #&gt; $headers$`accept-encoding`
 #&gt; [1] &quot;gzip, br&quot;
@@ -4660,7 +4660,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.124&quot;
+#&gt; [1] &quot;13.105.49.124&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
@@ -4689,7 +4689,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$core$reset
-#&gt; [1] 1789589523
+#&gt; [1] 1789689250
 #&gt; 
 #&gt; 
 #&gt; $resources$search
@@ -4703,7 +4703,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 30
 #&gt; 
 #&gt; $resources$search$reset
-#&gt; [1] 1789585983
+#&gt; [1] 1789685710
 #&gt; 
 #&gt; 
 #&gt; $resources$graphql
@@ -4717,7 +4717,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$graphql$reset
-#&gt; [1] 1789589523
+#&gt; [1] 1789689250
 #&gt; 
 #&gt; 
 #&gt; $resources$integration_manifest
@@ -4731,7 +4731,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$integration_manifest$reset
-#&gt; [1] 1789589523
+#&gt; [1] 1789689250
 #&gt; 
 #&gt; 
 #&gt; $resources$source_import
@@ -4745,7 +4745,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$source_import$reset
-#&gt; [1] 1789585983
+#&gt; [1] 1789685710
 #&gt; 
 #&gt; 
 #&gt; $resources$code_scanning_autofix
@@ -4759,7 +4759,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_scanning_autofix$reset
-#&gt; [1] 1789585983
+#&gt; [1] 1789685710
 #&gt; 
 #&gt; 
 #&gt; $resources$actions_runner_registration
@@ -4773,7 +4773,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10000
 #&gt; 
 #&gt; $resources$actions_runner_registration$reset
-#&gt; [1] 1789589523
+#&gt; [1] 1789689250
 #&gt; 
 #&gt; 
 #&gt; $resources$scim
@@ -4787,7 +4787,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15000
 #&gt; 
 #&gt; $resources$scim$reset
-#&gt; [1] 1789589523
+#&gt; [1] 1789689250
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_snapshots
@@ -4801,7 +4801,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_snapshots$reset
-#&gt; [1] 1789585983
+#&gt; [1] 1789685710
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_sbom
@@ -4815,7 +4815,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_sbom$reset
-#&gt; [1] 1789585983
+#&gt; [1] 1789685710
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log
@@ -4829,7 +4829,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$audit_log$reset
-#&gt; [1] 1789589523
+#&gt; [1] 1789689250
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log_streaming
@@ -4843,7 +4843,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15
 #&gt; 
 #&gt; $resources$audit_log_streaming$reset
-#&gt; [1] 1789589523
+#&gt; [1] 1789689250
 #&gt; 
 #&gt; 
 #&gt; $resources$code_search
@@ -4857,7 +4857,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_search$reset
-#&gt; [1] 1789585983
+#&gt; [1] 1789685710
 #&gt; 
 #&gt; 
 #&gt; $resources$copilot_usage_records
@@ -4871,7 +4871,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$copilot_usage_records$reset
-#&gt; [1] 1789589523
+#&gt; [1] 1789689250
 #&gt; 
 #&gt; 
 #&gt; $resources$enterprise_token_inventory
@@ -4885,7 +4885,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$enterprise_token_inventory$reset
-#&gt; [1] 1789589523
+#&gt; [1] 1789689250
 #&gt; 
 #&gt; 
 #&gt; 
@@ -4900,7 +4900,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $rate$reset
-#&gt; [1] 1789589523
+#&gt; [1] 1789689250
 </code></pre>
 <h2 id="sec:man-retry"><span class="section-number main-number">82</span> Retry calling a function for a number of times</h2>
 <h3 id="sec:description_82" class="unnumbered unlisted">Description</h3>
@@ -5472,17 +5472,17 @@ formed by concatenating wrapped strings by <code>\n</code>.
 x = rep(paste(x, collapse = &quot;&quot;), 2)
 strwrap(x, width = 30)
 </code></pre>
-<pre><code>#&gt;  [1] &quot;g u sfex r r lqftqe i gkf n&quot;   &quot;bmrw x w wb h ncyjxs lf pe qu&quot;
-#&gt;  [3] &quot;c urrp hq bk v pg h cphw s&quot;    &quot;ngn up iwnf wtp k sinn cdng&quot;  
-#&gt;  [5] &quot;mgx ht qr w p p ju ef we v iq&quot; &quot;i ln g gs yh h pripv a&quot;       
-#&gt;  [7] &quot;g u sfex r r lqftqe i gkf n&quot;   &quot;bmrw x w wb h ncyjxs lf pe qu&quot;
-#&gt;  [9] &quot;c urrp hq bk v pg h cphw s&quot;    &quot;ngn up iwnf wtp k sinn cdng&quot;  
-#&gt; [11] &quot;mgx ht qr w p p ju ef we v iq&quot; &quot;i ln g gs yh h pripv a&quot;       
+<pre><code>#&gt;  [1] &quot;qecmf x cn o uxh ho fjx c u&quot;   &quot;vo l ep e t lxb py agcm t c&quot;  
+#&gt;  [3] &quot;sc z mi da dp ghv xrn tu x&quot;    &quot;mcao y m u h mbjact n m qwdlj&quot;
+#&gt;  [5] &quot;e t p q e twokuz slt t f n&quot;    &quot;rzail&quot;                        
+#&gt;  [7] &quot;qecmf x cn o uxh ho fjx c u&quot;   &quot;vo l ep e t lxb py agcm t c&quot;  
+#&gt;  [9] &quot;sc z mi da dp ghv xrn tu x&quot;    &quot;mcao y m u h mbjact n m qwdlj&quot;
+#&gt; [11] &quot;e t p q e twokuz slt t f n&quot;    &quot;rzail&quot;                        
 </code></pre>
 <pre><code class="language-r">xfun::str_wrap(x, width = 30)  # same length as x
 </code></pre>
-<pre><code>#&gt; [1] &quot;g u sfex r r lqftqe i gkf n\nbmrw x w wb h ncyjxs lf pe qu\nc urrp hq bk v pg h cphw s\nngn up iwnf wtp k sinn cdng\nmgx ht qr w p p ju ef we v iq\ni ln g gs yh h pripv a&quot;
-#&gt; [2] &quot;g u sfex r r lqftqe i gkf n\nbmrw x w wb h ncyjxs lf pe qu\nc urrp hq bk v pg h cphw s\nngn up iwnf wtp k sinn cdng\nmgx ht qr w p p ju ef we v iq\ni ln g gs yh h pripv a&quot;
+<pre><code>#&gt; [1] &quot;qecmf x cn o uxh ho fjx c u\nvo l ep e t lxb py agcm t c\nsc z mi da dp ghv xrn tu x\nmcao y m u h mbjact n m qwdlj\ne t p q e twokuz slt t f n\nrzail&quot;
+#&gt; [2] &quot;qecmf x cn o uxh ho fjx c u\nvo l ep e t lxb py agcm t c\nsc z mi da dp ghv xrn tu x\nmcao y m u h mbjact n m qwdlj\ne t p q e twokuz slt t f n\nrzail&quot;
 </code></pre>
 <h2 id="sec:man-strict_list"><span class="section-number main-number">93</span> Strict lists</h2>
 <h3 id="sec:description_93" class="unnumbered unlisted">Description</h3>
@@ -6016,7 +6016,7 @@ tojson(NULL)
   [&quot;a&quot;, &quot;b&quot;],
   [1, 2, 3, 4, 5],
   true,
-  [new Date(&quot;2026-09-17&quot;), new Date(&quot;2026-09-18&quot;), new Date(&quot;2026-09-19&quot;)]
+  [new Date(&quot;2026-09-18&quot;), new Date(&quot;2026-09-19&quot;), new Date(&quot;2026-09-20&quot;)]
 ]
 </code></pre>
 <pre><code class="language-r">tojson(head(iris))  # each column is in an element
@@ -6380,8 +6380,19 @@ If <code>FALSE</code>, the system command <code>curl</code> will be used.</p>
 </table>
 <h3 id="sec:details_27" class="unnumbered unlisted">Details</h3>
 <p>One application is to upload local image files to Imgur when knitting a
-document with <span class="pkg">knitr</span>: you can set the <code>knitr::opts_knit$set(upload.fun = xfun::upload_imgur</code>, so the output document does not need local image files
-any more, and it is ready to be published online.
+document with <span class="pkg">knitr</span>: you can set
+<code>knitr::opts_knit$set(upload.fun = xfun::upload_imgur)</code>, so the output
+document does not need local image files any more, and it is ready to be
+published online.
+</p>
+<p>Note that this makes the output self-contained only in the sense that the
+images are loaded from imgur.com rather than from local files, so the single
+output file can be shared without the accompanying image files. It does not
+make the file work offline. If you want a stricter form of self-containedness
+that does not require an Internet connection (i.e., the images are base64
+encoded and embedded in the output), do not use this function, and instead
+use the <code>self_contained</code> option of the output format (e.g., in the YAML
+metadata of an R Markdown document).
 </p>
 <h3 id="sec:value_84" class="unnumbered unlisted">Value</h3>
 <p>A character string of the link to the image. If <code>include_xml = TRUE</code>,
