@@ -155,9 +155,19 @@ shrink_images = function(
 #' (whichever is available) to upload a image to <https://imgur.com>.
 #'
 #' One application is to upload local image files to Imgur when knitting a
-#' document with \pkg{knitr}: you can set the `knitr::opts_knit$set(upload.fun =
-#' xfun::upload_imgur`, so the output document does not need local image files
-#' any more, and it is ready to be published online.
+#' document with \pkg{knitr}: you can set
+#' `knitr::opts_knit$set(upload.fun = xfun::upload_imgur)`, so the output
+#' document does not need local image files any more, and it is ready to be
+#' published online.
+#'
+#' Note that this makes the output self-contained only in the sense that the
+#' images are loaded from imgur.com rather than from local files, so the single
+#' output file can be shared without the accompanying image files. It does not
+#' make the file work offline. If you want a stricter form of self-containedness
+#' that does not require an Internet connection (i.e., the images are base64
+#' encoded and embedded in the output), do not use this function, and instead
+#' use the `self_contained` option of the output format (e.g., in the YAML
+#' metadata of an R Markdown document).
 #' @param file Path to the image file to be uploaded.
 #' @param key Client ID for Imgur. It can be set via either the global option
 #'   `xfun.upload_imgur.key` or the environment variable
