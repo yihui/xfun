@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.62
 
+- Added `rust` to the internal object `comment_chars` (thanks, @kbvernon, #132).
 
 # CHANGES IN xfun VERSION 0.61
 
