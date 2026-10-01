@@ -29,6 +29,11 @@
 #'   expression `[codes].map(i => [u][i])` (0-based `codes` indexing the unique
 #'   values `u`), which is not strict JSON but meant to be evaluated as
 #'   JavaScript (e.g. embedded in a `<script>`).
+#' @param pretty Whether to pretty-print the output with line breaks,
+#'   indentation, and a space after each array/object separator (the default).
+#'   `FALSE` produces a compact, single-line result (no line breaks or
+#'   indentation, and `,` instead of `, ` between array elements), which can be
+#'   substantially smaller for large data.
 #' @export
 #' @return A character string.
 #' @seealso The \pkg{jsonlite} package provides a full JSON serializer.
@@ -45,25 +50,31 @@
 #'
 #' # literal JS code
 #' tojson(list(a = 1:5, b = js('function() {return true;}')))
-tojson = function(x, dict = FALSE) {
+tojson = function(x, dict = FALSE, pretty = TRUE) {
   if (inherits(x, 'json')) return(x)
   if (isTRUE(dict)) dict = 1 else if (isFALSE(dict)) dict = 0
-  res = structure(.tojson(x, dict = dict), class = 'json')
+  res = structure(.tojson(x, dict = dict, pretty = pretty), class = 'json')
   raw_string(res, lang = '.json')
 }
 
-.tojson = function(x, n = 1, dict = 0) {
+.tojson = function(x, n = 1, dict = 0, pretty = TRUE) {
+  sep = if (pretty) ', ' else ','       # between array elements
+  kv = if (pretty) ': ' else ':'        # between an object key and its value
   make_array = function(..., braces = c('[', ']')) {
-    inner = paste0(strrep('  ', n), ..., collapse = ',\n')
-    paste0(braces[1], '\n', inner, '\n', strrep('  ', n - 1), braces[2])
+    if (pretty) {
+      inner = paste0(strrep('  ', n), ..., collapse = ',\n')
+      paste0(braces[1], '\n', inner, '\n', strrep('  ', n - 1), braces[2])
+    } else {
+      paste0(braces[1], paste0(..., collapse = ','), braces[2])
+    }
   }
   if (is.null(x)) 'null' else if (is.array(x)) {
     # vectorize the common 2d matrix case (avoid one .tojson() call per row)
     if (length(dim(x)) == 2) {
-      els = matrix(json_atomic(as.vector(x), FALSE), nrow(x))
-      rows = do.call(paste, c(as.data.frame(els, stringsAsFactors = FALSE), sep = ', '))
+      els = matrix(json_atomic(as.vector(x), FALSE, sep), nrow(x))
+      rows = do.call(paste, c(as.data.frame(els, stringsAsFactors = FALSE), sep = sep))
       make_array(paste0('[', rows, ']'))
-    } else make_array(apply(x, 1, .tojson, n + 1, dict))
+    } else make_array(apply(x, 1, .tojson, n + 1, dict, pretty))
   } else if (is.list(x)) {
     if (length(x) == 0) return('{}')
     # output unnamed data frames by rows instead of columns
@@ -71,25 +82,25 @@ tojson = function(x, dict = FALSE) {
     is_df = is.data.frame(x)
     by_row = is_df && is.null(nms)
     cols = unlist(lapply(x, function(z) {
-      if (by_row) json_atomic(z, FALSE) else {
+      if (by_row) json_atomic(z, FALSE, sep) else {
         # data frame columns must be arrays even for length 1
-        .tojson(if (is_df) I(z) else z, n + 1, dict)
+        .tojson(if (is_df) I(z) else z, n + 1, dict, pretty)
       }
     }))
     if (is.null(nms)) {
       if (by_row) {
         dim(cols) = dim(x)
-        cols = apply(cols, 1, json_vector, TRUE, FALSE)
+        cols = apply(cols, 1, json_vector, TRUE, FALSE, sep)
       }
       make_array(cols)
     } else {
-      make_array(quote_string(nms), ': ', cols, braces = c('{', '}'))
+      make_array(quote_string(nms), kv, cols, braces = c('{', '}'))
     }
   } else if (is.character(x) && inherits(x, c('JS_LITERAL', 'JS_EVAL'))) {
     paste(x, collapse = '\n')
   } else {
-    plain = json_atomic(x)
-    d = if (dict > 0) dict_atomic(x, dict)
+    plain = json_atomic(x, sep = sep)
+    d = if (dict > 0) dict_atomic(x, dict, sep)
     if (length(d) && nchar(d) < nchar(plain)) d else plain
   }
 }
@@ -98,20 +109,20 @@ tojson = function(x, dict = FALSE) {
 # enough repeats (unique values at most `dict` times the length); return NULL to
 # signal the caller to keep the plain form. unique() keeps NA, so NA becomes a
 # normal entry (`u[code]` is `null`) and needs no special casing.
-dict_atomic = function(x, dict) {
+dict_atomic = function(x, dict, sep = ', ') {
   n = length(x)
   if (n == 0) return()
   u = unique(x)
   if (length(u) > dict * n) return()
   codes = match(x, u) - 1L
-  paste0(json_atomic(I(codes)), '.map(i => ', json_atomic(I(u)), '[i])')
+  paste0(json_atomic(I(codes), sep = sep), '.map(i => ', json_atomic(I(u), sep = sep), '[i])')
 }
 
 #' @rdname tojson
 #' @export
 js = function(x) structure(x, class = 'JS_LITERAL')
 
-json_atomic = function(x, to_array = NA) {
+json_atomic = function(x, to_array = NA, sep = ', ') {
   use_quote = !(is.numeric(x) || is.logical(x))
   asis = inherits(x, 'AsIs')
   if (is.factor(x)) x = as.character(x)
@@ -122,14 +133,16 @@ json_atomic = function(x, to_array = NA) {
     use_quote = FALSE
   }
   if (is.na(to_array)) to_array = length(x) != 1 || asis
-  json_vector(x, to_array, use_quote)
+  json_vector(x, to_array, use_quote, sep)
 }
 
 #' @param to_array Whether to convert a vector to a JSON array (use `[]`).
 #' @param quote Whether to double quote the elements.
+#' @param sep The string separating consecutive array elements (`', '` by
+#'   default; use `','` for compact output).
 #' @rdname tojson
 #' @export
-json_vector = function(x, to_array = FALSE, quote = TRUE) {
+json_vector = function(x, to_array = FALSE, quote = TRUE, sep = ', ') {
   i = is.na(x)
   if (quote) {
     x = quote_string(x)
@@ -145,7 +158,7 @@ json_vector = function(x, to_array = FALSE, quote = TRUE) {
     x = ifelse(is.infinite(x), ifelse(x > 0, 'Infinity', '-Infinity'), x)
   }
   x[i] = 'null'
-  if (to_array) paste0('[', paste(x, collapse = ', '), ']') else x
+  if (to_array) paste0('[', paste(x, collapse = sep), ']') else x
 }
 
 # escape \ and " in strings, and quote them

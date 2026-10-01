@@ -6,11 +6,11 @@
 \alias{json_vector}
 \title{A simple JSON serializer}
 \usage{
-tojson(x, dict = FALSE)
+tojson(x, dict = FALSE, pretty = TRUE)
 
 js(x)
 
-json_vector(x, to_array = FALSE, quote = TRUE)
+json_vector(x, to_array = FALSE, quote = TRUE, sep = ", ")
 }
 \arguments{
 \item{x}{An R object.}
@@ -26,9 +26,18 @@ expression \verb{[codes].map(i => [u][i])} (0-based \code{codes} indexing the un
 values \code{u}), which is not strict JSON but meant to be evaluated as
 JavaScript (e.g. embedded in a \verb{<script>}).}
 
+\item{pretty}{Whether to pretty-print the output with line breaks,
+indentation, and a space after each array/object separator (the default).
+\code{FALSE} produces a compact, single-line result (no line breaks or
+indentation, and \verb{,} instead of \verb{, } between array elements), which can be
+substantially smaller for large data.}
+
 \item{to_array}{Whether to convert a vector to a JSON array (use \verb{[]}).}
 
 \item{quote}{Whether to double quote the elements.}
+
+\item{sep}{The string separating consecutive array elements (\code{', '} by
+default; use \code{','} for compact output).}
 }
 \value{
 A character string.

@@ -140,3 +140,22 @@ assert('tojson(dict = ) dictionary-encodes repeated values when it is shorter', 
   df = data.frame(g = rep(c('alpha', 'bravo'), 20), stringsAsFactors = FALSE)
   (grepl('"g": \\[0, 1,.*\\.map\\(i => \\["alpha", "bravo"\\]\\[i\\]\\)', .tojson(df, dict = TRUE)))
 })
+
+assert('tojson(pretty = FALSE) produces compact output', {
+  # arrays join with ',' (no space), objects have no line breaks or indentation
+  (.tojson(1:5, pretty = FALSE) %==% '[1,2,3,4,5]')
+  (.tojson(list(a = 1:3, b = c('x', 'y')), pretty = FALSE) %==%
+      '{"a":[1,2,3],"b":["x","y"]}')
+  # nested lists stay single-line
+  (.tojson(list(a = 1, b = list(c = 1:3, d = 'abc')), pretty = FALSE) %==%
+      '{"a":1,"b":{"c":[1,2,3],"d":"abc"}}')
+  # matrices and by-row data frames
+  (.tojson(matrix(1:6, 2), pretty = FALSE) %==% '[[1,3,5],[2,4,6]]')
+  (.tojson(unname(data.frame(x = 1:2, y = c('a', 'b'))), pretty = FALSE) %==%
+      '[[1,"a"],[2,"b"]]')
+  # dict encoding uses compact code/unique arrays
+  (.tojson(rep(c(45, 52), 20), dict = TRUE, pretty = FALSE) %==%
+      paste0('[', paste(rep(c(0, 1), 20), collapse = ','), '].map(i => [45,52][i])'))
+  # pretty = TRUE (default) is unchanged
+  (.tojson(1:5) %==% '[1, 2, 3, 4, 5]')
+})
