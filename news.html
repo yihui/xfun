@@ -200,6 +200,12 @@
 <li>
 <p><code>tojson()</code> now emits each row of a single-column matrix as an array (e.g., <code>[[1], [2], [3]]</code>) for consistency with multi-column matrices, instead of collapsing the rows into scalars.</p>
 </li>
+<li>
+<p><code>tojson()</code> now escapes <code>&lt;/script</code> to <code>&lt;\/script</code> in strings so the output can be safely embedded in an inline <code>&lt;script&gt;</code> block (a literal <code>&lt;/script&gt;</code> would otherwise close the block early). This is still valid JSON and parses back to the original string.</p>
+</li>
+<li>
+<p><code>tojson()</code> gained an argument <code>factor</code> to control how factors are serialized. With <code>factor = 'dict'</code>, a factor is dictionary-encoded as a runnable JavaScript expression <code>[codes].map(i =&gt; [levels][i])</code> (0-based codes into a levels array), so highly repetitive values are serialized only once instead of being repeated per element.</p>
+</li>
 </ul>
 <h2 id="sec:xfun-0-61" class="unnumbered">xfun 0.61</h2>
 <ul>
