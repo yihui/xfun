@@ -6,6 +6,10 @@
 
 - `tojson()` now emits each row of a single-column matrix as an array (e.g., `[[1], [2], [3]]`) for consistency with multi-column matrices, instead of collapsing the rows into scalars.
 
+- `tojson()` now escapes `</script` to `<\/script` in strings so the output can be safely embedded in an inline `<script>` block (a literal `</script>` would otherwise close the block early). This is still valid JSON and parses back to the original string.
+
+- `tojson()` gained an argument `factor` to control how factors are serialized. With `factor = 'dict'`, a factor is dictionary-encoded as a runnable JavaScript expression `[codes].map(i => [levels][i])` (0-based codes into a levels array), so highly repetitive values are serialized only once instead of being repeated per element.
+
 # CHANGES IN xfun VERSION 0.61
 
 - `is_abs_path()` (and hence `is_rel_path()`) now tests paths purely syntactically instead of normalizing them on the filesystem. On Windows, `normalizePath()` could drop a trailing slash, which made a relative path like `test/mydir/` be misclassified as absolute (thanks, @pitakakariki, #127).

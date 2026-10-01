@@ -19,6 +19,13 @@
 #' represented via the JavaScript expression `new Date(value)` (which is not
 #' standard JSON but practically more useful).
 #' @param x An R object.
+#' @param factor How to serialize factors. By default (`'string'`), a factor
+#'   becomes an array of its character values. With `'dict'`, it is
+#'   dictionary-encoded as a runnable JavaScript expression
+#'   `[codes].map(i => [levels][i])` (0-based `codes` indexing a `levels`
+#'   array), so the unique values are emitted once instead of repeated per
+#'   element. Like dates, this is not strict JSON but is meant to be evaluated
+#'   as JavaScript (e.g. embedded in a `<script>`).
 #' @export
 #' @return A character string.
 #' @seealso The \pkg{jsonlite} package provides a full JSON serializer.
@@ -30,15 +37,18 @@
 #' tojson(unname(head(iris)))  # each row is in an element
 #' tojson(matrix(1:12, 3))
 #'
+#' # dictionary-encode a factor
+#' tojson(factor(c('b', 'a', 'b', NA, 'a')), factor = 'dict')
+#'
 #' # literal JS code
 #' tojson(list(a = 1:5, b = js('function() {return true;}')))
-tojson = function(x) {
+tojson = function(x, factor = c('string', 'dict')) {
   if (inherits(x, 'json')) return(x)
-  res = structure(.tojson(x), class = 'json')
+  res = structure(.tojson(x, factor = match.arg(factor)), class = 'json')
   raw_string(res, lang = '.json')
 }
 
-.tojson = function(x, n = 1) {
+.tojson = function(x, n = 1, factor = 'string') {
   make_array = function(..., braces = c('[', ']')) {
     inner = paste0(strrep('  ', n), ..., collapse = ',\n')
     paste0(braces[1], '\n', inner, '\n', strrep('  ', n - 1), braces[2])
@@ -49,7 +59,14 @@ tojson = function(x) {
       els = matrix(json_atomic(as.vector(x), FALSE), nrow(x))
       rows = do.call(paste, c(as.data.frame(els, stringsAsFactors = FALSE), sep = ', '))
       make_array(paste0('[', rows, ']'))
-    } else make_array(apply(x, 1, .tojson, n + 1))
+    } else make_array(apply(x, 1, .tojson, n + 1, factor))
+  } else if (is.factor(x) && factor == 'dict') {
+    # emit the unique values once as a runnable JS expression (see `factor`)
+    lv = json_atomic(I(levels(x)))
+    cd = json_atomic(I(as.integer(x) - 1L))
+    # levels[null] is `undefined` in JS, so map NA codes back to null
+    tail = if (anyNA(x)) ' ?? null' else ''
+    paste0(cd, '.map(i => ', lv, '[i]', tail, ')')
   } else if (is.list(x)) {
     if (length(x) == 0) return('{}')
     # output unnamed data frames by rows instead of columns
@@ -59,7 +76,7 @@ tojson = function(x) {
     cols = unlist(lapply(x, function(z) {
       if (by_row) json_atomic(z, FALSE) else {
         # data frame columns must be arrays even for length 1
-        .tojson(if (is_df) I(z) else z, n + 1)
+        .tojson(if (is_df) I(z) else z, n + 1, factor)
       }
     }))
     if (is.null(nms)) {
@@ -121,6 +138,10 @@ json_vector = function(x, to_array = FALSE, quote = TRUE) {
 quote_string = function(x) {
   # only escape when backslashes or double quotes are actually present
   if (any(grepl('["\\]', x, useBytes = TRUE))) x = gsub('(["\\])', "\\\\\\1", x)
+  # escape </script (case-insensitively, as the HTML parser matches it) so the
+  # output can't close an inline <script> block early; \/ is still valid JSON
+  if (any(grepl('</script', x, ignore.case = TRUE)))
+    x = gsub('</(script)', '<\\\\/\\1', x, perl = TRUE, ignore.case = TRUE)
   if (length(x)) x = paste0('"', x, '"')
   x
 }

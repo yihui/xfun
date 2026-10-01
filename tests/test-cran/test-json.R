@@ -101,3 +101,33 @@ assert('json_vector() escapes control characters in strings', {
 assert('quote_string() returns character(0) for empty input', {
   (quote_string(character(0)) %==% character(0))
 })
+
+assert('quote_string() escapes </script to keep output inline-<script> safe', {
+  # a literal </script> would close an inline <script> block early
+  (quote_string('a</script>b') %==% '"a<\\/script>b"')
+  (json_vector('</script>', to_array = FALSE) %==% '"<\\/script>"')
+  # case-insensitive like the HTML parser, preserving the original case
+  (quote_string('</SCRIPT>') %==% '"<\\/SCRIPT>"')
+  # other </ sequences and bare / are left alone (e.g. a regex, </style>)
+  (quote_string('</style>') %==% '"</style>"')
+  (quote_string('if (a</b && /</.test(s))') %==% '"if (a</b && /</.test(s))"')
+  (quote_string('a/b') %==% '"a/b"')
+})
+
+assert('tojson(factor = ) chooses string vs dict encoding', {
+  f = factor(c('b', 'a', 'b', NA, 'a'))
+  # default: array of character values
+  (.tojson(f) %==% '["b", "a", "b", null, "a"]')
+  # dict: runnable JS expression, 0-based codes into a levels array; the ?? null
+  # restores NA (which is the code null) because levels[null] is undefined in JS
+  (.tojson(f, factor = 'dict') %==%
+    '[1, 0, 1, null, 0].map(i => ["a", "b"][i] ?? null)')
+  # no NA -> bare .map(), no ?? null tail
+  (.tojson(factor(c('b', 'a', 'b')), factor = 'dict') %==%
+    '[1, 0, 1].map(i => ["a", "b"][i])')
+  # dict threads through list/data-frame columns
+  (.tojson(list(x = f, y = 1:3), factor = 'dict') %==% paste0(
+    '{\n  "x": [1, 0, 1, null, 0].map(i => ["a", "b"][i] ?? null),\n',
+    '  "y": [1, 2, 3]\n}'
+  ))
+})

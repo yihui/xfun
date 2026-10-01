@@ -6,7 +6,7 @@
 \alias{json_vector}
 \title{A simple JSON serializer}
 \usage{
-tojson(x)
+tojson(x, factor = c("string", "dict"))
 
 js(x)
 
@@ -14,6 +14,14 @@ json_vector(x, to_array = FALSE, quote = TRUE)
 }
 \arguments{
 \item{x}{An R object.}
+
+\item{factor}{How to serialize factors. By default (\code{'string'}), a factor
+becomes an array of its character values. With \code{'dict'}, it is
+dictionary-encoded as a runnable JavaScript expression
+\verb{[codes].map(i => [levels][i])} (0-based \code{codes} indexing a \code{levels}
+array), so the unique values are emitted once instead of repeated per
+element. Like dates, this is not strict JSON but is meant to be evaluated
+as JavaScript (e.g. embedded in a \verb{<script>}).}
 
 \item{to_array}{Whether to convert a vector to a JSON array (use \verb{[]}).}
 
@@ -54,6 +62,9 @@ tojson(list(c("a", "b"), 1:5, TRUE, Sys.Date() + 1:3))
 tojson(head(iris))  # each column is in an element
 tojson(unname(head(iris)))  # each row is in an element
 tojson(matrix(1:12, 3))
+
+# dictionary-encode a factor
+tojson(factor(c("b", "a", "b", NA, "a")), factor = "dict")
 
 # literal JS code
 tojson(list(a = 1:5, b = js("function() {return true;}")))
