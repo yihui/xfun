@@ -2,6 +2,10 @@
 
 - Added `rust` to the internal object `comment_chars` (thanks, @kbvernon, #132).
 
+- `tojson()` is faster now: string escaping is skipped when no special characters are present, the `Inf`/`-Inf` conversion is skipped when no infinite values are present, and matrices are serialized without a per-row function call.
+
+- `tojson()` now emits each row of a single-column matrix as an array (e.g., `[[1], [2], [3]]`) for consistency with multi-column matrices, instead of collapsing the rows into scalars.
+
 # CHANGES IN xfun VERSION 0.61
 
 - `is_abs_path()` (and hence `is_rel_path()`) now tests paths purely syntactically instead of normalizing them on the filesystem. On Windows, `normalizePath()` could drop a trailing slash, which made a relative path like `test/mydir/` be misclassified as absolute (thanks, @pitakakariki, #127).

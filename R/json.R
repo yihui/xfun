@@ -44,7 +44,12 @@ tojson = function(x) {
     paste0(braces[1], '\n', inner, '\n', strrep('  ', n - 1), braces[2])
   }
   if (is.null(x)) 'null' else if (is.array(x)) {
-    make_array(apply(x, 1, .tojson, n + 1))
+    # vectorize the common 2d matrix case (avoid one .tojson() call per row)
+    if (length(dim(x)) == 2) {
+      els = matrix(json_atomic(as.vector(x), FALSE), nrow(x))
+      rows = do.call(paste, c(as.data.frame(els, stringsAsFactors = FALSE), sep = ', '))
+      make_array(paste0('[', rows, ']'))
+    } else make_array(apply(x, 1, .tojson, n + 1))
   } else if (is.list(x)) {
     if (length(x) == 0) return('{}')
     # output unnamed data frames by rows instead of columns
@@ -97,12 +102,15 @@ json_vector = function(x, to_array = FALSE, quote = TRUE) {
   i = is.na(x)
   if (quote) {
     x = quote_string(x)
-    x = gsub('\n', '\\\\n', x)
-    x = gsub('\b', '\\\\b', x)
-    x = gsub('\f', '\\\\f', x)
-    x = gsub('\r', '\\\\r', x)
-    x = gsub('\t', '\\\\t', x)
-  } else if (is.numeric(x)) {
+    # escape control chars only when present (avoid 5 full passes otherwise)
+    if (any(grepl('[\n\b\f\r\t]', x, useBytes = TRUE))) {
+      x = gsubf('\n', '\\n', x)
+      x = gsubf('\b', '\\b', x)
+      x = gsubf('\f', '\\f', x)
+      x = gsubf('\r', '\\r', x)
+      x = gsubf('\t', '\\t', x)
+    }
+  } else if (is.numeric(x) && any(is.infinite(x))) {
     x = ifelse(is.infinite(x), ifelse(x > 0, 'Infinity', '-Infinity'), x)
   }
   x[i] = 'null'
@@ -111,7 +119,8 @@ json_vector = function(x, to_array = FALSE, quote = TRUE) {
 
 # escape \ and " in strings, and quote them
 quote_string = function(x) {
-  x = gsub('(["\\])', "\\\\\\1", x)
+  # only escape when backslashes or double quotes are actually present
+  if (any(grepl('["\\]', x, useBytes = TRUE))) x = gsub('(["\\])', "\\\\\\1", x)
   if (length(x)) x = paste0('"', x, '"')
   x
 }

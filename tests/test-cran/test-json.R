@@ -66,9 +66,24 @@ assert('json_atomic() handles Date, POSIXct, and factor', {
 })
 
 assert('.tojson() handles arrays', {
-  m = matrix(1:4, nrow = 2)
-  out = .tojson(m)
-  (grepl('\\[', out))  # should produce nested arrays
+  # each matrix row is an array element
+  (.tojson(matrix(1:4, 2)) %==% '[\n  [1, 3],\n  [2, 4]\n]')
+  (.tojson(matrix(1:6, 2)) %==% '[\n  [1, 3, 5],\n  [2, 4, 6]\n]')
+  # single-column matrices still emit one array per row
+  (.tojson(matrix(1:3, 3)) %==% '[\n  [1],\n  [2],\n  [3]\n]')
+  # single-row matrices produce a single array element
+  (.tojson(matrix(1:3, 1)) %==% '[\n  [1, 2, 3]\n]')
+  # character matrices are quoted and NA becomes null
+  (.tojson(matrix(c('a', NA, 'c', 'd'), 2)) %==%
+    '[\n  ["a", "c"],\n  [null, "d"]\n]')
+  # Inf/-Inf in numeric matrices
+  (.tojson(matrix(c(1, Inf, -Inf, 2), 2)) %==%
+    '[\n  [1, -Infinity],\n  [Infinity, 2]\n]')
+  # higher-dimensional arrays recurse (nested one level deeper per dimension)
+  (.tojson(array(1:8, c(2, 2, 2))) %==% paste0(
+    '[\n  [\n    [1, 5],\n    [3, 7]\n  ],\n',
+    '  [\n    [2, 6],\n    [4, 8]\n  ]\n]'
+  ))
 })
 
 assert('json_vector() escapes control characters in strings', {
