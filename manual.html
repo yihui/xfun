@@ -1842,7 +1842,7 @@ VignetteBuilder: litedown
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.1.0
 NeedsCompilation: yes
-Packaged: 2026-10-01 17:20:57 UTC; runner
+Packaged: 2026-10-01 19:01:02 UTC; runner
 Author: Yihui Xie [aut, cre, cph] (ORCID:
     &lt;https://orcid.org/0000-0003-0645-5666&gt;, URL: https://yihui.org),
   Wush Wu [ctb],
@@ -1851,7 +1851,7 @@ Author: Yihui Xie [aut, cre, cph] (ORCID:
   Salim Brüggemann [ctb] (ORCID: &lt;https://orcid.org/0000-0002-5329-5987&gt;),
   Christophe Dervieux [ctb]
 Maintainer: Yihui Xie &lt;xie@yihui.name&gt;
-Built: R 4.6.1; aarch64-apple-darwin23; 2026-10-01 17:20:58 UTC; unix
+Built: R 4.6.1; aarch64-apple-darwin23; 2026-10-01 19:01:03 UTC; unix
 </code></pre>
 <h2 id="sec:man-find_globals"><span class="section-number main-number">32</span> Find global/local variables in R code</h2>
 <h3 id="sec:description_32" class="unnumbered unlisted">Description</h3>
@@ -2226,8 +2226,8 @@ in_dir(tempdir(), {
     list.files()
 })
 </code></pre>
-<pre><code>#&gt; [1] &quot;/private/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/RtmpB6wB8l&quot;
-#&gt; [1] &quot;fileb7432618c11.html&quot; &quot;fileb7465039af4&quot;     
+<pre><code>#&gt; [1] &quot;/private/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/RtmpYZWtkn&quot;
+#&gt; [1] &quot;fileae51e7cd67c&quot;      &quot;fileae57a5e2b62.html&quot;
 </code></pre>
 <h2 id="sec:man-install_dir"><span class="section-number main-number">40</span> Install a source package from a directory</h2>
 <h3 id="sec:description_40" class="unnumbered unlisted">Description</h3>
@@ -3820,8 +3820,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 <h3 id="sec:examples_55" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">rand_unit(10)
 </code></pre>
-<pre><code>#&gt;  [1] 0.7112523 0.7433008 0.9548144 0.7774042 0.8209292 0.3849442 0.7308417
-#&gt;  [8] 0.7720088 0.7737246 0.5089065
+<pre><code>#&gt;  [1] 0.78922577 0.43018073 0.79403956 0.02534322 0.07551545 0.53549749
+#&gt;  [7] 0.15340224 0.38482512 0.08734952 0.84131396
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = 0)
 </code></pre>
@@ -3833,8 +3833,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = Sys.getpid())
 </code></pre>
-<pre><code>#&gt;  [1] 0.03809035 0.32721292 0.49926829 0.67260201 0.17434971 0.19084010
-#&gt;  [7] 0.30505625 0.22372168 0.99859187 0.43062623
+<pre><code>#&gt;  [1] 0.036232600 0.670394554 0.004931532 0.164695432 0.511003187 0.444833915
+#&gt;  [7] 0.397954259 0.653806196 0.424308570 0.145298965
 </code></pre>
 <h2 id="sec:man-random_port"><span class="section-number main-number">72</span> Find a random available TCP port</h2>
 <h3 id="sec:description_72" class="unnumbered unlisted">Description</h3>
@@ -4600,13 +4600,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;gzip, br&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.139&quot;
+#&gt; [1] &quot;13.105.117.87&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a43d251738887330&quot;
+#&gt; [1] &quot;a43db79f0da1cc90&quot;
 #&gt; 
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
@@ -4624,7 +4624,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.139&quot;
+#&gt; [1] &quot;13.105.117.87&quot;
 #&gt; 
 #&gt; 
 #&gt; $queryParams
@@ -4632,7 +4632,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
 <pre><code class="language-r">xfun::rest_api_raw(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
-<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;accept&quot;:&quot;*/*&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.117.139&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-ray&quot;:&quot;a43d251c68eb460c&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;connection&quot;:&quot;Keep-Alive&quot;,&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;user-agent&quot;:&quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;x-real-ip&quot;:&quot;13.105.117.139&quot;},&quot;queryParams&quot;:{}}
+<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;accept&quot;:&quot;*/*&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.117.87&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-ray&quot;:&quot;a43db7a2ca1ccf2a&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;connection&quot;:&quot;Keep-Alive&quot;,&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;user-agent&quot;:&quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;x-real-ip&quot;:&quot;13.105.117.87&quot;},&quot;queryParams&quot;:{}}
 </code></pre>
 <pre><code class="language-r"># send the request with an auth header
 xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPEN SESAME!&quot;)
@@ -4648,13 +4648,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;Basic OPEN SESAME!&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.139&quot;
+#&gt; [1] &quot;13.105.117.87&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a43d2523bd0bf0a4&quot;
+#&gt; [1] &quot;a43db7a60eea7803&quot;
 #&gt; 
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
@@ -4672,7 +4672,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.139&quot;
+#&gt; [1] &quot;13.105.117.87&quot;
 </code></pre>
 <pre><code class="language-r"># with query parameters
 xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/response-headers&quot;, params = list(foo = &quot;bar&quot;))
@@ -4695,7 +4695,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$core$reset
-#&gt; [1] 1790878902
+#&gt; [1] 1790884904
 #&gt; 
 #&gt; 
 #&gt; $resources$search
@@ -4709,7 +4709,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 30
 #&gt; 
 #&gt; $resources$search$reset
-#&gt; [1] 1790875362
+#&gt; [1] 1790881364
 #&gt; 
 #&gt; 
 #&gt; $resources$graphql
@@ -4723,7 +4723,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$graphql$reset
-#&gt; [1] 1790878902
+#&gt; [1] 1790884904
 #&gt; 
 #&gt; 
 #&gt; $resources$integration_manifest
@@ -4737,7 +4737,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$integration_manifest$reset
-#&gt; [1] 1790878902
+#&gt; [1] 1790884904
 #&gt; 
 #&gt; 
 #&gt; $resources$source_import
@@ -4751,7 +4751,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$source_import$reset
-#&gt; [1] 1790875362
+#&gt; [1] 1790881364
 #&gt; 
 #&gt; 
 #&gt; $resources$code_scanning_autofix
@@ -4765,7 +4765,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_scanning_autofix$reset
-#&gt; [1] 1790875362
+#&gt; [1] 1790881364
 #&gt; 
 #&gt; 
 #&gt; $resources$actions_runner_registration
@@ -4779,7 +4779,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10000
 #&gt; 
 #&gt; $resources$actions_runner_registration$reset
-#&gt; [1] 1790878902
+#&gt; [1] 1790884904
 #&gt; 
 #&gt; 
 #&gt; $resources$scim
@@ -4793,7 +4793,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15000
 #&gt; 
 #&gt; $resources$scim$reset
-#&gt; [1] 1790878902
+#&gt; [1] 1790884904
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_snapshots
@@ -4807,7 +4807,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_snapshots$reset
-#&gt; [1] 1790875362
+#&gt; [1] 1790881364
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_sbom
@@ -4821,7 +4821,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_sbom$reset
-#&gt; [1] 1790875362
+#&gt; [1] 1790881364
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log
@@ -4835,7 +4835,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$audit_log$reset
-#&gt; [1] 1790878902
+#&gt; [1] 1790884904
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log_streaming
@@ -4849,7 +4849,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15
 #&gt; 
 #&gt; $resources$audit_log_streaming$reset
-#&gt; [1] 1790878902
+#&gt; [1] 1790884904
 #&gt; 
 #&gt; 
 #&gt; $resources$code_search
@@ -4863,7 +4863,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_search$reset
-#&gt; [1] 1790875362
+#&gt; [1] 1790881364
 #&gt; 
 #&gt; 
 #&gt; $resources$copilot_usage_records
@@ -4877,7 +4877,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$copilot_usage_records$reset
-#&gt; [1] 1790878902
+#&gt; [1] 1790884904
 #&gt; 
 #&gt; 
 #&gt; $resources$enterprise_token_inventory
@@ -4891,7 +4891,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$enterprise_token_inventory$reset
-#&gt; [1] 1790878902
+#&gt; [1] 1790884904
 #&gt; 
 #&gt; 
 #&gt; 
@@ -4906,7 +4906,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $rate$reset
-#&gt; [1] 1790878902
+#&gt; [1] 1790884904
 </code></pre>
 <h2 id="sec:man-retry"><span class="section-number main-number">82</span> Retry calling a function for a number of times</h2>
 <h3 id="sec:description_82" class="unnumbered unlisted">Description</h3>
@@ -5478,17 +5478,17 @@ formed by concatenating wrapped strings by <code>\n</code>.
 x = rep(paste(x, collapse = &quot;&quot;), 2)
 strwrap(x, width = 30)
 </code></pre>
-<pre><code>#&gt;  [1] &quot;w q p goxydb qyj c v y&quot;        &quot;pqqimfpjuesq u fhsh ve haqaih&quot;
-#&gt;  [3] &quot;wl cn djt vfi wv eaph m j&quot;     &quot;lhza m qabt f w m g f tuk d c&quot;
-#&gt;  [5] &quot;qr vx ef ez w a oego axs zb&quot;   &quot;we j m y tl ub icmlb&quot;         
-#&gt;  [7] &quot;w q p goxydb qyj c v y&quot;        &quot;pqqimfpjuesq u fhsh ve haqaih&quot;
-#&gt;  [9] &quot;wl cn djt vfi wv eaph m j&quot;     &quot;lhza m qabt f w m g f tuk d c&quot;
-#&gt; [11] &quot;qr vx ef ez w a oego axs zb&quot;   &quot;we j m y tl ub icmlb&quot;         
+<pre><code>#&gt;  [1] &quot;c g qqbnn i y dg cwe vfr w ym&quot; &quot;v v d se n qp dtwvg c wrhywx&quot; 
+#&gt;  [3] &quot;vi vfjiqy eml m a broj k q x&quot;  &quot;dq pu acl h l lj gh p e a o&quot;  
+#&gt;  [5] &quot;nr t hkl cv sakebsyef s j&quot;     &quot;viay va jm k&quot;                 
+#&gt;  [7] &quot;c g qqbnn i y dg cwe vfr w ym&quot; &quot;v v d se n qp dtwvg c wrhywx&quot; 
+#&gt;  [9] &quot;vi vfjiqy eml m a broj k q x&quot;  &quot;dq pu acl h l lj gh p e a o&quot;  
+#&gt; [11] &quot;nr t hkl cv sakebsyef s j&quot;     &quot;viay va jm k&quot;                 
 </code></pre>
 <pre><code class="language-r">xfun::str_wrap(x, width = 30)  # same length as x
 </code></pre>
-<pre><code>#&gt; [1] &quot;w q p goxydb qyj c v y\npqqimfpjuesq u fhsh ve haqaih\nwl cn djt vfi wv eaph m j\nlhza m qabt f w m g f tuk d c\nqr vx ef ez w a oego axs zb\nwe j m y tl ub icmlb&quot;
-#&gt; [2] &quot;w q p goxydb qyj c v y\npqqimfpjuesq u fhsh ve haqaih\nwl cn djt vfi wv eaph m j\nlhza m qabt f w m g f tuk d c\nqr vx ef ez w a oego axs zb\nwe j m y tl ub icmlb&quot;
+<pre><code>#&gt; [1] &quot;c g qqbnn i y dg cwe vfr w ym\nv v d se n qp dtwvg c wrhywx\nvi vfjiqy eml m a broj k q x\ndq pu acl h l lj gh p e a o\nnr t hkl cv sakebsyef s j\nviay va jm k&quot;
+#&gt; [2] &quot;c g qqbnn i y dg cwe vfr w ym\nv v d se n qp dtwvg c wrhywx\nvi vfjiqy eml m a broj k q x\ndq pu acl h l lj gh p e a o\nnr t hkl cv sakebsyef s j\nviay va jm k&quot;
 </code></pre>
 <h2 id="sec:man-strict_list"><span class="section-number main-number">93</span> Strict lists</h2>
 <h3 id="sec:description_93" class="unnumbered unlisted">Description</h3>
@@ -5948,11 +5948,11 @@ wrapped in <code>js()</code> is treated as raw JavaScript, so will not be quoted
 function <code>json_vector()</code> converts an atomic R vector to JSON.
 </p>
 <h3 id="sec:usage_100" class="unnumbered unlisted">Usage</h3>
-<pre><code class="language-r">tojson(x, dict = FALSE)
+<pre><code class="language-r">tojson(x, dict = FALSE, pretty = TRUE)
 
 js(x)
 
-json_vector(x, to_array = FALSE, quote = TRUE)</code></pre>
+json_vector(x, to_array = FALSE, quote = TRUE, sep = ", ")</code></pre>
 <h3 id="sec:arguments_96" class="unnumbered unlisted">Arguments</h3>
 <table role = "presentation">
 <tr><td><code>x</code></td>
@@ -5972,6 +5972,14 @@ expression <code>[codes].map(i =&gt; [u][i])</code> (0-based <code>codes</code> 
 values <code>u</code>), which is not strict JSON but meant to be evaluated as
 JavaScript (e.g. embedded in a <code>&lt;script&gt;</code>).</p>
 </td></tr>
+<tr><td><code>pretty</code></td>
+<td>
+<p>Whether to pretty-print the output with line breaks,
+indentation, and a space after each array/object separator (the default).
+<code>FALSE</code> produces a compact, single-line result (no line breaks or
+indentation, and <code>,</code> instead of <code>, </code> between array elements), which can be
+substantially smaller for large data.</p>
+</td></tr>
 <tr><td><code>to_array</code></td>
 <td>
 <p>Whether to convert a vector to a JSON array (use <code>[]</code>).</p>
@@ -5979,6 +5987,11 @@ JavaScript (e.g. embedded in a <code>&lt;script&gt;</code>).</p>
 <tr><td><code>quote</code></td>
 <td>
 <p>Whether to double quote the elements.</p>
+</td></tr>
+<tr><td><code>sep</code></td>
+<td>
+<p>The string separating consecutive array elements (<code>', '</code> by
+default; use <code>','</code> for compact output).</p>
 </td></tr>
 </table>
 <h3 id="sec:details_25" class="unnumbered unlisted">Details</h3>

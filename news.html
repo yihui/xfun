@@ -206,6 +206,9 @@
 <li>
 <p><code>tojson()</code> gained an argument <code>dict</code> to dictionary-encode atomic vectors (and data-frame columns) with repeated values. When enabled, a vector is emitted as a runnable JavaScript expression <code>[codes].map(i =&gt; [u][i])</code> (0-based <code>codes</code> indexing the unique values <code>u</code>), so repeated values are serialized once instead of per element. <code>dict</code> is a cardinality threshold (or <code>TRUE</code> for <code>1</code>), and encoding is used only when it actually shortens the output, so near-unique vectors are left as plain arrays.</p>
 </li>
+<li>
+<p><code>tojson()</code> gained an argument <code>pretty</code> (<code>TRUE</code> by default). With <code>pretty = FALSE</code>, the output is compact (single line, no indentation, and <code>,</code> instead of <code>, </code> between array elements), which can be substantially smaller for large data.</p>
+</li>
 </ul>
 <h2 id="sec:xfun-0-61" class="unnumbered">xfun 0.61</h2>
 <ul>
