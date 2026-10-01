@@ -19,13 +19,16 @@
 #' represented via the JavaScript expression `new Date(value)` (which is not
 #' standard JSON but practically more useful).
 #' @param x An R object.
-#' @param factor How to serialize factors. By default (`'string'`), a factor
-#'   becomes an array of its character values. With `'dict'`, it is
-#'   dictionary-encoded as a runnable JavaScript expression
-#'   `[codes].map(i => [levels][i])` (0-based `codes` indexing a `levels`
-#'   array), so the unique values are emitted once instead of repeated per
-#'   element. Like dates, this is not strict JSON but is meant to be evaluated
-#'   as JavaScript (e.g. embedded in a `<script>`).
+#' @param dict Whether to dictionary-encode atomic vectors (and data-frame
+#'   columns) to shrink the output when values repeat. `FALSE` (the default)
+#'   serializes normally. A number in `(0, 1]` acts as a cardinality threshold:
+#'   a vector is encoded when its number of unique values is at most `dict`
+#'   times its length, and only when the encoding is actually shorter than the
+#'   plain form (so near-unique vectors are left alone). `TRUE` means `1`
+#'   (consider every vector). An encoded vector becomes a runnable JavaScript
+#'   expression `[codes].map(i => [u][i])` (0-based `codes` indexing the unique
+#'   values `u`), which is not strict JSON but meant to be evaluated as
+#'   JavaScript (e.g. embedded in a `<script>`).
 #' @export
 #' @return A character string.
 #' @seealso The \pkg{jsonlite} package provides a full JSON serializer.
@@ -37,18 +40,19 @@
 #' tojson(unname(head(iris)))  # each row is in an element
 #' tojson(matrix(1:12, 3))
 #'
-#' # dictionary-encode a factor
-#' tojson(factor(c('b', 'a', 'b', NA, 'a')), factor = 'dict')
+#' # dictionary-encode repeated values
+#' tojson(rep(c('b', 'a', NA), 3), dict = TRUE)
 #'
 #' # literal JS code
 #' tojson(list(a = 1:5, b = js('function() {return true;}')))
-tojson = function(x, factor = c('string', 'dict')) {
+tojson = function(x, dict = FALSE) {
   if (inherits(x, 'json')) return(x)
-  res = structure(.tojson(x, factor = match.arg(factor)), class = 'json')
+  if (isTRUE(dict)) dict = 1 else if (isFALSE(dict)) dict = 0
+  res = structure(.tojson(x, dict = dict), class = 'json')
   raw_string(res, lang = '.json')
 }
 
-.tojson = function(x, n = 1, factor = 'string') {
+.tojson = function(x, n = 1, dict = 0) {
   make_array = function(..., braces = c('[', ']')) {
     inner = paste0(strrep('  ', n), ..., collapse = ',\n')
     paste0(braces[1], '\n', inner, '\n', strrep('  ', n - 1), braces[2])
@@ -59,14 +63,7 @@ tojson = function(x, factor = c('string', 'dict')) {
       els = matrix(json_atomic(as.vector(x), FALSE), nrow(x))
       rows = do.call(paste, c(as.data.frame(els, stringsAsFactors = FALSE), sep = ', '))
       make_array(paste0('[', rows, ']'))
-    } else make_array(apply(x, 1, .tojson, n + 1, factor))
-  } else if (is.factor(x) && factor == 'dict') {
-    # emit the unique values once as a runnable JS expression (see `factor`)
-    lv = json_atomic(I(levels(x)))
-    cd = json_atomic(I(as.integer(x) - 1L))
-    # levels[null] is `undefined` in JS, so map NA codes back to null
-    tail = if (anyNA(x)) ' ?? null' else ''
-    paste0(cd, '.map(i => ', lv, '[i]', tail, ')')
+    } else make_array(apply(x, 1, .tojson, n + 1, dict))
   } else if (is.list(x)) {
     if (length(x) == 0) return('{}')
     # output unnamed data frames by rows instead of columns
@@ -76,7 +73,7 @@ tojson = function(x, factor = c('string', 'dict')) {
     cols = unlist(lapply(x, function(z) {
       if (by_row) json_atomic(z, FALSE) else {
         # data frame columns must be arrays even for length 1
-        .tojson(if (is_df) I(z) else z, n + 1, factor)
+        .tojson(if (is_df) I(z) else z, n + 1, dict)
       }
     }))
     if (is.null(nms)) {
@@ -90,7 +87,24 @@ tojson = function(x, factor = c('string', 'dict')) {
     }
   } else if (is.character(x) && inherits(x, c('JS_LITERAL', 'JS_EVAL'))) {
     paste(x, collapse = '\n')
-  } else json_atomic(x)
+  } else {
+    plain = json_atomic(x)
+    d = if (dict > 0) dict_atomic(x, dict)
+    if (length(d) && nchar(d) < nchar(plain)) d else plain
+  }
+}
+
+# dictionary-encode an atomic vector as `[codes].map(i => [u][i])` when it has
+# enough repeats (unique values at most `dict` times the length); return NULL to
+# signal the caller to keep the plain form. unique() keeps NA, so NA becomes a
+# normal entry (`u[code]` is `null`) and needs no special casing.
+dict_atomic = function(x, dict) {
+  n = length(x)
+  if (n == 0) return()
+  u = unique(x)
+  if (length(u) > dict * n) return()
+  codes = match(x, u) - 1L
+  paste0(json_atomic(I(codes)), '.map(i => ', json_atomic(I(u)), '[i])')
 }
 
 #' @rdname tojson

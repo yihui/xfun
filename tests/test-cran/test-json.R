@@ -114,20 +114,29 @@ assert('quote_string() escapes </script to keep output inline-<script> safe', {
   (quote_string('a/b') %==% '"a/b"')
 })
 
-assert('tojson(factor = ) chooses string vs dict encoding', {
-  f = factor(c('b', 'a', 'b', NA, 'a'))
-  # default: array of character values
-  (.tojson(f) %==% '["b", "a", "b", null, "a"]')
-  # dict: runnable JS expression, 0-based codes into a levels array; the ?? null
-  # restores NA (which is the code null) because levels[null] is undefined in JS
-  (.tojson(f, factor = 'dict') %==%
-    '[1, 0, 1, null, 0].map(i => ["a", "b"][i] ?? null)')
-  # no NA -> bare .map(), no ?? null tail
-  (.tojson(factor(c('b', 'a', 'b')), factor = 'dict') %==%
-    '[1, 0, 1].map(i => ["a", "b"][i])')
-  # dict threads through list/data-frame columns
-  (.tojson(list(x = f, y = 1:3), factor = 'dict') %==% paste0(
-    '{\n  "x": [1, 0, 1, null, 0].map(i => ["a", "b"][i] ?? null),\n',
-    '  "y": [1, 2, 3]\n}'
-  ))
+assert('tojson(dict = ) dictionary-encodes repeated values when it is shorter', {
+  # off by default: plain array
+  x = rep(c('alpha', 'bravo'), 10)
+  (.tojson(x) %==% json_atomic(x))
+  # enabled: runnable JS expression, 0-based codes indexing unique values (in
+  # order of appearance), chosen because it is shorter than the plain form
+  d = .tojson(x, dict = TRUE)
+  (grepl('\\.map\\(i => \\["alpha", "bravo"\\]\\[i\\]\\)$', d))
+  (nchar(d) < nchar(json_atomic(x)))
+  # numeric vectors encode too
+  (grepl('\\.map\\(i => \\[45, 52\\]\\[i\\]\\)$', .tojson(rep(c(45, 52), 20), dict = TRUE)))
+  # NA is a normal dict entry (null in the unique array), so no `?? null` tail
+  d2 = .tojson(rep(c('a', NA, 'b'), 10), dict = TRUE)
+  (grepl('\\[i\\]\\)$', d2))
+  (!grepl('\\?\\?', d2))
+  (grepl('null', d2))
+  # near-unique vectors stay plain even when enabled (encoding would be longer)
+  u = as.character(1:50)
+  (.tojson(u, dict = TRUE) %==% json_atomic(u))
+  # a numeric threshold gates candidacy: 2 uniques / 20 rows = 0.1
+  (.tojson(x, dict = 0.05) %==% json_atomic(x))
+  (grepl('\\.map', .tojson(x, dict = 0.1)))
+  # threads through data-frame columns
+  df = data.frame(g = rep(c('alpha', 'bravo'), 20), stringsAsFactors = FALSE)
+  (grepl('"g": \\[0, 1,.*\\.map\\(i => \\["alpha", "bravo"\\]\\[i\\]\\)', .tojson(df, dict = TRUE)))
 })

@@ -8,7 +8,7 @@
 
 - `tojson()` now escapes `</script` to `<\/script` in strings so the output can be safely embedded in an inline `<script>` block (a literal `</script>` would otherwise close the block early). This is still valid JSON and parses back to the original string.
 
-- `tojson()` gained an argument `factor` to control how factors are serialized. With `factor = 'dict'`, a factor is dictionary-encoded as a runnable JavaScript expression `[codes].map(i => [levels][i])` (0-based codes into a levels array), so highly repetitive values are serialized only once instead of being repeated per element.
+- `tojson()` gained an argument `dict` to dictionary-encode atomic vectors (and data-frame columns) with repeated values. When enabled, a vector is emitted as a runnable JavaScript expression `[codes].map(i => [u][i])` (0-based `codes` indexing the unique values `u`), so repeated values are serialized once instead of per element. `dict` is a cardinality threshold (or `TRUE` for `1`), and encoding is used only when it actually shortens the output, so near-unique vectors are left as plain arrays.
 
 # CHANGES IN xfun VERSION 0.61
 
