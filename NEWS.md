@@ -12,6 +12,8 @@
 
 - `tojson()` gained an argument `pretty` (`TRUE` by default). With `pretty = FALSE`, the output is compact (single line, no indentation, and `,` instead of `, ` between array elements), which can be substantially smaller for large data.
 
+- `browser_print()` and `browser_dom()` now run the headless browser with its temporary directory pointed at a private subdirectory that is deleted afterward, so the browser's scratch files (e.g. `com.google.Chrome.*`) no longer accumulate in the session's temp directory (which also tripped `R CMD check`'s detritus NOTE for packages using these functions).
+
 # CHANGES IN xfun VERSION 0.61
 
 - `is_abs_path()` (and hence `is_rel_path()`) now tests paths purely syntactically instead of normalizing them on the filesystem. On Windows, `normalizePath()` could drop a trailing slash, which made a relative path like `test/mydir/` be misclassified as absolute (thanks, @pitakakariki, #127).

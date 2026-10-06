@@ -42,7 +42,8 @@ browser_print = function(
   args = c(args, sprintf(
     '--%s="%s"', if (to_pdf) 'print-to-pdf' else 'screenshot', normalize_path(output)
   ), shQuote(input))
-  if (system2(browser, args, stderr = FALSE) != 0) stop('Failed to print to ', output)
+  if (with_browser_tmp(system2(browser, args, stderr = FALSE)) != 0)
+    stop('Failed to print to ', output)
   output
 }
 
@@ -70,12 +71,24 @@ browser_print = function(
 browser_dom = function(input, output = NULL, fragment = FALSE, browser = NULL) {
   browser = check_browser(browser)
   args = c(browser_args(), '--dump-dom', '--log-level=3', input)
-  html = system2(browser, args, stdout = TRUE, stderr = FALSE)
+  html = with_browser_tmp(system2(browser, args, stdout = TRUE, stderr = FALSE))
   if (!is.null(attr2(html, 'status'))) stop('Failed to dump DOM.')
   html = gsub('\\s*<script[^>]*>(?s).*?</script>\\s*', '', one_string(html), perl = TRUE)
   if (fragment)
     html = gsub('^(?s).*?<body[^>]*>\\s*|\\s*</body>(?s).*$', '', html, perl = TRUE)
   if (is.null(output)) raw_string(html) else write_utf8(html, output)
+}
+
+# Evaluate `expr` (a headless-browser command) with the browser pointed at a
+# private, disposable temp directory. Chromium scatters scratch files (e.g.
+# 'com.google.Chrome.*') into TMPDIR and does not always remove them when it
+# exits; confining them to a directory we delete afterward keeps the temp dir
+# clean (e.g. so R CMD check does not report detritus).
+with_browser_tmp = function(expr) {
+  d = tempfile('browser-'); dir.create(d)
+  old = set_envvar(c(TMPDIR = d))
+  on.exit({ set_envvar(old); unlink(d, recursive = TRUE, force = TRUE) }, add = TRUE)
+  expr
 }
 
 check_browser = function(browser) {
