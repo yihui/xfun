@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <meta name="generator" content="litedown 0.11.7">
 <title>Help pages</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/css/default.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/css/article.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/css/copy-button.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/css/heading-anchor.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/css/pages.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/css/site.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/css/default.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/css/article.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/css/copy-button.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/css/heading-anchor.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/css/pages.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/css/site.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/css/prism-xcode.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/css/prism-xcode.min.css">
 </head>
 <body>
 <nav><p><a href="index.html">Home</a>
@@ -1287,7 +1287,7 @@ perform the task or see the message again in the current R session. Set
 <h3 id="sec:examples_15" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">do_once(message(&quot;Today's date is &quot;, Sys.Date()), &quot;xfun.date.reminder&quot;)
 </code></pre>
-<pre><code class="language-plain message">#&gt; Today's date is 2026-10-06
+<pre><code class="language-plain message">#&gt; Today's date is 2026-10-08
 #&gt; You will not see this message again in this R session. If you never want to see this message, you may set options(xfun.date.reminder = FALSE) in your .Rprofile.
 </code></pre>
 <pre><code class="language-r"># if you run it again, it will not emit the message again
@@ -1842,7 +1842,7 @@ VignetteBuilder: litedown
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.1.0
 NeedsCompilation: yes
-Packaged: 2026-10-06 19:02:34 UTC; runner
+Packaged: 2026-10-08 17:42:44 UTC; runner
 Author: Yihui Xie [aut, cre, cph] (ORCID:
     &lt;https://orcid.org/0000-0003-0645-5666&gt;, URL: https://yihui.org),
   Wush Wu [ctb],
@@ -1851,7 +1851,7 @@ Author: Yihui Xie [aut, cre, cph] (ORCID:
   Salim Brüggemann [ctb] (ORCID: &lt;https://orcid.org/0000-0002-5329-5987&gt;),
   Christophe Dervieux [ctb]
 Maintainer: Yihui Xie &lt;xie@yihui.name&gt;
-Built: R 4.6.1; aarch64-apple-darwin23; 2026-10-06 19:02:35 UTC; unix
+Built: R 4.6.1; aarch64-apple-darwin23; 2026-10-08 17:42:44 UTC; unix
 </code></pre>
 <h2 id="sec:man-find_globals"><span class="section-number main-number">32</span> Find global/local variables in R code</h2>
 <h3 id="sec:description_32" class="unnumbered unlisted">Description</h3>
@@ -2226,8 +2226,8 @@ in_dir(tempdir(), {
     list.files()
 })
 </code></pre>
-<pre><code>#&gt; [1] &quot;/private/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/Rtmp5JCYe8&quot;
-#&gt; [1] &quot;file102d7156dc97&quot;      &quot;file102d723305aa.html&quot;
+<pre><code>#&gt; [1] &quot;/private/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/RtmpSS4oeU&quot;
+#&gt; [1] &quot;filec5f44d1888f.html&quot; &quot;filec5f7f0e9d09&quot;     
 </code></pre>
 <h2 id="sec:man-install_dir"><span class="section-number main-number">40</span> Install a source package from a directory</h2>
 <h3 id="sec:description_40" class="unnumbered unlisted">Description</h3>
@@ -3533,7 +3533,7 @@ packages.
 #&gt;   title = {xfun: Supporting Functions for Packages Maintained by Yihui Xie},
 #&gt;   author = {Yihui Xie},
 #&gt;   year = {2026},
-#&gt;   note = {R package version 0.61.5 (retrieved 2026-10-06)},
+#&gt;   note = {R package version 0.61.5 (retrieved 2026-10-08)},
 #&gt;   url = {https://github.com/yihui/xfun},
 #&gt; }
 </code></pre>
@@ -3820,8 +3820,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 <h3 id="sec:examples_55" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">rand_unit(10)
 </code></pre>
-<pre><code>#&gt;  [1] 0.40266756 0.64189261 0.68177187 0.82523847 0.83113078 0.60400436
-#&gt;  [7] 0.63122502 0.46217700 0.08992657 0.63292773
+<pre><code>#&gt;  [1] 0.5854316 0.3293620 0.4123513 0.9682277 0.2028531 0.5932854 0.5435516
+#&gt;  [8] 0.5465117 0.7118260 0.7526271
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = 0)
 </code></pre>
@@ -3833,8 +3833,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = Sys.getpid())
 </code></pre>
-<pre><code>#&gt;  [1] 0.05379677 0.69849546 0.95138812 0.60308490 0.32809760 0.86161966
-#&gt;  [7] 0.79237310 0.04209805 0.94480523 0.29748405
+<pre><code>#&gt;  [1] 0.04114329 0.67233401 0.22073079 0.11566527 0.77495414 0.11609502
+#&gt;  [7] 0.75379030 0.23721915 0.11716932 0.69672349
 </code></pre>
 <h2 id="sec:man-random_port"><span class="section-number main-number">72</span> Find a random available TCP port</h2>
 <h3 id="sec:description_72" class="unnumbered unlisted">Description</h3>
@@ -4600,13 +4600,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;gzip, br&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.82&quot;
+#&gt; [1] &quot;13.105.117.158&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a466ecc93df9ebeb&quot;
+#&gt; [1] &quot;a476f2ca8efa765b&quot;
 #&gt; 
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
@@ -4624,7 +4624,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.82&quot;
+#&gt; [1] &quot;13.105.117.158&quot;
 #&gt; 
 #&gt; 
 #&gt; $queryParams
@@ -4632,7 +4632,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
 <pre><code class="language-r">xfun::rest_api_raw(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
-<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;accept&quot;:&quot;*/*&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.117.82&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-ray&quot;:&quot;a466eccf6beb2953&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;connection&quot;:&quot;Keep-Alive&quot;,&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;user-agent&quot;:&quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;x-real-ip&quot;:&quot;13.105.117.82&quot;},&quot;queryParams&quot;:{}}
+<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;accept&quot;:&quot;*/*&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.117.158&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-ray&quot;:&quot;a476f2cc1d57f7c2&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;connection&quot;:&quot;Keep-Alive&quot;,&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;user-agent&quot;:&quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;x-real-ip&quot;:&quot;13.105.117.158&quot;},&quot;queryParams&quot;:{}}
 </code></pre>
 <pre><code class="language-r"># send the request with an auth header
 xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPEN SESAME!&quot;)
@@ -4648,13 +4648,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;Basic OPEN SESAME!&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.82&quot;
+#&gt; [1] &quot;13.105.117.158&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a466ecd3489f349f&quot;
+#&gt; [1] &quot;a476f2cdfc66290b&quot;
 #&gt; 
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
@@ -4672,7 +4672,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.82&quot;
+#&gt; [1] &quot;13.105.117.158&quot;
 </code></pre>
 <pre><code class="language-r"># with query parameters
 xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/response-headers&quot;, params = list(foo = &quot;bar&quot;))
@@ -4695,7 +4695,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$core$reset
-#&gt; [1] 1791316997
+#&gt; [1] 1791485014
 #&gt; 
 #&gt; 
 #&gt; $resources$search
@@ -4709,7 +4709,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 30
 #&gt; 
 #&gt; $resources$search$reset
-#&gt; [1] 1791313457
+#&gt; [1] 1791481474
 #&gt; 
 #&gt; 
 #&gt; $resources$graphql
@@ -4723,7 +4723,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$graphql$reset
-#&gt; [1] 1791316997
+#&gt; [1] 1791485014
 #&gt; 
 #&gt; 
 #&gt; $resources$integration_manifest
@@ -4737,7 +4737,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$integration_manifest$reset
-#&gt; [1] 1791316997
+#&gt; [1] 1791485014
 #&gt; 
 #&gt; 
 #&gt; $resources$source_import
@@ -4751,7 +4751,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$source_import$reset
-#&gt; [1] 1791313457
+#&gt; [1] 1791481474
 #&gt; 
 #&gt; 
 #&gt; $resources$code_scanning_autofix
@@ -4765,7 +4765,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_scanning_autofix$reset
-#&gt; [1] 1791313457
+#&gt; [1] 1791481474
 #&gt; 
 #&gt; 
 #&gt; $resources$actions_runner_registration
@@ -4779,7 +4779,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10000
 #&gt; 
 #&gt; $resources$actions_runner_registration$reset
-#&gt; [1] 1791316997
+#&gt; [1] 1791485014
 #&gt; 
 #&gt; 
 #&gt; $resources$scim
@@ -4793,7 +4793,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15000
 #&gt; 
 #&gt; $resources$scim$reset
-#&gt; [1] 1791316997
+#&gt; [1] 1791485014
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_snapshots
@@ -4807,7 +4807,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_snapshots$reset
-#&gt; [1] 1791313457
+#&gt; [1] 1791481474
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_sbom
@@ -4821,7 +4821,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_sbom$reset
-#&gt; [1] 1791313457
+#&gt; [1] 1791481474
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log
@@ -4835,7 +4835,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$audit_log$reset
-#&gt; [1] 1791316997
+#&gt; [1] 1791485014
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log_streaming
@@ -4849,7 +4849,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15
 #&gt; 
 #&gt; $resources$audit_log_streaming$reset
-#&gt; [1] 1791316997
+#&gt; [1] 1791485014
 #&gt; 
 #&gt; 
 #&gt; $resources$code_search
@@ -4863,7 +4863,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_search$reset
-#&gt; [1] 1791313457
+#&gt; [1] 1791481474
 #&gt; 
 #&gt; 
 #&gt; $resources$copilot_usage_records
@@ -4877,7 +4877,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$copilot_usage_records$reset
-#&gt; [1] 1791316997
+#&gt; [1] 1791485014
 #&gt; 
 #&gt; 
 #&gt; $resources$enterprise_token_inventory
@@ -4891,7 +4891,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$enterprise_token_inventory$reset
-#&gt; [1] 1791316997
+#&gt; [1] 1791485014
 #&gt; 
 #&gt; 
 #&gt; 
@@ -4906,7 +4906,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $rate$reset
-#&gt; [1] 1791316997
+#&gt; [1] 1791485014
 </code></pre>
 <h2 id="sec:man-retry"><span class="section-number main-number">82</span> Retry calling a function for a number of times</h2>
 <h3 id="sec:description_82" class="unnumbered unlisted">Description</h3>
@@ -5478,17 +5478,17 @@ formed by concatenating wrapped strings by <code>\n</code>.
 x = rep(paste(x, collapse = &quot;&quot;), 2)
 strwrap(x, width = 30)
 </code></pre>
-<pre><code>#&gt;  [1] &quot;h t vn a zju j mf k ao l a cj&quot; &quot;v ystio llq q f t k xuwc s&quot;   
-#&gt;  [3] &quot;gygmi fhg mm ubei zz tp liaq&quot;  &quot;u upp z hw o j m ymn r ja dz&quot; 
-#&gt;  [5] &quot;r d f owo ax k k ouek d x w l&quot; &quot;ot&quot;                           
-#&gt;  [7] &quot;h t vn a zju j mf k ao l a cj&quot; &quot;v ystio llq q f t k xuwc s&quot;   
-#&gt;  [9] &quot;gygmi fhg mm ubei zz tp liaq&quot;  &quot;u upp z hw o j m ymn r ja dz&quot; 
-#&gt; [11] &quot;r d f owo ax k k ouek d x w l&quot; &quot;ot&quot;                           
+<pre><code>#&gt;  [1] &quot;d deu z fxk f u sgblm tm cwws&quot; &quot;l u o fa h ksr tp mnqgdi wy b&quot;
+#&gt;  [3] &quot;um ftz kbc xv z u ynfmtej gg&quot;  &quot;qkin rr ljczog c q y p b rtx&quot; 
+#&gt;  [5] &quot;h w q tq wu h z mm w o dm&quot;     &quot;yuev y n wua&quot;                 
+#&gt;  [7] &quot;d deu z fxk f u sgblm tm cwws&quot; &quot;l u o fa h ksr tp mnqgdi wy b&quot;
+#&gt;  [9] &quot;um ftz kbc xv z u ynfmtej gg&quot;  &quot;qkin rr ljczog c q y p b rtx&quot; 
+#&gt; [11] &quot;h w q tq wu h z mm w o dm&quot;     &quot;yuev y n wua&quot;                 
 </code></pre>
 <pre><code class="language-r">xfun::str_wrap(x, width = 30)  # same length as x
 </code></pre>
-<pre><code>#&gt; [1] &quot;h t vn a zju j mf k ao l a cj\nv ystio llq q f t k xuwc s\ngygmi fhg mm ubei zz tp liaq\nu upp z hw o j m ymn r ja dz\nr d f owo ax k k ouek d x w l\not&quot;
-#&gt; [2] &quot;h t vn a zju j mf k ao l a cj\nv ystio llq q f t k xuwc s\ngygmi fhg mm ubei zz tp liaq\nu upp z hw o j m ymn r ja dz\nr d f owo ax k k ouek d x w l\not&quot;
+<pre><code>#&gt; [1] &quot;d deu z fxk f u sgblm tm cwws\nl u o fa h ksr tp mnqgdi wy b\num ftz kbc xv z u ynfmtej gg\nqkin rr ljczog c q y p b rtx\nh w q tq wu h z mm w o dm\nyuev y n wua&quot;
+#&gt; [2] &quot;d deu z fxk f u sgblm tm cwws\nl u o fa h ksr tp mnqgdi wy b\num ftz kbc xv z u ynfmtej gg\nqkin rr ljczog c q y p b rtx\nh w q tq wu h z mm w o dm\nyuev y n wua&quot;
 </code></pre>
 <h2 id="sec:man-strict_list"><span class="section-number main-number">93</span> Strict lists</h2>
 <h3 id="sec:description_93" class="unnumbered unlisted">Description</h3>
@@ -6048,7 +6048,7 @@ tojson(NULL)
   [&quot;a&quot;, &quot;b&quot;],
   [1, 2, 3, 4, 5],
   true,
-  [new Date(&quot;2026-10-07&quot;), new Date(&quot;2026-10-08&quot;), new Date(&quot;2026-10-09&quot;)]
+  [new Date(&quot;2026-10-09&quot;), new Date(&quot;2026-10-10&quot;), new Date(&quot;2026-10-11&quot;)]
 ]
 </code></pre>
 <pre><code class="language-r">tojson(head(iris))  # each column is in an element
@@ -6711,20 +6711,20 @@ character strings for expressions.
 <pre><code>#&gt; $a
 #&gt; [1] 1
 </code></pre>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/css/manual.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/css/manual.min.css">
 </div>
 <footer><div class="flex-col">
 <p>Developed by <a href="https://yihui.org">Yihui Xie</a></p>
 <p>Site built with <a href="https://github.com/yihui/litedown">litedown</a> v0.11.7</p>
 </div></footer>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/js/sidenotes.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/js/appendix.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/js/toc-highlight.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/js/copy-button.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/js/heading-anchor.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/js/pages.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/js/sidenotes.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/js/appendix.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/js/toc-highlight.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/js/copy-button.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/js/heading-anchor.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/js/pages.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/combine/npm/katex@0.19.0/dist/katex.min.js,npm/katex@0.19.0/dist/contrib/auto-render.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.95/js/render-katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.98/js/render-katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
 </body>
