@@ -20,7 +20,11 @@
 #' standard JSON but practically more useful).
 #' @param x An R object.
 #' @param dict Whether to dictionary-encode atomic vectors (and data-frame
-#'   columns) to shrink the output when values repeat. `FALSE` (the default)
+#'   columns) to shrink the output when values repeat. Defaults to the global
+#'   option `xfun.tojson.dict` (and to `FALSE` when that is unset), so a package
+#'   that embeds `tojson()` output deep inside another function can turn
+#'   encoding on without the call being reachable, e.g.
+#'   `options(xfun.tojson.dict = 0.5)`. `FALSE`
 #'   serializes normally. A number in `(0, 1]` acts as a cardinality threshold:
 #'   a vector is encoded when its number of unique values is at most `dict`
 #'   times its length, and only when the encoding is actually shorter than the
@@ -30,10 +34,12 @@
 #'   values `u`), which is not strict JSON but meant to be evaluated as
 #'   JavaScript (e.g. embedded in a `<script>`).
 #' @param pretty Whether to pretty-print the output with line breaks,
-#'   indentation, and a space after each array/object separator (the default).
-#'   `FALSE` produces a compact, single-line result (no line breaks or
-#'   indentation, and `,` instead of `, ` between array elements), which can be
-#'   substantially smaller for large data.
+#'   indentation, and a space after each array/object separator. Defaults to the
+#'   global option `xfun.tojson.pretty` (and to `TRUE` when that is unset), so an
+#'   embedding package can turn pretty-printing off without reaching the call,
+#'   e.g. `options(xfun.tojson.pretty = FALSE)`. `FALSE` produces a compact,
+#'   single-line result (no line breaks or indentation, and `,` instead of `, `
+#'   between array elements), which can be substantially smaller for large data.
 #' @export
 #' @return A character string.
 #' @seealso The \pkg{jsonlite} package provides a full JSON serializer.
@@ -50,7 +56,8 @@
 #'
 #' # literal JS code
 #' tojson(list(a = 1:5, b = js('function() {return true;}')))
-tojson = function(x, dict = FALSE, pretty = TRUE) {
+tojson = function(x, dict = getOption('xfun.tojson.dict', FALSE),
+                  pretty = getOption('xfun.tojson.pretty', TRUE)) {
   if (inherits(x, 'json')) return(x)
   if (isTRUE(dict)) dict = 1 else if (isFALSE(dict)) dict = 0
   res = structure(.tojson(x, dict = dict, pretty = pretty), class = 'json')

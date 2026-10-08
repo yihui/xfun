@@ -6,7 +6,11 @@
 \alias{json_vector}
 \title{A simple JSON serializer}
 \usage{
-tojson(x, dict = FALSE, pretty = TRUE)
+tojson(
+  x,
+  dict = getOption("xfun.tojson.dict", FALSE),
+  pretty = getOption("xfun.tojson.pretty", TRUE)
+)
 
 js(x)
 
@@ -16,7 +20,11 @@ json_vector(x, to_array = FALSE, quote = TRUE, sep = ", ")
 \item{x}{An R object.}
 
 \item{dict}{Whether to dictionary-encode atomic vectors (and data-frame
-columns) to shrink the output when values repeat. \code{FALSE} (the default)
+columns) to shrink the output when values repeat. Defaults to the global
+option \code{xfun.tojson.dict} (and to \code{FALSE} when that is unset), so a package
+that embeds \code{tojson()} output deep inside another function can turn
+encoding on without the call being reachable, e.g.
+\code{options(xfun.tojson.dict = 0.5)}. \code{FALSE}
 serializes normally. A number in \verb{(0, 1]} acts as a cardinality threshold:
 a vector is encoded when its number of unique values is at most \code{dict}
 times its length, and only when the encoding is actually shorter than the
@@ -27,10 +35,12 @@ values \code{u}), which is not strict JSON but meant to be evaluated as
 JavaScript (e.g. embedded in a \verb{<script>}).}
 
 \item{pretty}{Whether to pretty-print the output with line breaks,
-indentation, and a space after each array/object separator (the default).
-\code{FALSE} produces a compact, single-line result (no line breaks or
-indentation, and \verb{,} instead of \verb{, } between array elements), which can be
-substantially smaller for large data.}
+indentation, and a space after each array/object separator. Defaults to the
+global option \code{xfun.tojson.pretty} (and to \code{TRUE} when that is unset), so an
+embedding package can turn pretty-printing off without reaching the call,
+e.g. \code{options(xfun.tojson.pretty = FALSE)}. \code{FALSE} produces a compact,
+single-line result (no line breaks or indentation, and \verb{,} instead of \verb{, }
+between array elements), which can be substantially smaller for large data.}
 
 \item{to_array}{Whether to convert a vector to a JSON array (use \verb{[]}).}
 
