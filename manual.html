@@ -1842,7 +1842,7 @@ VignetteBuilder: litedown
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.1.0
 NeedsCompilation: yes
-Packaged: 2026-10-08 17:42:44 UTC; runner
+Packaged: 2026-10-08 18:38:48 UTC; runner
 Author: Yihui Xie [aut, cre, cph] (ORCID:
     &lt;https://orcid.org/0000-0003-0645-5666&gt;, URL: https://yihui.org),
   Wush Wu [ctb],
@@ -1851,7 +1851,7 @@ Author: Yihui Xie [aut, cre, cph] (ORCID:
   Salim Brüggemann [ctb] (ORCID: &lt;https://orcid.org/0000-0002-5329-5987&gt;),
   Christophe Dervieux [ctb]
 Maintainer: Yihui Xie &lt;xie@yihui.name&gt;
-Built: R 4.6.1; aarch64-apple-darwin23; 2026-10-08 17:42:44 UTC; unix
+Built: R 4.6.1; aarch64-apple-darwin23; 2026-10-08 18:38:49 UTC; unix
 </code></pre>
 <h2 id="sec:man-find_globals"><span class="section-number main-number">32</span> Find global/local variables in R code</h2>
 <h3 id="sec:description_32" class="unnumbered unlisted">Description</h3>
@@ -2226,8 +2226,8 @@ in_dir(tempdir(), {
     list.files()
 })
 </code></pre>
-<pre><code>#&gt; [1] &quot;/private/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/RtmpSS4oeU&quot;
-#&gt; [1] &quot;filec5f44d1888f.html&quot; &quot;filec5f7f0e9d09&quot;     
+<pre><code>#&gt; [1] &quot;/private/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/Rtmp7ojjXA&quot;
+#&gt; [1] &quot;filef144015466a&quot;     &quot;filef14e1cb85f.html&quot;
 </code></pre>
 <h2 id="sec:man-install_dir"><span class="section-number main-number">40</span> Install a source package from a directory</h2>
 <h3 id="sec:description_40" class="unnumbered unlisted">Description</h3>
@@ -3820,8 +3820,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 <h3 id="sec:examples_55" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">rand_unit(10)
 </code></pre>
-<pre><code>#&gt;  [1] 0.5854316 0.3293620 0.4123513 0.9682277 0.2028531 0.5932854 0.5435516
-#&gt;  [8] 0.5465117 0.7118260 0.7526271
+<pre><code>#&gt;  [1] 0.62888738 0.02906434 0.70295586 0.82800049 0.94337142 0.29531815
+#&gt;  [7] 0.86702126 0.18544381 0.20817309 0.43388380
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = 0)
 </code></pre>
@@ -3833,8 +3833,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = Sys.getpid())
 </code></pre>
-<pre><code>#&gt;  [1] 0.04114329 0.67233401 0.22073079 0.11566527 0.77495414 0.11609502
-#&gt;  [7] 0.75379030 0.23721915 0.11716932 0.69672349
+<pre><code>#&gt;  [1] 0.050146230 0.009223011 0.616362751 0.192443301 0.758864217 0.346740377
+#&gt;  [7] 0.072823034 0.306809579 0.054080703 0.541001794
 </code></pre>
 <h2 id="sec:man-random_port"><span class="section-number main-number">72</span> Find a random available TCP port</h2>
 <h3 id="sec:description_72" class="unnumbered unlisted">Description</h3>
@@ -4600,13 +4600,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;gzip, br&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.158&quot;
+#&gt; [1] &quot;13.105.117.207&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a476f2ca8efa765b&quot;
+#&gt; [1] &quot;a47744747eeb14f4&quot;
 #&gt; 
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
@@ -4624,7 +4624,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.158&quot;
+#&gt; [1] &quot;13.105.117.207&quot;
 #&gt; 
 #&gt; 
 #&gt; $queryParams
@@ -4632,7 +4632,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
 <pre><code class="language-r">xfun::rest_api_raw(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
-<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;accept&quot;:&quot;*/*&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.117.158&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-ray&quot;:&quot;a476f2cc1d57f7c2&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;connection&quot;:&quot;Keep-Alive&quot;,&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;user-agent&quot;:&quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;x-real-ip&quot;:&quot;13.105.117.158&quot;},&quot;queryParams&quot;:{}}
+<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;accept&quot;:&quot;*/*&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.117.207&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-ray&quot;:&quot;a4774478aca47ff1&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;connection&quot;:&quot;Keep-Alive&quot;,&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;user-agent&quot;:&quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;x-real-ip&quot;:&quot;13.105.117.207&quot;},&quot;queryParams&quot;:{}}
 </code></pre>
 <pre><code class="language-r"># send the request with an auth header
 xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPEN SESAME!&quot;)
@@ -4648,13 +4648,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;Basic OPEN SESAME!&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.158&quot;
+#&gt; [1] &quot;13.105.117.207&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a476f2cdfc66290b&quot;
+#&gt; [1] &quot;a47744790ce0f284&quot;
 #&gt; 
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
@@ -4672,7 +4672,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.158&quot;
+#&gt; [1] &quot;13.105.117.207&quot;
 </code></pre>
 <pre><code class="language-r"># with query parameters
 xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/response-headers&quot;, params = list(foo = &quot;bar&quot;))
@@ -4695,7 +4695,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$core$reset
-#&gt; [1] 1791485014
+#&gt; [1] 1791488358
 #&gt; 
 #&gt; 
 #&gt; $resources$search
@@ -4709,7 +4709,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 30
 #&gt; 
 #&gt; $resources$search$reset
-#&gt; [1] 1791481474
+#&gt; [1] 1791484818
 #&gt; 
 #&gt; 
 #&gt; $resources$graphql
@@ -4723,7 +4723,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$graphql$reset
-#&gt; [1] 1791485014
+#&gt; [1] 1791488358
 #&gt; 
 #&gt; 
 #&gt; $resources$integration_manifest
@@ -4737,7 +4737,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$integration_manifest$reset
-#&gt; [1] 1791485014
+#&gt; [1] 1791488358
 #&gt; 
 #&gt; 
 #&gt; $resources$source_import
@@ -4751,7 +4751,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$source_import$reset
-#&gt; [1] 1791481474
+#&gt; [1] 1791484818
 #&gt; 
 #&gt; 
 #&gt; $resources$code_scanning_autofix
@@ -4765,7 +4765,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_scanning_autofix$reset
-#&gt; [1] 1791481474
+#&gt; [1] 1791484818
 #&gt; 
 #&gt; 
 #&gt; $resources$actions_runner_registration
@@ -4779,7 +4779,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10000
 #&gt; 
 #&gt; $resources$actions_runner_registration$reset
-#&gt; [1] 1791485014
+#&gt; [1] 1791488358
 #&gt; 
 #&gt; 
 #&gt; $resources$scim
@@ -4793,7 +4793,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15000
 #&gt; 
 #&gt; $resources$scim$reset
-#&gt; [1] 1791485014
+#&gt; [1] 1791488358
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_snapshots
@@ -4807,7 +4807,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_snapshots$reset
-#&gt; [1] 1791481474
+#&gt; [1] 1791484818
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_sbom
@@ -4821,7 +4821,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_sbom$reset
-#&gt; [1] 1791481474
+#&gt; [1] 1791484818
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log
@@ -4835,7 +4835,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$audit_log$reset
-#&gt; [1] 1791485014
+#&gt; [1] 1791488358
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log_streaming
@@ -4849,7 +4849,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15
 #&gt; 
 #&gt; $resources$audit_log_streaming$reset
-#&gt; [1] 1791485014
+#&gt; [1] 1791488358
 #&gt; 
 #&gt; 
 #&gt; $resources$code_search
@@ -4863,7 +4863,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_search$reset
-#&gt; [1] 1791481474
+#&gt; [1] 1791484818
 #&gt; 
 #&gt; 
 #&gt; $resources$copilot_usage_records
@@ -4877,7 +4877,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$copilot_usage_records$reset
-#&gt; [1] 1791485014
+#&gt; [1] 1791488358
 #&gt; 
 #&gt; 
 #&gt; $resources$enterprise_token_inventory
@@ -4891,7 +4891,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$enterprise_token_inventory$reset
-#&gt; [1] 1791485014
+#&gt; [1] 1791488358
 #&gt; 
 #&gt; 
 #&gt; 
@@ -4906,7 +4906,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $rate$reset
-#&gt; [1] 1791485014
+#&gt; [1] 1791488358
 </code></pre>
 <h2 id="sec:man-retry"><span class="section-number main-number">82</span> Retry calling a function for a number of times</h2>
 <h3 id="sec:description_82" class="unnumbered unlisted">Description</h3>
@@ -5478,17 +5478,17 @@ formed by concatenating wrapped strings by <code>\n</code>.
 x = rep(paste(x, collapse = &quot;&quot;), 2)
 strwrap(x, width = 30)
 </code></pre>
-<pre><code>#&gt;  [1] &quot;d deu z fxk f u sgblm tm cwws&quot; &quot;l u o fa h ksr tp mnqgdi wy b&quot;
-#&gt;  [3] &quot;um ftz kbc xv z u ynfmtej gg&quot;  &quot;qkin rr ljczog c q y p b rtx&quot; 
-#&gt;  [5] &quot;h w q tq wu h z mm w o dm&quot;     &quot;yuev y n wua&quot;                 
-#&gt;  [7] &quot;d deu z fxk f u sgblm tm cwws&quot; &quot;l u o fa h ksr tp mnqgdi wy b&quot;
-#&gt;  [9] &quot;um ftz kbc xv z u ynfmtej gg&quot;  &quot;qkin rr ljczog c q y p b rtx&quot; 
-#&gt; [11] &quot;h w q tq wu h z mm w o dm&quot;     &quot;yuev y n wua&quot;                 
+<pre><code>#&gt;  [1] &quot;v if om j a h xk h v e aypp&quot;   &quot;pr k tq j h fcu e q y zps s&quot;  
+#&gt;  [3] &quot;hk fus ut ezvqjci e h j znbna&quot; &quot;ugt c rvomwqloqqurfj y q rum&quot; 
+#&gt;  [5] &quot;rw w z bdt k z a ri vvmir qnw&quot; &quot;i x pn tk&quot;                    
+#&gt;  [7] &quot;v if om j a h xk h v e aypp&quot;   &quot;pr k tq j h fcu e q y zps s&quot;  
+#&gt;  [9] &quot;hk fus ut ezvqjci e h j znbna&quot; &quot;ugt c rvomwqloqqurfj y q rum&quot; 
+#&gt; [11] &quot;rw w z bdt k z a ri vvmir qnw&quot; &quot;i x pn tk&quot;                    
 </code></pre>
 <pre><code class="language-r">xfun::str_wrap(x, width = 30)  # same length as x
 </code></pre>
-<pre><code>#&gt; [1] &quot;d deu z fxk f u sgblm tm cwws\nl u o fa h ksr tp mnqgdi wy b\num ftz kbc xv z u ynfmtej gg\nqkin rr ljczog c q y p b rtx\nh w q tq wu h z mm w o dm\nyuev y n wua&quot;
-#&gt; [2] &quot;d deu z fxk f u sgblm tm cwws\nl u o fa h ksr tp mnqgdi wy b\num ftz kbc xv z u ynfmtej gg\nqkin rr ljczog c q y p b rtx\nh w q tq wu h z mm w o dm\nyuev y n wua&quot;
+<pre><code>#&gt; [1] &quot;v if om j a h xk h v e aypp\npr k tq j h fcu e q y zps s\nhk fus ut ezvqjci e h j znbna\nugt c rvomwqloqqurfj y q rum\nrw w z bdt k z a ri vvmir qnw\ni x pn tk&quot;
+#&gt; [2] &quot;v if om j a h xk h v e aypp\npr k tq j h fcu e q y zps s\nhk fus ut ezvqjci e h j znbna\nugt c rvomwqloqqurfj y q rum\nrw w z bdt k z a ri vvmir qnw\ni x pn tk&quot;
 </code></pre>
 <h2 id="sec:man-strict_list"><span class="section-number main-number">93</span> Strict lists</h2>
 <h3 id="sec:description_93" class="unnumbered unlisted">Description</h3>
@@ -5948,7 +5948,11 @@ wrapped in <code>js()</code> is treated as raw JavaScript, so will not be quoted
 function <code>json_vector()</code> converts an atomic R vector to JSON.
 </p>
 <h3 id="sec:usage_100" class="unnumbered unlisted">Usage</h3>
-<pre><code class="language-r">tojson(x, dict = FALSE, pretty = TRUE)
+<pre><code class="language-r">tojson(
+  x,
+  dict = getOption("xfun.tojson.dict", FALSE),
+  pretty = getOption("xfun.tojson.pretty", TRUE)
+)
 
 js(x)
 
@@ -5962,7 +5966,11 @@ json_vector(x, to_array = FALSE, quote = TRUE, sep = ", ")</code></pre>
 <tr><td><code>dict</code></td>
 <td>
 <p>Whether to dictionary-encode atomic vectors (and data-frame
-columns) to shrink the output when values repeat. <code>FALSE</code> (the default)
+columns) to shrink the output when values repeat. Defaults to the global
+option <code>xfun.tojson.dict</code> (and to <code>FALSE</code> when that is unset), so a package
+that embeds <code>tojson()</code> output deep inside another function can turn
+encoding on without the call being reachable, e.g.
+<code>options(xfun.tojson.dict = 0.5)</code>. <code>FALSE</code>
 serializes normally. A number in <code>(0, 1]</code> acts as a cardinality threshold:
 a vector is encoded when its number of unique values is at most <code>dict</code>
 times its length, and only when the encoding is actually shorter than the
@@ -5975,10 +5983,12 @@ JavaScript (e.g. embedded in a <code>&lt;script&gt;</code>).</p>
 <tr><td><code>pretty</code></td>
 <td>
 <p>Whether to pretty-print the output with line breaks,
-indentation, and a space after each array/object separator (the default).
-<code>FALSE</code> produces a compact, single-line result (no line breaks or
-indentation, and <code>,</code> instead of <code>, </code> between array elements), which can be
-substantially smaller for large data.</p>
+indentation, and a space after each array/object separator. Defaults to the
+global option <code>xfun.tojson.pretty</code> (and to <code>TRUE</code> when that is unset), so an
+embedding package can turn pretty-printing off without reaching the call,
+e.g. <code>options(xfun.tojson.pretty = FALSE)</code>. <code>FALSE</code> produces a compact,
+single-line result (no line breaks or indentation, and <code>,</code> instead of <code>, </code>
+between array elements), which can be substantially smaller for large data.</p>
 </td></tr>
 <tr><td><code>to_array</code></td>
 <td>
