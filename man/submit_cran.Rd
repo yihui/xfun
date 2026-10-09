@@ -24,6 +24,16 @@ before submission.}
 \description{
 Build a source package and submit it to CRAN with the \pkg{curl} package.
 }
+\details{
+When the tarball is built automatically (the default \code{file}), you can
+run arbitrary code before and after the build by placing scripts named
+\file{build-before.*} and \file{build-after.*} under the package's
+\file{tools/} directory (\file{.R} scripts are run via \command{Rscript},
+\file{.sh} via \command{sh}). A \file{build-before} script can generate files
+that should ship in the tarball but are not kept in the source tree (e.g.,
+download or minify assets), and the matching \file{build-after} script (run
+even if the build fails) can restore the source tree afterwards.
+}
 \seealso{
 \code{devtools::submit_cran()} does the same job, with a few more
 dependencies in addition to \pkg{curl} (such as \pkg{cli});

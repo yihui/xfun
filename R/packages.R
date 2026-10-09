@@ -192,16 +192,46 @@ install_dir = function(pkg = '.', build = TRUE, build_opts = NULL, install_opts 
   invisible(res)
 }
 
-pkg_build = function(dir = '.', opts = NULL) {
+# Build a source package tarball via `R CMD build`, with optional hooks run
+# before and after the build (see `run_hooks()` for what a hook can be). By
+# default the hooks are auto-detected scripts under the package's tools/ dir
+# (build-before.* / build-after.*). A `before` hook can modify the source tree
+# (e.g. download or minify assets) so the build ships the result; the `after`
+# hook always runs (even on failure) to undo those changes (e.g. git checkout).
+pkg_build = function(
+  dir = '.', opts = NULL, before = build_hooks('before', dir),
+  after = build_hooks('after', dir)
+) {
   desc = file.path(dir, 'DESCRIPTION')
   pv = read.dcf(desc, fields = c('Package', 'Version'))
   # delete existing tarballs
   unlink(sprintf('%s_*.tar.gz', pv[1, 1]))
+  # run `after` hooks no matter what follows (build error, or a failing `before`
+  # that left the source tree half-modified) — the place to restore the tree
+  if (length(after)) on.exit(run_hooks(after, dir), add = TRUE)
+  run_hooks(before, dir)
   Rcmd(c('build', opts, shQuote(dir)))
   pkg = sprintf('%s_%s.tar.gz', pv[1, 1], pv[1, 2])
   if (!file_exists(pkg)) stop('Failed to build the package ', pkg)
   pkg
 }
+
+# default hooks: tools/build-before.* / tools/build-after.* under the pkg dir
+build_hooks = function(when, dir) {
+  all_files(sprintf('^build-%s[.]', when), file.path(dir, 'tools'), recursive = FALSE)
+}
+
+# run each hook in `dir`: a function is called in-process; a script path is run
+# in a separate process, dispatched by extension (.R -> Rscript, .sh -> sh)
+run_hooks = function(hooks, dir = '.') for (h in hooks) in_dir(dir, {
+  if (is.function(h)) h() else {
+    res = switch(
+      tolower(file_ext(h)),
+      r = Rscript(shQuote(h)), sh = system2('sh', shQuote(h)), system2(h)
+    )
+    if (res != 0) stop('Build hook failed (exit ', res, '): ', h)
+  }
+})
 
 # install dependencies given a package DESCRIPTION
 install_deps = function(dir = '.') {

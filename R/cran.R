@@ -104,6 +104,14 @@ pkg_maintainers = function(pkgs) {
 #'   comment.
 #' @param sync Whether to sync the current Git branch with the remote repository
 #'   before submission.
+#' @details When the tarball is built automatically (the default `file`), you can
+#'   run arbitrary code before and after the build by placing scripts named
+#'   \file{build-before.*} and \file{build-after.*} under the package's
+#'   \file{tools/} directory (\file{.R} scripts are run via \command{Rscript},
+#'   \file{.sh} via \command{sh}). A \file{build-before} script can generate files
+#'   that should ship in the tarball but are not kept in the source tree (e.g.,
+#'   download or minify assets), and the matching \file{build-after} script (run
+#'   even if the build fails) can restore the source tree afterwards.
 #' @seealso `devtools::submit_cran()` does the same job, with a few more
 #'   dependencies in addition to \pkg{curl} (such as \pkg{cli});
 #'   `xfun::submit_cran()` only depends on \pkg{curl}.

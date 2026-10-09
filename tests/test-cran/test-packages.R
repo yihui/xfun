@@ -53,3 +53,30 @@ assert('pkg_available() with version constraint works', {
   (pkg_available('base', '0.0.1'))
   (!pkg_available('xfun', '999999.999.999'))
 })
+
+assert('build_hooks() auto-detects tools/build-before.* and build-after.*', {
+  d = tempfile(); dir_create(file.path(d, 'tools'))
+  on.exit(unlink(d, recursive = TRUE), add = TRUE)
+  file.create(file.path(d, 'tools', c('build-before.sh', 'build-after.R')))
+  (basename(build_hooks('before', d)) %==% 'build-before.sh')
+  (basename(build_hooks('after', d)) %==% 'build-after.R')
+  # no tools/ dir -> no hooks
+  (build_hooks('before', tempfile()) %==% character(0))
+})
+
+assert('run_hooks() runs hooks in `dir`; functions in-process, scripts dispatched', {
+  d = tempfile(); dir_create(d)
+  on.exit(unlink(d, recursive = TRUE), add = TRUE)
+  # a function hook runs with the working directory set to `dir`
+  wd = NULL
+  run_hooks(list(function() wd <<- getwd()), d)
+  (same_path(wd, d))
+  # a script-path hook runs in `dir` and its relative paths resolve there
+  writeLines('writeLines("x", "from-hook.txt")', file.path(d, 'h.R'))
+  run_hooks('h.R', d)
+  (file_exists(file.path(d, 'from-hook.txt')))
+  # a missing hook, and a hook that exits non-zero, both error
+  (has_error(run_hooks('absent.R', d)))
+  writeLines('quit(status = 3)', file.path(d, 'bad.R'))
+  (has_error(run_hooks('bad.R', d)))
+})
