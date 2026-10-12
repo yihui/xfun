@@ -169,10 +169,9 @@ yaml_value = function(x, envir = parent.frame()) {
   if (grepl(r <- '^\\s*\\[(.*)\\]\\s*$', v)) {
     v = gsub(r, '\\1', x)
     if (is_blank(v)) return()
-    v = unname(unlist(read.csv(text = v, header = FALSE)))
-    if (is.numeric(v)) return(v)
-    v = gsub('^ ', '', v)  # [a, b] -> ["a", " b"] -> ["a", "b"]
-    return(if (yaml_bool(v)) as.logical(v) else yaml_unquote(v))
+    # split on top-level commas (respecting quotes), then parse each element,
+    # so quoting is preserved: '1'/"1" stay strings while bare 1 is numeric
+    return(unlist(lapply(split_flow(v), function(z) yaml_value(trimws(z), envir))))
   }
   if (grepl('^[0-9.e+-]', v)) {
     v = suppressWarnings(as.numeric(v))
@@ -181,6 +180,22 @@ yaml_value = function(x, envir = parent.frame()) {
   if (grepl(r <- '^!(r|expr) (.+)$', x)) {
     yaml_expr(gsub(r, '\\2', x), envir)
   } else yaml_unquote(x)
+}
+
+# split a flow sequence on commas not enclosed in quotes
+split_flow = function(x) {
+  tokens = character(); cur = ''; q = ''  # q: open quote char, '' if outside
+  for (c in strsplit(x, '')[[1]]) {
+    if (q != '') {
+      cur = paste0(cur, c)
+      if (c == q) q = ''  # closing quote
+    } else if (c == '"' || c == "'") {
+      q = c; cur = paste0(cur, c)
+    } else if (c == ',') {
+      tokens = c(tokens, cur); cur = ''
+    } else cur = paste0(cur, c)
+  }
+  c(tokens, cur)
 }
 
 # convert true/false/na to boolean

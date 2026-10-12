@@ -60,6 +60,15 @@ assert('taml_load() works', {
   (taml_load('a: [A, B, C D]') %==% res)
   (taml_load('a: ["A", \'B\', "C D"]') %==% res)
   (taml_load("a: ['A', 'B', 'C D']") %==% res)
+  # spaces around array elements are ignored (#133)
+  (taml_load('a: [ 1 ]') %==% list(a = 1L))
+  (taml_load("a: [ '1' ]") %==% list(a = '1'))
+  (taml_load("a: [ 1, 2 ]") %==% list(a = 1:2))
+  (taml_load("a: [ '1', '2' ]") %==% list(a = c('1', '2')))
+  # quoted values stay strings even if they look numeric (#133)
+  (taml_load('a: ["1"]') %==% list(a = '1'))
+  # commas inside quotes are not treated as separators
+  (taml_load('a: ["x, y", z]') %==% list(a = c('x, y', 'z')))
 })
 
 assert('taml_load() works with variable indent', {

@@ -2,6 +2,8 @@
 
 - Added `rust` to the internal object `comment_chars` (thanks, @kbvernon, #132).
 
+- `taml_load()` now parses flow arrays (`[...]`) correctly when elements are surrounded by spaces (e.g. `[ 1, 2 ]`), and keeps quoted values as strings even when they look numeric (e.g. `["1"]` is `"1"`, not `1`) (thanks, @reedacartwright, #133).
+
 - `tojson()` is faster now: string escaping is skipped when no special characters are present, the `Inf`/`-Inf` conversion is skipped when no infinite values are present, and matrices are serialized without a per-row function call.
 
 - `tojson()` now emits each row of a single-column matrix as an array (e.g., `[[1], [2], [3]]`) for consistency with multi-column matrices, instead of collapsing the rows into scalars.
