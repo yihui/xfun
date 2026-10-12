@@ -195,6 +195,9 @@
 <p>Added <code>rust</code> to the internal object <code>comment_chars</code> (thanks, <a href="https://github.com/kbvernon">@kbvernon</a>, <a href="https://github.com/yihui/xfun/issues/132">#132</a>).</p>
 </li>
 <li>
+<p><code>taml_load()</code> now parses flow arrays (<code>[...]</code>) correctly when elements are surrounded by spaces (e.g. <code>[ 1, 2 ]</code>), and keeps quoted values as strings even when they look numeric (e.g. <code>[&quot;1&quot;]</code> is <code>&quot;1&quot;</code>, not <code>1</code>) (thanks, <a href="https://github.com/reedacartwright">@reedacartwright</a>, <a href="https://github.com/yihui/xfun/issues/133">#133</a>).</p>
+</li>
+<li>
 <p><code>tojson()</code> is faster now: string escaping is skipped when no special characters are present, the <code>Inf</code>/<code>-Inf</code> conversion is skipped when no infinite values are present, and matrices are serialized without a per-row function call.</p>
 </li>
 <li>
