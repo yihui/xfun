@@ -42,9 +42,9 @@ xfun::tabset(p)
 
 # custom tab content
 xfun::tabset(iris, function(x) {
-    if (is.factor(x)) {
-        res = c("A factor with levels: ", xfun::join_words(levels(x), before = "`"))
-        xfun::tab_content(res)
-    } else print(summary(x))
+  if (is.factor(x)) {
+    res = c("A factor with levels: ", xfun::join_words(levels(x), before = "`"))
+    xfun::tab_content(res)
+  } else print(summary(x))
 })
 }

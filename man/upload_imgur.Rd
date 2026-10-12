@@ -56,18 +56,14 @@ can certainly use mine, but this ID is in the public domain and it might
 reach Imgur's rate limit if too many people are using it in the same time
 period or someone is trying to upload too many images at once.
 }
-\examples{
-\dontrun{
+\examples{\dontrun{
 f = tempfile(fileext = ".png")
-png(f)
-plot(rnorm(100), main = R.version.string)
-dev.off()
+png(f); plot(rnorm(100), main = R.version.string); dev.off()
 
 res = imgur_upload(f, include_xml = TRUE)
 res  # link to original URL of the image
 xfun::attr2(res, "XML")  # all information
-if (interactive())
-    browseURL(res)
+if (interactive()) browseURL(res)
 
 # to use your own key
 options(xfun.upload_imgur.key = "your imgur key")

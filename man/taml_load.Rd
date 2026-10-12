@@ -37,17 +37,17 @@ specifications.
 (res = taml_load("a: 1"))
 taml_save(res)
 
-(res = taml_load("a: 1\nb: \"foo\"\nc: null"))
+(res = taml_load('a: 1\nb: "foo"\nc: null'))
 taml_save(res)
 
 (res = taml_load("a:\n  b: false\n  c: true\n  d: 1.234\ne: bar"))
 taml_save(res)
 taml_save(res, indent = "\t")
 
-taml_load("a: !expr paste(1:10, collapse = \", \")")
+taml_load('a: !expr paste(1:10, collapse = ", ")')
 taml_load("a: [1, 3, 4, 2]")
-taml_load("a: [1, \"abc\", 4, 2]")
-taml_load("a: [\"foo\", \"bar\"]")
+taml_load('a: [1, "abc", 4, 2]')
+taml_load('a: ["foo", "bar"]')
 taml_load("a: [true, false, true]")
 # the other form of array is not supported
 taml_load("a:\n  - b\n  - c")

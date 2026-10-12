@@ -14,8 +14,8 @@
 #' @export
 #' @import stats
 #' @examples library(xfun)
-#' if (loadable('rstudioapi') && rstudioapi::isAvailable()) {
-#'   rstudio_type('Hello, RStudio! xfun::rstudio_type() looks pretty cool!',
+#' if (loadable("rstudioapi") && rstudioapi::isAvailable()) {
+#'   rstudio_type("Hello, RStudio! xfun::rstudio_type() looks pretty cool!",
 #'     pause = function() runif(1, 0, .5), mistake = .1)
 #' }
 rstudio_type = function(x, pause = function() .1, mistake = 0, save = 0) {

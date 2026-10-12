@@ -16,5 +16,5 @@ A character vector with HTML tags and comments stripped off.
 Remove HTML tags and comments from text.
 }
 \examples{
-xfun::strip_html("<a href=\"#\">Hello <!-- comment -->world!</a>")
+xfun::strip_html('<a href="#">Hello <!-- comment -->world!</a>')
 }

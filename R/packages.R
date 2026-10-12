@@ -36,10 +36,10 @@
 #' @import utils
 #' @export
 #' @examples library(xfun)
-#' pkg_attach('stats', 'graphics')
+#' pkg_attach("stats", "graphics")
 #' # pkg_attach2('servr')  # automatically install servr if it is not installed
 #'
-#' (pkg_load('stats', 'graphics'))
+#' (pkg_load("stats", "graphics"))
 pkg_attach = function(
   ..., install = FALSE, message = getOption('xfun.pkg_attach.message', TRUE)
 ) {
@@ -294,7 +294,7 @@ reinstall_from_cran = function(dry_run = TRUE, skip_github = TRUE) {
 #' @export
 #' @examplesIf interactive()
 #' # news for the current version of R
-#' xfun::news2md('R', Version == getRversion(), output = NA)
+#' xfun::news2md("R", Version == getRversion(), output = NA)
 news2md = function(package, ..., output = 'NEWS.md', category = TRUE) {
   db = news(package = package, ...)
   k = db[, 'Category']

@@ -18,7 +18,7 @@ length as the input vector; each element of the output vector is a string
 formed by concatenating wrapped strings by \verb{\\n}.
 }
 \examples{
-x = sample(c(letters, " "), 200, TRUE, c(rep(0.5/26, 26), 0.5))
+x = sample(c(letters, " "), 200, TRUE, c(rep(.5/26, 26), .5))
 x = rep(paste(x, collapse = ""), 2)
 strwrap(x, width = 30)
 xfun::str_wrap(x, width = 30)  # same length as x

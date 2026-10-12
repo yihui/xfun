@@ -77,7 +77,7 @@ base64_encode_r = function(x) {
 #' @export
 #' @examples
 #' logo = xfun:::R_logo()
-#' img = xfun::html_tag('img', src = xfun::base64_uri(logo), alt = "R logo")
+#' img = xfun::html_tag("img", src = xfun::base64_uri(logo), alt = "R logo")
 #' if (interactive()) xfun::html_view(img)
 base64_uri = function(x, type = mime_type(x)) {
   paste0("data:", type, ";base64,", base64_encode(x))
@@ -101,7 +101,7 @@ base64_uri = function(x, type = mime_type(x)) {
 #'   since running the command in real time can be a little slow.
 #' @export
 #' @examplesIf tolower(Sys.getenv('CI')) == 'true'
-#' f = list.files(R.home('doc'), full.names = TRUE)
+#' f = list.files(R.home("doc"), full.names = TRUE)
 #' mime_type(f)
 #' mime_type(f, FALSE)  # don't use mime
 #' mime_type(f, FALSE, NA)  # run command for files without extension

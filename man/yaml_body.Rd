@@ -24,6 +24,8 @@ Split a document into the YAML metadata (which starts with \verb{---} in the
 beginning of the document) and the body.
 }
 \examples{
-xfun::yaml_body(c("---", "title: Hello", "output: litedown::html_format", "---",
-    "", "Content."))
+xfun::yaml_body(c(
+  "---", "title: Hello", "output: litedown::html_format",
+  "---", "", "Content."
+))
 }

@@ -18,5 +18,6 @@ This function is a shorthand of \code{gsub(pattern, replacement, grep(pattern, x
 }
 \examples{
 # find elements that matches 'a[b]+c' and capitalize 'b' with perl regex
-xfun::grep_sub("a([b]+)c", "a\\\\U\\\\1c", c("abc", "abbbc", "addc", "123"), perl = TRUE)
+xfun::grep_sub("a([b]+)c", "a\\\\U\\\\1c",
+  c("abc", "abbbc", "addc", "123"), perl = TRUE)
 }

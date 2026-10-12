@@ -26,7 +26,7 @@
 #' @export
 #' @examplesIf interactive()
 #' xfun::session_info()
-#' if (xfun::loadable('MASS')) xfun::session_info('MASS')
+#' if (xfun::loadable("MASS")) xfun::session_info("MASS")
 session_info = function(packages = NULL, dependencies = TRUE) {
   res = sessionInfo()
   res$matprod = res$BLAS = res$LAPACK = NULL

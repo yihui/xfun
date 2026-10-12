@@ -80,7 +80,7 @@ packages when attaching/loading them but they have not been installed.
 \examples{
 library(xfun)
 pkg_attach("stats", "graphics")
-# pkg_attach2('servr') # automatically install servr if it is not installed
+# pkg_attach2('servr')  # automatically install servr if it is not installed
 
 (pkg_load("stats", "graphics"))
 }

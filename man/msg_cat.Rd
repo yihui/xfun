@@ -26,10 +26,10 @@ a newline, you have to explicitly add it to the message (see
 }
 \examples{
 {
-    # a message without a newline at the end
-    xfun::msg_cat("Hello world!")
-    # add a newline at the end
-    xfun::msg_cat(" This message appears right after the previous one.\n")
+# a message without a newline at the end
+xfun::msg_cat("Hello world!")
+# add a newline at the end
+xfun::msg_cat(" This message appears right after the previous one.\n")
 }
 suppressMessages(xfun::msg_cat("Hello world!"))
 }

@@ -6,10 +6,10 @@
 #' @return `TRUE` for blank elements, or `FALSE` otherwise.
 #' @export
 #' @examples
-#' xfun::is_blank('')
-#' xfun::is_blank('abc')
-#' xfun::is_blank(c('', '  ', '\n\t'))
-#' xfun::is_blank(c('', ' ', 'abc'))
+#' xfun::is_blank("")
+#' xfun::is_blank("abc")
+#' xfun::is_blank(c("", "  ", "\n\t"))
+#' xfun::is_blank(c("", " ", "abc"))
 is_blank = function(x) grepl('^\\s*$', x)
 
 # remote blank elements from both ends
@@ -41,9 +41,9 @@ strip_blank = function(x) {
 #' n2w(0, cap = TRUE)
 #' n2w(0:121, and = TRUE)
 #' n2w(1e6)
-#' n2w(1e11+12345678)
+#' n2w(1e11 + 12345678)
 #' n2w(-987654321)
-#' n2w(1e15-1)
+#' n2w(1e15 - 1)
 #' n2w(123.456)
 #' n2w(123.45678901)
 #' n2w(123.456789098765)
@@ -141,12 +141,12 @@ n2w = numbers_to_words
 #'   elements in the list.
 #' @return A character string marked by [raw_string()].
 #' @export
-#' @examples join_words('a'); join_words(c('a', 'b'))
-#' join_words(c('a', 'b', 'c'))
-#' join_words(c('a', 'b', 'c'), sep = ' / ', and = '')
-#' join_words(c('a', 'b', 'c'), and = '')
-#' join_words(c('a', 'b', 'c'), before = '"', after = '"')
-#' join_words(c('a', 'b', 'c'), before = '"', after = '"', oxford_comma = FALSE)
+#' @examples join_words("a"); join_words(c("a", "b"))
+#' join_words(c("a", "b", "c"))
+#' join_words(c("a", "b", "c"), sep = " / ", and = "")
+#' join_words(c("a", "b", "c"), and = "")
+#' join_words(c("a", "b", "c"), before = '"', after = '"')
+#' join_words(c("a", "b", "c"), before = '"', after = '"', oxford_comma = FALSE)
 join_words = function(
   words, sep = ', ', and = ' and ', before = '', after = before, oxford_comma = TRUE
 ) {
@@ -180,7 +180,7 @@ join_words = function(
 #' @export
 #' @return The value of `x`.
 #' @examples
-#' opts = options(OutDec = ',')
+#' opts = options(OutDec = ",")
 #' as.character(1.234)  # using ',' as the decimal separator
 #' print(1.234)  # same
 #' xfun::decimal_dot(as.character(1.234))  # using dot
@@ -212,8 +212,8 @@ query_params = function(..., .list = list()) {
 #' @return A character vector.
 #' @export
 #' @examples
-#' x = sample(c(letters, ' '), 200, TRUE, c(rep(.5/26, 26), .5))
-#' x = rep(paste(x, collapse = ''), 2)
+#' x = sample(c(letters, " "), 200, TRUE, c(rep(.5/26, 26), .5))
+#' x = rep(paste(x, collapse = ""), 2)
 #' strwrap(x, width = 30)
 #' xfun::str_wrap(x, width = 30)  # same length as x
 str_wrap = function(...) {
@@ -233,7 +233,7 @@ str_wrap = function(...) {
 #' @return All elements of the character vector are split by `'\n'` into
 #'   lines.
 #' @export
-#' @examples xfun::split_lines(c('a', 'b\nc'))
+#' @examples xfun::split_lines(c("a", "b\nc"))
 split_lines = function(x) {
   if (length(grep('\n', x)) == 0L) return(x)
   x = gsub('\n$', '\n\n', x)
@@ -256,7 +256,9 @@ split_lines = function(x) {
 #'   line numbers of the expression if the argument `line_number = TRUE`.
 #' @export
 #' @examples
-#' code = c('# comment 1', '# comment 2', 'if (TRUE) {', '1 + 1', '}', 'print(1:5)')
+#' code = c(
+#'   "# comment 1", "# comment 2", "if (TRUE) {", "1 + 1", "}", "print(1:5)"
+#' )
 #' xfun::split_source(code)
 #' xfun::split_source(code, merge_comments = TRUE)
 split_source = function(x, merge_comments = FALSE, line_number = FALSE) {
@@ -286,9 +288,9 @@ split_source = function(x, merge_comments = FALSE, line_number = FALSE) {
 #'   valid.
 #' @return `TRUE` if the code could be parsed, otherwise `FALSE`.
 #' @export
-#' @examples xfun::valid_syntax('1+1')
-#' xfun::valid_syntax('1+')
-#' xfun::valid_syntax(c('if(T){1+1}', 'else {2+2}'), silent = FALSE)
+#' @examples xfun::valid_syntax("1+1")
+#' xfun::valid_syntax("1+")
+#' xfun::valid_syntax(c("if(T){1+1}", "else {2+2}"), silent = FALSE)
 valid_syntax = function(code, silent = TRUE) {
   !inherits(suppressWarnings(try(parse_only(code), silent = silent)), 'try-error')
 }
@@ -302,7 +304,7 @@ valid_syntax = function(code, silent = TRUE) {
 #'   `as.numeric_version()`.
 #' @return A vector of new version numbers.
 #' @export
-#' @examples xfun::bump_version(c('0.1', '91.2.14'))
+#' @examples xfun::bump_version(c("0.1", "91.2.14"))
 bump_version = function(x) {
   x = as.numeric_version(x)
   for (i in seq_along(x)) {
@@ -340,11 +342,11 @@ release_versions = function(ver, bump = NA, patch = '.1') {
 #' @references <https://d.cosx.org/d/420794/5>
 #' @noRd
 #' @examples
-#' files = list.files('.', '[.]R?md$', recursive = TRUE, full.names = TRUE)
+#' files = list.files(".", "[.]R?md$", recursive = TRUE, full.names = TRUE)
 #' for (f in files) {
 #'   pair_chars(file = f)
 #'   # curly single quotes
-#'   pair_chars(file = f, chars = c('\U2018', '\U2019'))
+#'   pair_chars(file = f, chars = c("\U2018", "\U2019"))
 #' }
 pair_chars = function(x = read_utf8(file), file, chars = c('\U201c', '\U201d')) {
   if (length(chars) != 2) stop("'chars' must be of length 2 (i.e., a pair of characters)")
@@ -383,11 +385,11 @@ pair_chars = function(x = read_utf8(file), file, chars = c('\U201c', '\U201d')) 
 #' @return A character vector of IDs.
 #' @export
 #' @examples
-#' x = c('Hello world 123!', 'a  &b*^##c 456')
+#' x = c("Hello world 123!", "a  &b*^##c 456")
 #' xfun::alnum_id(x)
-#' xfun::alnum_id(x, '[^[:alpha:]]+')  # only keep alphabetical chars
+#' xfun::alnum_id(x, "[^[:alpha:]]+")  # only keep alphabetical chars
 #' # when text contains HTML tags
-#' xfun::alnum_id('<h1>Hello <strong>world</strong>!')
+#' xfun::alnum_id("<h1>Hello <strong>world</strong>!")
 alnum_id = function(x, exclude = '[^[:alnum:]]+') {
   x = strip_html(x)
   tolower(gsub('^-+|-+$', '', gsub(exclude, '-', x, perl = TRUE)))
@@ -435,10 +437,11 @@ strip_html = function(x) {
 #' @return A character string.
 #' @export
 #' @examples
-#' xfun::html_tag('a', '<R Project>', href = 'https://www.r-project.org', target = '_blank')
-#' xfun::html_tag('br')
-#' xfun::html_tag('a', xfun::html_tag('strong', 'R Project'), href = '#')
-#' xfun::html_tag('a', list('<text>', xfun::html_tag('b', 'R Project')), href = '#')
+#' xfun::html_tag("a", "<R Project>",
+#'   href = "https://www.r-project.org", target = "_blank")
+#' xfun::html_tag("br")
+#' xfun::html_tag("a", xfun::html_tag("strong", "R Project"), href = "#")
+#' xfun::html_tag("a", list("<text>", xfun::html_tag("b", "R Project")), href = "#")
 html_tag = function(.name, .content = NULL, .attrs = NULL, ...) {
   if (is.null(.attrs)) .attrs = list(...)
   if (length(.attrs) && (is.null(nm <- names(.attrs)) || any(nm == '')))

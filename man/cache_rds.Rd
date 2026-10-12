@@ -122,11 +122,11 @@ changed. By comparison, \code{\link[=cache_exec]{cache_exec()}} doesn't have thi
 \examples{
 f = tempfile()  # the cache file
 compute = function(...) {
-    res = xfun::cache_rds({
-        Sys.sleep(1)
-        1:10
-    }, file = f, dir = "", ...)
-    res
+  res = xfun::cache_rds({
+    Sys.sleep(1)
+    1:10
+  }, file = f, dir = "", ...)
+  res
 }
 compute()  # takes one second
 compute()  # returns 1:10 immediately

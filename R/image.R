@@ -40,7 +40,7 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' f = xfun:::R_logo('jpg$')
+#' f = xfun:::R_logo("jpg$")
 #' xfun::tinify(f)  # remember to set the API key before trying this
 #' }
 tinify = function(
@@ -129,7 +129,7 @@ tinify_dir = function(dir = '.', ...) {
 #' @param tinify Whether to compress images using [tinify()].
 #' @export
 #' @examplesIf xfun::loadable('magick')
-#' f = xfun:::all_files('[.](png|jpe?g)$', R.home('doc'))
+#' f = xfun:::all_files("[.](png|jpe?g)$", R.home("doc"))
 #' file.copy(f, tempdir())
 #' f = file.path(tempdir(), basename(f))
 #' magick::image_info(magick::image_read(f))  # some widths are larger than 300
@@ -188,16 +188,16 @@ shrink_images = function(
 #' @references A demo: <https://yihui.org/knitr/demo/upload/>
 #' @export
 #' @examples \dontrun{
-#' f = tempfile(fileext = '.png')
+#' f = tempfile(fileext = ".png")
 #' png(f); plot(rnorm(100), main = R.version.string); dev.off()
 #'
 #' res = imgur_upload(f, include_xml = TRUE)
 #' res  # link to original URL of the image
-#' xfun::attr2(res, 'XML')  # all information
+#' xfun::attr2(res, "XML")  # all information
 #' if (interactive()) browseURL(res)
 #'
 #' # to use your own key
-#' options(xfun.upload_imgur.key = 'your imgur key')
+#' options(xfun.upload_imgur.key = "your imgur key")
 #' }
 upload_imgur = function(
   file, key = env_option('xfun.upload_imgur.key'), use_curl = loadable('curl'),

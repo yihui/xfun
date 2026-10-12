@@ -30,7 +30,7 @@ Load an HTML page in a headless browser (Chromium/Chrome/Edge), execute all
 JavaScript on it, and return (or save) the rendered DOM as HTML.
 }
 \examples{\dontshow{if (interactive()) \{}
-f = tempfile(fileext = '.html')
+f = tempfile(fileext = ".html")
 writeLines(c(
   '<html><body><div id="out"></div>',
   '<script>document.getElementById("out").textContent = "hello";</script>',

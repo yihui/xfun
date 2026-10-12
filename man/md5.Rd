@@ -22,11 +22,7 @@ object will be passed to the \code{bytes} argument directly (which will be
 faster than writing to a temporary file).
 }
 \examples{
-x1 = 1
-x2 = 1:10
-x3 = seq(1, 10)
-x4 = iris
-x5 = paste
+x1 = 1; x2 = 1:10; x3 = seq(1, 10); x4 = iris; x5 = paste
 (m = xfun::md5(x1, x2, x3, x4, x5))
 stopifnot(m[2] == m[3])  # x2 and x3 should be identical
 

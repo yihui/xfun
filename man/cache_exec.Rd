@@ -80,17 +80,17 @@ methods and also supports compression.
 \examples{
 # the first run takes about 1 second
 y1 = xfun::cache_exec({
-    x = rnorm(1e+05)
-    Sys.sleep(1)
-    x
+  x = rnorm(1e5)
+  Sys.sleep(1)
+  x
 }, path = ":memory:", id = "sim-norm")
 
 # the second run takes almost no time
 y2 = xfun::cache_exec({
-    # comments won't affect caching
-    x = rnorm(1e+05)
-    Sys.sleep(1)
-    x
+  # comments won't affect caching
+  x = rnorm(1e5)
+  Sys.sleep(1)
+  x
 }, path = ":memory:", id = "sim-norm")
 
 # y1, y2, and x should be identical

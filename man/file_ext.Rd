@@ -41,11 +41,8 @@ and \verb{#} to be present at the end of a filename.
 \examples{
 library(xfun)
 p = c("abc.doc", "def123.tex", "path/to/foo.Rmd", "backup.ppt~", "pkg.tar.xz")
-file_ext(p)
-sans_ext(p)
-with_ext(p, ".txt")
-with_ext(p, c(".ppt", ".sty", ".Rnw", "doc", "zip"))
-with_ext(p, "html")
+file_ext(p); sans_ext(p); with_ext(p, ".txt")
+with_ext(p, c(".ppt", ".sty", ".Rnw", "doc", "zip")); with_ext(p, "html")
 
 # allow for more characters in extensions
 p = c("a.c++", "b.c--", "c.e##")

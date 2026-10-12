@@ -13,8 +13,8 @@
 #'   character strings for expressions.
 #' @export
 #' @examples
-#' yaml_load('a: 1')
-#' yaml_load('a: 1', use_yaml = FALSE)
+#' yaml_load("a: 1")
+#' yaml_load("a: 1", use_yaml = FALSE)
 yaml_load = function(
   x, ..., handlers = NULL, envir = parent.frame(), use_yaml = loadable('yaml')
 ) {
@@ -49,25 +49,25 @@ yaml_load = function(
 #'   to the file specified by the `path`.
 #' @export
 #' @examples
-#' (res = taml_load('a: 1'))
+#' (res = taml_load("a: 1"))
 #' taml_save(res)
 #'
 #' (res = taml_load('a: 1\nb: "foo"\nc: null'))
 #' taml_save(res)
 #'
-#' (res = taml_load('a:\n  b: false\n  c: true\n  d: 1.234\ne: bar'))
+#' (res = taml_load("a:\n  b: false\n  c: true\n  d: 1.234\ne: bar"))
 #' taml_save(res)
-#' taml_save(res, indent = '\t')
+#' taml_save(res, indent = "\t")
 #'
 #' taml_load('a: !expr paste(1:10, collapse = ", ")')
-#' taml_load('a: [1, 3, 4, 2]')
+#' taml_load("a: [1, 3, 4, 2]")
 #' taml_load('a: [1, "abc", 4, 2]')
 #' taml_load('a: ["foo", "bar"]')
-#' taml_load('a: [true, false, true]')
+#' taml_load("a: [true, false, true]")
 #' # the other form of array is not supported
-#' taml_load('a:\n  - b\n  - c')
+#' taml_load("a:\n  - b\n  - c")
 #' # and you must use the yaml package
-#' if (loadable('yaml')) yaml_load('a:\n  - b\n  - c')
+#' if (loadable("yaml")) yaml_load("a:\n  - b\n  - c")
 taml_load = function(x, envir = parent.frame()) {
   res = list()
   r = '^(\\s*)(.+?):($|\\s+.*)'
@@ -216,7 +216,10 @@ yaml_handlers = function(h, envir) {
 #'   text). If YAML metadata does not exist in the document, the components
 #'   `yaml` and `lines` will be missing.
 #' @examples
-#' xfun::yaml_body(c('---', 'title: Hello', 'output: litedown::html_format', '---', '', 'Content.'))
+#' xfun::yaml_body(c(
+#'   "---", "title: Hello", "output: litedown::html_format",
+#'   "---", "", "Content."
+#' ))
 yaml_body = function(x, ..., parse = TRUE) {
   n = length(x)
   res = if (length(i <- locate_yaml(x)) == 0) {

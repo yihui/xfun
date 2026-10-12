@@ -12,9 +12,9 @@ warning2 = function(...) warning(..., call. = FALSE)
 #' @export
 #' @examples
 #' z = structure(list(a = 1), foo = 2)
-#' base::attr(z, 'f')  # 2
-#' xfun::attr2(z, 'f')  # NULL
-#' xfun::attr2(z, 'foo')  # 2
+#' base::attr(z, "f")  # 2
+#' xfun::attr2(z, "f")  # NULL
+#' xfun::attr2(z, "foo")  # 2
 attr2 = function(...) base::attr(..., exact = TRUE)
 
 #' Set environment variables
@@ -30,10 +30,10 @@ attr2 = function(...) base::attr(..., exact = TRUE)
 #' @return Old values of the variables (if not set, `NA`).
 #' @export
 #' @examples
-#' vars = xfun::set_envvar(c(FOO = '1234'))
-#' Sys.getenv('FOO')
+#' vars = xfun::set_envvar(c(FOO = "1234"))
+#' Sys.getenv("FOO")
 #' xfun::set_envvar(vars)
-#' Sys.getenv('FOO')
+#' Sys.getenv("FOO")
 set_envvar = function(vars) {
   if (is.null(nms <- names(vars)) || any(nms == '')) stop(
     "The 'vars' argument must take a named character vector."
@@ -62,20 +62,20 @@ set_envvar = function(vars) {
 #' @return The option value.
 #' @export
 #' @examples
-#' xfun::env_option('xfun.test.option')  # NULL
+#' xfun::env_option("xfun.test.option")  # NULL
 #'
-#' Sys.setenv(R_XFUN_TEST_OPTION = '1234')
-#' xfun::env_option('xfun.test.option')  # 1234
+#' Sys.setenv(R_XFUN_TEST_OPTION = "1234")
+#' xfun::env_option("xfun.test.option")  # 1234
 #'
 #' options(xfun.test.option = TRUE)
-#' xfun::env_option('xfun.test.option')  # TRUE (from options())
+#' xfun::env_option("xfun.test.option")  # TRUE (from options())
 #' options(xfun.test.option = NULL)  # reset the option
-#' xfun::env_option('xfun.test.option')  # 1234 (from env var)
+#' xfun::env_option("xfun.test.option")  # 1234 (from env var)
 #'
-#' Sys.unsetenv('R_XFUN_TEST_OPTION')
-#' xfun::env_option('xfun.test.option')  # NULL again
+#' Sys.unsetenv("R_XFUN_TEST_OPTION")
+#' xfun::env_option("xfun.test.option")  # NULL again
 #'
-#' xfun::env_option('xfun.test.option', FALSE)  # use default
+#' xfun::env_option("xfun.test.option", FALSE)  # use default
 env_option = function(name, default = NULL) {
   if (name %in% names(.Options)) return(.Options[[name]])
   name = toupper(paste0('R_', gsub('[.]', '_', name)))
@@ -101,13 +101,13 @@ env_option = function(name, default = NULL) {
 #' @examples
 #' f = function(x) {
 #'   print(x)
-#'   xfun::exit_call(function() print('The parent function is exiting!'))
+#'   xfun::exit_call(function() print("The parent function is exiting!"))
 #' }
 #' g = function(y) {
 #'   f(y)
-#'   print('f() has been called!')
+#'   print("f() has been called!")
 #' }
-#' g('An argument of g()!')
+#' g("An argument of g()!")
 exit_call = function(fun, n = 2, ...) {
   do.call(
     on.exit, list(substitute(fun(), list(fun = fun)), add = TRUE, ...),
@@ -137,7 +137,7 @@ in_dir = function(dir, expr) {
 #' @export
 #' @return R [expression()]s.
 #' @examples library(xfun)
-#' parse_only('1+1'); parse_only(c('y~x', '1:5 # a comment'))
+#' parse_only("1+1"); parse_only(c("y~x", "1:5 # a comment"))
 #' parse_only(character(0))
 parse_only = function(code) {
   if (length(code) == 0) return(expression())
@@ -150,8 +150,8 @@ parse_only = function(code) {
 #' @param expr An R expression.
 #' @export
 #' @examples library(xfun)
-#' z = try_silent(stop('Wrong!'))
-#' inherits(z, 'try-error')
+#' z = try_silent(stop("Wrong!"))
+#' inherits(z, "try-error")
 try_silent = function(expr) try(expr, silent = TRUE)
 
 #' Try an expression and see if it throws an error
@@ -161,7 +161,7 @@ try_silent = function(expr) try(expr, silent = TRUE)
 #' @return `TRUE` (error) or `FALSE` (success).
 #' @export
 #' @examples
-#' xfun::try_error(stop('foo'))  # TRUE
+#' xfun::try_error(stop("foo"))  # TRUE
 #' xfun::try_error(1:10)  # FALSE
 try_error = function(expr) {
   err = FALSE
@@ -183,7 +183,7 @@ try_error = function(expr) {
 #' @export
 #' @examplesIf interactive()
 #' # read the GitHub releases info of the repo yihui/xfun
-#' xfun::retry(xfun::github_releases, 'yihui/xfun')
+#' xfun::retry(xfun::github_releases, "yihui/xfun")
 retry = function(fun, ..., .times = 3, .pause = 5) {
   for (i in seq_len(.times)) {
     if (!inherits(res <- tryCatch(fun(...), error = identity), 'error'))
@@ -290,7 +290,7 @@ pkg_file = function(...) system.file(..., package = 'xfun', mustWork = TRUE)
 #' @export
 #' @examples
 #' xfun::format_bytes(c(1, 1024, 2000, 1e6, 2e8))
-#' xfun::format_bytes(c(1, 1024, 2000, 1e6, 2e8), units = 'KB')
+#' xfun::format_bytes(c(1, 1024, 2000, 1e6, 2e8), units = "KB")
 format_bytes = function(x, units = 'auto', ...) {
   vapply(x, function(b) {
     format(structure(b, class = 'object_size'), units = units, ...)

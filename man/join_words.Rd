@@ -35,11 +35,10 @@ than 2, \code{sep} is used to separate all words, and the \code{and} string is
 prepended to the last word.
 }
 \examples{
-join_words("a")
-join_words(c("a", "b"))
+join_words("a"); join_words(c("a", "b"))
 join_words(c("a", "b", "c"))
 join_words(c("a", "b", "c"), sep = " / ", and = "")
 join_words(c("a", "b", "c"), and = "")
-join_words(c("a", "b", "c"), before = "\"", after = "\"")
-join_words(c("a", "b", "c"), before = "\"", after = "\"", oxford_comma = FALSE)
+join_words(c("a", "b", "c"), before = '"', after = '"')
+join_words(c("a", "b", "c"), before = '"', after = '"', oxford_comma = FALSE)
 }

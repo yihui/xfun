@@ -9,8 +9,8 @@
 #' @return An integer vector of indices of lines that are prose in Markdown.
 #' @export
 #' @examples library(xfun)
-#' prose_index(c('a', '```', 'b', '```', 'c'))
-#' prose_index(c('a', '````', '```r', '1+1', '```', '````', 'c'))
+#' prose_index(c("a", "```", "b", "```", "c"))
+#' prose_index(c("a", "````", "```r", "1+1", "```", "````", "c"))
 prose_index = function(x, warn = TRUE) {
   xi = seq_along(x); n = length(idx <- code_lines_regex(x))
   if (n == 0) return(xi)
@@ -85,9 +85,10 @@ code_lines_regex = function(x) {
 #'   expressions.
 #' @export
 #' @examples library(xfun)
-#' protect_math(c('hi $a+b$', 'hello $$\\alpha$$', 'no math here: $x is $10 dollars'))
-#' protect_math(c('hi $$', '\\begin{equation}', 'x + y = z', '\\end{equation}'))
-#' protect_math('$a+b$', '===')
+#' protect_math(c("hi $a+b$", "hello $$\\alpha$$",
+#'   "no math here: $x is $10 dollars"))
+#' protect_math(c("hi $$", "\\begin{equation}", "x + y = z", "\\end{equation}"))
+#' protect_math("$a+b$", "===")
 protect_math = function(x, token = '', use_block = FALSE) {
   i = prose_index(x)
   if (length(i)) x[i] = escape_math(x[i], token, use_block)
@@ -161,9 +162,9 @@ escape_math = function(x, token = '', use_block = FALSE) {
 #' @export
 #' @examples
 #' # code block with class 'r' and ID 'foo'
-#' xfun::fenced_block('1+1', c('.r', '#foo'))
+#' xfun::fenced_block("1+1", c(".r", "#foo"))
 #' # fenced Div
-#' xfun::fenced_block('This is a **Div**.', char = ':')
+#' xfun::fenced_block("This is a **Div**.", char = ":")
 fenced_block = function(x, attrs = NULL, fence = make_fence(x, char), char = '`') {
   a = block_attr(attrs)
   c('', paste0(fence, a), x, fence)
@@ -184,9 +185,9 @@ fenced_div = function(...) fenced_block(..., char = ':')
 #' @export
 #' @examples
 #' # three backticks by default
-#' xfun::make_fence('1+1')
+#' xfun::make_fence("1+1")
 #' # needs five backticks for the fences because content has four
-#' xfun::make_fence(c('````r', '1+1', '````'))
+#' xfun::make_fence(c("````r", "1+1", "````"))
 make_fence = function(x, char = '`', start = 3) {
   f = strrep(char, start)
   while (any(grepl(f, x, fixed = TRUE))) f = paste0(f, char)
@@ -227,7 +228,7 @@ block_attr = function(attrs) {
 #' @export
 #' @examples
 #' logo = xfun:::R_logo()
-#' link = xfun::embed_file(logo, text = 'Download R logo')
+#' link = xfun::embed_file(logo, text = "Download R logo")
 #' link
 #' if (interactive()) xfun::html_view(link)
 embed_file = function(path, name = basename(path), text = paste('Download', name), ...) {
@@ -290,8 +291,8 @@ zip = function(name, ...) {
 #' @examples
 #' xfun::md_table(head(iris))
 #' xfun::md_table(mtcars, limit = c(10, 6))
-#' xfun::md_table(data.frame(x = 'Hello <world>', y = 1), escape = TRUE)
-#' xfun::md_table(data.frame(x = 'Hello <world>', y = 1), escape = 'x')
+#' xfun::md_table(data.frame(x = "Hello <world>", y = 1), escape = TRUE)
+#' xfun::md_table(data.frame(x = "Hello <world>", y = 1), escape = "x")
 md_table = function(x, digits = NULL, na = NULL, newline = NULL, limit = NULL, escape = NULL) {
   if (length(d <- dim(x)) != 2)
     stop('xfun::md_table() only supports 2-dimensional objects.')
@@ -384,7 +385,7 @@ md_table = function(x, digits = NULL, na = NULL, newline = NULL, limit = NULL, e
 #' # custom tab content
 #' xfun::tabset(iris, function(x) {
 #'   if (is.factor(x)) {
-#'     res = c('A factor with levels: ', xfun::join_words(levels(x), before = '`'))
+#'     res = c("A factor with levels: ", xfun::join_words(levels(x), before = "`"))
 #'     xfun::tab_content(res)
 #'   } else print(summary(x))
 #' })

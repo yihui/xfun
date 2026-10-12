@@ -101,7 +101,7 @@ is_utf8 = function(x) {
 #' @return A character string of text lines concatenated by `'\n'`.
 #' @export
 #' @examples
-#' xfun::file_string(system.file('DESCRIPTION', package = 'xfun'))
+#' xfun::file_string(system.file("DESCRIPTION", package = "xfun"))
 file_string = function(file) {
   x = read_utf8(file)
   # paste converts 0-length character() into 1-length ""
@@ -119,7 +119,7 @@ file_string = function(file) {
 #' @export
 #' @examples
 #' f = tempfile()
-#' cat('abc', file = f)
+#' cat("abc", file = f)
 #' xfun::read_bin(f)
 #' unlink(f)
 read_bin = function(file, what = 'raw', n = file.info(file)$size, ...) {
@@ -138,14 +138,14 @@ read_bin = function(file, what = 'raw', n = file.info(file)$size, ...) {
 #' @export
 #' @examples
 #' # two files in this package
-#' fs = system.file('scripts', c('call-fun.R', 'child-pids.sh'), package = 'xfun')
+#' fs = system.file("scripts", c("call-fun.R", "child-pids.sh"), package = "xfun")
 #' xfun::read_all(fs)
 #'
 #' # add file paths before file content and an empty line after content
-#' xfun::read_all(fs, before = function(f) paste('#-----', f, '-----'), after = '')
+#' xfun::read_all(fs, before = function(f) paste("#-----", f, "-----"), after = "")
 #'
 #' # add constants
-#' xfun::read_all(fs, before = '/*', after = c('*/', ''))
+#' xfun::read_all(fs, before = "/*", after = c("*/", ""))
 read_all = function(files, before = function(f, x) NULL, after = function(f, x) NULL) {
   call_fun = function(fun, x, ...) {
     if (is.function(fun)) {
@@ -176,8 +176,8 @@ read_all = function(files, before = function(f, x) NULL, after = function(f, x) 
 #'   side effect), otherwise the processed content (as a character vector).
 #' @export
 #' @examples f = tempfile()
-#' xfun::write_utf8('Hello World', f)
-#' xfun::process_file(f, function(x) gsub('World', 'woRld', x))
+#' xfun::write_utf8("Hello World", f)
+#' xfun::process_file(f, function(x) gsub("World", "woRld", x))
 #' xfun::read_utf8(f)  # see if it has been updated
 #' file.remove(f)
 process_file = function(file, fun = identity, x = read_utf8(file)) {
@@ -216,8 +216,8 @@ sort_file = function(..., fun = sort) {
 #' @export
 #' @examples library(xfun)
 #' f = tempfile()
-#' writeLines(c('hello', 'world'), f)
-#' gsub_file(f, 'world', 'woRld', fixed = TRUE)
+#' writeLines(c("hello", "world"), f)
+#' gsub_file(f, "world", "woRld", fixed = TRUE)
 #' readLines(f)
 gsub_file = function(file, ..., rw_error = TRUE) {
   if (!(file.access(file, 2) == 0 && file.access(file, 4) == 0)) {
@@ -260,7 +260,8 @@ gsub_ext = function(ext, ..., dir = '.', recursive = TRUE) {
 #' @return A character vector.
 #' @export
 #' @examples # find elements that matches 'a[b]+c' and capitalize 'b' with perl regex
-#' xfun::grep_sub('a([b]+)c', 'a\\U\\1c', c('abc', 'abbbc', 'addc', '123'), perl = TRUE)
+#' xfun::grep_sub("a([b]+)c", "a\\U\\1c",
+#'   c("abc", "abbbc", "addc", "123"), perl = TRUE)
 grep_sub = function(pattern, replacement, x, ...) {
   x = grep(pattern, x, value = TRUE, ...)
   gsub(pattern, replacement, x, ...)
@@ -326,7 +327,7 @@ download_file = function(
 #' @param ... Arguments to be passed to `curlGetHeaders()`.
 #' @return `TRUE` or `FALSE`.
 #' @export
-#' @examples xfun::url_accessible('https://yihui.org')
+#' @examples xfun::url_accessible("https://yihui.org")
 url_accessible = function(x, use_curl = !capabilities('libcurl'), ...) {
   try_status = function(code) tryCatch(code < 400, error = function(e) FALSE)
   if (use_curl) {
@@ -350,7 +351,7 @@ url_accessible = function(x, use_curl = !capabilities('libcurl'), ...) {
 #'   than or equal to 400, it will throw an error.
 #' @export
 #' @examples
-#' u = 'https://cran.r-project.org/package=xfun'
+#' u = "https://cran.r-project.org/package=xfun"
 #' url_destination(u)  # redirected to canonical URL
 url_destination = function(x, force = FALSE) {
   unlist(lapply(x, .url_destination, force))
@@ -384,11 +385,11 @@ url_destination = function(x, force = FALSE) {
 #' @examples
 #' {
 #' # a message without a newline at the end
-#' xfun::msg_cat('Hello world!')
+#' xfun::msg_cat("Hello world!")
 #' # add a newline at the end
-#' xfun::msg_cat(' This message appears right after the previous one.\n')
+#' xfun::msg_cat(" This message appears right after the previous one.\n")
 #' }
-#' suppressMessages(xfun::msg_cat('Hello world!'))
+#' suppressMessages(xfun::msg_cat("Hello world!"))
 msg_cat = function(...) {
   x = paste(c(...), collapse = '')
   withRestarts({

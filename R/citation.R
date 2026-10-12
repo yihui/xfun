@@ -56,9 +56,9 @@
 #' @export
 #' @author Yihui Xie and Michael Friendly
 #' @examples
-#' pkg_bib(c('base', 'MASS', 'xfun'))
-#' pkg_bib('cluster', prefix = 'R-pkg-')  # a different prefix
-#' pkg_bib('xfun', date = 'package')
+#' pkg_bib(c("base", "MASS", "xfun"))
+#' pkg_bib("cluster", prefix = "R-pkg-")  # a different prefix
+#' pkg_bib("xfun", date = "package")
 pkg_bib = function(
   x = .packages(), file = '', tweak = TRUE, width = NULL,
   prefix = getOption('xfun.bib.prefix', 'R-'), lib.loc = NULL,

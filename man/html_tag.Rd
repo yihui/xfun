@@ -49,10 +49,11 @@ characters in HTML, and \code{html_view()} launches a browser or viewer to view
 the HTML content.
 }
 \examples{
-xfun::html_tag("a", "<R Project>", href = "https://www.r-project.org", target = "_blank")
+xfun::html_tag("a", "<R Project>",
+  href = "https://www.r-project.org", target = "_blank")
 xfun::html_tag("br")
 xfun::html_tag("a", xfun::html_tag("strong", "R Project"), href = "#")
 xfun::html_tag("a", list("<text>", xfun::html_tag("b", "R Project")), href = "#")
-xfun::html_escape("\" quotes \" & brackets < >")
-xfun::html_escape("\" & < > \r \n", attr = TRUE)
+xfun::html_escape('" quotes " & brackets < >')
+xfun::html_escape('" & < > \r \n', attr = TRUE)
 }

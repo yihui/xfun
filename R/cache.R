@@ -74,7 +74,7 @@
 #'   x = rnorm(1e5)
 #'   Sys.sleep(1)
 #'   x
-#' }, path = ':memory:', id = 'sim-norm')
+#' }, path = ":memory:", id = "sim-norm")
 #'
 #' # the second run takes almost no time
 #' y2 = xfun::cache_exec({
@@ -82,7 +82,7 @@
 #'   x = rnorm(1e5)
 #'   Sys.sleep(1)
 #'   x
-#' }, path = ':memory:', id = 'sim-norm')
+#' }, path = ":memory:", id = "sim-norm")
 #'
 #' # y1, y2, and x should be identical
 #' stopifnot(identical(y1, y2), identical(y1, x))
@@ -352,7 +352,7 @@ io_methods = list(
 #'   res = xfun::cache_rds({
 #'     Sys.sleep(1)
 #'     1:10
-#'   }, file = f, dir = '', ...)
+#'   }, file = f, dir = "", ...)
 #'   res
 #' }
 #' compute()  # takes one second
@@ -360,7 +360,7 @@ io_methods = list(
 #' compute()  # fast again
 #' compute(rerun = TRUE)  # one second to rerun
 #' compute()
-#' unlink(paste0(f, '_*.rds'))
+#' unlink(paste0(f, "_*.rds"))
 cache_rds = function(
   expr = {}, rerun = FALSE, file = 'cache.rds', dir = 'cache/',
   hash = NULL, clean = getOption('xfun.cache_rds.clean', TRUE), ...
@@ -467,11 +467,11 @@ clean_cache = function(path, ext) {
 #' @export
 #' @examples
 #' x = 2
-#' xfun::find_globals('y = x + 1')
+#' xfun::find_globals("y = x + 1")
 #' xfun::find_globals("y = get('x') + 1")  # x is not recognized
-#' xfun::find_globals('y = zzz + 1')  # zzz doesn't exist
+#' xfun::find_globals("y = zzz + 1")  # zzz doesn't exist
 #'
-#' xfun::find_locals('y = x + 1')
+#' xfun::find_locals("y = x + 1")
 #' xfun::find_locals("assign('y', x + 1)")  # it works
 #' xfun::find_locals("assign('y', x + 1, new.env())")  # still smart
 #' xfun::find_locals("eval(parse(text = 'y = x + 1'))")  # no way
@@ -538,21 +538,21 @@ global_vars = function(code, envir) {
 #' @export
 #' @examplesIf interactive()
 #' # the first time it may take a few seconds
-#' x1 = xfun::download_cache$get('https://www.r-project.org/')
+#' x1 = xfun::download_cache$get("https://www.r-project.org/")
 #' head(x1)
 #'
 #' # now you can get the cached content
-#' x2 = xfun::download_cache$get('https://www.r-project.org/')
+#' x2 = xfun::download_cache$get("https://www.r-project.org/")
 #' identical(x1, x2)  # TRUE
 #'
 #' # a binary file
-#' x3 = xfun::download_cache$get('https://yihui.org/images/logo.png', 'raw')
+#' x3 = xfun::download_cache$get("https://yihui.org/images/logo.png", "raw")
 #' length(x3)
 #'
 #' # show a summary
 #' xfun::download_cache$summary()
 #' # remove a specific cache file
-#' xfun::download_cache$remove('https://yihui.org/images/logo.png', 'raw')
+#' xfun::download_cache$remove("https://yihui.org/images/logo.png", "raw")
 #' # remove all cache files
 #' xfun::download_cache$purge()
 download_cache = local({

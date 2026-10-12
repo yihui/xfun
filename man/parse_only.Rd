@@ -17,7 +17,6 @@ An abbreviation of \code{parse(keep.source = FALSE)}.
 }
 \examples{
 library(xfun)
-parse_only("1+1")
-parse_only(c("y~x", "1:5 # a comment"))
+parse_only("1+1"); parse_only(c("y~x", "1:5 # a comment"))
 parse_only(character(0))
 }

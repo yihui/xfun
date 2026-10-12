@@ -17,8 +17,5 @@ working directory.
 }
 \examples{
 library(xfun)
-in_dir(tempdir(), {
-    print(getwd())
-    list.files()
-})
+in_dir(tempdir(), {print(getwd()); list.files()})
 }

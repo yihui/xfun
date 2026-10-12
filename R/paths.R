@@ -17,14 +17,14 @@
 #' @export
 #' @return A character vector of the same length as `x`.
 #' @examples library(xfun)
-#' p = c('abc.doc', 'def123.tex', 'path/to/foo.Rmd', 'backup.ppt~', 'pkg.tar.xz')
-#' file_ext(p); sans_ext(p); with_ext(p, '.txt')
-#' with_ext(p, c('.ppt', '.sty', '.Rnw', 'doc', 'zip')); with_ext(p, 'html')
+#' p = c("abc.doc", "def123.tex", "path/to/foo.Rmd", "backup.ppt~", "pkg.tar.xz")
+#' file_ext(p); sans_ext(p); with_ext(p, ".txt")
+#' with_ext(p, c(".ppt", ".sty", ".Rnw", "doc", "zip")); with_ext(p, "html")
 #'
 #' # allow for more characters in extensions
-#' p = c('a.c++', 'b.c--', 'c.e##')
+#' p = c("a.c++", "b.c--", "c.e##")
 #' file_ext(p)  # -/+/# not recognized by default
-#' file_ext(p, extra = '-+#')
+#' file_ext(p, extra = "-+#")
 file_ext = function(x, extra = '') {
   ext = character(length(x))
   i = grep(r <- reg_path(extra), x)
@@ -71,7 +71,7 @@ reg_path = function(...) paste0('^(.*?)', reg_ext(...))
 #' @param resolve_symlink Whether to resolve symbolic links.
 #' @export
 #' @examples library(xfun)
-#' normalize_path('~')
+#' normalize_path("~")
 normalize_path = function(x, winslash = '/', must_work = FALSE, resolve_symlink = TRUE) {
   if (!resolve_symlink) {
     # apply the trick on all files on Windows since Sys.readlink() doesn't work
@@ -99,7 +99,7 @@ is_symlink = function(x) {
 #' @param ... Arguments to be passed to [normalize_path()].
 #' @export
 #' @examples library(xfun)
-#' same_path('~/foo', file.path(Sys.getenv('HOME'), 'foo'))
+#' same_path("~/foo", file.path(Sys.getenv("HOME"), "foo"))
 same_path = function(p1, p2, ...) {
   normalize_path(p1, ...) == normalize_path(p2, ...)
 }
@@ -118,7 +118,7 @@ same_path = function(p1, p2, ...) {
 #' @return A vector of existing file paths.
 #' @export
 #' @examples
-#' xfun::existing_files(c('foo.txt', system.file('DESCRIPTION', package='xfun')))
+#' xfun::existing_files(c("foo.txt", system.file("DESCRIPTION", package = "xfun")))
 existing_files = function(x, first = FALSE, error = TRUE) {
   x = x[file_exists(x)]
   if (!first) return(x)
@@ -197,8 +197,8 @@ root_rules = matrix(c(
 #'   TRUE`.
 #' @export
 #' @examples
-#' xfun::relative_path('foo/bar.txt', 'foo/')
-#' xfun::relative_path('foo/bar/a.txt', 'foo/haha/')
+#' xfun::relative_path("foo/bar.txt", "foo/")
+#' xfun::relative_path("foo/bar/a.txt", "foo/haha/")
 #' xfun::relative_path(getwd())
 relative_path = function(x, dir = '.', use.. = TRUE, error = TRUE) {
   res = x
@@ -253,9 +253,9 @@ relative_path_one = function(x, dir, use.., error) {
 #'   are consistent.
 #' @export
 #' @examples
-#' xfun::is_sub_path('a/b/c.txt', 'a/b')  # TRUE
-#' xfun::is_sub_path('a/b/c.txt', 'd/b')  # FALSE
-#' xfun::is_sub_path('a/b/c.txt', 'a\\b')  # FALSE (even on Windows)
+#' xfun::is_sub_path("a/b/c.txt", "a/b")  # TRUE
+#' xfun::is_sub_path("a/b/c.txt", "d/b")  # FALSE
+#' xfun::is_sub_path("a/b/c.txt", "a\\b")  # FALSE (even on Windows)
 is_sub_path = function(x, dir, n = nchar(dir)) substr(x, 1, n) == dir
 
 # remove the first n2 characters and the possible / from the path
@@ -274,8 +274,8 @@ get_subpath = function(p, n1, n2) {
 #' @return A logical vector.
 #' @export
 #' @examples
-#' xfun::is_abs_path(c('C:/foo', 'foo.txt', '/Users/john/', tempdir()))
-#' xfun::is_rel_path(c('C:/foo', 'foo.txt', '/Users/john/', tempdir()))
+#' xfun::is_abs_path(c("C:/foo", "foo.txt", "/Users/john/", tempdir()))
+#' xfun::is_rel_path(c("C:/foo", "foo.txt", "/Users/john/", tempdir()))
 is_abs_path = function(x) {
   grepl(if (is_unix()) '^[/~]' else '^([a-zA-Z]:|[/\\\\~])', x)
 }
@@ -292,8 +292,8 @@ is_rel_path = function(x) !is_abs_path(x)
 #' @return A logical vector.
 #' @export
 #' @examples
-#' xfun::is_web_path('https://www.r-project.org')  # TRUE
-#' xfun::is_web_path('www.r-project.org')  # FALSE
+#' xfun::is_web_path("https://www.r-project.org")  # TRUE
+#' xfun::is_web_path("www.r-project.org")  # FALSE
 is_web_path = function(x) {
   grepl('^(f|ht)tps?://', x)
 }
@@ -318,7 +318,7 @@ is_web_path = function(x) {
 #' @export
 #' @examples
 #' \dontrun{
-#' xfun::from_root('data', 'mtcars.csv')
+#' xfun::from_root("data", "mtcars.csv")
 #' }
 from_root = function(..., root = proj_root(), error = TRUE) {
   if (is.null(root)) stop('Cannot determine the root directory of the current project.')
@@ -348,7 +348,7 @@ from_root = function(..., root = proj_root(), error = TRUE) {
 #' @export
 #' @examples
 #' \dontrun{
-#' xfun::magic_path('mtcars.csv')  # find any file that has the base name mtcars.csv
+#' xfun::magic_path("mtcars.csv")  # find any file that has the base name mtcars.csv
 #' }
 magic_path = function(
   ..., root = proj_root(), relative = TRUE, error = TRUE,
@@ -454,7 +454,7 @@ dir_create = function(x, recursive = TRUE, ...) {
 #'   vector itself is the new filenames.
 #' @export
 #' @examples xfun::rename_seq()
-#' xfun::rename_seq('[.](jpeg|png)$', format = '%04d')
+#' xfun::rename_seq("[.](jpeg|png)$", format = "%04d")
 rename_seq = function(
   pattern = '^[0-9]+-.+[.]Rmd$', format = 'auto', replace = TRUE, start = 1,
   dry_run = TRUE
@@ -522,12 +522,12 @@ R_logo = function(ext = NULL, all = FALSE) {
 #' @return A character vector of filenames at the end of URLs.
 #' @export
 #' @examples
-#' xfun::url_filename('https://yihui.org/images/logo.png')
-#' xfun::url_filename('https://yihui.org/index.html')
-#' xfun::url_filename('https://yihui.org/index.html?foo=bar')
-#' xfun::url_filename('https://yihui.org/index.html#about')
-#' xfun::url_filename('https://yihui.org')
-#' xfun::url_filename('https://yihui.org/')
+#' xfun::url_filename("https://yihui.org/images/logo.png")
+#' xfun::url_filename("https://yihui.org/index.html")
+#' xfun::url_filename("https://yihui.org/index.html?foo=bar")
+#' xfun::url_filename("https://yihui.org/index.html#about")
+#' xfun::url_filename("https://yihui.org")
+#' xfun::url_filename("https://yihui.org/")
 url_filename = function(x, default = 'index.html') {
   # protocol shouldn't be treated as dir name, and query/hash should be removed
   x = gsub('^https?://|[?#].*$', '', x)

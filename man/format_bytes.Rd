@@ -18,6 +18,6 @@ A character vector.
 Call the S3 method \code{format.object_size()} to format numbers of bytes.
 }
 \examples{
-xfun::format_bytes(c(1, 1024, 2000, 1e+06, 2e+08))
-xfun::format_bytes(c(1, 1024, 2000, 1e+06, 2e+08), units = "KB")
+xfun::format_bytes(c(1, 1024, 2000, 1e6, 2e8))
+xfun::format_bytes(c(1, 1024, 2000, 1e6, 2e8), units = "KB")
 }

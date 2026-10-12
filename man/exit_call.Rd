@@ -24,12 +24,12 @@ function when a parent function exits (thinking of it as inserting an
 }
 \examples{
 f = function(x) {
-    print(x)
-    xfun::exit_call(function() print("The parent function is exiting!"))
+  print(x)
+  xfun::exit_call(function() print("The parent function is exiting!"))
 }
 g = function(y) {
-    f(y)
-    print("f() has been called!")
+  f(y)
+  print("f() has been called!")
 }
 g("An argument of g()!")
 }

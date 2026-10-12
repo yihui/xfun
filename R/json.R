@@ -45,17 +45,17 @@
 #' @seealso The \pkg{jsonlite} package provides a full JSON serializer.
 #' @examples library(xfun)
 #' tojson(NULL); tojson(1:10); tojson(TRUE); tojson(FALSE)
-#' tojson(list(a = 1, b = list(c = 1:3, d = 'abc')))
-#' tojson(list(c('a', 'b'), 1:5, TRUE, Sys.Date() + 1:3))
+#' tojson(list(a = 1, b = list(c = 1:3, d = "abc")))
+#' tojson(list(c("a", "b"), 1:5, TRUE, Sys.Date() + 1:3))
 #' tojson(head(iris))  # each column is in an element
 #' tojson(unname(head(iris)))  # each row is in an element
 #' tojson(matrix(1:12, 3))
 #'
 #' # dictionary-encode repeated values
-#' tojson(rep(c('b', 'a', NA), 3), dict = TRUE)
+#' tojson(rep(c("b", "a", NA), 3), dict = TRUE)
 #'
 #' # literal JS code
-#' tojson(list(a = 1:5, b = js('function() {return true;}')))
+#' tojson(list(a = 1:5, b = js("function() {return true;}")))
 tojson = function(x, dict = getOption('xfun.tojson.dict', FALSE),
                   pretty = getOption('xfun.tojson.pretty', TRUE)) {
   if (inherits(x, 'json')) return(x)

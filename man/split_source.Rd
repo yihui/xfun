@@ -26,7 +26,9 @@ Parse the lines of code one by one to find complete expressions in the code,
 and put them in a list.
 }
 \examples{
-code = c("# comment 1", "# comment 2", "if (TRUE) {", "1 + 1", "}", "print(1:5)")
+code = c(
+  "# comment 1", "# comment 2", "if (TRUE) {", "1 + 1", "}", "print(1:5)"
+)
 xfun::split_source(code)
 xfun::split_source(code, merge_comments = TRUE)
 }

@@ -75,10 +75,7 @@ standard JSON but practically more useful).
 }
 \examples{
 library(xfun)
-tojson(NULL)
-tojson(1:10)
-tojson(TRUE)
-tojson(FALSE)
+tojson(NULL); tojson(1:10); tojson(TRUE); tojson(FALSE)
 tojson(list(a = 1, b = list(c = 1:3, d = "abc")))
 tojson(list(c("a", "b"), 1:5, TRUE, Sys.Date() + 1:3))
 tojson(head(iris))  # each column is in an element

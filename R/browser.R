@@ -21,7 +21,7 @@
 #' @return The `output` path if the web page is successfully printed.
 #' @export
 #' @examplesIf interactive()
-#' xfun::browser_print('https://www.r-project.org')
+#' xfun::browser_print("https://www.r-project.org")
 browser_print = function(
   input, output = '.pdf', args = 'default', window_size = c(1280, 1024),
   browser = NULL
@@ -61,7 +61,7 @@ browser_print = function(
 #'   otherwise the `output` path (invisibly).
 #' @export
 #' @examplesIf interactive()
-#' f = tempfile(fileext = '.html')
+#' f = tempfile(fileext = ".html")
 #' writeLines(c(
 #'   '<html><body><div id="out"></div>',
 #'   '<script>document.getElementById("out").textContent = "hello";</script>',

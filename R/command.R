@@ -10,13 +10,13 @@
 #' @return The value returned by `system2()`.
 #' @export
 #' @examplesIf interactive()
-#' a = c('-e', 'print(intToUtf8(c(20320, 22909)))')
-#' x2 = system2('Rscript', shQuote(a), stdout = TRUE)
+#' a = c("-e", "print(intToUtf8(c(20320, 22909)))")
+#' x2 = system2("Rscript", shQuote(a), stdout = TRUE)
 #' Encoding(x2)  # unknown
 #'
-#' x3 = xfun::system3('Rscript', a, stdout = TRUE)
+#' x3 = xfun::system3("Rscript", a, stdout = TRUE)
 #' # encoding of x3 should be UTF-8 if the current locale is UTF-8
-#' !l10n_info()[['UTF-8']] || Encoding(x3) == 'UTF-8'  # should be TRUE
+#' !l10n_info()[["UTF-8"]] || Encoding(x3) == "UTF-8"  # should be TRUE
 system3 = function(command, args = character(), ...) {
   res = system2(command, shQuote(args), ...)
   if (is.character(res)) {
@@ -49,8 +49,8 @@ optipng = function(dir = '.', files = all_files('[.]png$', dir), ...) {
 #' @export
 #' @return A value returned by `system2()`.
 #' @examples library(xfun)
-#' Rscript(c('-e', '1+1'))
-#' Rcmd(c('build', '--help'))
+#' Rscript(c("-e", "1+1"))
+#' Rcmd(c("build", "--help"))
 Rscript = function(args, ...) {
   # unset R_TESTS for the new R session: https://stackoverflow.com/a/27994299
   if (is_R_CMD_check()) {
@@ -87,7 +87,7 @@ Rcmd = function(args, ...) {
 #'   possible error message.
 #' @examples factorial(10)
 #' # should return the same value
-#' xfun::Rscript_call('factorial', list(10))
+#' xfun::Rscript_call("factorial", list(10))
 #'
 #' # the first argument can be either a character string or a function
 #' xfun::Rscript_call(factorial, list(10))

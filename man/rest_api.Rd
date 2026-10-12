@@ -74,7 +74,10 @@ xfun::rest_api_raw("https://mockhttp.org", "/get")
 xfun::rest_api("https://mockhttp.org", "/headers", "OPEN SESAME!")
 
 # with query parameters
-xfun::rest_api("https://mockhttp.org", "/response-headers", params = list(foo = "bar"))
+xfun::rest_api(
+  "https://mockhttp.org", "/response-headers",
+  params = list(foo = "bar")
+)
 
 # get the rate limit info from GitHub
 xfun::github_api("/rate_limit")
