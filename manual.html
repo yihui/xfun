@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <meta name="generator" content="litedown 0.11.7">
 <title>Help pages</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/css/default.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/css/article.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/css/copy-button.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/css/heading-anchor.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/css/pages.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/css/site.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/css/default.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/css/article.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/css/copy-button.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/css/heading-anchor.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/css/pages.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/css/site.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.0/dist/katex.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/css/prism-xcode.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/css/prism-xcode.min.css">
 </head>
 <body>
 <nav><p><a href="index.html">Home</a>
@@ -730,7 +730,7 @@ argument.</p>
 otherwise the <code>output</code> path (invisibly).
 </p>
 <h3 id="sec:examples_8" class="unnumbered unlisted">Examples</h3>
-<pre><code class="language-r">f = tempfile(fileext = '.html')
+<pre><code class="language-r">f = tempfile(fileext = &quot;.html&quot;)
 writeLines(c(
   '&lt;html&gt;&lt;body&gt;&lt;div id=&quot;out&quot;&gt;&lt;/div&gt;',
   '&lt;script&gt;document.getElementById(&quot;out&quot;).textContent = &quot;hello&quot;;&lt;/script&gt;',
@@ -916,17 +916,17 @@ how it works and an application in <span class="pkg">litedown</span>.
 <h3 id="sec:examples_11" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r"># the first run takes about 1 second
 y1 = xfun::cache_exec({
-    x = rnorm(1e+05)
-    Sys.sleep(1)
-    x
+  x = rnorm(1e5)
+  Sys.sleep(1)
+  x
 }, path = &quot;:memory:&quot;, id = &quot;sim-norm&quot;)
 
 # the second run takes almost no time
 y2 = xfun::cache_exec({
-    # comments won't affect caching
-    x = rnorm(1e+05)
-    Sys.sleep(1)
-    x
+  # comments won't affect caching
+  x = rnorm(1e5)
+  Sys.sleep(1)
+  x
 }, path = &quot;:memory:&quot;, id = &quot;sim-norm&quot;)
 
 # y1, y2, and x should be identical
@@ -1185,8 +1185,10 @@ of the chunk body.
 </p>
 <h3 id="sec:examples_14" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r"># parse yaml-like items
-yaml_like = c(&quot;#| label: mine&quot;, &quot;#| echo: true&quot;, &quot;#| fig.width: 8&quot;, &quot;#| foo: bar&quot;,
-    &quot;1 + 1&quot;)
+yaml_like = c(
+  &quot;#| label: mine&quot;, &quot;#| echo: true&quot;, &quot;#| fig.width: 8&quot;,
+  &quot;#| foo: bar&quot;, &quot;1 + 1&quot;
+)
 writeLines(yaml_like)
 </code></pre>
 <pre><code>#&gt; #| label: mine
@@ -1287,23 +1289,17 @@ perform the task or see the message again in the current R session. Set
 <h3 id="sec:examples_15" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">do_once(message(&quot;Today's date is &quot;, Sys.Date()), &quot;xfun.date.reminder&quot;)
 </code></pre>
-<pre><code class="language-plain message">#&gt; Today's date is 2026-10-09
+<pre><code class="language-plain message">#&gt; Today's date is 2026-10-12
 #&gt; You will not see this message again in this R session. If you never want to see this message, you may set options(xfun.date.reminder = FALSE) in your .Rprofile.
 </code></pre>
 <pre><code class="language-r"># if you run it again, it will not emit the message again
 do_once(message(&quot;Today's date is &quot;, Sys.Date()), &quot;xfun.date.reminder&quot;)
 
-do_once({
-    Sys.sleep(2)
-    1 + 1
-}, &quot;xfun.task.1plus1&quot;)
+do_once({Sys.sleep(2); 1 + 1}, &quot;xfun.task.1plus1&quot;)
 </code></pre>
 <pre><code class="language-plain message">#&gt; You will not see this message again in this R session. If you never want to see this message, you may set options(xfun.task.1plus1 = FALSE) in your .Rprofile.
 </code></pre>
-<pre><code class="language-r">do_once({
-    Sys.sleep(2)
-    1 + 1
-}, &quot;xfun.task.1plus1&quot;)
+<pre><code class="language-r">do_once({Sys.sleep(2); 1 + 1}, &quot;xfun.task.1plus1&quot;)
 </code></pre>
 <h2 id="sec:man-download_cache"><span class="section-number main-number">22</span> Download a file from a URL and cache it on disk</h2>
 <h3 id="sec:description_22" class="unnumbered unlisted">Description</h3>
@@ -1614,12 +1610,12 @@ grandparent, etc.</p>
 </p>
 <h3 id="sec:examples_20" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">f = function(x) {
-    print(x)
-    xfun::exit_call(function() print(&quot;The parent function is exiting!&quot;))
+  print(x)
+  xfun::exit_call(function() print(&quot;The parent function is exiting!&quot;))
 }
 g = function(y) {
-    f(y)
-    print(&quot;f() has been called!&quot;)
+  f(y)
+  print(&quot;f() has been called!&quot;)
 }
 g(&quot;An argument of g()!&quot;)
 </code></pre>
@@ -1744,25 +1740,12 @@ and <code>#</code> to be present at the end of a filename.
 <h3 id="sec:examples_22" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">library(xfun)
 p = c(&quot;abc.doc&quot;, &quot;def123.tex&quot;, &quot;path/to/foo.Rmd&quot;, &quot;backup.ppt~&quot;, &quot;pkg.tar.xz&quot;)
-file_ext(p)
-</code></pre>
-<pre><code>#&gt; [1] &quot;doc&quot;    &quot;tex&quot;    &quot;Rmd&quot;    &quot;ppt~&quot;   &quot;tar.xz&quot;
-</code></pre>
-<pre><code class="language-r">sans_ext(p)
-</code></pre>
-<pre><code>#&gt; [1] &quot;abc&quot;         &quot;def123&quot;      &quot;path/to/foo&quot; &quot;backup&quot;      &quot;pkg&quot;        
-</code></pre>
-<pre><code class="language-r">with_ext(p, &quot;.txt&quot;)
+file_ext(p); sans_ext(p); with_ext(p, &quot;.txt&quot;)
 </code></pre>
 <pre><code>#&gt; [1] &quot;abc.txt&quot;         &quot;def123.txt&quot;      &quot;path/to/foo.txt&quot; &quot;backup.txt&quot;     
 #&gt; [5] &quot;pkg.txt&quot;        
 </code></pre>
-<pre><code class="language-r">with_ext(p, c(&quot;.ppt&quot;, &quot;.sty&quot;, &quot;.Rnw&quot;, &quot;doc&quot;, &quot;zip&quot;))
-</code></pre>
-<pre><code>#&gt; [1] &quot;abc.ppt&quot;         &quot;def123.sty&quot;      &quot;path/to/foo.Rnw&quot; &quot;backup.doc&quot;     
-#&gt; [5] &quot;pkg.zip&quot;        
-</code></pre>
-<pre><code class="language-r">with_ext(p, &quot;html&quot;)
+<pre><code class="language-r">with_ext(p, c(&quot;.ppt&quot;, &quot;.sty&quot;, &quot;.Rnw&quot;, &quot;doc&quot;, &quot;zip&quot;)); with_ext(p, &quot;html&quot;)
 </code></pre>
 <pre><code>#&gt; [1] &quot;abc.html&quot;         &quot;def123.html&quot;      &quot;path/to/foo.html&quot; &quot;backup.html&quot;     
 #&gt; [5] &quot;pkg.html&quot;        
@@ -1842,7 +1825,7 @@ VignetteBuilder: litedown
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.1.1
 NeedsCompilation: yes
-Packaged: 2026-10-09 21:34:35 UTC; runner
+Packaged: 2026-10-12 21:31:55 UTC; runner
 Author: Yihui Xie [aut, cre, cph] (ORCID:
     &lt;https://orcid.org/0000-0003-0645-5666&gt;, URL: https://yihui.org),
   Wush Wu [ctb],
@@ -1851,7 +1834,7 @@ Author: Yihui Xie [aut, cre, cph] (ORCID:
   Salim Brüggemann [ctb] (ORCID: &lt;https://orcid.org/0000-0002-5329-5987&gt;),
   Christophe Dervieux [ctb]
 Maintainer: Yihui Xie &lt;xie@yihui.name&gt;
-Built: R 4.6.1; aarch64-apple-darwin23; 2026-10-09 21:34:36 UTC; unix
+Built: R 4.6.1; aarch64-apple-darwin23; 2026-10-12 21:31:56 UTC; unix
 </code></pre>
 <h2 id="sec:man-find_globals"><span class="section-number main-number">32</span> Find global/local variables in R code</h2>
 <h3 id="sec:description_32" class="unnumbered unlisted">Description</h3>
@@ -1935,11 +1918,11 @@ xfun::find_globals(&quot;y = x + 1&quot;)
 <p>A character vector.
 </p>
 <h3 id="sec:examples_25" class="unnumbered unlisted">Examples</h3>
-<pre><code class="language-r">xfun::format_bytes(c(1, 1024, 2000, 1e+06, 2e+08))
+<pre><code class="language-r">xfun::format_bytes(c(1, 1024, 2000, 1e6, 2e8))
 </code></pre>
 <pre><code>#&gt; [1] &quot;1 bytes&quot;  &quot;1 Kb&quot;     &quot;2 Kb&quot;     &quot;976.6 Kb&quot; &quot;190.7 Mb&quot;
 </code></pre>
-<pre><code class="language-r">xfun::format_bytes(c(1, 1024, 2000, 1e+06, 2e+08), units = &quot;KB&quot;)
+<pre><code class="language-r">xfun::format_bytes(c(1, 1024, 2000, 1e6, 2e8), units = &quot;KB&quot;)
 </code></pre>
 <pre><code>#&gt; [1] &quot;0 Kb&quot;        &quot;1 Kb&quot;        &quot;2 Kb&quot;        &quot;976.6 Kb&quot;    &quot;195312.5 Kb&quot;
 </code></pre>
@@ -2046,7 +2029,8 @@ returned.</p>
 </p>
 <h3 id="sec:examples_28" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r"># find elements that matches 'a[b]+c' and capitalize 'b' with perl regex
-xfun::grep_sub(&quot;a([b]+)c&quot;, &quot;a\\U\\1c&quot;, c(&quot;abc&quot;, &quot;abbbc&quot;, &quot;addc&quot;, &quot;123&quot;), perl = TRUE)
+xfun::grep_sub(&quot;a([b]+)c&quot;, &quot;a\\U\\1c&quot;,
+  c(&quot;abc&quot;, &quot;abbbc&quot;, &quot;addc&quot;, &quot;123&quot;), perl = TRUE)
 </code></pre>
 <pre><code>#&gt; [1] &quot;aBc&quot;   &quot;aBBBc&quot;
 </code></pre>
@@ -2176,7 +2160,8 @@ for tag attributes).</p>
 <p>A character string.
 </p>
 <h3 id="sec:examples_30" class="unnumbered unlisted">Examples</h3>
-<pre><code class="language-r">xfun::html_tag(&quot;a&quot;, &quot;&lt;R Project&gt;&quot;, href = &quot;https://www.r-project.org&quot;, target = &quot;_blank&quot;)
+<pre><code class="language-r">xfun::html_tag(&quot;a&quot;, &quot;&lt;R Project&gt;&quot;,
+  href = &quot;https://www.r-project.org&quot;, target = &quot;_blank&quot;)
 </code></pre>
 <pre><code class="language-html plain">&lt;a href=&quot;https://www.r-project.org&quot; target=&quot;_blank&quot;&gt;&amp;lt;R Project&amp;gt;&lt;/a&gt;
 </code></pre>
@@ -2193,11 +2178,11 @@ for tag attributes).</p>
 <pre><code class="language-html plain">&lt;a href=&quot;#&quot;&gt;&amp;lt;text&amp;gt;
 &lt;b&gt;R Project&lt;/b&gt;&lt;/a&gt;
 </code></pre>
-<pre><code class="language-r">xfun::html_escape(&quot;\&quot; quotes \&quot; &amp; brackets &lt; &gt;&quot;)
+<pre><code class="language-r">xfun::html_escape('&quot; quotes &quot; &amp; brackets &lt; &gt;')
 </code></pre>
 <pre><code>#&gt; [1] &quot;\&quot; quotes \&quot; &amp;amp; brackets &amp;lt; &amp;gt;&quot;
 </code></pre>
-<pre><code class="language-r">xfun::html_escape(&quot;\&quot; &amp; &lt; &gt; \r \n&quot;, attr = TRUE)
+<pre><code class="language-r">xfun::html_escape('&quot; &amp; &lt; &gt; \r \n', attr = TRUE)
 </code></pre>
 <pre><code>#&gt; [1] &quot;&amp;quot; &amp;amp; &amp;lt; &amp;gt; &amp;#13; &amp;#10;&quot;
 </code></pre>
@@ -2221,13 +2206,10 @@ working directory.
 </table>
 <h3 id="sec:examples_31" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">library(xfun)
-in_dir(tempdir(), {
-    print(getwd())
-    list.files()
-})
+in_dir(tempdir(), {print(getwd()); list.files()})
 </code></pre>
-<pre><code>#&gt; [1] &quot;/private/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/RtmpmV7rsk&quot;
-#&gt; [1] &quot;filef931214af02&quot;     &quot;filef9354ab34a.html&quot;
+<pre><code>#&gt; [1] &quot;/private/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/RtmpX2Uh8W&quot;
+#&gt; [1] &quot;filee1020e043eb&quot;      &quot;filee102a599c35.html&quot;
 </code></pre>
 <h2 id="sec:man-install_dir"><span class="section-number main-number">40</span> Install a source package from a directory</h2>
 <h3 id="sec:description_40" class="unnumbered unlisted">Description</h3>
@@ -2482,11 +2464,7 @@ elements in the list.</p>
 <p>A character string marked by <code><a href="#sec:man-raw-string">raw_string()</a></code>.
 </p>
 <h3 id="sec:examples_37" class="unnumbered unlisted">Examples</h3>
-<pre><code class="language-r">join_words(&quot;a&quot;)
-</code></pre>
-<pre><code>a
-</code></pre>
-<pre><code class="language-r">join_words(c(&quot;a&quot;, &quot;b&quot;))
+<pre><code class="language-r">join_words(&quot;a&quot;); join_words(c(&quot;a&quot;, &quot;b&quot;))
 </code></pre>
 <pre><code>a and b
 </code></pre>
@@ -2502,11 +2480,11 @@ elements in the list.</p>
 </code></pre>
 <pre><code>a, b, c
 </code></pre>
-<pre><code class="language-r">join_words(c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;), before = &quot;\&quot;&quot;, after = &quot;\&quot;&quot;)
+<pre><code class="language-r">join_words(c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;), before = '&quot;', after = '&quot;')
 </code></pre>
 <pre><code>&quot;a&quot;, &quot;b&quot;, and &quot;c&quot;
 </code></pre>
-<pre><code class="language-r">join_words(c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;), before = &quot;\&quot;&quot;, after = &quot;\&quot;&quot;, oxford_comma = FALSE)
+<pre><code class="language-r">join_words(c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;), before = '&quot;', after = '&quot;', oxford_comma = FALSE)
 </code></pre>
 <pre><code>&quot;a&quot;, &quot;b&quot; and &quot;c&quot;
 </code></pre>
@@ -2666,11 +2644,7 @@ faster than writing to a temporary file).
 the arguments are named, the results will also be named.
 </p>
 <h3 id="sec:examples_40" class="unnumbered unlisted">Examples</h3>
-<pre><code class="language-r">x1 = 1
-x2 = 1:10
-x3 = seq(1, 10)
-x4 = iris
-x5 = paste
+<pre><code class="language-r">x1 = 1; x2 = 1:10; x3 = seq(1, 10); x4 = iris; x5 = paste
 (m = xfun::md5(x1, x2, x3, x4, x5))
 </code></pre>
 <pre><code>#&gt; [1] &quot;f17801eb638793fa56d7fbaad2ae9c6b&quot; &quot;80e76ade6af799c5b55e6447e7bf0d7b&quot;
@@ -2881,10 +2855,10 @@ a newline, you have to explicitly add it to the message (see
 </p>
 <h3 id="sec:examples_43" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">{
-    # a message without a newline at the end
-    xfun::msg_cat(&quot;Hello world!&quot;)
-    # add a newline at the end
-    xfun::msg_cat(&quot; This message appears right after the previous one.\n&quot;)
+# a message without a newline at the end
+xfun::msg_cat(&quot;Hello world!&quot;)
+# add a newline at the end
+xfun::msg_cat(&quot; This message appears right after the previous one.\n&quot;)
 }
 </code></pre>
 <pre><code class="language-plain message">#&gt; Hello world! This message appears right after the previous one.
@@ -3154,11 +3128,11 @@ n2w(0, cap = TRUE)
 #&gt; [119] &quot;one hundred and eighteen&quot;   &quot;one hundred and nineteen&quot;  
 #&gt; [121] &quot;one hundred and twenty&quot;     &quot;one hundred and twenty-one&quot;
 </code></pre>
-<pre><code class="language-r">n2w(1e+06)
+<pre><code class="language-r">n2w(1e6)
 </code></pre>
 <pre><code>#&gt; [1] &quot;one million&quot;
 </code></pre>
-<pre><code class="language-r">n2w(1e+11 + 12345678)
+<pre><code class="language-r">n2w(1e11 + 12345678)
 </code></pre>
 <pre><code>#&gt; [1] &quot;one hundred billion, twelve million, three hundred forty-five thousand, six hundred seventy-eight&quot;
 </code></pre>
@@ -3166,7 +3140,7 @@ n2w(0, cap = TRUE)
 </code></pre>
 <pre><code>#&gt; [1] &quot;minus nine hundred eighty-seven million, six hundred fifty-four thousand, three hundred twenty-one&quot;
 </code></pre>
-<pre><code class="language-r">n2w(1e+15 - 1)
+<pre><code class="language-r">n2w(1e15 - 1)
 </code></pre>
 <pre><code>#&gt; [1] &quot;nine hundred ninety-nine trillion, nine hundred ninety-nine billion, nine hundred ninety-nine million, nine hundred ninety-nine thousand, nine hundred ninety-nine&quot;
 </code></pre>
@@ -3260,11 +3234,7 @@ is_arm64()  # TRUE on Apple silicone machines
 </p>
 <h3 id="sec:examples_49" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">library(xfun)
-parse_only(&quot;1+1&quot;)
-</code></pre>
-<pre><code>#&gt; expression(1 + 1)
-</code></pre>
-<pre><code class="language-r">parse_only(c(&quot;y~x&quot;, &quot;1:5 # a comment&quot;))
+parse_only(&quot;1+1&quot;); parse_only(c(&quot;y~x&quot;, &quot;1:5 # a comment&quot;))
 </code></pre>
 <pre><code>#&gt; expression(y ~ x, 1:5)
 </code></pre>
@@ -3368,7 +3338,7 @@ must be quoted. Allowing NSE adds too much complexity with too little gain
 <h3 id="sec:examples_50" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">library(xfun)
 pkg_attach(&quot;stats&quot;, &quot;graphics&quot;)
-# pkg_attach2('servr') # automatically install servr if it is not installed
+# pkg_attach2('servr')  # automatically install servr if it is not installed
 
 (pkg_load(&quot;stats&quot;, &quot;graphics&quot;))
 </code></pre>
@@ -3533,7 +3503,7 @@ packages.
 #&gt;   title = {xfun: Supporting Functions for Packages Maintained by Yihui Xie},
 #&gt;   author = {Yihui Xie},
 #&gt;   year = {2026},
-#&gt;   note = {R package version 0.61.6 (retrieved 2026-10-09)},
+#&gt;   note = {R package version 0.61.6 (retrieved 2026-10-12)},
 #&gt;   url = {https://github.com/yihui/xfun},
 #&gt; }
 </code></pre>
@@ -3766,7 +3736,8 @@ expressions.
 </p>
 <h3 id="sec:examples_54" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">library(xfun)
-protect_math(c(&quot;hi $a+b$&quot;, &quot;hello $$\\alpha$$&quot;, &quot;no math here: $x is $10 dollars&quot;))
+protect_math(c(&quot;hi $a+b$&quot;, &quot;hello $$\\alpha$$&quot;,
+  &quot;no math here: $x is $10 dollars&quot;))
 </code></pre>
 <pre><code>#&gt; [1] &quot;hi `\\(a+b\\)`&quot;                  &quot;hello `$$\\alpha$$`&quot;            
 #&gt; [3] &quot;no math here: $x is $10 dollars&quot;
@@ -3820,8 +3791,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 <h3 id="sec:examples_55" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">rand_unit(10)
 </code></pre>
-<pre><code>#&gt;  [1] 0.8884282 0.6270433 0.1325460 0.6676262 0.5408228 0.2920849 0.4632419
-#&gt;  [8] 0.5072337 0.1206825 0.7229374
+<pre><code>#&gt;  [1] 0.25377289 0.76569440 0.45040133 0.04297851 0.07178111 0.17085553
+#&gt;  [7] 0.22582955 0.61140498 0.56380272 0.50037049
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = 0)
 </code></pre>
@@ -3833,8 +3804,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = Sys.getpid())
 </code></pre>
-<pre><code>#&gt;  [1] 0.05179612 0.06807569 0.41902546 0.36380089 0.99833980 0.36592070
-#&gt;  [7] 0.27703250 0.58218907 0.40326937 0.22097776
+<pre><code>#&gt;  [1] 0.04676851 0.54228053 0.62665956 0.72352225 0.37096145 0.53582004
+#&gt;  [7] 0.15081941 0.27059961 0.64629288 0.20404312
 </code></pre>
 <h2 id="sec:man-random_port"><span class="section-number main-number">72</span> Find a random available TCP port</h2>
 <h3 id="sec:description_72" class="unnumbered unlisted">Description</h3>
@@ -3904,7 +3875,7 @@ D
 E
 F
 </code></pre>
-<pre><code class="language-r">raw_string(c(&quot;a \&quot;b\&quot;&quot;, &quot;hello\tworld!&quot;))
+<pre><code class="language-r">raw_string(c('a &quot;b&quot;', &quot;hello\tworld!&quot;))
 </code></pre>
 <pre><code>a &quot;b&quot;
 hello	world!
@@ -4282,13 +4253,14 @@ or HTML code for displaying the results.
 console or displays the HTML page.
 </p>
 <h3 id="sec:examples_59" class="unnumbered unlisted">Examples</h3>
-<pre><code class="language-r">code = c(&quot;# a warning test&quot;, &quot;1:2 + 1:3&quot;, &quot;par(mar = c(4, 4, 1, .2))&quot;,
-    &quot;barplot(5:1, col = 2:6, horiz = TRUE)&quot;, &quot;head(iris)&quot;,
-    &quot;sunflowerplot(iris[, 3:4], seg.col = 'purple')&quot;,
-    &quot;if (TRUE) {\n  message('Hello, xfun::record()!')\n}&quot;,
-    &quot;# throw an error&quot;, &quot;1 + 'a'&quot;)
-res = xfun::record(code, dev.args = list(width = 9, height = 6.75),
-    error = TRUE)
+<pre><code class="language-r">code = c(
+  &quot;# a warning test&quot;, &quot;1:2 + 1:3&quot;, &quot;par(mar = c(4, 4, 1, .2))&quot;,
+  &quot;barplot(5:1, col = 2:6, horiz = TRUE)&quot;, &quot;head(iris)&quot;,
+  &quot;sunflowerplot(iris[, 3:4], seg.col = 'purple')&quot;,
+  &quot;if (TRUE) {\n  message('Hello, xfun::record()!')\n}&quot;,
+  &quot;# throw an error&quot;, &quot;1 + 'a'&quot;
+)
+res = xfun::record(code, dev.args = list(width = 9, height = 6.75), error = TRUE)
 xfun::tree(res)
 </code></pre>
 <pre><code>List of 13
@@ -4354,8 +4326,7 @@ if (TRUE) {
 #&gt; Error in 1 + &quot;a&quot;: non-numeric argument to binary operator
 </code></pre>
 <pre><code class="language-r"># find and clean up plot files
-plots = Filter(function(x) inherits(x, &quot;record_plot&quot;),
-    res)
+plots = Filter(function(x) inherits(x, &quot;record_plot&quot;), res)
 file.remove(unlist(plots))
 </code></pre>
 <pre><code>#&gt; [1] TRUE TRUE
@@ -4600,13 +4571,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;gzip, br&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.206&quot;
+#&gt; [1] &quot;13.105.49.253&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a480837a3ef26665&quot;
+#&gt; [1] &quot;a49937de2d202d61&quot;
 #&gt; 
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
@@ -4624,7 +4595,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.206&quot;
+#&gt; [1] &quot;13.105.49.253&quot;
 #&gt; 
 #&gt; 
 #&gt; $queryParams
@@ -4632,7 +4603,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
 <pre><code class="language-r">xfun::rest_api_raw(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
-<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;accept&quot;:&quot;*/*&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.117.206&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-ray&quot;:&quot;a480837e38346911&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;connection&quot;:&quot;Keep-Alive&quot;,&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;user-agent&quot;:&quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;x-real-ip&quot;:&quot;13.105.117.206&quot;},&quot;queryParams&quot;:{}}
+<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;accept&quot;:&quot;*/*&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.49.253&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-ray&quot;:&quot;a49937de9f347db7&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;connection&quot;:&quot;Keep-Alive&quot;,&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;user-agent&quot;:&quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;x-real-ip&quot;:&quot;13.105.49.253&quot;},&quot;queryParams&quot;:{}}
 </code></pre>
 <pre><code class="language-r"># send the request with an auth header
 xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPEN SESAME!&quot;)
@@ -4648,13 +4619,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;Basic OPEN SESAME!&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.206&quot;
+#&gt; [1] &quot;13.105.49.253&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a48083825ee43151&quot;
+#&gt; [1] &quot;a49937dfbac0871f&quot;
 #&gt; 
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
@@ -4672,10 +4643,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.206&quot;
+#&gt; [1] &quot;13.105.49.253&quot;
 </code></pre>
 <pre><code class="language-r"># with query parameters
-xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/response-headers&quot;, params = list(foo = &quot;bar&quot;))
+xfun::rest_api(
+  &quot;https://mockhttp.org&quot;, &quot;/response-headers&quot;,
+  params = list(foo = &quot;bar&quot;)
+)
 </code></pre>
 <pre><code>#&gt; $foo
 #&gt; [1] &quot;bar&quot;
@@ -4695,7 +4669,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$core$reset
-#&gt; [1] 1791585312
+#&gt; [1] 1791844358
 #&gt; 
 #&gt; 
 #&gt; $resources$search
@@ -4709,7 +4683,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 30
 #&gt; 
 #&gt; $resources$search$reset
-#&gt; [1] 1791581772
+#&gt; [1] 1791840818
 #&gt; 
 #&gt; 
 #&gt; $resources$graphql
@@ -4723,7 +4697,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$graphql$reset
-#&gt; [1] 1791585312
+#&gt; [1] 1791844358
 #&gt; 
 #&gt; 
 #&gt; $resources$integration_manifest
@@ -4737,7 +4711,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$integration_manifest$reset
-#&gt; [1] 1791585312
+#&gt; [1] 1791844358
 #&gt; 
 #&gt; 
 #&gt; $resources$source_import
@@ -4751,7 +4725,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$source_import$reset
-#&gt; [1] 1791581772
+#&gt; [1] 1791840818
 #&gt; 
 #&gt; 
 #&gt; $resources$code_scanning_autofix
@@ -4765,7 +4739,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_scanning_autofix$reset
-#&gt; [1] 1791581772
+#&gt; [1] 1791840818
 #&gt; 
 #&gt; 
 #&gt; $resources$actions_runner_registration
@@ -4779,7 +4753,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10000
 #&gt; 
 #&gt; $resources$actions_runner_registration$reset
-#&gt; [1] 1791585312
+#&gt; [1] 1791844358
 #&gt; 
 #&gt; 
 #&gt; $resources$scim
@@ -4793,7 +4767,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15000
 #&gt; 
 #&gt; $resources$scim$reset
-#&gt; [1] 1791585312
+#&gt; [1] 1791844358
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_snapshots
@@ -4807,7 +4781,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_snapshots$reset
-#&gt; [1] 1791581772
+#&gt; [1] 1791840818
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_sbom
@@ -4821,7 +4795,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_sbom$reset
-#&gt; [1] 1791581772
+#&gt; [1] 1791840818
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log
@@ -4835,7 +4809,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$audit_log$reset
-#&gt; [1] 1791585312
+#&gt; [1] 1791844358
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log_streaming
@@ -4849,7 +4823,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15
 #&gt; 
 #&gt; $resources$audit_log_streaming$reset
-#&gt; [1] 1791585312
+#&gt; [1] 1791844358
 #&gt; 
 #&gt; 
 #&gt; $resources$code_search
@@ -4863,7 +4837,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_search$reset
-#&gt; [1] 1791581772
+#&gt; [1] 1791840818
 #&gt; 
 #&gt; 
 #&gt; $resources$copilot_usage_records
@@ -4877,7 +4851,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$copilot_usage_records$reset
-#&gt; [1] 1791585312
+#&gt; [1] 1791844358
 #&gt; 
 #&gt; 
 #&gt; $resources$enterprise_token_inventory
@@ -4891,7 +4865,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$enterprise_token_inventory$reset
-#&gt; [1] 1791585312
+#&gt; [1] 1791844358
 #&gt; 
 #&gt; 
 #&gt; 
@@ -4906,7 +4880,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $rate$reset
-#&gt; [1] 1791585312
+#&gt; [1] 1791844358
 </code></pre>
 <h2 id="sec:man-retry"><span class="section-number main-number">82</span> Retry calling a function for a number of times</h2>
 <h3 id="sec:description_82" class="unnumbered unlisted">Description</h3>
@@ -5144,8 +5118,8 @@ be saved.</p>
 <h3 id="sec:examples_64" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">library(xfun)
 if (loadable(&quot;rstudioapi&quot;) &amp;&amp; rstudioapi::isAvailable()) {
-    rstudio_type(&quot;Hello, RStudio! xfun::rstudio_type() looks pretty cool!&quot;,
-        pause = function() runif(1, 0, 0.5), mistake = 0.1)
+  rstudio_type(&quot;Hello, RStudio! xfun::rstudio_type() looks pretty cool!&quot;,
+    pause = function() runif(1, 0, .5), mistake = .1)
 }
 </code></pre>
 <h2 id="sec:man-same_path"><span class="section-number main-number">85</span> Test if two paths are the same after they are normalized</h2>
@@ -5432,7 +5406,9 @@ expression, with an attribute <code>lines</code> indicating the starting and end
 line numbers of the expression if the argument <code>line_number = TRUE</code>.
 </p>
 <h3 id="sec:examples_71" class="unnumbered unlisted">Examples</h3>
-<pre><code class="language-r">code = c(&quot;# comment 1&quot;, &quot;# comment 2&quot;, &quot;if (TRUE) {&quot;, &quot;1 + 1&quot;, &quot;}&quot;, &quot;print(1:5)&quot;)
+<pre><code class="language-r">code = c(
+  &quot;# comment 1&quot;, &quot;# comment 2&quot;, &quot;if (TRUE) {&quot;, &quot;1 + 1&quot;, &quot;}&quot;, &quot;print(1:5)&quot;
+)
 xfun::split_source(code)
 </code></pre>
 <pre><code>#&gt; [[1]]
@@ -5474,21 +5450,21 @@ formed by concatenating wrapped strings by <code>\n</code>.
 <p>A character vector.
 </p>
 <h3 id="sec:examples_72" class="unnumbered unlisted">Examples</h3>
-<pre><code class="language-r">x = sample(c(letters, &quot; &quot;), 200, TRUE, c(rep(0.5/26, 26), 0.5))
+<pre><code class="language-r">x = sample(c(letters, &quot; &quot;), 200, TRUE, c(rep(.5/26, 26), .5))
 x = rep(paste(x, collapse = &quot;&quot;), 2)
 strwrap(x, width = 30)
 </code></pre>
-<pre><code>#&gt;  [1] &quot;gcf jk k i m v zub g v xl cku&quot; &quot;qw oc matz dy l xw zr vurrhri&quot;
-#&gt;  [3] &quot;ml tew ekp t qlalcz gn chktq&quot;  &quot;bgosvjuja w o l n s q r n cs&quot; 
-#&gt;  [5] &quot;i w c js dc d jst s&quot;           &quot;wnhktgouxc u j fm&quot;            
-#&gt;  [7] &quot;gcf jk k i m v zub g v xl cku&quot; &quot;qw oc matz dy l xw zr vurrhri&quot;
-#&gt;  [9] &quot;ml tew ekp t qlalcz gn chktq&quot;  &quot;bgosvjuja w o l n s q r n cs&quot; 
-#&gt; [11] &quot;i w c js dc d jst s&quot;           &quot;wnhktgouxc u j fm&quot;            
+<pre><code>#&gt;  [1] &quot;agx c mo oi jvp kcw k k ah u&quot;  &quot;ksq duxz v t u iorf u t ln&quot;   
+#&gt;  [3] &quot;fds vahp aar zphu j o g&quot;       &quot;clnkqes j g d erg n f vp zc v&quot;
+#&gt;  [5] &quot;ipk x h bfbw qfu n b c nja&quot;    &quot;opqahx qvk w qn o l&quot;          
+#&gt;  [7] &quot;agx c mo oi jvp kcw k k ah u&quot;  &quot;ksq duxz v t u iorf u t ln&quot;   
+#&gt;  [9] &quot;fds vahp aar zphu j o g&quot;       &quot;clnkqes j g d erg n f vp zc v&quot;
+#&gt; [11] &quot;ipk x h bfbw qfu n b c nja&quot;    &quot;opqahx qvk w qn o l&quot;          
 </code></pre>
 <pre><code class="language-r">xfun::str_wrap(x, width = 30)  # same length as x
 </code></pre>
-<pre><code>#&gt; [1] &quot;gcf jk k i m v zub g v xl cku\nqw oc matz dy l xw zr vurrhri\nml tew ekp t qlalcz gn chktq\nbgosvjuja w o l n s q r n cs\ni w c js dc d jst s\nwnhktgouxc u j fm&quot;
-#&gt; [2] &quot;gcf jk k i m v zub g v xl cku\nqw oc matz dy l xw zr vurrhri\nml tew ekp t qlalcz gn chktq\nbgosvjuja w o l n s q r n cs\ni w c js dc d jst s\nwnhktgouxc u j fm&quot;
+<pre><code>#&gt; [1] &quot;agx c mo oi jvp kcw k k ah u\nksq duxz v t u iorf u t ln\nfds vahp aar zphu j o g\nclnkqes j g d erg n f vp zc v\nipk x h bfbw qfu n b c nja\nopqahx qvk w qn o l&quot;
+#&gt; [2] &quot;agx c mo oi jvp kcw k k ah u\nksq duxz v t u iorf u t ln\nfds vahp aar zphu j o g\nclnkqes j g d erg n f vp zc v\nipk x h bfbw qfu n b c nja\nopqahx qvk w qn o l&quot;
 </code></pre>
 <h2 id="sec:man-strict_list"><span class="section-number main-number">93</span> Strict lists</h2>
 <h3 id="sec:description_93" class="unnumbered unlisted">Description</h3>
@@ -5590,7 +5566,7 @@ z3$a  # NULL again!
 <p>A character vector with HTML tags and comments stripped off.
 </p>
 <h3 id="sec:examples_74" class="unnumbered unlisted">Examples</h3>
-<pre><code class="language-r">xfun::strip_html(&quot;&lt;a href=\&quot;#\&quot;&gt;Hello &lt;!-- comment --&gt;world!&lt;/a&gt;&quot;)
+<pre><code class="language-r">xfun::strip_html('&lt;a href=&quot;#&quot;&gt;Hello &lt;!-- comment --&gt;world!&lt;/a&gt;')
 </code></pre>
 <pre><code>#&gt; [1] &quot;Hello world!&quot;
 </code></pre>
@@ -5717,10 +5693,10 @@ xfun::tabset(p)
 
 # custom tab content
 xfun::tabset(iris, function(x) {
-    if (is.factor(x)) {
-        res = c(&quot;A factor with levels: &quot;, xfun::join_words(levels(x), before = &quot;`&quot;))
-        xfun::tab_content(res)
-    } else print(summary(x))
+  if (is.factor(x)) {
+    res = c(&quot;A factor with levels: &quot;, xfun::join_words(levels(x), before = &quot;`&quot;))
+    xfun::tab_content(res)
+  } else print(summary(x))
 })
 </code></pre>
 <h2 id="sec:man-taml_load"><span class="section-number main-number">98</span> A simple YAML reader and writer</h2>
@@ -5771,7 +5747,7 @@ to the file specified by the <code>path</code>.
 </code></pre>
 <pre><code class="language-yaml plain">a: 1
 </code></pre>
-<pre><code class="language-r">(res = taml_load(&quot;a: 1\nb: \&quot;foo\&quot;\nc: null&quot;))
+<pre><code class="language-r">(res = taml_load('a: 1\nb: &quot;foo&quot;\nc: null'))
 </code></pre>
 <pre><code>#&gt; $a
 #&gt; [1] 1
@@ -5820,7 +5796,7 @@ e: &quot;bar&quot;
 	d: 1.234
 e: &quot;bar&quot;
 </code></pre>
-<pre><code class="language-r">taml_load(&quot;a: !expr paste(1:10, collapse = \&quot;, \&quot;)&quot;)
+<pre><code class="language-r">taml_load('a: !expr paste(1:10, collapse = &quot;, &quot;)')
 </code></pre>
 <pre><code>#&gt; $a
 #&gt; [1] &quot;1, 2, 3, 4, 5, 6, 7, 8, 9, 10&quot;
@@ -5830,12 +5806,12 @@ e: &quot;bar&quot;
 <pre><code>#&gt; $a
 #&gt; [1] 1 3 4 2
 </code></pre>
-<pre><code class="language-r">taml_load(&quot;a: [1, \&quot;abc\&quot;, 4, 2]&quot;)
+<pre><code class="language-r">taml_load('a: [1, &quot;abc&quot;, 4, 2]')
 </code></pre>
 <pre><code>#&gt; $a
 #&gt; [1] &quot;1&quot;   &quot;abc&quot; &quot;4&quot;   &quot;2&quot;  
 </code></pre>
-<pre><code class="language-r">taml_load(&quot;a: [\&quot;foo\&quot;, \&quot;bar\&quot;]&quot;)
+<pre><code class="language-r">taml_load('a: [&quot;foo&quot;, &quot;bar&quot;]')
 </code></pre>
 <pre><code>#&gt; $a
 #&gt; [1] &quot;foo&quot; &quot;bar&quot;
@@ -6036,19 +6012,7 @@ standard JSON but practically more useful).
 </p>
 <h3 id="sec:examples_79" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r">library(xfun)
-tojson(NULL)
-</code></pre>
-<pre><code class="language-json plain">null
-</code></pre>
-<pre><code class="language-r">tojson(1:10)
-</code></pre>
-<pre><code class="language-json plain">[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-</code></pre>
-<pre><code class="language-r">tojson(TRUE)
-</code></pre>
-<pre><code class="language-json plain">true
-</code></pre>
-<pre><code class="language-r">tojson(FALSE)
+tojson(NULL); tojson(1:10); tojson(TRUE); tojson(FALSE)
 </code></pre>
 <pre><code class="language-json plain">false
 </code></pre>
@@ -6068,7 +6032,7 @@ tojson(NULL)
   [&quot;a&quot;, &quot;b&quot;],
   [1, 2, 3, 4, 5],
   true,
-  [new Date(&quot;2026-10-10&quot;), new Date(&quot;2026-10-11&quot;), new Date(&quot;2026-10-12&quot;)]
+  [new Date(&quot;2026-10-13&quot;), new Date(&quot;2026-10-14&quot;), new Date(&quot;2026-10-15&quot;)]
 ]
 </code></pre>
 <pre><code class="language-r">tojson(head(iris))  # each column is in an element
@@ -6471,15 +6435,12 @@ period or someone is trying to upload too many images at once.
 </p>
 <h3 id="sec:examples_83" class="unnumbered unlisted">Examples</h3>
 <pre><code class="language-r fade">f = tempfile(fileext = &quot;.png&quot;)
-png(f)
-plot(rnorm(100), main = R.version.string)
-dev.off()
+png(f); plot(rnorm(100), main = R.version.string); dev.off()
 
 res = imgur_upload(f, include_xml = TRUE)
 res  # link to original URL of the image
 xfun::attr2(res, &quot;XML&quot;)  # all information
-if (interactive())
-    browseURL(res)
+if (interactive()) browseURL(res)
 
 # to use your own key
 options(xfun.upload_imgur.key = &quot;your imgur key&quot;)
@@ -6662,8 +6623,10 @@ text). If YAML metadata does not exist in the document, the components
 <code>yaml</code> and <code>lines</code> will be missing.
 </p>
 <h3 id="sec:examples_88" class="unnumbered unlisted">Examples</h3>
-<pre><code class="language-r">xfun::yaml_body(c(&quot;---&quot;, &quot;title: Hello&quot;, &quot;output: litedown::html_format&quot;, &quot;---&quot;,
-    &quot;&quot;, &quot;Content.&quot;))
+<pre><code class="language-r">xfun::yaml_body(c(
+  &quot;---&quot;, &quot;title: Hello&quot;, &quot;output: litedown::html_format&quot;,
+  &quot;---&quot;, &quot;&quot;, &quot;Content.&quot;
+))
 </code></pre>
 <pre><code>#&gt; $yaml
 #&gt; $yaml$title
@@ -6731,20 +6694,20 @@ character strings for expressions.
 <pre><code>#&gt; $a
 #&gt; [1] 1
 </code></pre>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/css/manual.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/css/manual.min.css">
 </div>
 <footer><div class="flex-col">
 <p>Developed by <a href="https://yihui.org">Yihui Xie</a></p>
 <p>Site built with <a href="https://github.com/yihui/litedown">litedown</a> v0.11.7</p>
 </div></footer>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/js/sidenotes.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/js/appendix.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/js/toc-highlight.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/js/copy-button.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/js/heading-anchor.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/js/pages.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/js/sidenotes.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/js/appendix.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/js/toc-highlight.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/js/copy-button.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/js/heading-anchor.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/js/pages.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/combine/npm/katex@0.19.0/dist/katex.min.js,npm/katex@0.19.0/dist/contrib/auto-render.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.103/js/render-katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.107/js/render-katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
 </body>
