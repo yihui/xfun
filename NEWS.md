@@ -14,6 +14,8 @@
 
 - `tojson()` gained an argument `pretty` (`TRUE` by default). With `pretty = FALSE`, the output is compact (single line, no indentation, and `,` instead of `, ` between array elements), which can be substantially smaller for large data.
 
+- `tojson()` now emits a nested `json` value (e.g., a value pre-serialized by `tojson()`) raw instead of re-quoting it as a string, so `tojson()` output can be composed inside a larger `tojson()` call.
+
 - `browser_print()` and `browser_dom()` now run the headless browser with its temporary directory pointed at a private subdirectory that is deleted afterward, so the browser's scratch files (e.g. `com.google.Chrome.*`) no longer accumulate in the session's temp directory (which also tripped `R CMD check`'s detritus NOTE for packages using these functions).
 
 - `submit_cran()` (and the automatic tarball build behind it) now runs optional build hooks: scripts named `tools/build-before.*` and `tools/build-after.*` in the package are run before and after `R CMD build` (`.R` via `Rscript`, `.sh` via `sh`). A `build-before` script can generate files that ship in the tarball but are not kept in the source tree (e.g. download or minify assets), and the `build-after` script (run even if the build fails) can restore the source tree.

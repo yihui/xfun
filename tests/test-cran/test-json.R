@@ -38,6 +38,8 @@ assert("tojson() works", {
   res = tojson(list(NULL, 1:10, TRUE, FALSE))
   # passing a json object through tojson() should return it unchanged
   (tojson(res) %==% res)
+  # a nested json value is emitted raw, not re-quoted (tojson is composable)
+  (.tojson(list(a = tojson(1:3, pretty = FALSE)), pretty = FALSE) %==% '{"a":[1,2,3]}')
 })
 
 assert('json_vector() converts atomic vectors to JSON', {

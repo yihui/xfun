@@ -103,7 +103,8 @@ tojson = function(x, dict = getOption('xfun.tojson.dict', FALSE),
     } else {
       make_array(quote_string(nms), kv, cols, braces = c('{', '}'))
     }
-  } else if (is.character(x) && inherits(x, c('JS_LITERAL', 'JS_EVAL'))) {
+  } else if (is.character(x) && inherits(x, c('JS_LITERAL', 'JS_EVAL', 'json'))) {
+    # js() and tojson() results are emitted raw, not re-quoted
     paste(x, collapse = '\n')
   } else {
     plain = json_atomic(x, sep = sep)
