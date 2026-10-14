@@ -143,6 +143,24 @@ assert('tojson(dict = ) dictionary-encodes repeated values when it is shorter', 
   (grepl('"g": \\[0, 1,.*\\.map\\(i => \\["alpha", "bravo"\\]\\[i\\]\\)', .tojson(df, dict = TRUE)))
 })
 
+assert('tojson(mode = "json") emits pure static JSON', {
+  # Inf/-Inf become null (JSON has no Infinity literal)
+  (json_vector(c(1, Inf, -Inf), to_array = TRUE, quote = FALSE, mode = 'json') %==%
+      '[1, null, null]')
+  (json_vector(c(Inf, NA), to_array = TRUE, quote = FALSE, mode = 'json') %==% '[null, null]')
+  # dates/times become a plain quoted string, not new Date(...)
+  d = as.Date('2024-01-15')
+  (json_atomic(d, mode = 'json') %==% '"2024-01-15"')
+  t = as.POSIXct('2024-01-15 09:30:00', tz = 'UTC')
+  (json_atomic(t, mode = 'json') %==% '"2024-01-15 09:30:00"')
+  (.tojson(data.frame(d = d), mode = 'json') %==% '{\n  "d": ["2024-01-15"]\n}')
+  # dict uses the valid-JSON tagged object (json_reviver rebuilds it), not .map
+  (.tojson(rep(c('a', 'b'), 10), dict = TRUE, mode = 'json') %==%
+      paste0('{"\\u0001u":["a", "b"],"\\u0001c":[', paste(rep(c(0, 1), 10), collapse = ', '), ']}'))
+  # no JS wrapper when nothing was packed
+  (as.character(tojson(c(1, Inf), mode = 'json')) %==% '[1, null]')
+})
+
 assert('tojson(pretty = FALSE) produces compact output', {
   # arrays join with ',' (no space), objects have no line breaks or indentation
   (.tojson(1:5, pretty = FALSE) %==% '[1,2,3,4,5]')
@@ -173,24 +191,26 @@ assert('tojson(pack) packs long integer vectors as tagged base64', {
   (pack_ints(c(-129L, 0L)) %==% '{"\\u0001i16":"f/8AAA=="}')
   (pack_ints(c(-32769L, 0L)) %==% '{"\\u0001i32":"/3///wAAAAA="}')
   x = rep(c(0L, 1L), 100)
-  (.tojson(x, pack = 100) %==% pack_ints(x))
-  (nchar(.tojson(x, pack = 100)) < nchar(.tojson(x)))
+  # mode 'json': a packed vector is the bare valid-JSON tagged object
+  (.tojson(x, pack = 100, mode = 'json') %==% pack_ints(x))
+  (nchar(.tojson(x, pack = 100, mode = 'json')) < nchar(.tojson(x)))
   # off by default, below threshold, NA, factors, doubles
   (.tojson(x) %==% json_atomic(x))
   (.tojson(x, pack = 1000) %==% json_atomic(x))
   (.tojson(c(x, NA), pack = 100) %==% json_atomic(c(x, NA)))
   (.tojson(factor(x), pack = 100) %==% json_atomic(factor(x)))
   (.tojson(as.numeric(x), pack = 100) %==% json_atomic(as.numeric(x)))
-  # tojson(pack): a number is the threshold, or list(mode, threshold)
-  (as.character(tojson(x, pack = 100)) %==% pack_ints(x))
-  (as.character(tojson(x, pack = list(threshold = 100))) %==% pack_ints(x))
-  (.tojson(list(a = x), pack = 100, pretty = FALSE) %==% paste0('{"a":', pack_ints(x), '}'))
-  # dict + pack: pack the codes
+  # tojson(pack): a number is the length threshold
+  (as.character(tojson(x, pack = 100, mode = 'json')) %==% pack_ints(x))
+  (.tojson(list(a = x), pack = 100, pretty = FALSE, mode = 'json') %==%
+      paste0('{"a":', pack_ints(x), '}'))
+  # dict + pack in 'json' mode: pack the codes into the tagged object
   y = rep(c('a', 'b'), 100)
-  (.tojson(y, dict = TRUE, pack = 100) %==%
+  (.tojson(y, dict = TRUE, pack = 100, mode = 'json') %==%
       paste0('{"\\u0001u":["a", "b"],"\\u0001c":', pack_ints(rep(0:1, 100)), '}'))
-  (grepl('^\\[0, 1', .tojson(y, dict = TRUE)))
-  # mode 'js': self-contained expression with an unpack() call
-  (grepl('unpack(', tojson(x, pack = list(mode = 'js', threshold = 100)), fixed = TRUE))
+  # mode 'js' (default): a self-contained expression with an unpack() call
+  (.tojson(x, pack = 100) %==% paste0('unpack(', pack_ints(x), ')'))
+  (grepl('unpack(', tojson(x, pack = 100), fixed = TRUE))
+  (grepl('Array.from(unpack(', .tojson(y, dict = TRUE, pack = 100), fixed = TRUE))
   (grepl(json_unpack, json_reviver, fixed = TRUE))
 })

@@ -16,7 +16,8 @@ tojson(
   x,
   dict = getOption("xfun.tojson.dict", FALSE),
   pretty = getOption("xfun.tojson.pretty", TRUE),
-  pack = getOption("xfun.tojson.pack", Inf)
+  pack = getOption("xfun.tojson.pack", Inf),
+  mode = getOption("xfun.tojson.mode", "js")
 )
 
 json_unpack
@@ -25,7 +26,7 @@ json_reviver
 
 js(x)
 
-json_vector(x, to_array = FALSE, quote = TRUE, sep = ", ")
+json_vector(x, to_array = FALSE, quote = TRUE, sep = ", ", mode = "js")
 }
 \arguments{
 \item{x}{An R object.}
@@ -43,7 +44,8 @@ plain form (so near-unique vectors are left alone). \code{TRUE} means \code{1}
 (consider every vector). An encoded vector becomes a runnable JavaScript
 expression \verb{[codes].map(i => [u][i])} (0-based \code{codes} indexing the unique
 values \code{u}), which is not strict JSON but meant to be evaluated as
-JavaScript (e.g. embedded in a \verb{<script>}).}
+JavaScript (e.g. embedded in a \verb{<script>}). With \code{mode = "json"} the encoded
+vector instead becomes the valid-JSON object \verb{\{"<tag>u": [uniques], "<tag>c": [codes]\}} that \code{json_reviver} expands back to the vector.}
 
 \item{pretty}{Whether to pretty-print the output with line breaks,
 indentation, and a space after each array/object separator. Defaults to the
@@ -56,29 +58,32 @@ between array elements), which can be substantially smaller for large data.}
 \item{pack}{Whether to pack long integer vectors as base64 (little-endian
 bytes, 1/2/4 bytes per value chosen by range) to shrink the output and speed
 up parsing. Defaults to the global option \code{xfun.tojson.pack} (and to \code{Inf}
-when that is unset). Either a number giving the minimum vector length to pack
-(\code{Inf} disables packing) or a \code{list(mode, threshold)} (either field optional),
-where \code{mode} is \code{"json"} (default) or \code{"js"} (see below) and \code{threshold} is
-the length cutoff (default \code{100}).
+when that is unset). A number giving the minimum vector length to pack
+(\code{Inf} disables packing). Vectors containing \code{NA} are not packed, and packing
+is used only when it shortens the output. The packed representation depends on
+\code{mode} (see below).}
 
-In mode \code{"json"} a packed vector is valid JSON \code{{"<tag>": "<base64>"}}, where
-the tag is a fixed prefix (a leading control char, unlikely to collide with a
-real key) plus \code{u8}, \code{u16}, \code{u32} for unsigned or \code{i8}, \code{i16}, \code{i32} for
-signed integers. A consumer turns it into a typed array with the JavaScript
-\code{json_unpack} (defines \code{unpack(o)}, decode one packed object on demand) or
-\code{json_reviver} (also defines \code{reviver}, for \code{JSON.parse(text, reviver)}).
-Prefer lazy \code{unpack()} over \code{reviver} for large payloads: a reviver fires on
-\emph{every} parsed value, so attaching it to a document that still holds large
-\emph{plain} arrays can make \code{JSON.parse()} an order of magnitude slower (vs. no
-reviver); on a mostly-packed document the two cost about the same. Vectors
-containing \code{NA} are not packed, and packing is used only when it shortens the
-output. With \code{dict}, the codes are packed and the vector becomes
-\verb{\{"<tag>u": [uniques], "<tag>c": packed\}}, which \code{reviver} expands to an array.
+\item{mode}{Whether to emit standard JSON or JavaScript, one of \code{"js"}
+(default) or \code{"json"}; defaults to the global option \code{xfun.tojson.mode}. This
+is the master switch over every construct that is not strict JSON: dates,
+infinities (see above), and \code{dict}- and \code{pack}-encoded vectors.
 
-Mode \code{"js"} instead returns a self-contained JavaScript expression: each
-packed vector becomes an \code{unpack({...})} call (and a dict vector
-\verb{Array.from(unpack(\{...\}), i => u[i])}), with \code{unpack()} defined once in a
-wrapping \verb{(() => \{...\})()}. The whole result is a single expression to be
+With \code{mode = "json"} the whole result is valid JSON that \code{JSON.parse()}
+accepts. A packed vector is \code{{"<tag>": "<base64>"}}, where the tag is a fixed
+prefix (a leading control char, unlikely to collide with a real key) plus
+\code{u8}, \code{u16}, \code{u32} for unsigned or \code{i8}, \code{i16}, \code{i32} for signed integers. A
+consumer turns packed (and \code{dict}) values back into typed arrays with the
+JavaScript \code{json_unpack} (defines \code{unpack(o)}, decode one packed object on
+demand) or \code{json_reviver} (also defines \code{reviver}, for \code{JSON.parse(text, reviver)}). Prefer lazy \code{unpack()} over \code{reviver} for large payloads: a
+reviver fires on \emph{every} parsed value, so attaching it to a document that
+still holds large \emph{plain} arrays can make \code{JSON.parse()} an order of magnitude
+slower (vs. no reviver); on a mostly-packed document the two cost about the
+same.
+
+With \code{mode = "js"} the result is instead a self-contained JavaScript
+expression: each packed vector becomes an \code{unpack({...})} call (and a dict
+vector \verb{Array.from(unpack(\{...\}), i => u[i])}), with \code{unpack()} defined once
+in a wrapping \verb{(() => \{...\})()}. The whole result is a single expression to be
 evaluated (not \code{JSON.parse}d), so the consumer needs no reviver and the tags
 appear only as call arguments, never as standalone data. Use this when the
 output is embedded as a JS value; use \code{"json"} when it must stay valid JSON.}
@@ -110,9 +115,12 @@ to an array with each \emph{row} as an array element, whereas named data frames
 will have each \emph{column} as an individual element. For matrices, the JSON
 array will have each row as an individual element, and names are discarded.
 
-Dates and times are coerced to character using UTC as the timezone, and
-represented via the JavaScript expression \verb{new Date(value)} (which is not
-standard JSON but practically more useful).
+Dates and times are coerced to character using UTC as the timezone. By
+default (\code{mode = "js"}) they are represented via the JavaScript expression
+\verb{new Date(value)} (not standard JSON but practically more useful), and
+\code{Inf}/\code{-Inf} as the JavaScript literals \code{Infinity}/\code{-Infinity}; with
+\code{mode = "json"} they become a plain quoted string and \code{null}, respectively,
+so the output is standard JSON (see the \code{mode} argument).
 }
 \examples{
 library(xfun)
@@ -128,6 +136,9 @@ tojson(rep(c("b", "a", NA), 3), dict = TRUE)
 
 # literal JS code
 tojson(list(a = 1:5, b = js("function() {return true;}")))
+
+# pure static JSON: dates become strings and Inf becomes null
+tojson(list(d = as.Date("2024-01-15"), x = c(1, Inf)), mode = "json")
 }
 \seealso{
 The \pkg{jsonlite} package provides a full JSON serializer.
