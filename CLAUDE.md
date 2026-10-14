@@ -33,7 +33,10 @@ assert('message', {
 ## PR Checklist
 
 1. Every change needs tests
-2. Re-roxygenize: `roxygen2::roxygenize('.')` after roxygen changes
+2. Re-roxygenize: `roxygen2::roxygenize('.')` after roxygen changes, then
+   run `sh .githooks/pre-commit` explicitly to post-process the changed `.Rd`
+   files (it also runs on commit if `git config core.hooksPath .githooks` is
+   set). Don't hand-edit that formatting; discard unrelated `man/*.Rd` churn
 3. Run tests before pushing
 4. Update `NEWS.md`: first heading form `# PKG x.y` (next CRAN release)
 5. Clean up before committing: `rm -rf *.tar.gz *.Rcheck/ tests/R-lib-*`
