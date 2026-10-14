@@ -14,7 +14,7 @@ source.
 \usage{
 tojson(
   x,
-  dict = getOption("xfun.tojson.dict", FALSE),
+  dict = getOption("xfun.tojson.dict", 0),
   pretty = getOption("xfun.tojson.pretty", TRUE),
   pack = getOption("xfun.tojson.pack", Inf),
   mode = getOption("xfun.tojson.mode", "js")
@@ -31,17 +31,16 @@ json_vector(x, to_array = FALSE, quote = TRUE, sep = ", ", mode = "js")
 \arguments{
 \item{x}{An R object.}
 
-\item{dict}{Whether to dictionary-encode atomic vectors (and data-frame
-columns) to shrink the output when values repeat. Defaults to the global
-option \code{xfun.tojson.dict} (and to \code{FALSE} when that is unset), so a package
-that embeds \code{tojson()} output deep inside another function can turn
+\item{dict}{A number controlling whether to dictionary-encode atomic vectors
+(and data-frame columns) to shrink the output when values repeat. Defaults
+to the global option \code{xfun.tojson.dict} (and to \code{0} when that is unset), so a
+package that embeds \code{tojson()} output deep inside another function can turn
 encoding on without the call being reachable, e.g.
-\code{options(xfun.tojson.dict = 0.5)}. \code{FALSE}
-serializes normally. A number in \verb{(0, 1]} acts as a cardinality threshold:
-a vector is encoded when its number of unique values is at most \code{dict}
-times its length, and only when the encoding is actually shorter than the
-plain form (so near-unique vectors are left alone). \code{TRUE} means \code{1}
-(consider every vector). An encoded vector becomes a runnable JavaScript
+\code{options(xfun.tojson.dict = 0.5)}. \code{0} serializes normally. A number in
+\verb{(0, 1]} acts as a cardinality threshold: a vector is encoded when its number
+of unique values is at most \code{dict} times its length, and only when the
+encoding is actually shorter than the plain form (so near-unique vectors are
+left alone); \code{1} considers every vector. An encoded vector becomes a runnable JavaScript
 expression \verb{[codes].map(i => [u][i])} (0-based \code{codes} indexing the unique
 values \code{u}), which is not strict JSON but meant to be evaluated as
 JavaScript (e.g. embedded in a \verb{<script>}). With \code{mode = "json"} the encoded
@@ -132,7 +131,7 @@ tojson(unname(head(iris)))  # each row is in an element
 tojson(matrix(1:12, 3))
 
 # dictionary-encode repeated values
-tojson(rep(c("b", "a", NA), 3), dict = TRUE)
+tojson(rep(c("b", "a", NA), 3), dict = 1)
 
 # literal JS code
 tojson(list(a = 1:5, b = js("function() {return true;}")))

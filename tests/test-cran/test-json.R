@@ -122,25 +122,25 @@ assert('tojson(dict = ) dictionary-encodes repeated values when it is shorter', 
   (.tojson(x) %==% json_atomic(x))
   # enabled: runnable JS expression, 0-based codes indexing unique values (in
   # order of appearance), chosen because it is shorter than the plain form
-  d = .tojson(x, dict = TRUE)
+  d = .tojson(x, dict = 1)
   (grepl('\\.map\\(i => \\["alpha", "bravo"\\]\\[i\\]\\)$', d))
   (nchar(d) < nchar(json_atomic(x)))
   # numeric vectors encode too
-  (grepl('\\.map\\(i => \\[45, 52\\]\\[i\\]\\)$', .tojson(rep(c(45, 52), 20), dict = TRUE)))
+  (grepl('\\.map\\(i => \\[45, 52\\]\\[i\\]\\)$', .tojson(rep(c(45, 52), 20), dict = 1)))
   # NA is a normal dict entry (null in the unique array), so no `?? null` tail
-  d2 = .tojson(rep(c('a', NA, 'b'), 10), dict = TRUE)
+  d2 = .tojson(rep(c('a', NA, 'b'), 10), dict = 1)
   (grepl('\\[i\\]\\)$', d2))
   (!grepl('\\?\\?', d2))
   (grepl('null', d2))
   # near-unique vectors stay plain even when enabled (encoding would be longer)
   u = as.character(1:50)
-  (.tojson(u, dict = TRUE) %==% json_atomic(u))
+  (.tojson(u, dict = 1) %==% json_atomic(u))
   # a numeric threshold gates candidacy: 2 uniques / 20 rows = 0.1
   (.tojson(x, dict = 0.05) %==% json_atomic(x))
   (grepl('\\.map', .tojson(x, dict = 0.1)))
   # threads through data-frame columns
   df = data.frame(g = rep(c('alpha', 'bravo'), 20), stringsAsFactors = FALSE)
-  (grepl('"g": \\[0, 1,.*\\.map\\(i => \\["alpha", "bravo"\\]\\[i\\]\\)', .tojson(df, dict = TRUE)))
+  (grepl('"g": \\[0, 1,.*\\.map\\(i => \\["alpha", "bravo"\\]\\[i\\]\\)', .tojson(df, dict = 1)))
 })
 
 assert('tojson(mode = "json") emits pure static JSON', {
@@ -155,7 +155,7 @@ assert('tojson(mode = "json") emits pure static JSON', {
   (json_atomic(t, mode = 'json') %==% '"2024-01-15 09:30:00"')
   (.tojson(data.frame(d = d), mode = 'json') %==% '{\n  "d": ["2024-01-15"]\n}')
   # dict uses the valid-JSON tagged object (json_reviver rebuilds it), not .map
-  (.tojson(rep(c('a', 'b'), 10), dict = TRUE, mode = 'json') %==%
+  (.tojson(rep(c('a', 'b'), 10), dict = 1, mode = 'json') %==%
       paste0('{"\\u0001u":["a", "b"],"\\u0001c":[', paste(rep(c(0, 1), 10), collapse = ', '), ']}'))
   # no JS wrapper when nothing was packed
   (as.character(tojson(c(1, Inf), mode = 'json')) %==% '[1, null]')
@@ -174,7 +174,7 @@ assert('tojson(pretty = FALSE) produces compact output', {
   (.tojson(unname(data.frame(x = 1:2, y = c('a', 'b'))), pretty = FALSE) %==%
       '[[1,"a"],[2,"b"]]')
   # dict encoding uses compact code/unique arrays
-  (.tojson(rep(c(45, 52), 20), dict = TRUE, pretty = FALSE) %==%
+  (.tojson(rep(c(45, 52), 20), dict = 1, pretty = FALSE) %==%
       paste0('[', paste(rep(c(0, 1), 20), collapse = ','), '].map(i => [45,52][i])'))
   # pretty = TRUE (default) is unchanged
   (.tojson(1:5) %==% '[1, 2, 3, 4, 5]')
@@ -206,11 +206,11 @@ assert('tojson(pack) packs long integer vectors as tagged base64', {
       paste0('{"a":', pack_ints(x), '}'))
   # dict + pack in 'json' mode: pack the codes into the tagged object
   y = rep(c('a', 'b'), 100)
-  (.tojson(y, dict = TRUE, pack = 100, mode = 'json') %==%
+  (.tojson(y, dict = 1, pack = 100, mode = 'json') %==%
       paste0('{"\\u0001u":["a", "b"],"\\u0001c":', pack_ints(rep(0:1, 100)), '}'))
   # mode 'js' (default): a self-contained expression with an unpack() call
   (.tojson(x, pack = 100) %==% paste0('unpack(', pack_ints(x), ')'))
   (grepl('unpack(', tojson(x, pack = 100), fixed = TRUE))
-  (grepl('Array.from(unpack(', .tojson(y, dict = TRUE, pack = 100), fixed = TRUE))
+  (grepl('Array.from(unpack(', .tojson(y, dict = 1, pack = 100), fixed = TRUE))
   (grepl(json_unpack, json_reviver, fixed = TRUE))
 })

@@ -22,17 +22,16 @@
 #' `mode = "json"` they become a plain quoted string and `null`, respectively,
 #' so the output is standard JSON (see the `mode` argument).
 #' @param x An R object.
-#' @param dict Whether to dictionary-encode atomic vectors (and data-frame
-#'   columns) to shrink the output when values repeat. Defaults to the global
-#'   option `xfun.tojson.dict` (and to `FALSE` when that is unset), so a package
-#'   that embeds `tojson()` output deep inside another function can turn
+#' @param dict A number controlling whether to dictionary-encode atomic vectors
+#'   (and data-frame columns) to shrink the output when values repeat. Defaults
+#'   to the global option `xfun.tojson.dict` (and to `0` when that is unset), so a
+#'   package that embeds `tojson()` output deep inside another function can turn
 #'   encoding on without the call being reachable, e.g.
-#'   `options(xfun.tojson.dict = 0.5)`. `FALSE`
-#'   serializes normally. A number in `(0, 1]` acts as a cardinality threshold:
-#'   a vector is encoded when its number of unique values is at most `dict`
-#'   times its length, and only when the encoding is actually shorter than the
-#'   plain form (so near-unique vectors are left alone). `TRUE` means `1`
-#'   (consider every vector). An encoded vector becomes a runnable JavaScript
+#'   `options(xfun.tojson.dict = 0.5)`. `0` serializes normally. A number in
+#'   `(0, 1]` acts as a cardinality threshold: a vector is encoded when its number
+#'   of unique values is at most `dict` times its length, and only when the
+#'   encoding is actually shorter than the plain form (so near-unique vectors are
+#'   left alone); `1` considers every vector. An encoded vector becomes a runnable JavaScript
 #'   expression `[codes].map(i => [u][i])` (0-based `codes` indexing the unique
 #'   values `u`), which is not strict JSON but meant to be evaluated as
 #'   JavaScript (e.g. embedded in a `<script>`). With `mode = "json"` the encoded
@@ -89,19 +88,18 @@
 #' tojson(matrix(1:12, 3))
 #'
 #' # dictionary-encode repeated values
-#' tojson(rep(c("b", "a", NA), 3), dict = TRUE)
+#' tojson(rep(c("b", "a", NA), 3), dict = 1)
 #'
 #' # literal JS code
 #' tojson(list(a = 1:5, b = js("function() {return true;}")))
 #'
 #' # pure static JSON: dates become strings and Inf becomes null
 #' tojson(list(d = as.Date("2024-01-15"), x = c(1, Inf)), mode = "json")
-tojson = function(x, dict = getOption('xfun.tojson.dict', FALSE),
+tojson = function(x, dict = getOption('xfun.tojson.dict', 0),
                   pretty = getOption('xfun.tojson.pretty', TRUE),
                   pack = getOption('xfun.tojson.pack', Inf),
                   mode = getOption('xfun.tojson.mode', 'js')) {
   if (inherits(x, 'json')) return(x)
-  if (isTRUE(dict)) dict = 1 else if (isFALSE(dict)) dict = 0
   res = .tojson(x, dict = dict, pretty = pretty, pack = pack, mode = mode)
   # in 'js' mode, wrap in an IIFE defining unpack() once -- but only if a value
   # was packed (an `unpack(` call is in the output)

@@ -10,7 +10,7 @@
 
 - `tojson()` now escapes `</script` to `<\/script` in strings so the output can be safely embedded in an inline `<script>` block (a literal `</script>` would otherwise close the block early). This is still valid JSON and parses back to the original string.
 
-- `tojson()` gained an argument `dict` to dictionary-encode atomic vectors (and data-frame columns) with repeated values. When enabled, a vector is emitted as a runnable JavaScript expression `[codes].map(i => [u][i])` (0-based `codes` indexing the unique values `u`), so repeated values are serialized once instead of per element. `dict` is a cardinality threshold (or `TRUE` for `1`), and encoding is used only when it actually shortens the output, so near-unique vectors are left as plain arrays.
+- `tojson()` gained an argument `dict` to dictionary-encode atomic vectors (and data-frame columns) with repeated values. When enabled, a vector is emitted as a runnable JavaScript expression `[codes].map(i => [u][i])` (0-based `codes` indexing the unique values `u`), so repeated values are serialized once instead of per element. `dict` is a numeric cardinality threshold in `(0, 1]` (`0`, the default, disables it), and encoding is used only when it actually shortens the output, so near-unique vectors are left as plain arrays.
 
 - `tojson()` gained an argument `pretty` (`TRUE` by default). With `pretty = FALSE`, the output is compact (single line, no indentation, and `,` instead of `, ` between array elements), which can be substantially smaller for large data.
 
