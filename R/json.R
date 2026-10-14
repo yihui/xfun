@@ -40,6 +40,35 @@
 #'   e.g. `options(xfun.tojson.pretty = FALSE)`. `FALSE` produces a compact,
 #'   single-line result (no line breaks or indentation, and `,` instead of `, `
 #'   between array elements), which can be substantially smaller for large data.
+#' @param pack Whether to pack long integer vectors as base64 (little-endian
+#'   bytes, 1/2/4 bytes per value chosen by range) to shrink the output and speed
+#'   up parsing. Defaults to the global option `xfun.tojson.pack` (and to `Inf`
+#'   when that is unset). Either a number giving the minimum vector length to pack
+#'   (`Inf` disables packing) or a `list(mode, threshold)` (either field optional),
+#'   where `mode` is `"json"` (default) or `"js"` (see below) and `threshold` is
+#'   the length cutoff (default `100`).
+#'
+#'   In mode `"json"` a packed vector is valid JSON `{"<tag>": "<base64>"}`, where
+#'   the tag is a fixed prefix (a leading control char, unlikely to collide with a
+#'   real key) plus `u8`, `u16`, `u32` for unsigned or `i8`, `i16`, `i32` for
+#'   signed integers. A consumer turns it into a typed array with the JavaScript
+#'   `json_unpack` (defines `unpack(o)`, decode one packed object on demand) or
+#'   `json_reviver` (also defines `reviver`, for `JSON.parse(text, reviver)`).
+#'   Prefer lazy `unpack()` over `reviver` for large payloads: a reviver fires on
+#'   *every* parsed value, so attaching it to a document that still holds large
+#'   *plain* arrays can make `JSON.parse()` an order of magnitude slower (vs. no
+#'   reviver); on a mostly-packed document the two cost about the same. Vectors
+#'   containing `NA` are not packed, and packing is used only when it shortens the
+#'   output. With `dict`, the codes are packed and the vector becomes
+#'   `{"<tag>u": [uniques], "<tag>c": packed}`, which `reviver` expands to an array.
+#'
+#'   Mode `"js"` instead returns a self-contained JavaScript expression: each
+#'   packed vector becomes an `unpack({...})` call (and a dict vector
+#'   `Array.from(unpack({...}), i => u[i])`), with `unpack()` defined once in a
+#'   wrapping `(() => {...})()`. The whole result is a single expression to be
+#'   evaluated (not `JSON.parse`d), so the consumer needs no reviver and the tags
+#'   appear only as call arguments, never as standalone data. Use this when the
+#'   output is embedded as a JS value; use `"json"` when it must stay valid JSON.
 #' @export
 #' @return A character string.
 #' @seealso The \pkg{jsonlite} package provides a full JSON serializer.
@@ -57,14 +86,25 @@
 #' # literal JS code
 #' tojson(list(a = 1:5, b = js("function() {return true;}")))
 tojson = function(x, dict = getOption('xfun.tojson.dict', FALSE),
-                  pretty = getOption('xfun.tojson.pretty', TRUE)) {
+                  pretty = getOption('xfun.tojson.pretty', TRUE),
+                  pack = getOption('xfun.tojson.pack', Inf)) {
   if (inherits(x, 'json')) return(x)
   if (isTRUE(dict)) dict = 1 else if (isFALSE(dict)) dict = 0
-  res = structure(.tojson(x, dict = dict, pretty = pretty), class = 'json')
-  raw_string(res, lang = '.json')
+  # `pack`: a length threshold number, or a list(mode, threshold)
+  if (is.numeric(pack)) pack = list(threshold = pack)
+  mode = pack$mode %||% 'json'
+  res = .tojson(x, dict = dict, pretty = pretty, pack = pack$threshold %||% 100, mode = mode)
+  # in 'js' mode, wrap in an IIFE defining unpack() once -- but only if a value
+  # was packed (an `unpack(` call is in the output)
+  if (mode == 'js' && grepl('unpack(', res, fixed = TRUE))
+    res = paste0('(() => {\n', json_unpack, '\nreturn ', res, '\n})()')
+  raw_string(structure(res, class = 'json'), lang = '.json')
 }
 
-.tojson = function(x, n = 1, dict = 0, pretty = TRUE) {
+# a control char is unlikely to clash with a real object key
+pack_prefix = '\\u0001'
+
+.tojson = function(x, n = 1, dict = 0, pretty = TRUE, pack = Inf, mode = 'json') {
   sep = if (pretty) ', ' else ','       # between array elements
   kv = if (pretty) ': ' else ':'        # between an object key and its value
   make_array = function(..., braces = c('[', ']')) {
@@ -81,7 +121,7 @@ tojson = function(x, dict = getOption('xfun.tojson.dict', FALSE),
       els = matrix(json_atomic(as.vector(x), FALSE, sep), nrow(x))
       rows = do.call(paste, c(as.data.frame(els, stringsAsFactors = FALSE), sep = sep))
       make_array(paste0('[', rows, ']'))
-    } else make_array(apply(x, 1, .tojson, n + 1, dict, pretty))
+    } else make_array(apply(x, 1, .tojson, n + 1, dict, pretty, pack, mode))
   } else if (is.list(x)) {
     if (length(x) == 0) return('{}')
     # output unnamed data frames by rows instead of columns
@@ -91,7 +131,7 @@ tojson = function(x, dict = getOption('xfun.tojson.dict', FALSE),
     cols = unlist(lapply(x, function(z) {
       if (by_row) json_atomic(z, FALSE, sep) else {
         # data frame columns must be arrays even for length 1
-        .tojson(if (is_df) I(z) else z, n + 1, dict, pretty)
+        .tojson(if (is_df) I(z) else z, n + 1, dict, pretty, pack, mode)
       }
     }))
     if (is.null(nms)) {
@@ -108,7 +148,12 @@ tojson = function(x, dict = getOption('xfun.tojson.dict', FALSE),
     paste(x, collapse = '\n')
   } else {
     plain = json_atomic(x, sep = sep)
-    d = if (dict > 0) dict_atomic(x, dict, sep)
+    if (can_pack(x, pack)) {
+      p = pack_ints(x)
+      if (mode == 'js') p = paste0('unpack(', p, ')')
+      if (nchar(p) < nchar(plain)) plain = p
+    }
+    d = if (dict > 0) dict_atomic(x, dict, sep, pack, mode)
     if (length(d) && nchar(d) < nchar(plain)) d else plain
   }
 }
@@ -117,14 +162,70 @@ tojson = function(x, dict = getOption('xfun.tojson.dict', FALSE),
 # enough repeats (unique values at most `dict` times the length); return NULL to
 # signal the caller to keep the plain form. unique() keeps NA, so NA becomes a
 # normal entry (`u[code]` is `null`) and needs no special casing.
-dict_atomic = function(x, dict, sep = ', ') {
+dict_atomic = function(x, dict, sep = ', ', pack = Inf, mode = 'json') {
   n = length(x)
   if (n == 0) return()
   u = unique(x)
   if (length(u) > dict * n) return()
   codes = match(x, u) - 1L
-  paste0(json_atomic(I(codes), sep = sep), '.map(i => ', json_atomic(I(u), sep = sep), '[i])')
+  u = json_atomic(I(u), sep = sep)
+  if (can_pack(codes, pack)) {
+    if (mode == 'js')
+      return(paste0('Array.from(unpack(', pack_ints(codes), '), i => ', u, '[i])'))
+    return(paste0('{"', pack_prefix, 'u":', u, ',"', pack_prefix, 'c":', pack_ints(codes), '}'))
+  }
+  paste0(json_atomic(I(codes), sep = sep), '.map(i => ', u, '[i])')
 }
+
+# plain integer vectors (not factors, no NA) longer than the threshold
+can_pack = function(x, pack) {
+  length(x) > pack && is.integer(x) && !anyNA(x) &&
+    identical(setdiff(class(x), 'AsIs'), 'integer')
+}
+
+# pack an integer vector into a tagged base64 object of little-endian bytes,
+# using the smallest unsigned (or, with negatives, signed) width
+pack_ints = function(x) {
+  r = range(x)
+  w = if (r[1] >= 0) {
+    if (r[2] <= 255L) 1L else if (r[2] <= 65535L) 2L else 4L
+  } else {
+    if (r[1] >= -128L && r[2] <= 127L) 1L else
+      if (r[1] >= -32768L && r[2] <= 32767L) 2L else 4L
+  }
+  tag = paste0(if (r[1] >= 0) 'u' else 'i', 8L * w)
+  b = writeBin(as.integer(x), raw(), size = w, endian = 'little')
+  sprintf('{"%s%s":"%s"}', pack_prefix, tag, base64_encode(b))
+}
+
+#' @rdname tojson
+#' @format `json_unpack` and `json_reviver` are character strings of JavaScript
+#'   source.
+#' @export
+# slice(1) drops the one-char tag prefix
+json_unpack = paste(
+  'const W = {u8: Uint8Array, u16: Uint16Array, u32: Uint32Array, i8: Int8Array, i16: Int16Array, i32: Int32Array},',
+  'unpack = o => { for (const k in o) { const T = W[k.slice(1)]; if (!T) continue;',
+  '  const s = atob(o[k]), b = new Uint8Array(s.length);',
+  '  for (let i = 0; i < b.length; i++) b[i] = s.charCodeAt(i);',
+  '  return new T(b.buffer); } };',
+  sep = '\n'
+)
+
+#' @rdname tojson
+#' @export
+# a reviver sees every value, so test k[0] === _P to tell a packed object from a
+# real one (mode 'js' needs no such guard)
+json_reviver = paste(
+  json_unpack,
+  sprintf('const _P = "%s", _U = "%su", _C = "%sc",', pack_prefix, pack_prefix, pack_prefix),
+  'reviver = (k, v) => {',
+  '  if (!v || typeof v !== "object" || Array.isArray(v)) return v;',
+  '  if (_U in v && _C in v) return Array.from(v[_C], i => v[_U][i]);',
+  '  for (const k in v) if (k[0] === _P) return unpack(v) ?? v;',
+  '  return v; };',
+  sep = '\n'
+)
 
 #' @rdname tojson
 #' @export

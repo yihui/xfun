@@ -2,15 +2,26 @@
 % Please edit documentation in R/json.R
 \name{tojson}
 \alias{tojson}
+\alias{json_unpack}
+\alias{json_reviver}
 \alias{js}
 \alias{json_vector}
 \title{A simple JSON serializer}
+\format{
+\code{json_unpack} and \code{json_reviver} are character strings of JavaScript
+source.
+}
 \usage{
 tojson(
   x,
   dict = getOption("xfun.tojson.dict", FALSE),
-  pretty = getOption("xfun.tojson.pretty", TRUE)
+  pretty = getOption("xfun.tojson.pretty", TRUE),
+  pack = getOption("xfun.tojson.pack", Inf)
 )
+
+json_unpack
+
+json_reviver
 
 js(x)
 
@@ -41,6 +52,36 @@ embedding package can turn pretty-printing off without reaching the call,
 e.g. \code{options(xfun.tojson.pretty = FALSE)}. \code{FALSE} produces a compact,
 single-line result (no line breaks or indentation, and \verb{,} instead of \verb{, }
 between array elements), which can be substantially smaller for large data.}
+
+\item{pack}{Whether to pack long integer vectors as base64 (little-endian
+bytes, 1/2/4 bytes per value chosen by range) to shrink the output and speed
+up parsing. Defaults to the global option \code{xfun.tojson.pack} (and to \code{Inf}
+when that is unset). Either a number giving the minimum vector length to pack
+(\code{Inf} disables packing) or a \code{list(mode, threshold)} (either field optional),
+where \code{mode} is \code{"json"} (default) or \code{"js"} (see below) and \code{threshold} is
+the length cutoff (default \code{100}).
+
+In mode \code{"json"} a packed vector is valid JSON \code{{"<tag>": "<base64>"}}, where
+the tag is a fixed prefix (a leading control char, unlikely to collide with a
+real key) plus \code{u8}, \code{u16}, \code{u32} for unsigned or \code{i8}, \code{i16}, \code{i32} for
+signed integers. A consumer turns it into a typed array with the JavaScript
+\code{json_unpack} (defines \code{unpack(o)}, decode one packed object on demand) or
+\code{json_reviver} (also defines \code{reviver}, for \code{JSON.parse(text, reviver)}).
+Prefer lazy \code{unpack()} over \code{reviver} for large payloads: a reviver fires on
+\emph{every} parsed value, so attaching it to a document that still holds large
+\emph{plain} arrays can make \code{JSON.parse()} an order of magnitude slower (vs. no
+reviver); on a mostly-packed document the two cost about the same. Vectors
+containing \code{NA} are not packed, and packing is used only when it shortens the
+output. With \code{dict}, the codes are packed and the vector becomes
+\verb{\{"<tag>u": [uniques], "<tag>c": packed\}}, which \code{reviver} expands to an array.
+
+Mode \code{"js"} instead returns a self-contained JavaScript expression: each
+packed vector becomes an \code{unpack({...})} call (and a dict vector
+\verb{Array.from(unpack(\{...\}), i => u[i])}), with \code{unpack()} defined once in a
+wrapping \verb{(() => \{...\})()}. The whole result is a single expression to be
+evaluated (not \code{JSON.parse}d), so the consumer needs no reviver and the tags
+appear only as call arguments, never as standalone data. Use this when the
+output is embedded as a JS value; use \code{"json"} when it must stay valid JSON.}
 
 \item{to_array}{Whether to convert a vector to a JSON array (use \verb{[]}).}
 

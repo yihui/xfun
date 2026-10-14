@@ -161,3 +161,36 @@ assert('tojson(pretty = FALSE) produces compact output', {
   # pretty = TRUE (default) is unchanged
   (.tojson(1:5) %==% '[1, 2, 3, 4, 5]')
 })
+
+assert('tojson(pack) packs long integer vectors as tagged base64', {
+  # width selection at the boundaries + little-endian base64
+  (pack_ints(c(0L, 255L)) %==% '{"\\u0001u8":"AP8="}')
+  (pack_ints(c(0L, 256L)) %==% '{"\\u0001u16":"AAAAAQ=="}')
+  (pack_ints(c(0L, 65535L)) %==% '{"\\u0001u16":"AAD//w=="}')
+  (pack_ints(c(0L, 65536L)) %==% '{"\\u0001u32":"AAAAAAAAAQA="}')
+  # negatives use signed widths
+  (pack_ints(c(-128L, 127L)) %==% '{"\\u0001i8":"gH8="}')
+  (pack_ints(c(-129L, 0L)) %==% '{"\\u0001i16":"f/8AAA=="}')
+  (pack_ints(c(-32769L, 0L)) %==% '{"\\u0001i32":"/3///wAAAAA="}')
+  x = rep(c(0L, 1L), 100)
+  (.tojson(x, pack = 100) %==% pack_ints(x))
+  (nchar(.tojson(x, pack = 100)) < nchar(.tojson(x)))
+  # off by default, below threshold, NA, factors, doubles
+  (.tojson(x) %==% json_atomic(x))
+  (.tojson(x, pack = 1000) %==% json_atomic(x))
+  (.tojson(c(x, NA), pack = 100) %==% json_atomic(c(x, NA)))
+  (.tojson(factor(x), pack = 100) %==% json_atomic(factor(x)))
+  (.tojson(as.numeric(x), pack = 100) %==% json_atomic(as.numeric(x)))
+  # tojson(pack): a number is the threshold, or list(mode, threshold)
+  (as.character(tojson(x, pack = 100)) %==% pack_ints(x))
+  (as.character(tojson(x, pack = list(threshold = 100))) %==% pack_ints(x))
+  (.tojson(list(a = x), pack = 100, pretty = FALSE) %==% paste0('{"a":', pack_ints(x), '}'))
+  # dict + pack: pack the codes
+  y = rep(c('a', 'b'), 100)
+  (.tojson(y, dict = TRUE, pack = 100) %==%
+      paste0('{"\\u0001u":["a", "b"],"\\u0001c":', pack_ints(rep(0:1, 100)), '}'))
+  (grepl('^\\[0, 1', .tojson(y, dict = TRUE)))
+  # mode 'js': self-contained expression with an unpack() call
+  (grepl('unpack(', tojson(x, pack = list(mode = 'js', threshold = 100)), fixed = TRUE))
+  (grepl(json_unpack, json_reviver, fixed = TRUE))
+})

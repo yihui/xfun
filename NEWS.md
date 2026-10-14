@@ -16,6 +16,8 @@
 
 - `tojson()` now emits a nested `json` value (e.g., a value pre-serialized by `tojson()`) raw instead of re-quoting it as a string, so `tojson()` output can be composed inside a larger `tojson()` call.
 
+- `tojson()` gained an argument `pack` (and the option `xfun.tojson.pack`) to pack long integer vectors (and the `codes` of `dict`-encoded vectors) as base64 little-endian bytes in a small tagged object. This is valid JSON that is smaller and much faster to parse than a number array; the new strings `json_unpack` (decode one packed object on demand, preferred for large data) and `json_reviver` (for `JSON.parse()`, which is slower on large data) contain JavaScript code that turns the packed values into typed arrays.
+
 - `browser_print()` and `browser_dom()` now run the headless browser with its temporary directory pointed at a private subdirectory that is deleted afterward, so the browser's scratch files (e.g. `com.google.Chrome.*`) no longer accumulate in the session's temp directory (which also tripped `R CMD check`'s detritus NOTE for packages using these functions).
 
 - `submit_cran()` (and the automatic tarball build behind it) now runs optional build hooks: scripts named `tools/build-before.*` and `tools/build-after.*` in the package are run before and after `R CMD build` (`.R` via `Rscript`, `.sh` via `sh`). A `build-before` script can generate files that ship in the tarball but are not kept in the source tree (e.g. download or minify assets), and the `build-after` script (run even if the build fails) can restore the source tree.
