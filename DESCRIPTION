@@ -23,7 +23,6 @@ Suggests:
     tinytex (>= 0.30),
     mime,
     litedown (>= 0.6),
-    commonmark,
     knitr (>= 1.50),
     remotes,
     pak,

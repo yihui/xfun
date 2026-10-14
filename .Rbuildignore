@@ -7,3 +7,4 @@
 ^\.positai$
 ^\.claude$
 ^CLAUDE\.md$
+^\.githooks$
