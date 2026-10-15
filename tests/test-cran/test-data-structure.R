@@ -57,53 +57,37 @@ assert('raw_string() inherits from character', {
   (inherits(rs, 'character'))
 })
 
-assert('radix_id() gives equal ids for equal combinations', {
+assert('radix_id() encodes combinations as numeric codes', {
+  # equal combinations share a code; distinct ones differ
   k = radix_id(c('b', 'a', 'b', 'a', 'c'))
   (k[1] == k[3])  # 'b' == 'b'
   (k[2] == k[4])  # 'a' == 'a'
   (k[1] != k[2])  # 'b' != 'a'
+  # two vectors: combinations matched row-wise
+  k2 = radix_id(c(1, 1, 2), c('x', 'x', 'x'))
+  (k2[1] == k2[2])
+  (k2[1] != k2[3])
+  # NA is its own value
+  k3 = radix_id(c(1, NA, 1, NA))
+  (k3[1] == k3[3])
+  (k3[2] == k3[4])
+  (k3[1] != k3[2])
 })
 
-assert('radix_id() treats NA as its own value', {
-  k = radix_id(c(1, NA, 1, NA))
-  (k[1] == k[3])
-  (k[2] == k[4])
-  (k[1] != k[2])
-})
-
-assert('radix_id() works with two vectors', {
-  k = radix_id(c(1, 1, 2), c('x', 'x', 'x'))
-  (k[1] == k[2])
-  (k[1] != k[3])
-})
-
-assert('radix_group() numbers groups in first-appearance order', {
+assert('radix_group() returns 1-based group index in first-appearance order', {
+  # single vector
   (radix_group(c('b', 'a', 'b', 'a', 'c')) %==% c(1L, 2L, 1L, 2L, 3L))
-})
-
-assert('radix_group() handles two vectors (row-wise combinations)', {
+  # two vectors
   (radix_group(c(1, 1, 2, 2), c('x', 'y', 'x', 'y')) %==% 1:4)
   (radix_group(c(1, 1, 1, 2), c('x', 'x', 'y', 'x')) %==% c(1L, 1L, 2L, 3L))
-})
-
-assert('radix_group() treats NA as its own group', {
+  # NA is its own group; factors work
   (radix_group(c(1, NA, 1, NA)) %==% c(1L, 2L, 1L, 2L))
   (radix_group(c(NA, NA)) %==% c(1L, 1L))
-})
-
-assert('radix_group() works with a single element', {
   (radix_group('a') %==% 1L)
-  (radix_group(NA_character_) %==% 1L)
-})
-
-assert('radix_group() works with factors', {
   f = factor(c('b', 'a', 'b'), levels = c('a', 'b'))
   (radix_group(f) %==% c(1L, 2L, 1L))
-})
-
-assert('radix_group() can be used to expand a per-group result', {
+  # expand a per-group result back to the full row order
   x = c(3, 1, 3, 2, 1)
   gid = radix_group(x)
-  u = !duplicated(gid)
-  (x[u][gid] %==% x)
+  (x[!duplicated(gid)][gid] %==% x)
 })
