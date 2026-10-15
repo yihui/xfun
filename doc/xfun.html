@@ -14,7 +14,7 @@
 <div class="title"><h1>An Introduction to xfun</h1></div>
 <div class="subtitle"><h2>A Collection of Miscellaneous Functions</h2></div>
 <div class="author"><h2>Yihui Xie</h2></div>
-<div class="date"><h3>2026-10-14</h3></div>
+<div class="date"><h3>2026-10-15</h3></div>
 </div>
 <div class="body">
 <div id="TOC">
@@ -385,7 +385,7 @@ read_utf8(f)
 <pre><code class="language-r">scripts = system.file(&quot;scripts&quot;, c(&quot;call-fun.R&quot;, &quot;child-pids.sh&quot;), package = &quot;xfun&quot;)
 read_all(scripts, before = function(f) paste(&quot;##&quot;, f), after = &quot;&quot;)
 </code></pre>
-<pre><code>## /private/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/RtmpnWoa6z/Rinst170f784519d1/xfun/scripts/call-fun.R
+<pre><code>## /private/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/RtmpEdnCqn/Rinst81c3d55814b/xfun/scripts/call-fun.R
 # This script is executed via the command line `Rscript call-fun.R arg1 arg2
 # arg3`, where arg1 is a path to an .rds file, which contains the function and
 # its arguments saved as a list; arg2 is a path to an .rds file to which the
@@ -403,7 +403,7 @@ local({
   saveRDS(r, a[2])
 })
 
-## /private/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/RtmpnWoa6z/Rinst170f784519d1/xfun/scripts/child-pids.sh
+## /private/var/folders/36/tjdph2t965j8snz9_vkdnw0r0000gn/T/RtmpEdnCqn/Rinst81c3d55814b/xfun/scripts/child-pids.sh
 # given a PID, output all its child PIDs recursively
 list_children() {
   for j in $(pgrep -P $1); do
@@ -543,7 +543,7 @@ substr(base64_uri(f), 1, 60)
 <pre><code class="language-r">tojson(list(d = Sys.Date(), x = c(1, Inf, -Inf)), mode = &quot;json&quot;)
 </code></pre>
 <pre><code class="language-json plain">{
-  &quot;d&quot;: &quot;2026-10-14&quot;,
+  &quot;d&quot;: &quot;2026-10-15&quot;,
   &quot;x&quot;: [1, null, null]
 }
 </code></pre>
