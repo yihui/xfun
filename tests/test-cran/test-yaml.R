@@ -248,36 +248,43 @@ assert('yaml_body() splits YAML front matter from body', {
   (res3$yaml %==% c('title: Hello', 'output: html'))
 })
 
-assert("yaml_value() handles double quoted, single quoted, and plain strings", {
-  (yaml_value("\"a,b\"") %==% "a,b")             # double quoted, comma is literal
-  (yaml_value("\"\"") %==% "")                   # empty double quoted
-  (yaml_value("\"a\\tb\"") %==% "a\tb")          # escape sequence is processed
-  (yaml_value("\"a\\\"\\\\\"") %==% "a\"\\")     # \" and \\, and the string still closes
-  (yaml_value("'a,b'") %==% "a,b")               # single quoted
+assert('yaml_value() handles double quoted, single quoted, and plain strings', {
+  (yaml_value('"a,b"') %==% 'a,b')               # double quoted, comma is literal
+  (yaml_value('""') %==% '')                     # empty double quoted
+  (yaml_value('"a\\tb"') %==% 'a\tb')            # escape sequence is processed
+  (yaml_value('"a\\"\\\\"') %==% 'a"\\')         # \" and \\, and the string still closes
+  (yaml_value("'a,b'") %==% 'a,b')               # single quoted
   (yaml_value("'it''s'") %==% "it's")            # '' is an escaped quote
-  (yaml_value("'a\\tb'") %==% "a\\tb")           # backslash is literal
+  (yaml_value("'a\\tb'") %==% 'a\\tb')           # backslash is literal
   (yaml_value("don't") %==% "don't")             # plain, inner quote is literal
-  has_error(yaml_value("\"abc"))                 # unterminated double quote
-  has_error(yaml_value("\"b\" c"))               # text after the closing quote
-  has_error(yaml_value("\"\\q\""))               # invalid escape
-  has_error(yaml_value("'abc"))                  # unterminated single quote
+  (yaml_value('"a\\/b"') %==% 'a/b')             # \/ (valid YAML, rejected by R parser)
+  (yaml_value('"\\x41"') %==% 'A')               # \xXX byte escape
+  (yaml_value('"\\u00e9"') %==% '\u00e9')      # \uXXXX unicode escape
+  (yaml_value('"\\q"') %==% 'q')                 # unknown escape: backslash dropped (lenient)
+  # lenient: unbalanced/stray quotes are stripped, not an error
+  (yaml_value('"abc') %==% 'abc')                # unterminated double quote
+  (yaml_value("'abc") %==% 'abc')                # unterminated single quote
+  (yaml_value('"b" c') %==% 'b" c')              # text after the closing quote
+  (yaml_value('[1,,2,]') %==% c(1L, NA, 2L, NA)) # empty flow elements (incl. trailing) are NA
+  (yaml_value('[a,,b]') %==% c('a', NA, 'b'))    # empty flow element in a string array
 })
 
-assert("split_flow() splits on commas outside of quoted strings", {
-  (split_flow("abc") %==% "abc")                              # no commas
-  (split_flow(" a , b ,c ") %==% c("a", "b", "c"))            # whitespace is trimmed
-  (split_flow("1,,2") %==% c("1", "", "2"))                   # empty item in the middle
-  (split_flow(",1") %==% c("", "1"))                          # empty leading item
-  (split_flow("a,") %==% "a")                                 # one trailing comma is dropped
-  (split_flow("a,,") %==% c("a", ""))                         # but only one
-  (split_flow("") %==% character(0))                          # empty input
-  (split_flow("\"a,b\", c") %==% c("\"a,b\"", "c"))           # double quoted comma, quotes are kept
-  (split_flow("\"a\\\"b, c\", d") %==% c("\"a\\\"b, c\"", "d")) # \" does not end the string
-  (split_flow("'it''s, x', y") %==% c("'it''s, x'", "y"))     # '' does not end the string
-  (split_flow("'a\\', b") %==% c("'a\\'", "b"))               # backslash is literal in single quotes
-  (split_flow("  \"b,c\"  , d") %==% c("\"b,c\"", "d"))       # whitespace around a quoted item
-  (split_flow("\"a,b\",") %==% "\"a,b\"")                     # quoted item then trailing comma
-  (split_flow("don't, a \"b, c\" d") %==% c("don't", "a \"b", "c\" d"))  # quotes mid-value are literal
-  (split_flow("\"b\" c, d") %==% c("\"b\" c", "d"))           # text after a closing quote: not a span
-  (split_flow("\"abc, d") %==% c("\"abc", "d"))               # unterminated quote: not a span
+assert('split_flow() splits on commas outside of quoted strings', {
+  (split_flow('abc') %==% 'abc')                             # no commas
+  (split_flow(' a , b ,c ') %==% c('a', 'b', 'c'))           # whitespace is trimmed
+  (split_flow('1,,2') %==% c('1', '', '2'))                  # empty item in the middle
+  (split_flow(',1') %==% c('', '1'))                         # empty leading item
+  (split_flow('a,') %==% c('a', ''))                         # trailing comma is a trailing empty
+  (split_flow('a,,') %==% c('a', '', ''))                    # each comma is a separator
+  (split_flow('1,,2,') %==% c('1', '', '2', ''))             # empty items are kept everywhere
+  (split_flow('') %==% character(0))                         # empty input
+  (split_flow('"a,b", c') %==% c('"a,b"', 'c'))              # double quoted comma, quotes are kept
+  (split_flow('"a\\"b, c", d') %==% c('"a\\"b, c"', 'd'))    # \" does not end the string
+  (split_flow("'it''s, x', y") %==% c("'it''s, x'", 'y'))    # '' does not end the string
+  (split_flow("'a\\', b") %==% c("'a\\'", 'b'))              # backslash is literal in single quotes
+  (split_flow('  "b,c"  , d') %==% c('"b,c"', 'd'))          # whitespace around a quoted item
+  (split_flow('"a,b",') %==% c('"a,b"', ''))                 # quoted item then trailing empty
+  (split_flow('don\'t, a "b, c" d') %==% c("don't", 'a "b', 'c" d'))  # quotes mid-value are literal
+  (split_flow('"b" c, d') %==% c('"b" c', 'd'))              # text after a closing quote: not a span
+  (split_flow('"abc, d') %==% c('"abc', 'd'))                # unterminated quote: not a span
 })
