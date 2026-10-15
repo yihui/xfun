@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.62
 
+- Added `radix_id()` and `radix_group()`: `radix_id()` encodes row combinations as a mixed-radix numeric code (equal rows share a code, faster than `paste()`); `radix_group()` returns a 1-based group index in first-appearance order.
+
 - Added `rust` to the internal object `comment_chars` (thanks, @kbvernon, #132).
 
 - `taml_load()` now parses flow arrays (`[...]`) correctly when elements are surrounded by spaces (e.g. `[ 1, 2 ]`), and keeps quoted values as strings even when they look numeric (e.g. `["1"]` is `"1"`, not `1`) (thanks, @reedacartwright, #133).

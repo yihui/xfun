@@ -91,3 +91,56 @@ record_print.xfun_raw_string = function(x, ...) {
   cls = intersect(c(class(x), 'record_output'), .record_classes)[1]
   structure(x, class = cls, opts = list(comment = '', attr = attr2(x, 'lang')))
 }
+
+#' Mixed-radix codes and group indices for row combinations
+#'
+#' `radix_id()` encodes each row as a numeric code via a mixed-radix key: each
+#' vector contributes one digit in base `nlevels + 1`, with `NA` mapped to `0`
+#' (its own group). Equal combinations share a code; use
+#' `!duplicated(radix_id(...))` to flag the first occurrence of each. Faster
+#' than `paste()` — no string allocation.
+#'
+#' `radix_group()` returns `match(radix_id(...), unique(radix_id(...)))`: a
+#' 1-based group index in first-appearance order. Use `radix_id()` when only
+#' `!duplicated()` is needed; `radix_group()` when the index itself matters.
+#'
+#' @param ... Equal-length vectors (factors, or coercible via [factor()]).
+#' @return `radix_id()`: numeric vector; only equality comparisons meaningful.
+#'   `radix_group()`: integer vector in `1:k` (`k` = distinct combinations).
+#' @export
+#' @examples
+#' # radix_id(): equal combinations share a code; !duplicated() flags first occurrences
+#' k = radix_id(c('b', 'a', 'b', 'a', 'c'))
+#' !duplicated(k)  # TRUE FALSE TRUE FALSE TRUE
+#'
+#' # two vectors: combinations are matched row-wise
+#' k2 = radix_id(c(1, 1, 2), c('x', 'x', 'y'))
+#' k2[1] == k2[2]  # TRUE  (same combination)
+#' k2[1] == k2[3]  # FALSE (different combination)
+#'
+#' # radix_group(): 1-based group index in first-appearance order
+#' radix_group(c("b", "a", "b", "a", "c"))  # 1 2 1 2 3
+#'
+#' # expand a per-group result back to the full row order
+#' x = c(3, 1, 3, 2, 1)
+#' gid = radix_group(x)
+#' u = !duplicated(gid)
+#' per_group = x[u]^2  # 9 1 4 (one value per distinct group)
+#' per_group[gid]      # 9 1 9 4 1 (expanded back)
+radix_id = function(...) {
+  key = 0
+  for (x in list(...)) {
+    f = if (is.factor(x)) x else factor(x)
+    code = as.integer(f)
+    code[is.na(code)] = 0L
+    key = key * (nlevels(f) + 1L) + code
+  }
+  key
+}
+
+#' @rdname radix_id
+#' @export
+radix_group = function(...) {
+  key = radix_id(...)
+  match(key, unique(key))
+}

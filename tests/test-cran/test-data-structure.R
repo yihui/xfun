@@ -56,3 +56,29 @@ assert('raw_string() inherits from character', {
   rs = raw_string(c('a "b"', 'hello\tworld!'))
   (inherits(rs, 'character'))
 })
+
+assert('radix_id() encodes combinations as numeric codes', {
+  (radix_id(c('b', 'a', 'b', 'a', 'c')) %==% c(2, 1, 2, 1, 3))
+  # two vectors: combinations matched row-wise
+  (radix_id(c(1, 1, 2), c('x', 'x', 'x')) %==% c(3, 3, 5))
+  # NA maps to code 0 (its own group)
+  (radix_id(c(1, NA, 1, NA)) %==% c(1, 0, 1, 0))
+})
+
+assert('radix_group() returns 1-based group index in first-appearance order', {
+  # single vector
+  (radix_group(c('b', 'a', 'b', 'a', 'c')) %==% c(1L, 2L, 1L, 2L, 3L))
+  # two vectors
+  (radix_group(c(1, 1, 2, 2), c('x', 'y', 'x', 'y')) %==% 1:4)
+  (radix_group(c(1, 1, 1, 2), c('x', 'x', 'y', 'x')) %==% c(1L, 1L, 2L, 3L))
+  # NA is its own group; factors work
+  (radix_group(c(1, NA, 1, NA)) %==% c(1L, 2L, 1L, 2L))
+  (radix_group(c(NA, NA)) %==% c(1L, 1L))
+  (radix_group('a') %==% 1L)
+  f = factor(c('b', 'a', 'b'), levels = c('a', 'b'))
+  (radix_group(f) %==% c(1L, 2L, 1L))
+  # expand a per-group result back to the full row order
+  x = c(3, 1, 3, 2, 1)
+  gid = radix_group(x)
+  (x[!duplicated(gid)][gid] %==% x)
+})
