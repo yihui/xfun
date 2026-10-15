@@ -171,7 +171,7 @@ yaml_value = function(x, envir = parent.frame()) {
     if (is_blank(v)) return()
     # split on top-level commas (respecting quotes), then parse each element,
     # so quoting is preserved: '1'/"1" stay strings while bare 1 is numeric
-    return(unlist(lapply(split_flow(v), function(z) yaml_value(trimws(z), envir))))
+    return(unlist(lapply(split_flow(v), function(z) yaml_value(z, envir))))
   }
   if (grepl('^[0-9.e+-]', v)) {
     v = suppressWarnings(as.numeric(v))
@@ -183,25 +183,58 @@ yaml_value = function(x, envir = parent.frame()) {
 }
 
 # split a flow sequence on commas not enclosed in quotes
+# double quoted strings use backslash escapes
+# single quoted strings use '' is a literal quote
 split_flow = function(x) {
-  tokens = character(); cur = ''; q = ''  # q: open quote char, '' if outside
-  for (c in strsplit(x, '')[[1]]) {
-    if (q != '') {
-      cur = paste0(cur, c)
-      if (c == q) q = ''  # closing quote
-    } else if (c == '"' || c == "'") {
-      q = c; cur = paste0(cur, c)
-    } else if (c == ',') {
-      tokens = c(tokens, cur); cur = ''
-    } else cur = paste0(cur, c)
+  dq = "\"(?:[^\"\\\\]++|\\\\.)*+\""
+  sq = "'(?:[^']++|'')*+'"
+
+  pat = paste0("(?:^|(?<=,))\\s*(?:", dq, "|", sq, ")(?=\\s*(?:,|$))")
+
+  # identify the spans of double and single quoted strings
+  m = gregexpr(pat, x, perl = TRUE)[[1]]
+  len = attr(m, "match.length")
+  starts = m
+  ends = m + len - 1L
+  if (m[1] == -1L) starts = ends = integer(0)
+
+  # identify the positions of all commas
+  commas = gregexpr(",", x, fixed = TRUE)[[1]]
+  commas = commas[commas > 0L]
+
+  # remove commas inside of quotes
+  i = findInterval(commas, starts)
+  inside = i > 0L & commas <= ends[pmax(i, 1L)]
+  cut = commas[!inside]
+
+  # split at commas and trim white space
+  parts = substring(x, c(1L, cut + 1L), c(cut - 1L, nchar(x)))
+  parts = trimws(parts)
+
+  # remove empty part produced by a trailing comma
+  if (!nzchar(parts[length(parts)])) {
+    parts = parts[-length(parts)]
   }
-  c(tokens, cur)
+  parts
 }
 
 # convert true/false/na to boolean
 yaml_bool = function(x) all(grepl('^(true|false|na)$', x))
-# remove optional quotes for strings
-yaml_unquote = function(x) gsub('^["\']|["\']$', '', x)
+# remove quotes and unescape single and double quoted strings
+yaml_unquote = function(x) {
+  if (grepl("^'(?:[^']++|'')*+'$", x, perl = TRUE)) {
+    gsub("''", "'", substr(x, 2, nchar(x) - 1), fixed = TRUE)
+  } else if (grepl("^\"(?:[^\"\\\\]++|\\\\.)*+\"$", x, perl = TRUE)) {
+    # use R's string parser to unescape double quoted strings
+    parse_only(x)[[1]]
+  } else if(grepl("^[\"']", x)) {
+    stop("Failed to parse YAML: unterminated quoted scalar: ", x)
+  } else if(!nzchar(x)) {
+    stop("Failed to parse YAML: plain scalar has zero length")
+  } else {
+    x
+  }
+}
 
 yaml_expr = function(x, envir) {
   x = parse_only(x)
