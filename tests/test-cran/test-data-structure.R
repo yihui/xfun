@@ -58,20 +58,11 @@ assert('raw_string() inherits from character', {
 })
 
 assert('radix_id() encodes combinations as numeric codes', {
-  # equal combinations share a code; distinct ones differ
-  k = radix_id(c('b', 'a', 'b', 'a', 'c'))
-  (k[1] == k[3])  # 'b' == 'b'
-  (k[2] == k[4])  # 'a' == 'a'
-  (k[1] != k[2])  # 'b' != 'a'
+  (radix_id(c('b', 'a', 'b', 'a', 'c')) %==% c(2, 1, 2, 1, 3))
   # two vectors: combinations matched row-wise
-  k2 = radix_id(c(1, 1, 2), c('x', 'x', 'x'))
-  (k2[1] == k2[2])
-  (k2[1] != k2[3])
-  # NA is its own value
-  k3 = radix_id(c(1, NA, 1, NA))
-  (k3[1] == k3[3])
-  (k3[2] == k3[4])
-  (k3[1] != k3[2])
+  (radix_id(c(1, 1, 2), c('x', 'x', 'x')) %==% c(3, 3, 5))
+  # NA maps to code 0 (its own group)
+  (radix_id(c(1, NA, 1, NA)) %==% c(1, 0, 1, 0))
 })
 
 assert('radix_group() returns 1-based group index in first-appearance order', {
