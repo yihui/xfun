@@ -1,3 +1,6 @@
+# CHANGES IN xfun VERSION 0.63
+
+
 # CHANGES IN xfun VERSION 0.62
 
 - Added `radix_id()` and `radix_group()`: `radix_id()` encodes row combinations as a mixed-radix numeric code (equal rows share a code, faster than `paste()`); `radix_group()` returns a 1-based group index in first-appearance order.
