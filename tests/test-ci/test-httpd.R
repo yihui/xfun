@@ -228,7 +228,7 @@ if (
   })
 
   d = tempfile(); dir.create(d)
-  writeLines('hello', file.path(d, I('a.txt')))
+  writeLines('hello', file.path(d, 'a.txt'))
   url = serve_dir(d, name = 'serve-dir-test', open = FALSE)
   on.exit({ stop_app('serve-dir-test'); unlink(d, recursive = TRUE) }, add = TRUE)
 
@@ -239,7 +239,7 @@ if (
     (!is.null(handler))
     # request for the served file
     r = handler('/custom/serve-dir-test/a.txt')
-    (basename(r$file) %==% I('a.txt'))
+    (basename(r$file) %==% 'a.txt')
     # request for the directory listing
     r = handler('/custom/serve-dir-test/')
     (r$`content-type` %==% 'text/html')
