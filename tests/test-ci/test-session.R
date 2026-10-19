@@ -2,10 +2,10 @@ library(testit)
 
 assert('session_info() strips BLAS/LAPACK/matrix-products and base-packages noise', {
   si = session_info()
-  (!any(grepl('BLAS', si, fixed = TRUE)))
-  (!any(grepl('LAPACK', si, fixed = TRUE)))
-  (!any(grepl('Matrix products', si, fixed = TRUE)))
-  (!any(grepl('attached base packages', si, ignore.case = TRUE)))
+  (has_match(si, !I('BLAS')))
+  (has_match(si, !I('LAPACK')))
+  (has_match(si, !I('Matrix products')))
+  (has_match(si, !'(?i)attached base packages'))
   # no consecutive blank lines
   blank = !nzchar(trimws(si))
   (!any(blank[-1] & blank[-length(blank)]))
@@ -13,12 +13,12 @@ assert('session_info() strips BLAS/LAPACK/matrix-products and base-packages nois
 
 assert('session_info() renames "other attached packages" and filters by package name', {
   si_all = session_info()
-  (!any(grepl('other attached packages', si_all, ignore.case = TRUE)))
-  (any(grepl('Package version:', si_all, fixed = TRUE)))
+  (has_match(si_all, !'(?i)other attached packages'))
+  (has_match(si_all, I('Package version:')))
   # packages= restricts output to the named package
   si = session_info('xfun', dependencies = FALSE)
   ver = as.character(packageVersion('xfun'))
-  (any(grepl(paste0('xfun_', ver), si, fixed = TRUE)))
+  (has_match(si, I(paste0('xfun_', ver))))
   # empty strings in packages= are silently ignored
   si2 = session_info(c('xfun', ''), dependencies = FALSE)
   (identical(si, si2))

@@ -137,7 +137,7 @@ if (
 
   assert('proxy root app responds to a GET request', {
     (!is.null(resp))
-    (grepl('200 OK', resp, fixed = TRUE))
+    (has_match(resp, I('200 OK')))
     (http_body(resp) %==% make_body('hello', method = 'GET'))
   })
 
@@ -233,7 +233,7 @@ if (
   on.exit({ stop_app('serve-dir-test'); unlink(d, recursive = TRUE) }, add = TRUE)
 
   assert('serve_dir() registers an app and returns its URL', {
-    (grepl('/custom/serve-dir-test/$', url))
+    (has_match(url, '/custom/serve-dir-test/$'))
     (!is.null(.proxy$apps[['serve-dir-test']]))
     handler = get0('serve-dir-test', .httpd_env(), inherits = FALSE)
     (!is.null(handler))
@@ -243,6 +243,6 @@ if (
     # request for the directory listing
     r = handler('/custom/serve-dir-test/')
     (r$`content-type` %==% 'text/html')
-    (grepl('a.txt', r$payload))
+    (has_match(r$payload, I('a.txt')))
   })
 }

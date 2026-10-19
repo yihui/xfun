@@ -41,7 +41,7 @@ opts = options(try.outFile = NULL)
 if (getRversion() >= '3.4.0') assert('record() can capture try() messages', {
   rec = record('try(stop("asdf qwer zxcv"))')
   (length(rec) %==% 2L)
-  (grepl('asdf qwer zxcv', rec[[2]]))
+  (has_match(rec[[2]], 'asdf qwer zxcv'))
 })
 options(opts)
 
@@ -55,7 +55,7 @@ assert('record() captures messages', {
   res = record('message("hello")', message = TRUE)
   cls = sapply(res, function(x) sub('record_', '', class(x)))
   ('message' %in% cls)
-  (any(grepl('hello', unlist(res))))
+  (has_match(unlist(res), 'hello'))
 })
 
 assert('record() suppresses messages when message = FALSE', {
@@ -68,14 +68,14 @@ assert('record() captures warnings', {
   res = record('warning("oops")', warning = TRUE)
   cls = sapply(res, function(x) sub('record_', '', class(x)))
   ('warning' %in% cls)
-  (any(grepl('oops', unlist(res))))
+  (has_match(unlist(res), 'oops'))
 })
 
 assert('record() captures errors when error = TRUE', {
   res = record('stop("boom")', error = TRUE)
   cls = sapply(res, function(x) sub('record_', '', class(x)))
   ('error' %in% cls)
-  (any(grepl('boom', unlist(res))))
+  (has_match(unlist(res), 'boom'))
 })
 
 assert('record() handles syntax errors gracefully', {
@@ -87,48 +87,48 @@ assert('record() handles syntax errors gracefully', {
 
 assert('record() with verbose = 2 prints invisible values', {
   res = record('invisible(42)', verbose = 2)
-  (any(grepl('42', unlist(res))))
+  (has_match(unlist(res), '42'))
 })
 
 assert('record() with verbose = 1 prints last invisible value', {
   res = record(c('invisible(1)', 'invisible(2)'), verbose = 1)
-  (any(grepl('2', unlist(res))))
+  (has_match(unlist(res), '2'))
 })
 
 assert('record() captures text output', {
   res = record('cat("hello world")')
   cls = sapply(res, function(x) sub('record_', '', class(x)))
   ('output' %in% cls)
-  (any(grepl('hello world', unlist(res))))
+  (has_match(unlist(res), 'hello world'))
 })
 
 assert('format.xfun_record_results() works for text output', {
   res = record(c('1 + 1', 'cat("hi")'))
   txt = format(res, to = 'text')
   (is.character(txt))
-  (any(grepl('1 \\+ 1', txt)))
-  (any(grepl('hi', txt)))
+  (has_match(txt, '1 \\+ 1'))
+  (has_match(txt, 'hi'))
 })
 
 assert('format.xfun_record_results() works for markdown output', {
   res = record(c('1 + 1'))
   md = format(res, to = 'markdown')
   (is.character(md))
-  (any(grepl('```', md)))
+  (has_match(md, '```'))
 })
 
 assert('format.xfun_record_results() works for html output', {
   res = record(c('1 + 1'))
   html = format(res, to = 'html')
   (is.character(html))
-  (any(grepl('<pre', html)))
-  (any(grepl('</code></pre>', html)))
+  (has_match(html, '<pre'))
+  (has_match(html, '</code></pre>'))
 })
 
 assert('format.xfun_record_results() html with template', {
   res = record('1 + 1')
   html = format(res, to = 'html', template = TRUE)
-  (any(grepl('<html', html) | grepl('<!DOCTYPE', html)))
+  (has_match(html, '<html|<!DOCTYPE'))
 })
 
 assert('print.xfun_record_results() works in non-interactive mode', {
@@ -152,22 +152,22 @@ assert('new_record() creates record objects with correct class', {
 assert('record_print.default() captures print output', {
   out = record_print(1:3)
   (is.character(out))
-  (any(grepl('1 2 3', out)))
+  (has_match(out, '1 2 3'))
 })
 
 assert('format() markdown output includes fenced blocks for messages/warnings', {
   res = record(c('message("hi")', 'warning("yo")'), message = TRUE, warning = TRUE)
   md = format(res, to = 'markdown')
-  (any(grepl('```', md)))
-  (any(grepl('[.]message', md)))
-  (any(grepl('[.]warning', md)))
+  (has_match(md, '```'))
+  (has_match(md, '[.]message'))
+  (has_match(md, '[.]warning'))
 })
 
 assert('format() html output for messages and errors', {
   res = record('stop("boom")', error = TRUE)
   html = format(res, to = 'html')
-  (any(grepl('class="error"', html)))
-  (any(grepl('boom', html)))
+  (has_match(html, 'class="error"'))
+  (has_match(html, 'boom'))
 })
 
 assert('record() with error = NA halts on error', {

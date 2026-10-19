@@ -112,10 +112,10 @@ assert('md_table() generates a Markdown pipe table', {
   x = data.frame(a = 1:3, b = c('x', 'y', 'z'), stringsAsFactors = FALSE)
   res = md_table(x)
   (length(res) %==% 5L)  # header + separator + 3 rows
-  (grepl('^\\|', res[1]))  # starts with pipe
-  (grepl('\\|$', res[1]))  # ends with pipe
+  (has_match(res[1], '^\\|'))  # starts with pipe
+  (has_match(res[1], '\\|$'))  # ends with pipe
   # numeric column is right-aligned
-  (grepl('--:', res[2]))
+  (has_match(res[2], '--:'))
 
   # empty columns
   (md_table(data.frame()) %==% character())
@@ -126,12 +126,12 @@ assert('md_table() generates a Markdown pipe table', {
   # NA values in table
   x2 = data.frame(a = c(1, NA, 3), b = c('x', 'y', NA))
   res2 = md_table(x2)
-  (any(grepl('NA', res2) | grepl('', res2)))  # NA shown as empty by default
+  (has_match(res2, !'NA'))  # NA shown as empty by default
 
   # row names (non-numeric) are included as first column
   x3 = data.frame(a = 1:2, row.names = c('r1', 'r2'))
   res3 = md_table(x3)
-  (grepl('r1', res3[3]))  # first data row (after header + separator) contains r1
+  (has_match(res3[3], 'r1'))  # first data row (after header + separator) contains r1
 
   # limit parameter
   x4 = data.frame(a = 1:10)
@@ -145,39 +145,39 @@ assert('fenced_div() uses colons and supports attributes', {
 
 assert('md_table() with newlines, NA, digits, and pipes', {
   x = data.frame(a = 'line1\nline2', stringsAsFactors = FALSE)
-  (!any(grepl('\n', md_table(x))))
+  (has_match(md_table(x), !'line1\nline2'))
   x = data.frame(a = c(1, NA))
-  (any(grepl('N/A', md_table(x, na = 'N/A'))))
+  (has_match(md_table(x, na = 'N/A'), 'N/A'))
   x = data.frame(a = 3.14159265)
   res = md_table(x, digits = 2)
-  (any(grepl('3.14', res)))
-  (!any(grepl('3.1415', res)))
+  (has_match(res, I('3.14')))
+  (has_match(res, !I('3.1415')))
   x = data.frame(a = 'a|b', stringsAsFactors = FALSE)
-  (any(grepl('\\\\[|]', md_table(x))))
+  (has_match(md_table(x), '\\\\[|]'))
 })
 
 assert('md_table() escapes special Markdown characters', {
   x = data.frame(a = '<TaskRegr:mtcars[0]>', stringsAsFactors = FALSE)
   res = md_table(x, escape = TRUE)
-  (any(grepl('\\\\<', res)))
-  (any(grepl('\\\\\\[', res)))
+  (has_match(res, '\\\\<'))
+  (has_match(res, '\\\\\\['))
   # escape by column name
   x = data.frame(a = '*bold*', b = '*bold*', stringsAsFactors = FALSE)
   res = md_table(x, escape = 'a')
-  (any(grepl('\\\\[*]', res)))
+  (has_match(res, '\\\\[*]'))
   # column b should not be escaped
-  (grepl('\\*bold\\*\\|$', res[3]))
+  (has_match(res[3], '\\*bold\\*\\|$'))
   # escape = FALSE (default) does not escape
-  (!any(grepl('\\\\<', md_table(data.frame(a = '<x>'), escape = FALSE))))
+  (has_match(md_table(data.frame(a = '<x>'), escape = FALSE), !'\\\\<'))
 })
 
 assert('md_table() with column limit', {
   x = as.data.frame(matrix(1:20, nrow = 2))
-  (any(grepl('[.][.][.]', md_table(x, limit = c(0, 4)))))
+  (has_match(md_table(x, limit = c(0, 4)), '[.][.][.]'))
 })
 
 assert('md_table() with row limit shows ellipsis', {
-  (any(grepl('vellip', md_table(data.frame(a = 1:20), limit = 4))))
+  (has_match(md_table(data.frame(a = 1:20), limit = 4), 'vellip'))
 })
 
 assert('protect_math() does not touch code blocks', {
@@ -202,7 +202,7 @@ assert('embed_file() produces an anchor tag with base64 data', {
   f = tempfile(fileext = '.txt'); writeLines('hello', f)
   link = embed_file(f)
   (inherits(link, 'xfun_html'))
-  (grepl('<a ', link) && grepl('download=', link) && grepl('data:text/plain;base64,', link))
+  (has_match(link, '<a ') && has_match(link, 'download=') && has_match(link, 'data:text/plain;base64,'))
   unlink(f)
 })
 
@@ -212,7 +212,7 @@ assert('embed_files() compresses multiple files into a zip link', {
   f2 = file.path(d, 'b.txt'); writeLines('bbb', f2)
   link = embed_files(c(f1, f2))
   (inherits(link, 'xfun_html'))
-  (grepl('\\.zip', link))
+  (has_match(link, '\\.zip'))
   unlink(d, recursive = TRUE)
 })
 
@@ -221,6 +221,6 @@ assert('embed_dir() compresses a directory into a zip link', {
   writeLines('aaa', file.path(d, 'file.txt'))
   link = embed_dir(d)
   (inherits(link, 'xfun_html'))
-  (grepl('\\.zip', link))
+  (has_match(link, '\\.zip'))
   unlink(d, recursive = TRUE)
 })

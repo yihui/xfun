@@ -42,7 +42,7 @@ assert('read_utf8(binary = TRUE) preserves Ctrl+Z bytes and trailing content', {
 
   # binary mode reads the whole file and keeps the \x1a byte
   (read_utf8(f, binary = TRUE) %==% c('head', 'x\x1ay', 'tail'))
-  (grepl('\x1a', read_utf8(f, binary = TRUE)[2]))
+  (has_match(read_utf8(f, binary = TRUE)[2], '\x1a'))
 
   unlink(f)
 })

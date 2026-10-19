@@ -54,5 +54,5 @@ assert('json_unpack unpack() decodes packed ints and passes arrays/typed arrays 
     'document.getElementById("out").textContent = r.join(";");',
     '</script></body></html>'
   ), f)
-  (grepl('<div id="out">150;2;true;7,8</div>', browser_dom(f), fixed = TRUE))
+  (has_match(browser_dom(f), I('<div id="out">150;2;true;7,8</div>')))
 })

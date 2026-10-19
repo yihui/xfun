@@ -123,24 +123,24 @@ assert('tojson(dict = ) dictionary-encodes repeated values when it is shorter', 
   # enabled: runnable JS expression, 0-based codes indexing unique values (in
   # order of appearance), chosen because it is shorter than the plain form
   d = .tojson(x, dict = 1)
-  (grepl('\\.map\\(i => \\["alpha", "bravo"\\]\\[i\\]\\)$', d))
+  (has_match(d, '\\.map\\(i => \\["alpha", "bravo"\\]\\[i\\]\\)$'))
   (nchar(d) < nchar(json_atomic(x)))
   # numeric vectors encode too
-  (grepl('\\.map\\(i => \\[45, 52\\]\\[i\\]\\)$', .tojson(rep(c(45, 52), 20), dict = 1)))
+  (has_match(.tojson(rep(c(45, 52), 20), dict = 1), '\\.map\\(i => \\[45, 52\\]\\[i\\]\\)$'))
   # NA is a normal dict entry (null in the unique array), so no `?? null` tail
   d2 = .tojson(rep(c('a', NA, 'b'), 10), dict = 1)
-  (grepl('\\[i\\]\\)$', d2))
-  (!grepl('\\?\\?', d2))
-  (grepl('null', d2))
+  (has_match(d2, '\\[i\\]\\)$'))
+  (has_match(d2, !'\\?\\?'))
+  (has_match(d2, 'null'))
   # near-unique vectors stay plain even when enabled (encoding would be longer)
   u = as.character(1:50)
   (.tojson(u, dict = 1) %==% json_atomic(u))
   # a numeric threshold gates candidacy: 2 uniques / 20 rows = 0.1
   (.tojson(x, dict = 0.05) %==% json_atomic(x))
-  (grepl('\\.map', .tojson(x, dict = 0.1)))
+  (has_match(.tojson(x, dict = 0.1), '\\.map'))
   # threads through data-frame columns
   df = data.frame(g = rep(c('alpha', 'bravo'), 20), stringsAsFactors = FALSE)
-  (grepl('"g": \\[0, 1,.*\\.map\\(i => \\["alpha", "bravo"\\]\\[i\\]\\)', .tojson(df, dict = 1)))
+  (has_match(.tojson(df, dict = 1), '"g": \\[0, 1,.*\\.map\\(i => \\["alpha", "bravo"\\]\\[i\\]\\)'))
 })
 
 assert('tojson(mode = "json") emits pure static JSON', {
@@ -210,7 +210,7 @@ assert('tojson(pack) packs long integer vectors as tagged base64', {
       paste0('{"\\u0001u":["a", "b"],"\\u0001c":', pack_ints(rep(0:1, 100)), '}'))
   # mode 'js' (default): a self-contained expression with an unpack() call
   (.tojson(x, pack = 100) %==% paste0('unpack(', pack_ints(x), ')'))
-  (grepl('unpack(', tojson(x, pack = 100), fixed = TRUE))
-  (grepl('Array.from(unpack(', .tojson(y, dict = 1, pack = 100), fixed = TRUE))
-  (grepl(json_unpack, json_reviver, fixed = TRUE))
+  (has_match(tojson(x, pack = 100), I('unpack(')))
+  (has_match(.tojson(y, dict = 1, pack = 100), I('Array.from(unpack(')))
+  (has_match(json_reviver, I(json_unpack)))
 })

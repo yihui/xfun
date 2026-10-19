@@ -140,7 +140,7 @@ assert('handle_error() calls handler and shows message on error', {
     ),
     error = function(e) NULL
   )
-  (any(grepl('caught', msgs)))
+  (has_match(msgs, 'caught'))
 })
 
 assert('is_windows/unix/macos/linux/arm64 return logical(1)', {
@@ -229,5 +229,5 @@ assert('try_error() handles warnings gracefully (does not return TRUE for warnin
 assert('pkg_file() returns the path to a file in the xfun package', {
   p = pkg_file('DESCRIPTION')
   (file.exists(p))
-  (grepl('xfun', p, fixed = TRUE))
+  (has_match(p, I('xfun')))
 })

@@ -15,7 +15,7 @@ Description: Miscellaneous functions commonly used in other packages maintained 
 Depends: R (>= 3.2.0)
 Imports: grDevices, stats, tools
 Suggests:
-    testit,
+    testit (>= 1.2.3),
     parallel,
     codetools,
     methods,
@@ -33,6 +33,7 @@ Suggests:
     yaml,
     data.table,
     qs2
+Remotes: yihui/testit
 License: MIT + file LICENSE
 URL: https://github.com/yihui/xfun
 BugReports: https://github.com/yihui/xfun/issues
