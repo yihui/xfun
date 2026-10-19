@@ -15,7 +15,7 @@ assert('clean_log() removes OK lines, current time, and other noise', {
 
   x = clean_log()
   # first 2 lines removed, OK line removed, current time line removed
-  (!any(grepl('OK$', x)))
-  (!any(grepl('current time', x)))
+  (has_match(x, !'(?m)OK$'))
+  (has_match(x, !'current time'))
   (x %==% c('* checking foo ... WARNING', 'some detail'))
 })

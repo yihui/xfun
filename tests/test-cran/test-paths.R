@@ -203,7 +203,7 @@ assert('relative_path() with .. works across sibling directories', {
   b = file.path(d, 'b'); dir.create(b)
   f = file.path(a, 'file.txt'); file.create(f)
   res = relative_path(f, b)
-  (grepl('\\.\\.', res))
+  (has_match(res, '\\.\\.'))
   unlink(d, recursive = TRUE)
 })
 
@@ -220,7 +220,7 @@ assert('all_files() lists files recursively', {
   file.create(file.path(sub, 'b.R'))
   res = all_files('[.]R$', dir = d)
   (length(res) %==% 1L)
-  (grepl('b.R$', res))
+  (has_match(res, 'b.R$'))
   unlink(d, recursive = TRUE)
 })
 

@@ -98,7 +98,7 @@ assert('str_wrap() wraps text and returns same-length output', {
   (length(res) %==% length(x))
   (is.character(res))
   # each element should contain newlines when wrapping was needed
-  (grepl('\n', res[1]))
+  (has_match(res[1], '\n'))
 })
 
 assert('decimal_dot() forces dot as the decimal separator', {

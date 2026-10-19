@@ -2,9 +2,9 @@ library(testit)
 
 assert('html_doc() wraps content in an HTML document', {
   x = html_doc('<p>hi</p>', 'My Title')
-  (any(grepl('<!DOCTYPE html>', x)))
-  (any(grepl('<title>My Title</title>', x)))
-  (any(grepl('<p>hi</p>', x)))
+  (has_match(x, '<!DOCTYPE html>'))
+  (has_match(x, '<title>My Title</title>'))
+  (has_match(x, '<p>hi</p>'))
 })
 
 assert('fileinfo_table() builds a directory listing table', {
@@ -14,10 +14,10 @@ assert('fileinfo_table() builds a directory listing table', {
   dir.create(file.path(d, 'sub'))
   info = file.info(list.files(d, all.files = TRUE, full.names = TRUE))
   tbl = fileinfo_table(info)
-  (any(grepl('<table>', tbl)))
-  (any(grepl('a.txt', tbl)))
+  (has_match(tbl, '<table>'))
+  (has_match(tbl, I('a.txt')))
   # directories get a trailing slash
-  (any(grepl('sub/', tbl)))
+  (has_match(tbl, 'sub/'))
 })
 
 assert('resolve_path() classifies files, dirs, redirects, and 404s', {
@@ -47,14 +47,14 @@ assert('resolve_path() classifies files, dirs, redirects, and 404s', {
     r = resolve_path('sub/')
     (r$action %==% 'payload')
     (r$mime %==% 'text/html')
-    (grepl('Index of', r$body))
-    (grepl('b.txt', r$body))
+    (has_match(r$body, 'Index of'))
+    (has_match(r$body, I('b.txt')))
 
     # missing file gives 404 payload
     r = resolve_path('missing.txt')
     (r$action %==% 'payload')
     (r$status %==% 404L)
-    (grepl('Not found', r$body))
+    (has_match(r$body, 'Not found'))
 
     # favicon.ico falls back to R's built-in
     r = resolve_path('favicon.ico')
@@ -83,7 +83,7 @@ assert('.resolve_path_to_httpd() maps to R httpd response shape', {
     # add-slash → 301 with Location header
     r = .resolve_path_to_httpd('sub')
     (r$`status code` %==% 301L)
-    (grepl('^Location: /sub/$', r$header))
+    (has_match(r$header, '^Location: /sub/$'))
 
     # 404 payload
     r = .resolve_path_to_httpd('missing.txt')
