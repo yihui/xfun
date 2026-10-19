@@ -1,5 +1,6 @@
 # CHANGES IN xfun VERSION 0.63
 
+- The JavaScript `unpack()` in `json_unpack` (and `json_reviver`) now returns plain arrays and already-decoded typed arrays unchanged, instead of `undefined`. This fixes errors when a consumer calls `unpack()` on a vector that `tojson()` left unpacked because it was too short, or on a value it had already decoded.
 
 # CHANGES IN xfun VERSION 0.62
 
