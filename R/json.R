@@ -214,10 +214,11 @@ pack_ints = function(x) {
 #' @format `json_unpack` and `json_reviver` are character strings of JavaScript
 #'   source.
 #' @export
-# slice(1) drops the one-char tag prefix
+# slice(1) drops the one-char tag prefix; arrays (short vectors are not packed)
+# and typed arrays (already decoded) pass through, so unpack() is idempotent
 json_unpack = paste(
   'const W = {u8: Uint8Array, u16: Uint16Array, u32: Uint32Array, i8: Int8Array, i16: Int16Array, i32: Int32Array},',
-  'unpack = o => { for (const k in o) { const T = W[k.slice(1)]; if (!T) continue;',
+  'unpack = o => { if (Array.isArray(o) || ArrayBuffer.isView(o)) return o; for (const k in o) { const T = W[k.slice(1)]; if (!T) continue;',
   '  const s = atob(o[k]), b = new Uint8Array(s.length);',
   '  for (let i = 0; i < b.length; i++) b[i] = s.charCodeAt(i);',
   '  return new T(b.buffer); } };',

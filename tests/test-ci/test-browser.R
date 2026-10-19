@@ -42,3 +42,17 @@ assert('browser_dom(fragment = TRUE) returns body content only', {
   res = browser_dom(f, fragment = TRUE)
   (unclass(res) %==% '<p>content\n</p>')
 })
+
+assert('json_unpack unpack() decodes packed ints and passes arrays/typed arrays through', {
+  x = rep(1:3, 50)
+  f = tempfile(fileext = '.html')
+  on.exit(unlink(f), add = TRUE)
+  writeLines(c(
+    '<html><body><div id="out"></div><script>', json_unpack,
+    sprintf('const p = unpack(%s), r = [p.length, p[1], unpack(p) === p, unpack([7, 8]).join(",")];',
+            as.character(tojson(x, pack = 0, mode = 'json'))),
+    'document.getElementById("out").textContent = r.join(";");',
+    '</script></body></html>'
+  ), f)
+  (grepl('<div id="out">150;2;true;7,8</div>', browser_dom(f), fixed = TRUE))
+})
