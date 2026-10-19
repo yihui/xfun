@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<meta name="generator" content="litedown 0.11.7">
+<meta name="generator" content="litedown 0.11.8">
 <title>An Introduction to xfun</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.109/css/default.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.109/css/article.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.109/css/prism-xcode.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.110/css/default.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.110/css/article.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.110/css/prism-xcode.min.css">
 </head>
 <body>
 <div class="frontmatter">
 <div class="title"><h1>An Introduction to xfun</h1></div>
 <div class="subtitle"><h2>A Collection of Miscellaneous Functions</h2></div>
 <div class="author"><h2>Yihui Xie</h2></div>
-<div class="date"><h3>2026-10-16</h3></div>
+<div class="date"><h3>2026-10-19</h3></div>
 </div>
 <div class="body">
 <div id="TOC">
@@ -385,7 +385,7 @@ read_utf8(f)
 <pre><code class="language-r">scripts = system.file(&quot;scripts&quot;, c(&quot;call-fun.R&quot;, &quot;child-pids.sh&quot;), package = &quot;xfun&quot;)
 read_all(scripts, before = function(f) paste(&quot;##&quot;, f), after = &quot;&quot;)
 </code></pre>
-<pre><code>## /private/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/RtmpdAtjGO/Rinst455f400d8d71/xfun/scripts/call-fun.R
+<pre><code>## /private/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/Rtmp8fiBag/Rinst9a775f3d24f/xfun/scripts/call-fun.R
 # This script is executed via the command line `Rscript call-fun.R arg1 arg2
 # arg3`, where arg1 is a path to an .rds file, which contains the function and
 # its arguments saved as a list; arg2 is a path to an .rds file to which the
@@ -403,7 +403,7 @@ local({
   saveRDS(r, a[2])
 })
 
-## /private/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/RtmpdAtjGO/Rinst455f400d8d71/xfun/scripts/child-pids.sh
+## /private/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/Rtmp8fiBag/Rinst9a775f3d24f/xfun/scripts/child-pids.sh
 # given a PID, output all its child PIDs recursively
 list_children() {
   for j in $(pgrep -P $1); do
@@ -543,7 +543,7 @@ substr(base64_uri(f), 1, 60)
 <pre><code class="language-r">tojson(list(d = Sys.Date(), x = c(1, Inf, -Inf)), mode = &quot;json&quot;)
 </code></pre>
 <pre><code class="language-json plain">{
-  &quot;d&quot;: &quot;2026-10-16&quot;,
+  &quot;d&quot;: &quot;2026-10-19&quot;,
   &quot;x&quot;: [1, null, null]
 }
 </code></pre>
@@ -731,7 +731,7 @@ Running under: macOS Tahoe 26.6.2
 Locale: en_US.UTF-8 / en_US.UTF-8 / en_US.UTF-8 / C / en_US.UTF-8 / en_US.UTF-8
 
 Package version:
-  litedown_0.11.7 xfun_0.62.1    
+  litedown_0.11.8 xfun_0.62.2    
 </code></pre>
 <h3 id="sec:run-a-task-only-once-per-session"><span class="section-number">18.2</span> Run a task only once per session</h3>
 <p><code>do_once()</code> executes a task the first time it is called and skips it on subsequent calls in the same R session. Useful for showing a deprecation notice or one-time setup:</p>
@@ -743,8 +743,8 @@ Package version:
 #&gt; You will not see this message again in this R session. If you never want to see this message, you may set options(my-one-time-task = FALSE) in your .Rprofile.
 </code></pre>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.109/js/sidenotes.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.109/js/toc-highlight.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.110/js/sidenotes.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.110/js/toc-highlight.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
 </body>
