@@ -19,5 +19,5 @@ field in \file{DESCRIPTION}. Then \code{.1} is appended to \code{Version} in
 release version (which is from bumping the last digit of the current version)
 is prepended to \file{NEWS.md}. For example, if the current version is
 \verb{1.2.3} (or \code{1.2}), the next patch version will be \verb{1.2.3.1} (or \verb{1.2.1}) and
-the next release version will be \verb{1.2.4} (or \code{1.3}).
+the next release version will be \verb{1.2.4} (or \code{1.3}); \verb{1.2.0} goes to \verb{1.3.0}.
 }

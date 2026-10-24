@@ -165,7 +165,7 @@ news_tpl = function(news, pkg, ver) {
 #' release version (which is from bumping the last digit of the current version)
 #' is prepended to \file{NEWS.md}. For example, if the current version is
 #' `1.2.3` (or `1.2`), the next patch version will be `1.2.3.1` (or `1.2.1`) and
-#' the next release version will be `1.2.4` (or `1.3`).
+#' the next release version will be `1.2.4` (or `1.3`); `1.2.0` goes to `1.3.0`.
 #' @export
 post_release = function() {
   # Make sure gh is installed and token is available

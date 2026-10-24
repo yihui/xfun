@@ -321,11 +321,10 @@ bump_version = function(x) {
 release_versions = function(ver, bump = NA, patch = '.1') {
   v = as.numeric_version(ver)
   n = length(unlist(v))
-  # remove the last 0 if it is there
-  if (v[[1, n]] == 0) {
-    v = v[1, -n]; n = n - 1; ver = as.character(v)
-  }
-  b = if (is.na(bump)) n else min(bump, n)
+  # a trailing 0 is dropped from the patch version and not bumped
+  z = v[[1, n]] == 0
+  if (z) ver = as.character(v[1, -n])
+  b = if (is.na(bump)) n - z else min(bump, n - z)
   v[[1, b]] = v[[1, b]] + 1
   i = b; while (i < n) v[[1, i <- i + 1]] = 0
   list(next_ver = as.character(v), patch = paste0(ver, patch))
