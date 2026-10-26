@@ -18,7 +18,7 @@ jobs:
   # The domain of the PR preview (<owner>-<repo>-pr-<N>.surge.sh), derived once
   # and shared by the jobs below.
   preview:
-    runs-on: ubuntu-latest
+    runs-on: macOS-latest
     outputs:
       domain: ${{ steps.domain.outputs.domain }}
     steps:
