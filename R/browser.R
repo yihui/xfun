@@ -42,8 +42,7 @@ browser_print = function(
   args = c(args, sprintf(
     '--%s="%s"', if (to_pdf) 'print-to-pdf' else 'screenshot', normalize_path(output)
   ), shQuote(input))
-  if (with_browser_tmp(system2(browser, args, stderr = FALSE)) != 0)
-    stop('Failed to print to ', output)
+  run_browser(browser, args, paste('Failed to print to', output))
   output
 }
 
@@ -71,8 +70,7 @@ browser_print = function(
 browser_dom = function(input, output = NULL, fragment = FALSE, browser = NULL) {
   browser = check_browser(browser)
   args = c(browser_args(), '--dump-dom', '--log-level=3', input)
-  html = with_browser_tmp(system2(browser, args, stdout = TRUE, stderr = FALSE))
-  if (!is.null(attr2(html, 'status'))) stop('Failed to dump DOM.')
+  html = run_browser(browser, args, 'Failed to dump DOM')
   html = gsub('\\s*<script[^>]*>(?s).*?</script>\\s*', '', one_string(html), perl = TRUE)
   if (fragment)
     html = gsub('^(?s).*?<body[^>]*>\\s*|\\s*</body>(?s).*$', '', html, perl = TRUE)
@@ -89,6 +87,28 @@ with_browser_tmp = function(expr) {
   old = set_envvar(c(TMPDIR = d))
   on.exit({ set_envvar(old); unlink(d, recursive = TRUE, force = TRUE) }, add = TRUE)
   expr
+}
+
+# Run the browser; on failure, stop() with its exit status, version, and
+# stderr (otherwise lost), which is key to diagnosing remote failures. Chromium
+# logs repeat a lot, so collapse lines that differ only in the '[pid:tid:...]'
+# prefix and keep the last 30.
+run_browser = function(browser, args, msg) {
+  err = tempfile(); on.exit(unlink(err))
+  out = with_browser_tmp(system2(browser, args, stdout = TRUE, stderr = err))
+  if (is.null(status <- attr2(out, 'status'))) return(out)
+  ver = tryCatch(
+    system2(browser, '--version', stdout = TRUE, stderr = TRUE),
+    error = function(e) ''
+  )
+  x = if (file.exists(err)) read_utf8(err) else character()
+  k = sub('^\\[[^]]*\\]\\s*', '', x)
+  n = table(k)[unique(k)]
+  x = sprintf('%s%s', x[!duplicated(k)], ifelse(n > 1, sprintf(' (x%d)', n), ''))
+  stop2(one_string(c(
+    sprintf('%s (exit status %s).', msg, status), '',
+    paste('Browser:', browser, ver), '', tail(x, 30)
+  )))
 }
 
 check_browser = function(browser) {

@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.63
 
+- `browser_print()` and `browser_dom()` now include the browser's exit status, version, and (deduplicated) stderr in the error message when the browser fails, instead of just "Failed to print" / "Failed to dump DOM".
+
 - `post_release()` now writes the next `NEWS.md` header as `X.(Y+1).0` instead of `X.(Y+1)` (and `X+1.0` instead of `X+1` for `X.0`) when the released version ends with `.0`.
 
 - The JavaScript `unpack()` in `json_unpack` (and `json_reviver`) now returns plain arrays and already-decoded typed arrays unchanged, instead of `undefined`. This fixes errors when a consumer calls `unpack()` on a vector that `tojson()` left unpacked because it was too short, or on a value it had already decoded.
