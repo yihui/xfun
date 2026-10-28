@@ -18,17 +18,40 @@
 #'   option `options(xfun.browser = )` or environment variable `R_XFUN_BROWSER`
 #'   to the path of the browser, or simply pass the path to the `browser`
 #'   argument.
+#' @param query A named list (or vector) of query parameters to be appended to
+#'   the URL of the page, e.g., `list(paged = 1)`. If `input` is a file path, it
+#'   will be converted to a `file://` URL first.
+#' @param wait A JavaScript expression that must be true before the page is
+#'   printed (or its DOM is dumped), e.g., `"window.ready"`. It is evaluated
+#'   repeatedly until it returns a true value or the time is out. If it returns
+#'   a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise),
+#'   the page is ready when the promise is resolved (regardless of its value).
+#'   To wait for an event on `window` instead, use a named vector (or list) with
+#'   the name of the `event`, and optionally a `trigger` event to be dispatched
+#'   first to request something from the page, e.g., `c(event = "ready")` or
+#'   `c(event = "pagesjs:after", trigger = "pagesjs:paginate")`. The page is
+#'   always waited for until it is loaded. The command-line flags of the browser
+#'   can only wait for a fixed time, so `query` and `wait` make the function
+#'   control the browser via the Chrome DevTools Protocol instead, which is more
+#'   reliable for pages that update themselves after they are loaded.
+#' @param timeout The maximum number of seconds to wait for the browser and the
+#'   page (when `query` or `wait` is used).
 #' @return The `output` path if the web page is successfully printed.
 #' @export
 #' @examplesIf interactive()
 #' xfun::browser_print("https://www.r-project.org")
+#'
+#' # wait for a condition, or an event, on the page
+#' # xfun::browser_print("index.html", wait = "window.pageReady")
+#' # xfun::browser_print("index.html", wait = c(event = "pageReady"))
 browser_print = function(
   input, output = '.pdf', args = 'default', window_size = c(1280, 1024),
-  browser = NULL
+  browser = NULL, query = NULL, wait = NULL, timeout = 60
 ) {
   browser = check_browser(browser)
   if (sans_ext(output) == '') output = with_ext(url_filename(input), output)
   to_pdf = tolower(file_ext(output)) == 'pdf'
+  cdp = length(query) || !is.null(wait)
   if (!to_pdf && !any(grepl('--window-size=', args)))
     args = c(args, paste0('--window-size=', paste(window_size, collapse = ',')))
   if ('default' %in% args) {
@@ -36,8 +59,18 @@ browser_print = function(
       args, browser_args(),
       # Chromium otherwise stamps the date, page title, and file path into the
       # PDF's header and footer, which is just noise for programmatic printing.
-      if (to_pdf) '--no-pdf-header-footer'
+      # (this flag puts the browser in the print-only mode, so not for DevTools)
+      if (to_pdf && !cdp) '--no-pdf-header-footer'
     ), 'default')
+  }
+  if (cdp) {
+    type = switch(tolower(file_ext(output)), pdf = 'pdf', jpeg = , jpg = 'jpeg', 'png')
+    x = browser_cdp(
+      browser, args, browser_url(input, query), wait, timeout,
+      if (!to_pdf) window_size, type
+    )
+    writeBin(x, output)
+    return(output)
   }
   args = c(args, sprintf(
     '--%s="%s"', if (to_pdf) 'print-to-pdf' else 'screenshot', normalize_path(output)
@@ -67,11 +100,20 @@ browser_print = function(
 #'   '</body></html>'
 #' ), f)
 #' xfun::browser_dom(f)
-browser_dom = function(input, output = NULL, fragment = FALSE, browser = NULL) {
+browser_dom = function(
+  input, output = NULL, fragment = FALSE, browser = NULL, query = NULL,
+  wait = NULL, timeout = 60
+) {
   browser = check_browser(browser)
-  args = c(browser_args(), '--dump-dom', '--log-level=3', input)
-  html = run_browser(browser, args, 'Failed to dump DOM')
-  html = gsub('\\s*<script[^>]*>(?s).*?</script>\\s*', '', one_string(html), perl = TRUE)
+  html = if (length(query) || !is.null(wait)) {
+    browser_cdp(
+      browser, browser_args(), browser_url(input, query), wait, timeout, NULL, 'dom'
+    )
+  } else {
+    args = c(browser_args(), '--dump-dom', '--log-level=3', input)
+    one_string(run_browser(browser, args, 'Failed to dump DOM'))
+  }
+  html = gsub('\\s*<script[^>]*>(?s).*?</script>\\s*', '', html, perl = TRUE)
   if (fragment)
     html = gsub('^(?s).*?<body[^>]*>\\s*|\\s*</body>(?s).*$', '', html, perl = TRUE)
   if (is.null(output)) raw_string(html) else write_utf8(html, output)
@@ -90,13 +132,17 @@ with_browser_tmp = function(expr) {
 }
 
 # Run the browser; on failure, stop() with its exit status, version, and
-# stderr (otherwise lost), which is key to diagnosing remote failures. Chromium
-# logs repeat a lot, so collapse lines that differ only in the '[pid:tid:...]'
-# prefix and keep the last 30.
+# stderr (otherwise lost), which is key to diagnosing remote failures.
 run_browser = function(browser, args, msg) {
   err = tempfile(); on.exit(unlink(err))
   out = with_browser_tmp(system2(browser, args, stdout = TRUE, stderr = err))
   if (is.null(status <- attr2(out, 'status'))) return(out)
+  browser_fail(browser, msg, err, status)
+}
+
+# Chromium logs repeat a lot, so collapse lines that differ only in the
+# '[pid:tid:...]' prefix and keep the last 30.
+browser_fail = function(browser, msg, err, status = NULL) {
   ver = tryCatch(
     system2(browser, '--version', stdout = TRUE, stderr = TRUE),
     error = function(e) ''
@@ -106,8 +152,8 @@ run_browser = function(browser, args, msg) {
   n = table(k)[unique(k)]
   x = sprintf('%s%s', x[!duplicated(k)], ifelse(n > 1, sprintf(' (x%d)', n), ''))
   stop2(one_string(c(
-    sprintf('%s (exit status %s).', msg, status), '',
-    paste('Browser:', browser, ver), '', tail(x, 30)
+    if (is.null(status)) paste0(msg, '.') else sprintf('%s (exit status %s).', msg, status),
+    '', paste('Browser:', browser, ver), '', tail(x, 30)
   )))
 }
 

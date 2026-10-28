@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.63
 
+- `browser_print()` and `browser_dom()` gained arguments `query`, `wait`, and `timeout`. `query` appends URL query parameters to the page (e.g., `list(paged = 1)`; a file path is converted to a `file://` URL), and `wait` is a JavaScript expression that must be true before the page is printed or its DOM is dumped (the functions always wait until the page is loaded; if the expression returns a promise, it is awaited; `c(event = , trigger = )` waits for an event on `window`, after dispatching the `trigger` event if provided). When either of them is used, the browser is controlled via the Chrome DevTools Protocol (implemented in base R with a WebSocket over `socketConnection()`, no extra dependencies) instead of command-line flags, which can only wait for a fixed time (e.g., `--virtual-time-budget`) and are not reliable for pages that update themselves after they are loaded.
+
 - `browser_print()` and `browser_dom()` now include the browser's exit status, version, and (deduplicated) stderr in the error message when the browser fails, instead of just "Failed to print" / "Failed to dump DOM".
 
 - `post_release()` now writes the next `NEWS.md` header as `X.(Y+1).0` instead of `X.(Y+1)` (and `X+1.0` instead of `X+1` for `X.0`) when the released version ends with `.0`.

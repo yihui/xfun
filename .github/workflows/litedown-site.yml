@@ -55,6 +55,7 @@ jobs:
     runs-on: macOS-latest
     env:
       PREVIEW_DOMAIN: ${{ needs.preview.outputs.domain }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v7
       - uses: r-lib/actions/setup-r@v2

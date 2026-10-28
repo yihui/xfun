@@ -14,6 +14,10 @@ if (!has_fun('endsWith')) endsWith = function(x, s) {
 if (!has_fun('strrep')) strrep = function(x, times) {
   mapply(function(x, n) paste(rep(x, n), collapse = ''), x, times, USE.NAMES = FALSE)
 }
+# URLencode() is not vectorized in old versions of R
+if (length(URLencode(c('a', 'b'))) < 2) URLencode = function(URL, ...) {
+  vapply(URL, utils::URLencode, '', ..., USE.NAMES = FALSE)
+}
 if (!has_fun('packageDate', asNamespace('utils'))) packageDate = function(...) {
   as.Date(packageDescription(..., fields = 'Date/Publication'))
 }

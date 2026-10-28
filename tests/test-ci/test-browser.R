@@ -56,3 +56,50 @@ assert('json_unpack unpack() decodes packed ints and passes arrays/typed arrays 
   ), f)
   (grepl('<div id="out">150;2;true;7,8</div>', browser_dom(f), fixed = TRUE))
 })
+
+assert('browser_dom() waits for a condition and accepts query params', {
+  f = tempfile(fileext = '.html')
+  on.exit(unlink(f), add = TRUE)
+  writeLines(c(
+    '<html><body><div id="out"></div><script>',
+    'var q = location.search;',
+    'setTimeout(() => {',
+    '  document.getElementById("out").textContent = q + "|héllo";',
+    '  window.done = true;',
+    '}, 1000);',
+    '</script></body></html>'
+  ), f, useBytes = FALSE)
+  res = browser_dom(f, query = list(paged = 1, a = 'b c'), wait = 'window.done')
+  (unclass(res) %==% '<html><head></head><body><div id="out">?paged=1&amp;a=b%20c|héllo</div></body></html>')
+  # a promise is awaited (its value is not used)
+  res2 = browser_dom(f, wait = 'new Promise(r => setTimeout(() => r(), 1500))')
+  (grepl('héllo', res2) %==% TRUE)
+  # wait for an event after triggering it
+  g = tempfile(fileext = '.html'); on.exit(unlink(g), add = TRUE)
+  writeLines(c(
+    '<html><body><div id="out"></div><script>',
+    'addEventListener("go", () => setTimeout(() => {',
+    '  document.getElementById("out").textContent = "ok"; dispatchEvent(new Event("gone"));',
+    '}, 500));',
+    '</script></body></html>'
+  ), g)
+  (grepl('>ok<', browser_dom(g, wait = c(event = 'gone', trigger = 'go'))) %==% TRUE)
+  # time out if the condition is never true
+  (has_error(browser_dom(f, wait = 'window.never', timeout = 3)))
+})
+
+assert('browser_print() prints and takes screenshots via DevTools', {
+  f = tempfile(fileext = '.html')
+  out = tempfile(fileext = c('.pdf', '.png', '.jpeg'))
+  on.exit(unlink(c(f, out)), add = TRUE)
+  writeLines(c(
+    '<html><body><p id="out">waiting</p><script>',
+    'setTimeout(() => { document.getElementById("out").textContent = "ready"; window.ok = 1 }, 500);',
+    '</script></body></html>'
+  ), f)
+  for (o in out) (browser_print(f, o, wait = 'window.ok') %==% o)
+  (file.size(out) > 1000)
+
+  (readBin(out[1], 'raw', 4) %==% charToRaw('%PDF'))
+  (readBin(out[2], 'raw', 4)[2:4] %==% charToRaw('PNG'))
+})
