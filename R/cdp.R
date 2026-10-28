@@ -96,6 +96,25 @@ http_get_page = function(port) {
   if (grepl(r, gsub('\n', '', x))) sub(r, '\\1', gsub('\n', '', x))
 }
 
+# Turn `wait` into a JavaScript expression: a string is used as is, and a named
+# vector/list c(event = , trigger = ) means waiting for an event on `window`
+# (after dispatching the `trigger` event to request something, if provided).
+wait_js = function(wait) {
+  if (is.null(wait)) return('true')
+  if (is.null(names(wait))) return(one_string(wait))
+  wait = as.list(wait)
+  if (!is.character(wait$event) || length(wait$event) != 1) stop2(
+    "'wait' must be a JavaScript expression, or a named vector with an 'event' ",
+    "(the name of an event to wait for) and optionally a 'trigger' (the name of ",
+    "an event to dispatch first)."
+  )
+  sprintf(
+    'new Promise(r => { addEventListener(%s, r, {once: true}); %s })',
+    tojson(wait$event),
+    if (length(wait$trigger)) sprintf('dispatchEvent(new Event(%s))', tojson(wait$trigger)) else ''
+  )
+}
+
 # Start the browser with remote debugging, load `url`, wait until the page is
 # ready (`wait` is a JavaScript expression), and get the result of `type`: 'pdf',
 # 'png', 'jpeg' (raw vector), or 'dom' (the HTML of the page).
@@ -161,7 +180,7 @@ cdp_session = function(browser, args, url, wait, timeout, size, type) {
       "if (location.href === 'about:blank' || document.readyState !== 'complete') return false;",
       "const v = (%s); if (typeof v?.then !== 'function') return !!v; await v; return true;",
       "})()"
-    ), wait %||% 'true'))
+    ), wait_js(wait)))
     repeat {
       ok = tryCatch(grepl('"value":true', call(
         'Runtime.evaluate',

@@ -74,6 +74,16 @@ assert('browser_dom() waits for a condition and accepts query params', {
   # a promise is awaited (its value is not used)
   res2 = browser_dom(f, wait = 'new Promise(r => setTimeout(() => r(), 1500))')
   (grepl('héllo', res2) %==% TRUE)
+  # wait for an event after triggering it
+  g = tempfile(fileext = '.html'); on.exit(unlink(g), add = TRUE)
+  writeLines(c(
+    '<html><body><div id="out"></div><script>',
+    'addEventListener("go", () => setTimeout(() => {',
+    '  document.getElementById("out").textContent = "ok"; dispatchEvent(new Event("gone"));',
+    '}, 500));',
+    '</script></body></html>'
+  ), g)
+  (grepl('>ok<', browser_dom(g, wait = c(event = 'gone', trigger = 'go'))) %==% TRUE)
   # time out if the condition is never true
   (has_error(browser_dom(f, wait = 'window.never', timeout = 3)))
 })

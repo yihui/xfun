@@ -45,11 +45,14 @@ printed (or its DOM is dumped), e.g., \code{"window.ready"}. It is evaluated
 repeatedly until it returns a true value or the time is out. If it returns
 a \href{https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise}{Promise},
 the page is ready when the promise is resolved (regardless of its value).
-The page is always waited for until it is loaded.
-The command-line flags of the browser can only wait for a fixed time, so
-\code{query} and \code{wait} make the function control the browser via the Chrome
-DevTools Protocol instead, which is more reliable for pages that update
-themselves after they are loaded.}
+To wait for an event on \code{window} instead, use a named vector (or list) with
+the name of the \code{event}, and optionally a \code{trigger} event to be dispatched
+first to request something from the page, e.g., \code{c(event = "ready")} or
+\code{c(event = "pagesjs:after", trigger = "pagesjs:paginate")}. The page is
+always waited for until it is loaded. The command-line flags of the browser
+can only wait for a fixed time, so \code{query} and \code{wait} make the function
+control the browser via the Chrome DevTools Protocol instead, which is more
+reliable for pages that update themselves after they are loaded.}
 
 \item{timeout}{The maximum number of seconds to wait for the browser and the
 page (when \code{query} or \code{wait} is used).}
@@ -64,7 +67,8 @@ browser such as Chromium or Google Chrome.
 \examples{\dontshow{if (interactive()) \{}
 xfun::browser_print("https://www.r-project.org")
 
-# wait for a promise that is resolved when the page is ready
+# wait for a condition, or an event, on the page
 # xfun::browser_print("index.html", wait = "window.pageReady")
+# xfun::browser_print("index.html", wait = c(event = "pageReady"))
 \dontshow{\}}
 }

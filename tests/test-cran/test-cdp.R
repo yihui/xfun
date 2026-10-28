@@ -62,3 +62,15 @@ assert('cdp_data() decodes base64 data in a response', {
   (rawToChar(cdp_data(x, '"value":"')) %==% 'xyz')
   (has_error(cdp_data('{"id":1,"result":{}}')))
 })
+
+assert('wait_js() converts the argument wait to a JavaScript expression', {
+  (wait_js(NULL) %==% 'true')
+  (wait_js('window.ok') %==% 'window.ok')
+  (wait_js(c('a', 'b')) %==% 'a\nb')
+  (grepl('addEventListener("done"', wait_js(c(event = 'done')), fixed = TRUE) %==% TRUE)
+  (grepl('dispatchEvent', wait_js(c(event = 'done')), fixed = TRUE) %==% FALSE)
+  x = wait_js(list(event = 'a:after', trigger = 'a:start'))
+  (grepl('addEventListener("a:after"', x, fixed = TRUE) %==% TRUE)
+  (grepl('dispatchEvent(new Event("a:start"))', x, fixed = TRUE) %==% TRUE)
+  (has_error(wait_js(c(foo = 'bar'))))
+})

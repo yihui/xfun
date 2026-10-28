@@ -26,11 +26,14 @@
 #'   repeatedly until it returns a true value or the time is out. If it returns
 #'   a [Promise](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise),
 #'   the page is ready when the promise is resolved (regardless of its value).
-#'   The page is always waited for until it is loaded.
-#'   The command-line flags of the browser can only wait for a fixed time, so
-#'   `query` and `wait` make the function control the browser via the Chrome
-#'   DevTools Protocol instead, which is more reliable for pages that update
-#'   themselves after they are loaded.
+#'   To wait for an event on `window` instead, use a named vector (or list) with
+#'   the name of the `event`, and optionally a `trigger` event to be dispatched
+#'   first to request something from the page, e.g., `c(event = "ready")` or
+#'   `c(event = "pagesjs:after", trigger = "pagesjs:paginate")`. The page is
+#'   always waited for until it is loaded. The command-line flags of the browser
+#'   can only wait for a fixed time, so `query` and `wait` make the function
+#'   control the browser via the Chrome DevTools Protocol instead, which is more
+#'   reliable for pages that update themselves after they are loaded.
 #' @param timeout The maximum number of seconds to wait for the browser and the
 #'   page (when `query` or `wait` is used).
 #' @return The `output` path if the web page is successfully printed.
@@ -38,8 +41,9 @@
 #' @examplesIf interactive()
 #' xfun::browser_print("https://www.r-project.org")
 #'
-#' # wait for a promise that is resolved when the page is ready
+#' # wait for a condition, or an event, on the page
 #' # xfun::browser_print("index.html", wait = "window.pageReady")
+#' # xfun::browser_print("index.html", wait = c(event = "pageReady"))
 browser_print = function(
   input, output = '.pdf', args = 'default', window_size = c(1280, 1024),
   browser = NULL, query = NULL, wait = NULL, timeout = 60
