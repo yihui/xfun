@@ -242,8 +242,10 @@ browser_url = function(input, query = NULL) {
     )
   }
   if (length(query)) {
-    enc = function(x) vapply(x, URLencode, '', reserved = TRUE, USE.NAMES = FALSE)  # not vectorized in R < 3.5
-    q = paste0(enc(names(query)), '=', enc(vapply(query, as.character, '')), collapse = '&')
+    q = paste0(
+      URLencode(names(query), TRUE), '=',
+      URLencode(vapply(query, as.character, ''), TRUE), collapse = '&'
+    )
     x = strsplit(input, '#', fixed = TRUE)[[1]]
     input = paste0(
       x[1], if (grepl('?', x[1], fixed = TRUE)) '&' else '?', q,
