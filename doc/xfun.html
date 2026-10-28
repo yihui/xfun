@@ -385,7 +385,7 @@ read_utf8(f)
 <pre><code class="language-r">scripts = system.file(&quot;scripts&quot;, c(&quot;call-fun.R&quot;, &quot;child-pids.sh&quot;), package = &quot;xfun&quot;)
 read_all(scripts, before = function(f) paste(&quot;##&quot;, f), after = &quot;&quot;)
 </code></pre>
-<pre><code>## /private/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/Rtmpbs4FQf/Rinsta9b7e7e486b/xfun/scripts/call-fun.R
+<pre><code>## /private/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/RtmptsVmM4/Rinst93c7075691e/xfun/scripts/call-fun.R
 # This script is executed via the command line `Rscript call-fun.R arg1 arg2
 # arg3`, where arg1 is a path to an .rds file, which contains the function and
 # its arguments saved as a list; arg2 is a path to an .rds file to which the
@@ -403,7 +403,7 @@ local({
   saveRDS(r, a[2])
 })
 
-## /private/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/Rtmpbs4FQf/Rinsta9b7e7e486b/xfun/scripts/child-pids.sh
+## /private/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/RtmptsVmM4/Rinst93c7075691e/xfun/scripts/child-pids.sh
 # given a PID, output all its child PIDs recursively
 list_children() {
   for j in $(pgrep -P $1); do
