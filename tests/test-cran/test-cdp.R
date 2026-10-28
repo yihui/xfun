@@ -74,3 +74,17 @@ assert('wait_js() converts the argument wait to a JavaScript expression', {
   (grepl('dispatchEvent(new Event("a:start"))', x, fixed = TRUE) %==% TRUE)
   (has_error(wait_js(c(foo = 'bar'))))
 })
+
+assert('ws_page() finds the WebSocket path of the first page', {
+  x = paste0(
+    '[ {"description": "", "id": "A", "title": "bg", "type": "background_page", ',
+    '"url": "chrome-extension://x", "webSocketDebuggerUrl": "ws://127.0.0.1/devtools/page/A"}, ',
+    '{"description": "", "id": "B", "title": "about:blank", "type": "page", ',
+    '"url": "about:blank", "webSocketDebuggerUrl": "ws://localhost:9222/devtools/page/B"} ]'
+  )
+  (ws_page(x) %==% '/devtools/page/B')
+  # a single object (the response of /json/new)
+  (ws_page('{"id": "C", "type": "page", "url": "about:blank", "webSocketDebuggerUrl": "ws://127.0.0.1/devtools/page/C"}') %==% '/devtools/page/C')
+  (is.null(ws_page('[ {"type": "service_worker", "webSocketDebuggerUrl": "ws://127.0.0.1/devtools/page/D"} ]')))
+  (is.null(ws_page('')))
+})

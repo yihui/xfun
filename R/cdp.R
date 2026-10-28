@@ -74,26 +74,51 @@ cdp_data = function(x, key = '"data":"') {
   base64_decode(substr(x, 1, regexpr('"', x, fixed = TRUE) - 1))
 }
 
-# find the WebSocket path of a page via the HTTP API of the DevTools server (use
-# a socket instead of url() so that proxy settings do not get in the way)
-http_get_page = function(port) {
+# send a request to the HTTP API of the DevTools server and return the body of
+# the response (use a socket instead of url() so that proxy settings do not get
+# in the way)
+http_devtools = function(port, path, method = 'GET') {
   con = socketConnection('127.0.0.1', port, open = 'r+b', blocking = TRUE, timeout = 10)
   on.exit(close(con))
-  writeBin(charToRaw(paste0(
-    'GET /json/list HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n'
+  writeBin(charToRaw(sprintf(
+    '%s %s HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n', method, path
   )), con)
   # the server keeps the connection open, so read the body by Content-Length
   n = 0
   repeat {
     h = readLines(con, 1, warn = FALSE)
-    if (!length(h)) return()
+    if (!length(h)) return('')
     if (!nzchar(trimws(h))) break
     if (grepl('^content-length:', h, ignore.case = TRUE))
       n = as.integer(sub('^[^:]+:\\s*', '', h))
   }
   x = rawToChar(read_exact(con, n))
-  r = '.*"type": *"page", *"url": *"[^"]*", *"webSocketDebuggerUrl": *"ws://[^/]+(/[^"]+)".*'
-  if (grepl(r, gsub('\n', '', x))) sub(r, '\\1', gsub('\n', '', x))
+  Encoding(x) = 'UTF-8'
+  gsub('\r?\n', '', x)
+}
+
+# the WebSocket path of the first page in the JSON response of the server
+ws_page = function(x) {
+  r = '"type": *"page"[^}]*?"webSocketDebuggerUrl": *"ws://[^/"]+(/[^"]+)"'
+  m = regmatches(x, regexec(r, x, perl = TRUE))[[1]]
+  if (length(m) > 1) m[2]
+}
+
+# get the WebSocket path of a page; if the browser has not opened one, create it
+get_page = function(port, timed_out) {
+  for (i in seq_len(1e6)) {
+    x = http_devtools(port, '/json/list')
+    if (length(path <- ws_page(x))) return(path)
+    if (i %% 10 == 0) {
+      x = http_devtools(port, '/json/new?about:blank', 'PUT')
+      if (length(path <- ws_page(x))) return(path)
+    }
+    if (timed_out()) stop2(
+      'The browser did not open a page. The last response of the browser: ',
+      substr(x, 1, 500)
+    )
+    Sys.sleep(.2)
+  }
 }
 
 # Turn `wait` into a JavaScript expression: a string is used as is, and a named
@@ -148,14 +173,7 @@ cdp_session = function(browser, args, url, wait, timeout, size, type) {
       }, silent = TRUE)
       Sys.sleep(.5)  # give the browser time to exit before its profile is deleted
     }, add = TRUE)
-    # connect to the first page of the browser
-    repeat {
-      path = http_get_page(port)
-      if (length(path)) break
-      if (timed_out()) stop2('The browser did not open a page.')
-      Sys.sleep(.1)
-    }
-    con = ws_open(port, path, timeout)
+    con = ws_open(port, get_page(port, timed_out), timeout)
     id = 0
     call = function(method, params = '{}') {
       id <<- id + 1; i = id
@@ -224,10 +242,8 @@ browser_url = function(input, query = NULL) {
     )
   }
   if (length(query)) {
-    q = paste0(
-      URLencode(names(query), TRUE), '=',
-      URLencode(vapply(query, as.character, ''), TRUE), collapse = '&'
-    )
+    enc = function(x) vapply(x, URLencode, '', reserved = TRUE, USE.NAMES = FALSE)  # not vectorized in R < 3.5
+    q = paste0(enc(names(query)), '=', enc(vapply(query, as.character, '')), collapse = '&')
     x = strsplit(input, '#', fixed = TRUE)[[1]]
     input = paste0(
       x[1], if (grepl('?', x[1], fixed = TRUE)) '&' else '?', q,
