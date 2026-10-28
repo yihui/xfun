@@ -45,7 +45,7 @@ new_app = function(
     # register the backend handler before starting the proxy, so the proxy never
     # forwards a request to a not-yet-registered handler (R's httpd would return
     # its "httpd error" page, with a 200 status, during that window)
-    assign(key, .make_app_handler(paste0('/custom/xfun:', port), handler, getwd()), envir = .httpd_env())
+    .register_app(key, paste0('/custom/xfun:', port), handler)
     slot = tryCatch(
       proxy_start(as.integer(port), as.integer(backend), host = host),
       error = function(e) { rm_vars(key, .httpd_env()); stop(e) }
@@ -55,7 +55,7 @@ new_app = function(
     url = sprintf('http://%s:%d/', url_host, port)
   } else {
     key = as.character(name)
-    assign(key, .make_app_handler(paste0('/custom/', name), handler, getwd()), envir = .httpd_env())
+    .register_app(key, paste0('/custom/', name), handler)
     .proxy$apps[[name]] = list(type = 'httpd', key = key)
     url = sprintf('http://127.0.0.1:%d/custom/%s/', backend, name)
   }
@@ -178,15 +178,13 @@ proxy_start = function(port, backend_port, passthrough = FALSE, host = '127.0.0.
     if (isTRUE(bg$is_alive())) try(proc_kill(bg$pid), silent = TRUE)
     stop2("Failed to start proxy on port ", port, ".")
   }
-  paste0('r:', bg$pid)
+  bg$pid
 }
 
-# Stop the proxy instance identified by its slot.
+# Stop the proxy instance identified by its slot (the pid of its process).
 proxy_stop = function(slot) {
-  if (is.character(slot) && length(slot) == 1L && startsWith(slot, 'r:')) {
-    pid = sub('^r:', '', slot)
-    if (grepl('^[0-9]+$', pid)) try_silent(proc_kill(as.integer(pid)))
-  }
+  if (is.numeric(slot) && length(slot) == 1L && isTRUE(slot > 0))
+    try_silent(proc_kill(as.integer(slot)))
 }
 
 # Coerce body/headers-like argument to a raw vector.
@@ -205,15 +203,16 @@ proxy_stop = function(slot) {
   port = as.integer(port)
   if (is.na(port)) return(FALSE)
   # If a client can connect, something is already listening -> not available.
-  con = suppressWarnings(tryCatch(
-    socketConnection('127.0.0.1', port = port, open = 'r+b', blocking = FALSE, timeout = 0.5),
-    error = function(e) NULL
-  ))
-  if (!is.null(con)) { try_silent(close(con)); return(FALSE) }
+  if (port_open(port, timeout = 0.5)) return(FALSE)
   # Confirm we can actually bind the port as a server.
   server_socket = base::serverSocket
   s = tryCatch(server_socket(port), error = function(e) NULL)
   if (is.null(s)) FALSE else { close(s); TRUE }
+}
+
+# Register a handler under `key` in R's httpd, serving paths under `prefix`.
+.register_app = function(key, prefix, fn) {
+  assign(key, .make_app_handler(prefix, fn, getwd()), envir = .httpd_env())
 }
 
 # Build an R httpd handler closure.
@@ -235,25 +234,13 @@ proxy_stop = function(slot) {
   }
 }
 
-.proxy_connect_host = function(host) {
-  host = as.character(host)[1]
-  # server may bind all interfaces (0.0.0.0), but local readiness checks should
-  # use loopback for a deterministic self-connection target.
-  if (host == '0.0.0.0') '127.0.0.1' else host
-}
-
 # Poll until the proxy port is accepting connections (or give up after timeout).
 .proxy_wait_ready = function(port, host, tries = 100L, delay = 0.1) {
-  host = .proxy_connect_host(host)
+  # the server may bind all interfaces (0.0.0.0), but the readiness check should
+  # use loopback for a deterministic self-connection target
+  if (host == '0.0.0.0') host = '127.0.0.1'
   for (i in seq_len(tries)) {
-    con = tryCatch(
-      socketConnection(host = host, port = port, open = 'r+b', blocking = TRUE, timeout = 1),
-      error = function(e) NULL
-    )
-    if (!is.null(con)) {
-      close(con)
-      return(TRUE)
-    }
+    if (port_open(port, host)) return(TRUE)
     Sys.sleep(delay)
   }
   FALSE
@@ -269,17 +256,6 @@ proxy_stop = function(slot) {
 
   # Exit when the backend httpd is gone (e.g., parent R process died).
   n_fail = 0L
-  backend_alive = function() {
-    con = suppressWarnings(tryCatch(
-      socketConnection('127.0.0.1', port = backend_port, open = 'r+b',
-                       blocking = TRUE, timeout = 1),
-      error = function(e) NULL
-    ))
-    if (is.null(con)) return(FALSE)
-    close(con)
-    TRUE
-  }
-
   repeat {
     con = tryCatch(
       socket_accept(listener, blocking = FALSE, open = 'r+b', timeout = 1),
@@ -287,13 +263,40 @@ proxy_stop = function(slot) {
     )
     if (is.null(con)) {
       n_fail = n_fail + 1L
-      if (n_fail >= 5L && !backend_alive()) break
+      if (n_fail >= 5L && !port_open(backend_port)) break
       next
     }
     n_fail = 0L
     try_silent(.proxy_forward(con, port, backend_port, passthrough))
     try_silent(close(con))
   }
+}
+
+# Read from a non-blocking connection until done(buf) is TRUE, the peer closes
+# it, or the tries (0.05 s each) run out; return the bytes read.
+.read_until = function(con, done, tries = 200L) {
+  buf = raw(0)
+  for (i in seq_len(tries)) {
+    Sys.sleep(0.05)
+    ready = tryCatch(socketSelect(list(con), write = FALSE, timeout = 0), error = function(e) FALSE)
+    if (!isTRUE(ready[1L])) next
+    x = tryCatch(readBin(con, raw(), 65536L), error = function(e) raw(0))
+    if (!length(x)) break
+    buf = c(buf, x)
+    if (done(buf)) break
+  }
+  buf
+}
+
+# Split the head of an HTTP message in `buf` into lines: list(lines, end), where
+# `end` is the position of the last byte of the head; NULL if it is incomplete.
+.http_head = function(buf) {
+  s = tryCatch(rawToChar(buf), error = function(e) '')
+  m = regexpr('\r\n\r\n|\n\n', s, perl = TRUE, useBytes = TRUE)
+  if (m[1L] < 0L) return()
+  end = m[1L] + attr(m, 'match.length') - 1L
+  hs = sub('\r\n\r\n$|\n\n$', '', rawToChar(buf[seq_len(end)]), perl = TRUE)
+  list(lines = strsplit(hs, '\r\n|\n', perl = TRUE)[[1L]], end = end)
 }
 
 # Read a client request, forward it to backend httpd, and relay the response.
@@ -307,7 +310,7 @@ proxy_stop = function(slot) {
   query = if (q_pos > 0L) substring(path, q_pos + 1L) else ''
 
   backend = tryCatch(
-    socketConnection(host = '127.0.0.1', port = backend_port, open = 'r+b', blocking = FALSE, timeout = 5),
+    local_socket(backend_port, blocking = FALSE, timeout = 5),
     error = function(e) NULL
   )
   if (is.null(backend)) return()
@@ -324,69 +327,29 @@ proxy_stop = function(slot) {
   if (length(req$body)) writeBin(req$body, backend)
   flush(backend)
 
-  buf = raw(0); clen = NA_integer_; sep_end = NA_integer_
-  for (i in seq_len(200L)) {
-    Sys.sleep(0.05)
-    ready = tryCatch(socketSelect(list(backend), write = FALSE, timeout = 0), error = function(e) FALSE)
-    if (!isTRUE(ready[1L])) next
-    x = tryCatch(readBin(backend, raw(), 65536L), error = function(e) raw(0))
-    if (!length(x)) break
-    buf = c(buf, x)
-    if (is.na(sep_end)) {
-      s = tryCatch(rawToChar(buf), error = function(e) '')
-      m = regexpr('\r\n\r\n|\n\n', s, perl = TRUE)
-      if (m[1L] > 0L) {
-        sep_end = m[1L] + attr(m, 'match.length') - 1L
-        cl_m = regexpr('(?i)content-length:[ \t]*([0-9]+)', s, perl = TRUE)
-        if (cl_m[1L] > 0L)
-          clen = as.integer(trimws(sub('(?i).*:', '', regmatches(s, cl_m), perl = TRUE)))
-      }
-    }
-    if (!is.na(sep_end) && !is.na(clen) && (length(buf) - sep_end) >= clen) break
-  }
+  # done when the body is complete, which requires a Content-Length
+  buf = .read_until(backend, function(b) {
+    h = .http_head(b)
+    !is.null(h) && !is.na(n <- content_length(h$lines)) && length(b) - h$end >= n
+  })
   if (length(buf)) { writeBin(buf, client); flush(client) }
 }
 
 # Parse one HTTP request from a non-blocking socket connection.
-# Uses socketSelect() polling so readBin() returns immediately with whatever
-# bytes are available without blocking for the full buffer size.
 .proxy_read_request = function(con) {
-  buf = raw(0); head_end = 0L; sep_len = 0L
-  for (i in seq_len(200L)) {  # up to 200 * 0.05 s = 10 s
-    Sys.sleep(0.05)
-    ready = tryCatch(socketSelect(list(con), write = FALSE, timeout = 0), error = function(e) FALSE)
-    if (!isTRUE(ready[1L])) next
-    x = tryCatch(readBin(con, raw(), 65536L), error = function(e) raw(0))
-    if (!length(x)) return(NULL)
-    buf = c(buf, x)
-    s = tryCatch(rawToChar(buf), error = function(e) '')
-    m = regexpr('\r\n\r\n|\n\n', s, perl = TRUE)
-    if (m[1L] > 0L) { head_end = m[1L]; sep_len = attr(m, 'match.length'); break }
-    if (length(buf) >= 65536L) return(NULL)
-  }
-  if (head_end == 0L) return(NULL)
+  # up to 10 s, and give up on a head larger than 64 KB
+  buf = .read_until(con, function(b) length(b) >= 65536L || !is.null(.http_head(b)))
+  head = .http_head(buf)
+  if (is.null(head) || !length(head$lines)) return()
 
-  hs = substring(rawToChar(buf), 1L, head_end + sep_len - 1L)
-  hs = sub('\r\n\r\n$|\n\n$', '', hs, perl = TRUE)
-  lines = strsplit(hs, '\r\n|\n', perl = TRUE)[[1L]]
-  if (!length(lines)) return(NULL)
-
-  req = strsplit(lines[[1L]], ' ', fixed = TRUE)[[1L]]
+  req = strsplit(head$lines[[1L]], ' ', fixed = TRUE)[[1L]]
   req = req[nzchar(req)]
-  if (length(req) < 2L) return(NULL)
-  method = req[[1L]]; path = req[[2L]]; headers = lines[-1L]
+  if (length(req) < 2L) return()
+  method = req[[1L]]; path = req[[2L]]; headers = head$lines[-1L]
 
-  clen = 0L
-  if (length(headers)) {
-    i = grep('^content-length:', headers, ignore.case = TRUE)
-    if (length(i)) {
-      v = trimws(sub('^[^:]*:', '', headers[[i[1L]]]))
-      if (grepl('^[0-9]+$', v)) clen = as.integer(v)
-    }
-    if (is.na(clen) || clen < 0L) clen = 0L
-  }
-  body_start = head_end + sep_len
-  body0 = if (body_start <= length(buf)) buf[body_start:length(buf)] else raw(0)
+  clen = content_length(headers)
+  if (is.na(clen)) clen = 0L
+  body0 = buf[seq_len(length(buf) - head$end) + head$end]
   body = if (length(body0) < clen)
     c(body0, tryCatch(readBin(con, raw(), clen - length(body0)), error = function(e) raw(0)))
   else body0[seq_len(clen)]
