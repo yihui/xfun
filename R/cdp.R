@@ -157,7 +157,9 @@ cdp_session = function(browser, args, url, wait, timeout, size, type) {
     system2(browser, args, wait = FALSE, stdout = FALSE, stderr = err)
     # the browser tells us the port of the DevTools server in this file
     f = file.path(dir, 'DevToolsActivePort')
-    while (!(file.exists(f) && length(x <- readLines(f, warn = FALSE)) >= 2)) {
+    # (reading the file may fail on Windows when the browser is still writing it)
+    read_port = function() tryCatch(readLines(f, warn = FALSE), error = function(e) character())
+    while (!(file.exists(f) && length(x <- read_port()) >= 2)) {
       if (timed_out()) browser_fail(
         browser, 'Failed to start the browser', err
       )
