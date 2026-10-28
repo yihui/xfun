@@ -43,25 +43,18 @@ ws_recv = function(con) {
     msg[[length(msg) + 1]] = p
     if (bitwAnd(h[1], 128) > 0) break  # the final frame
   }
-  x = rawToChar(do.call(c, msg))
-  Encoding(x) = 'UTF-8'
-  x
+  raw_to_utf8(do.call(c, msg))
 }
 
 # open a WebSocket connection to the DevTools server of the browser
 ws_open = function(port, path, timeout) {
-  con = socketConnection(
-    '127.0.0.1', port, open = 'r+b', blocking = TRUE, timeout = timeout
-  )
+  con = local_socket(port, timeout = timeout)
   writeBin(charToRaw(sprintf(paste0(
     'GET %s HTTP/1.1\r\nHost: 127.0.0.1:%d\r\nUpgrade: websocket\r\n',
     'Connection: Upgrade\r\nSec-WebSocket-Key: %s\r\nSec-WebSocket-Version: 13\r\n\r\n'
   ), path, port, base64_encode(as.raw(1:16)))), con)
-  repeat {  # skip the HTTP response headers
-    h = readLines(con, 1, warn = FALSE)
-    if (!length(h)) stop2('Failed to connect to the browser.')
-    if (!nzchar(trimws(h))) break
-  }
+  # skip the HTTP response headers
+  if (is.null(read_headers(con))) stop2('Failed to connect to the browser.')
   con
 }
 
@@ -78,23 +71,16 @@ cdp_data = function(x, key = '"data":"') {
 # the response (use a socket instead of url() so that proxy settings do not get
 # in the way)
 http_devtools = function(port, path, method = 'GET') {
-  con = socketConnection('127.0.0.1', port, open = 'r+b', blocking = TRUE, timeout = 10)
+  con = local_socket(port)
   on.exit(close(con))
   writeBin(charToRaw(sprintf(
     '%s %s HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n', method, path
   )), con)
   # the server keeps the connection open, so read the body by Content-Length
-  n = 0
-  repeat {
-    h = readLines(con, 1, warn = FALSE)
-    if (!length(h)) return('')
-    if (!nzchar(trimws(h))) break
-    if (grepl('^content-length:', h, ignore.case = TRUE))
-      n = as.integer(sub('^[^:]+:\\s*', '', h))
-  }
-  x = rawToChar(read_exact(con, n))
-  Encoding(x) = 'UTF-8'
-  gsub('\r?\n', '', x)
+  h = read_headers(con)
+  if (is.null(h)) return('')
+  n = content_length(h)
+  gsub('\r?\n', '', raw_to_utf8(read_exact(con, if (is.na(n)) 0L else n)))
 }
 
 # the WebSocket path of the first page in the JSON response of the server
@@ -227,9 +213,7 @@ cdp_session = function(browser, args, url, wait, timeout, size, type) {
           'btoa(unescape(encodeURIComponent(',
           'document.documentElement.outerHTML)))'
         ))))
-        x = rawToChar(cdp_data(m, '"value":"'))
-        Encoding(x) = 'UTF-8'
-        x
+        raw_to_utf8(cdp_data(m, '"value":"'))
       }
     )
   }
