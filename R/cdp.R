@@ -99,8 +99,8 @@ http_devtools = function(port, path, method = 'GET') {
 
 # the WebSocket path of the first page in the JSON response of the server
 ws_page = function(x) {
-  r = '"type": *"page"[^}]*?"webSocketDebuggerUrl": *"ws://[^/"]+(/[^"]+)"'
-  m = regmatches(x, regexec(r, x, perl = TRUE))[[1]]
+  r = '"type": *"page"[^}]*"webSocketDebuggerUrl": *"ws://[^/"]+(/[^"]+)"'
+  m = regmatches(x, regexec(r, x))[[1]]
   if (length(m) > 1) m[2]
 }
 
