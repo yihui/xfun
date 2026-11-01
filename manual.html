@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<meta name="generator" content="litedown 0.11.20">
+<meta name="generator" content="litedown 0.11.23">
 <title>Help pages</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/css/default.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/css/article.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/css/copy-button.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/css/heading-anchor.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/css/pages.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/css/site.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/css/default.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/css/article.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/css/copy-button.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/css/heading-anchor.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/css/pages.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/css/site.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/css/prism-xcode.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/css/prism-xcode.min.css">
 </head>
 <body>
 <nav class="site-nav"><p><a href="index.html">Home</a>
@@ -27,7 +27,8 @@
 
 
 </header>
-<main class="body">
+<main>
+<article class="">
 <nav id="TOC">
 <ul class="numbered">
 <li><a href="#sec:man-Rscript"><span class="section-number main-number">1</span> Run the commands <code>Rscript</code> and <code>R CMD</code></a>
@@ -1314,7 +1315,7 @@ h2 {
 
 Rcmd(args, ...)</code></pre>
 <h3 id="sec:arguments_1" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>args</code></td>
 <td>
 <p>A character vector of command-line arguments.</p>
@@ -1348,7 +1349,7 @@ read the returned value back to the current R session.
   fail = sprintf("Failed to run '%s' in a new R session", deparse(substitute(fun))[1])
 )</code></pre>
 <h3 id="sec:arguments_2" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>fun</code></td>
 <td>
 <p>A function, or a character string that can be parsed and evaluated
@@ -1411,7 +1412,7 @@ will be removed first.
 <h3 id="sec:usage_3" class="unnumbered">Usage</h3>
 <pre><code class="language-r">alnum_id(x, exclude = "[^[:alnum:]]+")</code></pre>
 <h3 id="sec:arguments_3" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector.</p>
@@ -1447,7 +1448,7 @@ xfun::alnum_id(&quot;&lt;h1&gt;Hello &lt;strong&gt;world&lt;/strong&gt;!&quot;)
 <h3 id="sec:usage_4" class="unnumbered">Usage</h3>
 <pre><code class="language-r">attr2(...)</code></pre>
 <h3 id="sec:arguments_4" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>...</code></td>
 <td>
 <p>Passed to <code><a href="https://rdrr.io/cran/base/man/attr.html">base::attr()</a></code> (without the <code>exact</code> argument).</p>
@@ -1478,7 +1479,7 @@ base64 encoding.
 
 base64_decode(x, from = NA)</code></pre>
 <h3 id="sec:arguments_5" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>For <code>base64_encode()</code>, a raw vector. If not raw, it is assumed
@@ -1519,7 +1520,7 @@ the <code>&lt;img /&gt;</code> tag.
 <h3 id="sec:usage_6" class="unnumbered">Usage</h3>
 <pre><code class="language-r">base64_uri(x, type = mime_type(x))</code></pre>
 <h3 id="sec:arguments_6" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A file path.</p>
@@ -1567,7 +1568,7 @@ Unix, and return the process ID.
   verbose = getOption("xfun.bg_process.verbose", FALSE)
 )</code></pre>
 <h3 id="sec:arguments_7" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>command</code>, <code>args</code></td>
 <td>
 <p>The system command and its arguments. They do not need to
@@ -1604,7 +1605,7 @@ timeout, it is more likely that the command actually failed.
 <h3 id="sec:usage_9" class="unnumbered">Usage</h3>
 <pre><code class="language-r">broken_packages(reinstall = TRUE)</code></pre>
 <h3 id="sec:arguments_8" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>reinstall</code></td>
 <td>
 <p>Whether to reinstall the broken packages, or only list their
@@ -1635,7 +1636,7 @@ JavaScript on it, and return (or save) the rendered DOM as HTML.
   timeout = 60
 )</code></pre>
 <h3 id="sec:arguments_9" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>input</code></td>
 <td>
 <p>Path or URL to the HTML page.</p>
@@ -1718,7 +1719,7 @@ browser such as Chromium or Google Chrome.
   timeout = 60
 )</code></pre>
 <h3 id="sec:arguments_10" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>input</code></td>
 <td>
 <p>Path or URL to the HTML page to be printed.</p>
@@ -1797,7 +1798,7 @@ page (when <code>query</code> or <code>wait</code> is used).</p>
 <h3 id="sec:usage_12" class="unnumbered">Usage</h3>
 <pre><code class="language-r">bump_version(x)</code></pre>
 <h3 id="sec:arguments_11" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A vector of version numbers (of the class <code>"numeric_version"</code>),
@@ -1825,7 +1826,7 @@ be invalidated and the expression will be re-executed.
 <h3 id="sec:usage_13" class="unnumbered">Usage</h3>
 <pre><code class="language-r">cache_exec(expr, path = "cache/", id = NULL, ...)</code></pre>
 <h3 id="sec:arguments_12" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>expr</code></td>
 <td>
 <p>An R expression to be cached.</p>
@@ -1939,7 +1940,7 @@ one by one.
 
 crandalf_results(pkg, repo = NA, limit = 200, wait = 5 * 60)</code></pre>
 <h3 id="sec:arguments_13" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>pkg</code></td>
 <td>
 <p>The package name of which the reverse dependencies are to be
@@ -2002,7 +2003,7 @@ it will be treated as the chunk label.
 <h3 id="sec:usage_15" class="unnumbered">Usage</h3>
 <pre><code class="language-r">csv_options(x)</code></pre>
 <h3 id="sec:arguments_14" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>The chunk options as a string.</p>
@@ -2037,7 +2038,7 @@ coercing a number to character.
 <h3 id="sec:usage_16" class="unnumbered">Usage</h3>
 <pre><code class="language-r">decimal_dot(x)</code></pre>
 <h3 id="sec:arguments_15" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>An expression.</p>
@@ -2074,7 +2075,7 @@ under a directory. If not, delete this empty directory.
 <h3 id="sec:usage_17" class="unnumbered">Usage</h3>
 <pre><code class="language-r">del_empty_dir(dir)</code></pre>
 <h3 id="sec:arguments_16" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>dir</code></td>
 <td>
 <p>Path to a directory. If <code>NULL</code> or the directory does not
@@ -2089,7 +2090,7 @@ create it with <code><a href="https://rdrr.io/r/base/files2.html">dir.create</a>
 <h3 id="sec:usage_18" class="unnumbered">Usage</h3>
 <pre><code class="language-r">dir_create(x, recursive = TRUE, ...)</code></pre>
 <h3 id="sec:arguments_17" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A path name.</p>
@@ -2121,7 +2122,7 @@ in base R.
 
 file_exists(x)</code></pre>
 <h3 id="sec:arguments_18" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A vector of paths.</p>
@@ -2139,7 +2140,7 @@ chunk body.
 <h3 id="sec:usage_20" class="unnumbered">Usage</h3>
 <pre><code class="language-r">divide_chunk(engine, code, strict = FALSE, ...)</code></pre>
 <h3 id="sec:arguments_19" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>engine</code></td>
 <td>
 <p>The name of the language engine (to determine the appropriate
@@ -2257,7 +2258,7 @@ give users an optional hint on how not to perform this task at all.
     sprintf("you may set options(%s = FALSE) in your .Rprofile.", option))
 )</code></pre>
 <h3 id="sec:arguments_20" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>task</code></td>
 <td>
 <p>Any R code expression to be evaluated once to perform a task,
@@ -2284,7 +2285,7 @@ perform the task or see the message again in the current R session. Set
 <h3 id="sec:examples_15" class="unnumbered">Examples</h3>
 <pre><code class="language-r">do_once(message(&quot;Today's date is &quot;, Sys.Date()), &quot;xfun.date.reminder&quot;)
 </code></pre>
-<pre><code class="language-plain message">#&gt; Today's date is 2026-10-28
+<pre><code class="language-plain message">#&gt; Today's date is 2026-11-01
 #&gt; You will not see this message again in this R session. If you never want to see this message, you may set options(xfun.date.reminder = FALSE) in your .Rprofile.
 </code></pre>
 <pre><code class="language-r"># if you run it again, it will not emit the message again
@@ -2353,11 +2354,11 @@ length(x3)
 <pre><code class="language-r"># show a summary
 xfun::download_cache$summary()
 </code></pre>
-<pre><code class="language-plain message">#&gt; Total size: 10.9 Kb
+<pre><code class="language-plain message">#&gt; Total size: 10.8 Kb
 </code></pre>
 <pre><code>#&gt; [[1]]
 #&gt;                          url type size size_h
-#&gt; 1 https://www.r-project.org/ auto 3245 3.2 Kb
+#&gt; 1 https://www.r-project.org/ auto 3159 3.1 Kb
 #&gt; 
 #&gt; [[2]]
 #&gt;                                 url type size size_h
@@ -2371,7 +2372,7 @@ xfun::download_cache$remove(&quot;https://yihui.org/images/logo.png&quot;, &quot
 <pre><code class="language-r"># remove all cache files
 xfun::download_cache$purge()
 </code></pre>
-<pre><code class="language-plain message">#&gt; Purged 1 cache file(s) from '/Users/runner/Library/Caches/org.R-project.R/R/xfun' (3.2 Kb)
+<pre><code class="language-plain message">#&gt; Purged 1 cache file(s) from '/Users/runner/Library/Caches/org.R-project.R/R/xfun' (3.1 Kb)
 </code></pre>
 <h2 id="sec:man-download_file"><span class="section-number main-number">23</span> Try various methods to download a file</h2>
 <h3 id="sec:description_23" class="unnumbered">Description</h3>
@@ -2388,7 +2389,7 @@ e.g., <a href="https://stat.ethz.ch/pipermail/r-devel/2016-June/072852.html">htt
   .error = "No download method works (auto/wininet/wget/curl/lynx)"
 )</code></pre>
 <h3 id="sec:arguments_21" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>url</code></td>
 <td>
 <p>The URL of the file.</p>
@@ -2436,7 +2437,7 @@ embed_dir(path, name = paste0(normalize_path(path), ".zip"), ...)
 
 embed_files(path, name = with_ext(basename(path[1]), ".zip"), ...)</code></pre>
 <h3 id="sec:arguments_22" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>path</code></td>
 <td>
 <p>Path to the file(s) or directory.</p>
@@ -2490,7 +2491,7 @@ check the environment variable <code>R_XFUN_FOO</code>.
 <h3 id="sec:usage_25" class="unnumbered">Usage</h3>
 <pre><code class="language-r">env_option(name, default = NULL)</code></pre>
 <h3 id="sec:arguments_23" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>name</code></td>
 <td>
 <p>The option name.</p>
@@ -2546,7 +2547,7 @@ first existing file path.
 <h3 id="sec:usage_26" class="unnumbered">Usage</h3>
 <pre><code class="language-r">existing_files(x, first = FALSE, error = TRUE)</code></pre>
 <h3 id="sec:arguments_24" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A vector of file paths.</p>
@@ -2582,7 +2583,7 @@ function when a parent function exits (thinking of it as inserting an
 <h3 id="sec:usage_27" class="unnumbered">Usage</h3>
 <pre><code class="language-r">exit_call(fun, n = 2, ...)</code></pre>
 <h3 id="sec:arguments_25" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>fun</code></td>
 <td>
 <p>A function to be called when the parent function exits.</p>
@@ -2631,7 +2632,7 @@ fenced_div(...)
 
 make_fence(x, char = "`", start = 3)</code></pre>
 <h3 id="sec:arguments_26" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector of the block content.</p>
@@ -2703,7 +2704,7 @@ sans_ext(x, extra = "")
 
 with_ext(x, ext, extra = "")</code></pre>
 <h3 id="sec:arguments_27" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character of file paths.</p>
@@ -2764,7 +2765,7 @@ up the original files if the copy succeeds.
 <h3 id="sec:usage_30" class="unnumbered">Usage</h3>
 <pre><code class="language-r">file_rename(from, to)</code></pre>
 <h3 id="sec:arguments_28" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>from</code>, <code>to</code></td>
 <td>
 <p>Original and target paths, respectively.</p>
@@ -2780,7 +2781,7 @@ up the original files if the copy succeeds.
 <h3 id="sec:usage_31" class="unnumbered">Usage</h3>
 <pre><code class="language-r">file_string(file)</code></pre>
 <h3 id="sec:arguments_29" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>file</code></td>
 <td>
 <p>Path to a text file (should be encoded in UTF-8).</p>
@@ -2795,7 +2796,7 @@ up the original files if the copy succeeds.
 <pre><code>Package: xfun
 Type: Package
 Title: Supporting Functions for Packages Maintained by 'Yihui Xie'
-Version: 0.62.6
+Version: 0.62.7
 Authors@R: c(
   person(&quot;Yihui&quot;, &quot;Xie&quot;, role = c(&quot;aut&quot;, &quot;cre&quot;, &quot;cph&quot;), email = &quot;xie@yihui.name&quot;, comment = c(ORCID = &quot;0000-0003-0645-5666&quot;, URL = &quot;https://yihui.org&quot;)),
   person(&quot;Wush&quot;, &quot;Wu&quot;, role = &quot;ctb&quot;),
@@ -2819,7 +2820,7 @@ VignetteBuilder: litedown
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.1.1
 NeedsCompilation: yes
-Packaged: 2026-10-28 22:54:19 UTC; runner
+Packaged: 2026-11-01 22:13:13 UTC; runner
 Author: Yihui Xie [aut, cre, cph] (ORCID:
     &lt;https://orcid.org/0000-0003-0645-5666&gt;, URL: https://yihui.org),
   Wush Wu [ctb],
@@ -2828,7 +2829,7 @@ Author: Yihui Xie [aut, cre, cph] (ORCID:
   Salim Brüggemann [ctb] (ORCID: &lt;https://orcid.org/0000-0002-5329-5987&gt;),
   Christophe Dervieux [ctb]
 Maintainer: Yihui Xie &lt;xie@yihui.name&gt;
-Built: R 4.6.1; aarch64-apple-darwin23; 2026-10-28 22:54:20 UTC; unix
+Built: R 4.6.2; aarch64-apple-darwin23; 2026-11-01 22:13:14 UTC; unix
 </code></pre>
 <h2 id="sec:man-find_globals"><span class="section-number main-number">32</span> Find global/local variables in R code</h2>
 <h3 id="sec:description_32" class="unnumbered">Description</h3>
@@ -2841,7 +2842,7 @@ outside the code, and local variables are created inside the code.
 
 find_locals(code)</code></pre>
 <h3 id="sec:arguments_30" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>code</code></td>
 <td>
 <p>Either a character vector of R source code, or an R expression.</p>
@@ -2898,7 +2899,7 @@ xfun::find_globals(&quot;y = x + 1&quot;)
 <h3 id="sec:usage_33" class="unnumbered">Usage</h3>
 <pre><code class="language-r">format_bytes(x, units = "auto", ...)</code></pre>
 <h3 id="sec:arguments_31" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A numeric vector (each element represents a number of bytes).</p>
@@ -2930,7 +2931,7 @@ relative to the current working directory.
 <h3 id="sec:usage_34" class="unnumbered">Usage</h3>
 <pre><code class="language-r">from_root(..., root = proj_root(), error = TRUE)</code></pre>
 <h3 id="sec:arguments_32" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>...</code></td>
 <td>
 <p>A character vector of path components <em>relative to the root
@@ -2970,7 +2971,7 @@ releases.
   use_jsonlite = loadable("jsonlite")
 )</code></pre>
 <h3 id="sec:arguments_33" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>repo</code></td>
 <td>
 <p>The repository name of the form <code>user/repo</code>, e.g.,
@@ -3011,7 +3012,7 @@ returned.</p>
 <h3 id="sec:usage_36" class="unnumbered">Usage</h3>
 <pre><code class="language-r">grep_sub(pattern, replacement, x, ...)</code></pre>
 <h3 id="sec:arguments_34" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>pattern</code>, <code>replacement</code>, <code>x</code>, <code>...</code></td>
 <td>
 <p>Passed to <code><a href="https://rdrr.io/r/base/grep.html">grep()</a></code> and
@@ -3042,7 +3043,7 @@ gsub_dir(..., dir = ".", recursive = TRUE, ext = NULL, mimetype = ".*")
 
 gsub_ext(ext, ..., dir = ".", recursive = TRUE)</code></pre>
 <h3 id="sec:arguments_35" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>file</code></td>
 <td>
 <p>Path of a single file.</p>
@@ -3113,7 +3114,7 @@ html_escape(x, attr = FALSE)
 
 html_view(x, name = "xfun-html", ...)</code></pre>
 <h3 id="sec:arguments_36" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>.name</code></td>
 <td>
 <p>The tag name.</p>
@@ -3188,7 +3189,7 @@ working directory.
 <h3 id="sec:usage_39" class="unnumbered">Usage</h3>
 <pre><code class="language-r">in_dir(dir, expr)</code></pre>
 <h3 id="sec:arguments_37" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>dir</code></td>
 <td>
 <p>Path to a directory.</p>
@@ -3202,8 +3203,8 @@ working directory.
 <pre><code class="language-r">library(xfun)
 in_dir(tempdir(), {print(getwd()); list.files()})
 </code></pre>
-<pre><code>#&gt; [1] &quot;/private/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/RtmpTTtxVC&quot;
-#&gt; [1] &quot;filefac4f0e4396&quot;      &quot;filefac79da5aee.html&quot;
+<pre><code>#&gt; [1] &quot;/private/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/RtmpUFfGDf&quot;
+#&gt; [1] &quot;filed593485d9da.html&quot; &quot;filed596f8149fd&quot;     
 </code></pre>
 <h2 id="sec:man-install_dir"><span class="section-number main-number">40</span> Install a source package from a directory</h2>
 <h3 id="sec:description_40" class="unnumbered">Description</h3>
@@ -3213,7 +3214,7 @@ in_dir(tempdir(), {print(getwd()); list.files()})
 <h3 id="sec:usage_40" class="unnumbered">Usage</h3>
 <pre><code class="language-r">install_dir(pkg = ".", build = TRUE, build_opts = NULL, install_opts = NULL)</code></pre>
 <h3 id="sec:arguments_38" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>pkg</code></td>
 <td>
 <p>The package source directory.</p>
@@ -3247,7 +3248,7 @@ RStudio, I only need to type <code>xfun::ig</code> to get <code>xfun::install_gi
 <h3 id="sec:usage_41" class="unnumbered">Usage</h3>
 <pre><code class="language-r">install_github(...)</code></pre>
 <h3 id="sec:arguments_39" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>...</code></td>
 <td>
 <p>Arguments to be passed to <code><a href="https://rdrr.io/cran/remotes/man/install_github.html">remotes::install_github()</a></code>.</p>
@@ -3265,7 +3266,7 @@ are absolute paths). On Windows, check if the paths start with a drive letter
 
 is_rel_path(x)</code></pre>
 <h3 id="sec:arguments_40" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A vector of paths.</p>
@@ -3291,7 +3292,7 @@ the result is <code>NA</code>.
 <h3 id="sec:usage_43" class="unnumbered">Usage</h3>
 <pre><code class="language-r">is_ascii(x)</code></pre>
 <h3 id="sec:arguments_41" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector.</p>
@@ -3320,7 +3321,7 @@ blank (white spaces or empty strings).
 <h3 id="sec:usage_44" class="unnumbered">Usage</h3>
 <pre><code class="language-r">is_blank(x)</code></pre>
 <h3 id="sec:arguments_42" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector.</p>
@@ -3353,7 +3354,7 @@ blank (white spaces or empty strings).
 <h3 id="sec:usage_45" class="unnumbered">Usage</h3>
 <pre><code class="language-r">is_sub_path(x, dir, n = nchar(dir))</code></pre>
 <h3 id="sec:arguments_43" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A vector of paths.</p>
@@ -3396,7 +3397,7 @@ are consistent.
 <h3 id="sec:usage_46" class="unnumbered">Usage</h3>
 <pre><code class="language-r">is_web_path(x)</code></pre>
 <h3 id="sec:arguments_44" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A vector of paths.</p>
@@ -3431,7 +3432,7 @@ prepended to the last word.
   oxford_comma = TRUE
 )</code></pre>
 <h3 id="sec:arguments_45" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>words</code></td>
 <td>
 <p>A character vector.</p>
@@ -3495,7 +3496,7 @@ is used.
 
 lazy_load(path = "./", method = "auto", envir = parent.frame())</code></pre>
 <h3 id="sec:arguments_46" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>list</code></td>
 <td>
 <p>A character vector of object names. This list will be written to
@@ -3540,7 +3541,7 @@ path can be an incomplete path, e.g., it can be a base filename, and
   n_dirs = getOption("xfun.magic_path.n_dirs", 10000)
 )</code></pre>
 <h3 id="sec:arguments_47" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>...</code></td>
 <td>
 <p>A character vector of path components.</p>
@@ -3587,7 +3588,7 @@ files.
 <h3 id="sec:usage_50" class="unnumbered">Usage</h3>
 <pre><code class="language-r">mark_dirs(x)</code></pre>
 <h3 id="sec:arguments_48" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>Character vector of paths to files and directories.</p>
@@ -3627,7 +3628,7 @@ faster than writing to a temporary file).
 <h3 id="sec:usage_51" class="unnumbered">Usage</h3>
 <pre><code class="language-r">md5(...)</code></pre>
 <h3 id="sec:arguments_49" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>...</code></td>
 <td>
 <p>Any number of R objects.</p>
@@ -3666,7 +3667,7 @@ xfun::md5(x1 = x1, x2 = x2)  # named arguments
   escape = NULL
 )</code></pre>
 <h3 id="sec:arguments_50" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A 2-dimensional object (e.g., a matrix or data frame).</p>
@@ -3761,7 +3762,7 @@ exist if Cygwin or Rtools is installed. If it is not found, .NET's
 <h3 id="sec:usage_53" class="unnumbered">Usage</h3>
 <pre><code class="language-r">mime_type(x, use_mime = loadable("mime"), empty = "text/plain")</code></pre>
 <h3 id="sec:arguments_51" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A vector of file paths.</p>
@@ -3829,7 +3830,7 @@ message can be suppressed by <code><a href="https://rdrr.io/r/base/message.html"
 <h3 id="sec:usage_54" class="unnumbered">Usage</h3>
 <pre><code class="language-r">msg_cat(...)</code></pre>
 <h3 id="sec:arguments_52" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>...</code></td>
 <td>
 <p>Character strings of messages, which will be concatenated into one
@@ -3868,7 +3869,7 @@ return the original vector with a warning.
 <h3 id="sec:usage_55" class="unnumbered">Usage</h3>
 <pre><code class="language-r">native_encode(x)</code></pre>
 <h3 id="sec:arguments_53" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector.</p>
@@ -3900,7 +3901,7 @@ Encoding(s2)
 
 stop_app(name = names(.proxy$apps))</code></pre>
 <h3 id="sec:arguments_54" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>name</code></td>
 <td>
 <p>App name (a character string). Use <code>name = ''</code> to serve the app
@@ -3963,7 +3964,7 @@ items are written into bullet lists.
 <h3 id="sec:usage_57" class="unnumbered">Usage</h3>
 <pre><code class="language-r">news2md(package, ..., output = "NEWS.md", category = TRUE)</code></pre>
 <h3 id="sec:arguments_55" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>package</code>, <code>...</code></td>
 <td>
 <p>Arguments to be passed to <code><a href="https://rdrr.io/r/utils/news.html">news()</a></code>.</p>
@@ -3996,7 +3997,7 @@ xfun::news2md(&quot;R&quot;, Version == getRversion(), output = NA)
 <h3 id="sec:usage_58" class="unnumbered">Usage</h3>
 <pre><code class="language-r">normalize_path(x, winslash = "/", must_work = FALSE, resolve_symlink = TRUE)</code></pre>
 <h3 id="sec:arguments_56" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code>, <code>winslash</code>, <code>must_work</code></td>
 <td>
 <p>Arguments passed to
@@ -4024,7 +4025,7 @@ is an alias of <code>numbers_to_words()</code>.
 
 n2w(x, cap = FALSE, hyphen = TRUE, and = FALSE)</code></pre>
 <h3 id="sec:arguments_57" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A numeric vector. The absolute values should be less than <code>1e15</code>.</p>
@@ -4158,7 +4159,7 @@ files under a directory.
 <h3 id="sec:usage_60" class="unnumbered">Usage</h3>
 <pre><code class="language-r">optipng(dir = ".", files = all_files("[.]png$", dir), ...)</code></pre>
 <h3 id="sec:arguments_58" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>dir</code></td>
 <td>
 <p>Path to a directory.</p>
@@ -4217,7 +4218,7 @@ is_arm64()  # TRUE on Apple silicone machines
 <h3 id="sec:usage_62" class="unnumbered">Usage</h3>
 <pre><code class="language-r">parse_only(code)</code></pre>
 <h3 id="sec:arguments_59" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>code</code></td>
 <td>
 <p>A character vector of the R source code.</p>
@@ -4265,7 +4266,7 @@ pkg_attach2(...)
 
 pkg_load2(...)</code></pre>
 <h3 id="sec:arguments_60" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>...</code></td>
 <td>
 <p>Package names (character vectors, and must always be quoted).</p>
@@ -4357,7 +4358,7 @@ citations after updating R packages.
   date = c("none", "package", "today")
 )</code></pre>
 <h3 id="sec:arguments_61" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>Package names. Packages which are not installed are ignored.</p>
@@ -4456,8 +4457,8 @@ packages.
 #&gt; @Manual{R-MASS,
 #&gt;   title = {MASS: Support Functions and Datasets for Venables and Ripley's MASS},
 #&gt;   author = {Brian Ripley and Bill Venables},
-#&gt;   year = {2025},
-#&gt;   note = {R package version 7.3-65},
+#&gt;   year = {2026},
+#&gt;   note = {R package version 7.3-66},
 #&gt;   url = {http://www.stats.ox.ac.uk/pub/MASS4/},
 #&gt; }
 #&gt; 
@@ -4465,13 +4466,14 @@ packages.
 #&gt;   title = {xfun: Supporting Functions for Packages Maintained by Yihui Xie},
 #&gt;   author = {Yihui Xie},
 #&gt;   year = {2026},
-#&gt;   note = {R package version 0.62.6},
+#&gt;   note = {R package version 0.62.7},
 #&gt;   url = {https://github.com/yihui/xfun},
 #&gt; }
 #&gt; 
 #&gt; @Book{MASS2002,
+#&gt;   entry = {Book},
 #&gt;   title = {Modern Applied Statistics with S},
-#&gt;   author = {W. N. Venables and B. D. Ripley},
+#&gt;   author = {Brian D. Ripley and William N. Venables},
 #&gt;   publisher = {Springer},
 #&gt;   edition = {Fourth},
 #&gt;   address = {New York},
@@ -4487,7 +4489,7 @@ packages.
 #&gt; al.},
 #&gt;   author = {Martin Maechler and Peter Rousseeuw and Anja Struyf and Mia Hubert},
 #&gt;   year = {2026},
-#&gt;   note = {R package version 2.1.8.2},
+#&gt;   note = {R package version 2.1.8.3},
 #&gt;   url = {https://svn.r-project.org/R-packages/trunk/cluster/},
 #&gt; }
 </code></pre>
@@ -4497,7 +4499,7 @@ packages.
 #&gt;   title = {xfun: Supporting Functions for Packages Maintained by Yihui Xie},
 #&gt;   author = {Yihui Xie},
 #&gt;   year = {2026},
-#&gt;   note = {R package version 0.62.6 (retrieved 2026-10-28)},
+#&gt;   note = {R package version 0.62.7 (retrieved 2026-11-01)},
 #&gt;   url = {https://github.com/yihui/xfun},
 #&gt; }
 </code></pre>
@@ -4527,7 +4529,7 @@ Unix, respectively, to kill a process.
 <h3 id="sec:usage_66" class="unnumbered">Usage</h3>
 <pre><code class="language-r">proc_kill(pid, recursive = TRUE, ...)</code></pre>
 <h3 id="sec:arguments_62" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>pid</code></td>
 <td>
 <p>The process ID.</p>
@@ -4556,7 +4558,7 @@ original input.
 
 sort_file(..., fun = sort)</code></pre>
 <h3 id="sec:arguments_63" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>file</code></td>
 <td>
 <p>Path to a text file.</p>
@@ -4605,7 +4607,7 @@ an RStudio project), return the path to the project root directory.
 
 root_rules</code></pre>
 <h3 id="sec:arguments_64" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>path</code></td>
 <td>
 <p>The initial path to start the search. If it is a file path, its
@@ -4649,7 +4651,7 @@ otherwise please consider using <span class="pkg">rprojroot</span> instead.
 <h3 id="sec:usage_69" class="unnumbered">Usage</h3>
 <pre><code class="language-r">prose_index(x, warn = TRUE)</code></pre>
 <h3 id="sec:arguments_65" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector of text in Markdown.</p>
@@ -4687,7 +4689,7 @@ math expressions in Markdown (by heuristics), and wrap them in backticks.
 <h3 id="sec:usage_70" class="unnumbered">Usage</h3>
 <pre><code class="language-r">protect_math(x, token = "", use_block = FALSE)</code></pre>
 <h3 id="sec:arguments_66" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector of text in Markdown.</p>
@@ -4758,7 +4760,7 @@ than <code>paste()</code> — no string allocation.
 
 radix_group(...)</code></pre>
 <h3 id="sec:arguments_67" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>...</code></td>
 <td>
 <p>Equal-length vectors (factors, or coercible via <code><a href="https://rdrr.io/r/base/factor.html">factor()</a></code>).</p>
@@ -4811,7 +4813,7 @@ per_group[gid]      # 9 1 9 4 1 (expanded back)
 <h3 id="sec:usage_72" class="unnumbered">Usage</h3>
 <pre><code class="language-r">rand_unit(n = 1, a = 55797, c = 0, m = 4294967296, seed = NULL)</code></pre>
 <h3 id="sec:arguments_68" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>n</code></td>
 <td>
 <p>The desired length of the sequence.</p>
@@ -4844,8 +4846,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 <h3 id="sec:examples_56" class="unnumbered">Examples</h3>
 <pre><code class="language-r">rand_unit(10)
 </code></pre>
-<pre><code>#&gt;  [1] 0.27695171 0.07434174 0.04619633 0.61674784 0.67919368 0.96982467
-#&gt;  [7] 0.30710544 0.56237568 0.87569139 0.95246914
+<pre><code>#&gt;  [1] 0.7348736 0.7450303 0.4564672 0.4987514 0.8332710 0.0224845 0.5674884
+#&gt;  [8] 0.1522963 0.6740554 0.2705219
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = 0)
 </code></pre>
@@ -4857,8 +4859,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = Sys.getpid())
 </code></pre>
-<pre><code>#&gt;  [1] 0.0521209 0.1898971 0.6872662 0.3896587 0.7856381 0.2515861 0.7503021
-#&gt;  [8] 0.6049016 0.6924797 0.2918392
+<pre><code>#&gt;  [1] 0.044391106 0.890547935 0.903137700 0.374243202 0.647937573 0.972749189
+#&gt;  [7] 0.486486090 0.464344127 0.009272996 0.405337598
 </code></pre>
 <h2 id="sec:man-random_port"><span class="section-number main-number">73</span> Find a random available TCP port</h2>
 <h3 id="sec:description_73" class="unnumbered">Description</h3>
@@ -4868,7 +4870,7 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 <h3 id="sec:usage_73" class="unnumbered">Usage</h3>
 <pre><code class="language-r">random_port(port = 4321L, n = 20L, exclude = NULL, error = TRUE)</code></pre>
 <h3 id="sec:arguments_69" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>port</code></td>
 <td>
 <p>Default port to try first.</p>
@@ -4906,7 +4908,7 @@ characters in the raw form (especially when there are escape sequences).
 ## S3 method for class 'xfun_raw_string'
 print(x, ...)</code></pre>
 <h3 id="sec:arguments_70" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>For <code>raw_string()</code>, a character vector. For the print method,
@@ -4941,7 +4943,7 @@ combine all content into one character vector.
 <h3 id="sec:usage_75" class="unnumbered">Usage</h3>
 <pre><code class="language-r">read_all(files, before = function(f, x) NULL, after = function(f, x) NULL)</code></pre>
 <h3 id="sec:arguments_71" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>files</code></td>
 <td>
 <p>A vector of file paths.</p>
@@ -5068,7 +5070,7 @@ will read the full content of a binary file as a raw vector by default.
 <h3 id="sec:usage_76" class="unnumbered">Usage</h3>
 <pre><code class="language-r">read_bin(file, what = "raw", n = file.info(file)$size, ...)</code></pre>
 <h3 id="sec:arguments_72" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>file</code>, <code>what</code>, <code>n</code>, <code>...</code></td>
 <td>
 <p>Arguments to be passed to <code>readBin()</code>.</p>
@@ -5101,7 +5103,7 @@ append_utf8(text, con, sort = TRUE)
 
 append_unique(text, con, sort = function(x) base::sort(unique(x)))</code></pre>
 <h3 id="sec:arguments_73" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>con</code></td>
 <td>
 <p>A connection or a file path.</p>
@@ -5188,7 +5190,7 @@ print(
   ...
 )</code></pre>
 <h3 id="sec:arguments_74" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>code</code></td>
 <td>
 <p>A character vector of R source code.</p>
@@ -5404,7 +5406,7 @@ record_print(x, ...)
 
 new_record(x, class)</code></pre>
 <h3 id="sec:arguments_75" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>For <code>record_print()</code>, the value to be printed. For <code>new_record()</code>, a
@@ -5436,7 +5438,7 @@ directory. For example, the path &lsquo;<span class="file">foo/bar.txt</span>&rs
 <h3 id="sec:usage_80" class="unnumbered">Usage</h3>
 <pre><code class="language-r">relative_path(x, dir = ".", use.. = TRUE, error = TRUE)</code></pre>
 <h3 id="sec:arguments_76" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A vector of paths to be converted to relative paths.</p>
@@ -5489,7 +5491,7 @@ can be renamed to &lsquo;<span class="file">1-a.txt</span>&rsquo;, &lsquo;<span 
   dry_run = TRUE
 )</code></pre>
 <h3 id="sec:arguments_77" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>pattern</code></td>
 <td>
 <p>A regular expression for <code><a href="https://rdrr.io/r/base/list.files.html">list.files()</a></code> to obtain
@@ -5554,7 +5556,7 @@ github_api(
   raw = !loadable("jsonlite")
 )</code></pre>
 <h3 id="sec:arguments_78" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>...</code></td>
 <td>
 <p>Arguments to be passed to <code>rest_api_raw()</code>.</p>
@@ -5624,13 +5626,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;gzip, br&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.96&quot;
+#&gt; [1] &quot;13.105.117.226&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a51d86420f1a1682&quot;
+#&gt; [1] &quot;a53e3fea8e2bbacc&quot;
 #&gt; 
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
@@ -5642,7 +5644,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;mockhttp.org&quot;
 #&gt; 
 #&gt; $headers$`user-agent`
-#&gt; [1] &quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;
+#&gt; [1] &quot;R/4.6.2 R (4.6.2 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;
 #&gt; 
 #&gt; $headers$`x-forwarded-proto`
 #&gt; [1] &quot;https&quot;
@@ -5651,7 +5653,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.96&quot;
+#&gt; [1] &quot;13.105.117.226&quot;
 #&gt; 
 #&gt; 
 #&gt; $queryParams
@@ -5659,7 +5661,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
 <pre><code class="language-r">xfun::rest_api_raw(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
-<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;accept&quot;:&quot;*/*&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.117.96&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-ray&quot;:&quot;a51d86470d8daf1b&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;connection&quot;:&quot;Keep-Alive&quot;,&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;user-agent&quot;:&quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;x-mockhttp-forwarded-proto&quot;:&quot;https&quot;,&quot;x-real-ip&quot;:&quot;13.105.117.96&quot;},&quot;queryParams&quot;:{}}
+<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;accept&quot;:&quot;*/*&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.117.226&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-ray&quot;:&quot;a53e3ff03e1e8ca0&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;connection&quot;:&quot;Keep-Alive&quot;,&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;user-agent&quot;:&quot;R/4.6.2 R (4.6.2 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;x-mockhttp-forwarded-proto&quot;:&quot;https&quot;,&quot;x-real-ip&quot;:&quot;13.105.117.226&quot;},&quot;queryParams&quot;:{}}
 </code></pre>
 <pre><code class="language-r"># send the request with an auth header
 xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPEN SESAME!&quot;)
@@ -5675,13 +5677,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;Basic OPEN SESAME!&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.96&quot;
+#&gt; [1] &quot;13.105.117.226&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a51d864c8ca7ee01&quot;
+#&gt; [1] &quot;a53e3ff65f26ca91&quot;
 #&gt; 
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
@@ -5693,7 +5695,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;mockhttp.org&quot;
 #&gt; 
 #&gt; $headers$`user-agent`
-#&gt; [1] &quot;R/4.6.1 R (4.6.1 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;
+#&gt; [1] &quot;R/4.6.2 R (4.6.2 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;
 #&gt; 
 #&gt; $headers$`x-forwarded-proto`
 #&gt; [1] &quot;https&quot;
@@ -5702,7 +5704,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.96&quot;
+#&gt; [1] &quot;13.105.117.226&quot;
 </code></pre>
 <pre><code class="language-r"># with query parameters
 xfun::rest_api(
@@ -5722,13 +5724,13 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$core$used
-#&gt; [1] 10
+#&gt; [1] 1
 #&gt; 
 #&gt; $resources$core$remaining
-#&gt; [1] 4990
+#&gt; [1] 4999
 #&gt; 
 #&gt; $resources$core$reset
-#&gt; [1] 1793229703
+#&gt; [1] 1793574832
 #&gt; 
 #&gt; 
 #&gt; $resources$search
@@ -5742,7 +5744,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 30
 #&gt; 
 #&gt; $resources$search$reset
-#&gt; [1] 1793228150
+#&gt; [1] 1793571301
 #&gt; 
 #&gt; 
 #&gt; $resources$graphql
@@ -5756,7 +5758,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$graphql$reset
-#&gt; [1] 1793231690
+#&gt; [1] 1793574841
 #&gt; 
 #&gt; 
 #&gt; $resources$integration_manifest
@@ -5770,7 +5772,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$integration_manifest$reset
-#&gt; [1] 1793231690
+#&gt; [1] 1793574841
 #&gt; 
 #&gt; 
 #&gt; $resources$source_import
@@ -5784,7 +5786,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$source_import$reset
-#&gt; [1] 1793228150
+#&gt; [1] 1793571301
 #&gt; 
 #&gt; 
 #&gt; $resources$code_scanning_autofix
@@ -5798,7 +5800,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_scanning_autofix$reset
-#&gt; [1] 1793228150
+#&gt; [1] 1793571301
 #&gt; 
 #&gt; 
 #&gt; $resources$actions_runner_registration
@@ -5812,7 +5814,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10000
 #&gt; 
 #&gt; $resources$actions_runner_registration$reset
-#&gt; [1] 1793231690
+#&gt; [1] 1793574841
 #&gt; 
 #&gt; 
 #&gt; $resources$scim
@@ -5826,7 +5828,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15000
 #&gt; 
 #&gt; $resources$scim$reset
-#&gt; [1] 1793231690
+#&gt; [1] 1793574841
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_snapshots
@@ -5840,7 +5842,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_snapshots$reset
-#&gt; [1] 1793228150
+#&gt; [1] 1793571301
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_sbom
@@ -5854,7 +5856,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_sbom$reset
-#&gt; [1] 1793228150
+#&gt; [1] 1793571301
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log
@@ -5868,7 +5870,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$audit_log$reset
-#&gt; [1] 1793231690
+#&gt; [1] 1793574841
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log_streaming
@@ -5882,7 +5884,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15
 #&gt; 
 #&gt; $resources$audit_log_streaming$reset
-#&gt; [1] 1793231690
+#&gt; [1] 1793574841
 #&gt; 
 #&gt; 
 #&gt; $resources$code_search
@@ -5896,7 +5898,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_search$reset
-#&gt; [1] 1793228150
+#&gt; [1] 1793571301
 #&gt; 
 #&gt; 
 #&gt; $resources$copilot_usage_records
@@ -5910,7 +5912,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$copilot_usage_records$reset
-#&gt; [1] 1793231690
+#&gt; [1] 1793574841
 #&gt; 
 #&gt; 
 #&gt; $resources$enterprise_token_inventory
@@ -5924,7 +5926,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$enterprise_token_inventory$reset
-#&gt; [1] 1793231690
+#&gt; [1] 1793574841
 #&gt; 
 #&gt; 
 #&gt; 
@@ -5933,13 +5935,13 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $rate$used
-#&gt; [1] 10
+#&gt; [1] 1
 #&gt; 
 #&gt; $rate$remaining
-#&gt; [1] 4990
+#&gt; [1] 4999
 #&gt; 
 #&gt; $rate$reset
-#&gt; [1] 1793229703
+#&gt; [1] 1793574832
 </code></pre>
 <h2 id="sec:man-retry"><span class="section-number main-number">83</span> Retry calling a function for a number of times</h2>
 <h3 id="sec:description_83" class="unnumbered">Description</h3>
@@ -5949,7 +5951,7 @@ times, with a pause between attempts.
 <h3 id="sec:usage_83" class="unnumbered">Usage</h3>
 <pre><code class="language-r">retry(fun, ..., .times = 3, .pause = 5)</code></pre>
 <h3 id="sec:arguments_79" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>fun</code></td>
 <td>
 <p>A function.</p>
@@ -6008,7 +6010,7 @@ checks can be set via <code>options(mc.cores = n)</code> (both default to
 
 compare_Rcheck(status_only = TRUE, output = "00check_diffs.md")</code></pre>
 <h3 id="sec:arguments_80" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>pkg</code></td>
 <td>
 <p>The package name.</p>
@@ -6151,7 +6153,7 @@ RStudio source editor, as if they were typed by a human.
 <h3 id="sec:usage_85" class="unnumbered">Usage</h3>
 <pre><code class="language-r">rstudio_type(x, pause = function() 0.1, mistake = 0, save = 0)</code></pre>
 <h3 id="sec:arguments_81" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector.</p>
@@ -6188,7 +6190,7 @@ if (loadable(&quot;rstudioapi&quot;) &amp;&amp; rstudioapi::isAvailable()) {
 <h3 id="sec:usage_86" class="unnumbered">Usage</h3>
 <pre><code class="language-r">same_path(p1, p2, ...)</code></pre>
 <h3 id="sec:arguments_82" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>p1</code>, <code>p2</code></td>
 <td>
 <p>Two vectors of paths.</p>
@@ -6213,7 +6215,7 @@ similar to <code>servr::httd()</code> and Python's <code>http.server</code> modu
 <h3 id="sec:usage_87" class="unnumbered">Usage</h3>
 <pre><code class="language-r">serve_dir(dir = ".", name = "xfun-dir", ...)</code></pre>
 <h3 id="sec:arguments_83" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>dir</code></td>
 <td>
 <p>The directory to serve.</p>
@@ -6245,7 +6247,7 @@ group, and does not differentiate between loaded and attached packages.
 <h3 id="sec:usage_88" class="unnumbered">Usage</h3>
 <pre><code class="language-r">session_info(packages = NULL, dependencies = TRUE)</code></pre>
 <h3 id="sec:arguments_84" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>packages</code></td>
 <td>
 <p>A character vector of package names, of which the versions
@@ -6277,29 +6279,29 @@ diagnostics.
 <h3 id="sec:examples_68" class="unnumbered">Examples</h3>
 <pre><code class="language-r">xfun::session_info()
 </code></pre>
-<pre><code>R version 4.6.1 (2026-06-24)
+<pre><code>R version 4.6.2 (2026-10-29)
 Platform: aarch64-apple-darwin23
 Running under: macOS Tahoe 26.6.2
 
 Locale: en_US.UTF-8 / en_US.UTF-8 / en_US.UTF-8 / C / en_US.UTF-8 / en_US.UTF-8
 
 Package version:
-  codetools_0.2-20  compiler_4.6.1    graphics_4.6.1    grDevices_4.6.1  
-  jsonlite_2.0.0    litedown_0.11.20  methods_4.6.1     mime_0.13.1      
-  rstudioapi_0.19.0 stats_4.6.1       tools_4.6.1       utils_4.6.1      
-  xfun_0.62.6       yaml_2.3.12      
+  codetools_0.2-20  compiler_4.6.2    graphics_4.6.2    grDevices_4.6.2  
+  jsonlite_2.0.0    litedown_0.11.23  methods_4.6.2     mime_0.13.1      
+  rstudioapi_0.19.0 stats_4.6.2       tools_4.6.2       utils_4.6.2      
+  xfun_0.62.7       yaml_2.3.12      
 </code></pre>
 <pre><code class="language-r">if (xfun::loadable(&quot;MASS&quot;)) xfun::session_info(&quot;MASS&quot;)
 </code></pre>
-<pre><code>R version 4.6.1 (2026-06-24)
+<pre><code>R version 4.6.2 (2026-10-29)
 Platform: aarch64-apple-darwin23
 Running under: macOS Tahoe 26.6.2
 
 Locale: en_US.UTF-8 / en_US.UTF-8 / en_US.UTF-8 / C / en_US.UTF-8 / en_US.UTF-8
 
 Package version:
-  graphics_4.6.1  grDevices_4.6.1 MASS_7.3-65     methods_4.6.1  
-  stats_4.6.1     utils_4.6.1    
+  graphics_4.6.2  grDevices_4.6.2 MASS_7.3-66     methods_4.6.2  
+  stats_4.6.2     utils_4.6.2    
 </code></pre>
 <h2 id="sec:man-set_envvar"><span class="section-number main-number">89</span> Set environment variables</h2>
 <h3 id="sec:description_89" class="unnumbered">Description</h3>
@@ -6309,7 +6311,7 @@ values of the variables, so they could be restored later.
 <h3 id="sec:usage_89" class="unnumbered">Usage</h3>
 <pre><code class="language-r">set_envvar(vars)</code></pre>
 <h3 id="sec:arguments_85" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>vars</code></td>
 <td>
 <p>A named character vector of the form <code>c(VARIABLE = VALUE)</code>.
@@ -6349,7 +6351,7 @@ image if its width is larger than the value specified by the argument
   tinify = FALSE
 )</code></pre>
 <h3 id="sec:arguments_86" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>width</code></td>
 <td>
 <p>The desired maximum width of images.</p>
@@ -6419,7 +6421,7 @@ make sure it works in a few edge cases: <code>split_lines('')</code> returns
 <h3 id="sec:usage_91" class="unnumbered">Usage</h3>
 <pre><code class="language-r">split_lines(x)</code></pre>
 <h3 id="sec:arguments_87" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector.</p>
@@ -6442,7 +6444,7 @@ and put them in a list.
 <h3 id="sec:usage_92" class="unnumbered">Usage</h3>
 <pre><code class="language-r">split_source(x, merge_comments = FALSE, line_number = FALSE)</code></pre>
 <h3 id="sec:arguments_88" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector of R source code.</p>
@@ -6499,7 +6501,7 @@ formed by concatenating wrapped strings by <code>\n</code>.
 <h3 id="sec:usage_93" class="unnumbered">Usage</h3>
 <pre><code class="language-r">str_wrap(...)</code></pre>
 <h3 id="sec:arguments_89" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>...</code></td>
 <td>
 <p>Arguments passed to <code><a href="https://rdrr.io/r/base/strwrap.html">strwrap()</a></code>.</p>
@@ -6513,17 +6515,17 @@ formed by concatenating wrapped strings by <code>\n</code>.
 x = rep(paste(x, collapse = &quot;&quot;), 2)
 strwrap(x, width = 30)
 </code></pre>
-<pre><code>#&gt;  [1] &quot;mb jf x jcq uwkrv i a n wp o&quot; &quot;w b rurw ssq nhbn nhr ry q&quot;  
-#&gt;  [3] &quot;uplf m im c pl k i u nv cz a&quot; &quot;a am b bg a zl j q g d l l t&quot;
-#&gt;  [5] &quot;g iwb bsab adubwy hx d nv co&quot; &quot;d yxib ls a&quot;                 
-#&gt;  [7] &quot;mb jf x jcq uwkrv i a n wp o&quot; &quot;w b rurw ssq nhbn nhr ry q&quot;  
-#&gt;  [9] &quot;uplf m im c pl k i u nv cz a&quot; &quot;a am b bg a zl j q g d l l t&quot;
-#&gt; [11] &quot;g iwb bsab adubwy hx d nv co&quot; &quot;d yxib ls a&quot;                 
+<pre><code>#&gt;  [1] &quot;u aq p u eigh kxf q j l ax&quot;    &quot;magn e w a i xm x l t yz gt&quot;  
+#&gt;  [3] &quot;jx r y codox hn hjhhri j v&quot;    &quot;xtaif r rb acefupqv sxgu g&quot;   
+#&gt;  [5] &quot;dkim nkicx c u mr r tt y j og&quot; &quot;t yid bzhr wdjlnj r&quot;          
+#&gt;  [7] &quot;u aq p u eigh kxf q j l ax&quot;    &quot;magn e w a i xm x l t yz gt&quot;  
+#&gt;  [9] &quot;jx r y codox hn hjhhri j v&quot;    &quot;xtaif r rb acefupqv sxgu g&quot;   
+#&gt; [11] &quot;dkim nkicx c u mr r tt y j og&quot; &quot;t yid bzhr wdjlnj r&quot;          
 </code></pre>
 <pre><code class="language-r">xfun::str_wrap(x, width = 30)  # same length as x
 </code></pre>
-<pre><code>#&gt; [1] &quot;mb jf x jcq uwkrv i a n wp o\nw b rurw ssq nhbn nhr ry q\nuplf m im c pl k i u nv cz a\na am b bg a zl j q g d l l t\ng iwb bsab adubwy hx d nv co\nd yxib ls a&quot;
-#&gt; [2] &quot;mb jf x jcq uwkrv i a n wp o\nw b rurw ssq nhbn nhr ry q\nuplf m im c pl k i u nv cz a\na am b bg a zl j q g d l l t\ng iwb bsab adubwy hx d nv co\nd yxib ls a&quot;
+<pre><code>#&gt; [1] &quot;u aq p u eigh kxf q j l ax\nmagn e w a i xm x l t yz gt\njx r y codox hn hjhhri j v\nxtaif r rb acefupqv sxgu g\ndkim nkicx c u mr r tt y j og\nt yid bzhr wdjlnj r&quot;
+#&gt; [2] &quot;u aq p u eigh kxf q j l ax\nmagn e w a i xm x l t yz gt\njx r y codox hn hjhhri j v\nxtaif r rb acefupqv sxgu g\ndkim nkicx c u mr r tt y j og\nt yid bzhr wdjlnj r&quot;
 </code></pre>
 <h2 id="sec:man-strict_list"><span class="section-number main-number">94</span> Strict lists</h2>
 <h3 id="sec:description_94" class="unnumbered">Description</h3>
@@ -6541,7 +6543,7 @@ x$name
 ## S3 method for class 'xfun_strict_list'
 print(x, ...)</code></pre>
 <h3 id="sec:arguments_90" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>...</code></td>
 <td>
 <p>Objects (list elements), possibly named. Ignored in the
@@ -6615,7 +6617,7 @@ z3$a  # NULL again!
 <h3 id="sec:usage_95" class="unnumbered">Usage</h3>
 <pre><code class="language-r">strip_html(x)</code></pre>
 <h3 id="sec:arguments_91" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector.</p>
@@ -6636,7 +6638,7 @@ z3$a  # NULL again!
 <h3 id="sec:usage_96" class="unnumbered">Usage</h3>
 <pre><code class="language-r">submit_cran(file = pkg_build(), comment = "", sync = TRUE)</code></pre>
 <h3 id="sec:arguments_92" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>file</code></td>
 <td>
 <p>The path to the source package tarball. By default, the current
@@ -6682,7 +6684,7 @@ error if it is non-zero.
 <h3 id="sec:usage_97" class="unnumbered">Usage</h3>
 <pre><code class="language-r">system3(command, args = character(), ...)</code></pre>
 <h3 id="sec:arguments_93" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>command</code>, <code>args</code>, <code>...</code></td>
 <td>
 <p>Passed to <code><a href="https://rdrr.io/r/base/system2.html">system2()</a></code>. Note that <code>args</code> will always
@@ -6717,7 +6719,7 @@ represented recursively with a child tabset.
 
 tab_content(x)</code></pre>
 <h3 id="sec:arguments_94" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A list for <code>tabset()</code>, and a character vector for <code>tab_content()</code>.</p>
@@ -6771,7 +6773,7 @@ taml_file(path)
 
 taml_save(x, path = NULL, indent = "  ")</code></pre>
 <h3 id="sec:arguments_95" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>For <code>taml_load()</code>, a character vector of the YAML content. For
@@ -6911,7 +6913,7 @@ compress images under a directory.
 
 tinify_dir(dir = ".", ...)</code></pre>
 <h3 id="sec:arguments_96" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>input</code></td>
 <td>
 <p>A vector of input paths of images.</p>
@@ -7009,7 +7011,7 @@ js(x)
 
 json_vector(x, to_array = FALSE, quote = TRUE, sep = ", ", mode = "js")</code></pre>
 <h3 id="sec:arguments_97" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>An R object.</p>
@@ -7141,7 +7143,7 @@ tojson(NULL); tojson(1:10); tojson(TRUE); tojson(FALSE)
   [&quot;a&quot;, &quot;b&quot;],
   [1, 2, 3, 4, 5],
   true,
-  [new Date(&quot;2026-10-29&quot;), new Date(&quot;2026-10-30&quot;), new Date(&quot;2026-10-31&quot;)]
+  [new Date(&quot;2026-11-02&quot;), new Date(&quot;2026-11-03&quot;), new Date(&quot;2026-11-04&quot;)]
 ]
 </code></pre>
 <pre><code class="language-r">tojson(head(iris))  # each column is in an element
@@ -7205,7 +7207,7 @@ nested structure (such as a nested list).
 <h3 id="sec:usage_102" class="unnumbered">Usage</h3>
 <pre><code class="language-r">tree(...)</code></pre>
 <h3 id="sec:arguments_98" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>...</code></td>
 <td>
 <p>Arguments to be passed to <code><a href="https://rdrr.io/r/utils/str.html">str()</a></code> (note that the
@@ -7398,7 +7400,7 @@ xfun::tree(1:10)
 <h3 id="sec:usage_103" class="unnumbered">Usage</h3>
 <pre><code class="language-r">try_error(expr)</code></pre>
 <h3 id="sec:arguments_99" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>expr</code></td>
 <td>
 <p>An R expression.</p>
@@ -7423,7 +7425,7 @@ xfun::tree(1:10)
 <h3 id="sec:usage_104" class="unnumbered">Usage</h3>
 <pre><code class="language-r">try_silent(expr)</code></pre>
 <h3 id="sec:arguments_100" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>expr</code></td>
 <td>
 <p>An R expression.</p>
@@ -7453,7 +7455,7 @@ upload_win_builder(
   server = c("ftp", "https")
 )</code></pre>
 <h3 id="sec:arguments_101" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>file</code></td>
 <td>
 <p>Path to a local file.</p>
@@ -7494,7 +7496,7 @@ going to the win-builder web page and uploading packages there manually.
   include_xml = FALSE
 )</code></pre>
 <h3 id="sec:arguments_102" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>file</code></td>
 <td>
 <p>Path to the image file to be uploaded.</p>
@@ -7571,7 +7573,7 @@ returns a successful status code.
 <h3 id="sec:usage_107" class="unnumbered">Usage</h3>
 <pre><code class="language-r">url_accessible(x, use_curl = !capabilities("libcurl"), ...)</code></pre>
 <h3 id="sec:arguments_103" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A URL as a character string.</p>
@@ -7604,7 +7606,7 @@ otherwise return the original URL.
 <h3 id="sec:usage_108" class="unnumbered">Usage</h3>
 <pre><code class="language-r">url_destination(x, force = FALSE)</code></pre>
 <h3 id="sec:arguments_104" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector of URLs.</p>
@@ -7633,7 +7635,7 @@ possible query parameters or hash from the names.
 <h3 id="sec:usage_109" class="unnumbered">Usage</h3>
 <pre><code class="language-r">url_filename(x, default = "index.html")</code></pre>
 <h3 id="sec:arguments_105" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector of URLs.</p>
@@ -7679,7 +7681,7 @@ URL, e.g., when the URL ends with a slash.</p>
 <h3 id="sec:usage_110" class="unnumbered">Usage</h3>
 <pre><code class="language-r">valid_syntax(code, silent = TRUE)</code></pre>
 <h3 id="sec:arguments_106" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>code</code></td>
 <td>
 <p>A character vector of R source code.</p>
@@ -7719,7 +7721,7 @@ beginning of the document) and the body.
 <h3 id="sec:usage_111" class="unnumbered">Usage</h3>
 <pre><code class="language-r">yaml_body(x, ..., parse = TRUE)</code></pre>
 <h3 id="sec:arguments_107" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector of the document content.</p>
@@ -7773,7 +7775,7 @@ data. If not, use the simple parser <code><a href="#sec:man-taml-load">taml_load
   use_yaml = loadable("yaml")
 )</code></pre>
 <h3 id="sec:arguments_108" class="unnumbered">Arguments</h3>
-<table role = "presentation">
+<table class="desc-table" role = "presentation">
 <tr><td><code>x</code></td>
 <td>
 <p>A character vector of YAML data.</p>
@@ -7811,23 +7813,24 @@ character strings for expressions.
 <pre><code>#&gt; $a
 #&gt; [1] 1
 </code></pre>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/css/callout.min.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/css/manual.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/js/callout.min.js" defer></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/css/callout.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/css/manual.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/js/callout.min.js" defer></script>
 
+</article>
 </main>
 <footer><div class="flex-col">
 <p>Developed by <a href="https://yihui.org">Yihui Xie</a></p>
-<p>Site built with <a href="https://github.com/yihui/litedown">litedown</a> v0.11.20</p>
+<p>Site built with <a href="https://github.com/yihui/litedown">litedown</a> v0.11.23</p>
 </div></footer>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/js/sidenotes.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/js/appendix.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/js/toc-highlight.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/js/copy-button.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/js/heading-anchor.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/js/pages.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/js/sidenotes.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/js/toc-highlight.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/js/copy-button.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/js/heading-anchor.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/js/pages.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/js/nav-highlight.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/combine/npm/katex@0.19.1/dist/katex.min.js,npm/katex@0.19.1/dist/contrib/auto-render.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.129/js/render-katex.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.139/js/render-katex.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
 </body>
