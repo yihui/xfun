@@ -217,6 +217,9 @@ proxy_stop = function(slot) {
 
 # Build an R httpd handler closure.
 .make_app_handler = function(prefix, fn, wd) {
+  # force `wd` now, or getwd() passed in would be evaluated lazily when the
+  # first request arrives, i.e., in whichever directory R is by then
+  wd
   function(path, query = NULL, body = NULL, headers = NULL) {
     real = if (startsWith(path, prefix)) substring(path, nchar(prefix) + 1L) else path
     real = sub('^/', '', real)
