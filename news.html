@@ -198,6 +198,9 @@
 <h2 id="sec:xfun-0-63" class="unnumbered">xfun 0.63</h2>
 <ul>
 <li>
+<p><code>record()</code> gained an argument <code>src</code> to keep source references that point to a source file (e.g., an R Markdown document) for the code being evaluated, so that tracebacks of errors can be linked to lines in the file.</p>
+</li>
+<li>
 <p><code>browser_print()</code> and <code>browser_dom()</code> gained arguments <code>query</code>, <code>wait</code>, and <code>timeout</code>. <code>query</code> appends URL query parameters to the page (e.g., <code>list(paged = 1)</code>; a file path is converted to a <code>file://</code> URL), and <code>wait</code> is a JavaScript expression that must be true before the page is printed or its DOM is dumped (the functions always wait until the page is loaded; if the expression returns a promise, it is awaited; <code>c(event = , trigger = )</code> waits for an event on <code>window</code>, after dispatching the <code>trigger</code> event if provided). When either of them is used, the browser is controlled via the Chrome DevTools Protocol (implemented in base R with a WebSocket over <code>socketConnection()</code>, no extra dependencies) instead of command-line flags, which can only wait for a fixed time (e.g., <code>--virtual-time-budget</code>) and are not reliable for pages that update themselves after they are loaded.</p>
 </li>
 <li>
