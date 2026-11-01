@@ -179,3 +179,22 @@ assert('record() with message = NA does not capture messages', {
   cls = sapply(res, function(x) sub('record_', '', class(x)))
   (!('message' %in% cls))
 })
+
+assert('record() with src keeps source references pointing to the file', {
+  loc = NULL
+  env = new.env()
+  env$h = function() {
+    loc <<- vapply(sys.calls(), function(x) {
+      r = attr(x, 'srcref')
+      if (is.null(r)) '' else paste0(basename(attr(r, 'srcfile')$filename), '#', r[1])
+    }, '')
+  }
+  code = c('f = function() {', '  h()', '}', '', 'f()')
+  res = record(code, envir = env, src = list(file = '/a/b.Rmd', line = 11))
+  # f() is called on line 15 of the file, and h() on line 12
+  (c('b.Rmd#15', 'b.Rmd#12') %in% loc)
+  # no source references by default
+  loc = NULL
+  res = record(code, envir = env)
+  (!any(grepl('b.Rmd', loc)))
+})
