@@ -321,8 +321,8 @@ bump_version = function(x) {
 release_versions = function(ver, bump = NA, patch = '.1') {
   v = as.numeric_version(ver)
   n = length(unlist(v))
-  # a trailing 0 is dropped from the patch version and not bumped
-  z = v[[1, n]] == 0
+  # for X.Y.0 (3+ parts), the 0 is dropped from the patch version and not bumped
+  z = n > 2 && v[[1, n]] == 0
   if (z) ver = as.character(v[1, -n])
   b = if (is.na(bump)) n - z else min(bump, n - z)
   v[[1, b]] = v[[1, b]] + 1
