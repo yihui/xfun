@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<meta name="generator" content="litedown 0.11.23">
+<meta name="generator" content="litedown 1.0">
 <title>News</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.140/css/default.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.140/css/article.min.css">
@@ -207,7 +207,7 @@
 <p><code>browser_print()</code> and <code>browser_dom()</code> now include the browser’s exit status, version, and (deduplicated) stderr in the error message when the browser fails, instead of just “Failed to print” / “Failed to dump DOM”.</p>
 </li>
 <li>
-<p><code>post_release()</code> now writes the next <code>NEWS.md</code> header as <code>X.(Y+1).0</code> instead of <code>X.(Y+1)</code> (and <code>X+1.0</code> instead of <code>X+1</code> for <code>X.0</code>) when the released version ends with <code>.0</code>.</p>
+<p><code>post_release()</code> now keeps the trailing <code>.0</code> in the next <code>NEWS.md</code> header for <code>X.Y.0</code> versions (e.g., <code>1.2.0</code> gives <code>1.3.0</code>). Two-part versions like <code>10.0</code> now get the next patch <code>10.0.1</code> and the next release <code>10.1</code>.</p>
 </li>
 <li>
 <p>The JavaScript <code>unpack()</code> in <code>json_unpack</code> (and <code>json_reviver</code>) now returns plain arrays and already-decoded typed arrays unchanged, instead of <code>undefined</code>. This fixes errors when a consumer calls <code>unpack()</code> on a vector that <code>tojson()</code> left unpacked because it was too short, or on a value it had already decoded.</p>
@@ -1285,7 +1285,7 @@
 </main>
 <footer><div class="flex-col">
 <p>Developed by <a href="https://yihui.org">Yihui Xie</a></p>
-<p>Site built with <a href="https://github.com/yihui/litedown">litedown</a> v0.11.23</p>
+<p>Site built with <a href="https://github.com/yihui/litedown">litedown</a> v1.0</p>
 </div></footer>
 <script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.140/js/sidenotes.min.js" defer></script>
 <script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.140/js/toc-highlight.min.js" defer></script>
