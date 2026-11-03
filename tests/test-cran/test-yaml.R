@@ -174,10 +174,10 @@ assert('taml_file() reads YAML from a file', {
 assert('taml_save() converts a list to YAML', {
   res = list(a = 1L, b = 'foo', c = TRUE, d = list(e = 2L, f = NULL))
   yaml_str = as.character(taml_save(res))
-  (any(grepl('a: 1', yaml_str)))
-  (any(grepl('b: "foo"', yaml_str)))
-  (any(grepl('c: true', yaml_str)))
-  (any(grepl('f: null', yaml_str)))
+  (has_match(yaml_str, 'a: 1'))
+  (has_match(yaml_str, 'b: "foo"'))
+  (has_match(yaml_str, 'c: true'))
+  (has_match(yaml_str, 'f: null'))
   # round-trip
   (taml_load(yaml_str) %==% res)
 })
@@ -185,7 +185,7 @@ assert('taml_save() converts a list to YAML', {
 assert('taml_save() supports custom indent', {
   res = list(a = list(b = 1L))
   yaml_str = as.character(taml_save(res, indent = '\t'))
-  (grepl('\t', yaml_str))
+  (has_match(yaml_str, '\t'))
 })
 
 assert('taml_save() errors on unsupported types', {
@@ -196,13 +196,13 @@ assert('taml_save() errors on unsupported types', {
 assert('taml_save() handles expressions and arrays', {
   # expression value
   yaml_expr = as.character(taml_save(list(a = expression(1 + 1))))
-  (any(grepl('!expr', yaml_expr)))
+  (has_match(yaml_expr, '!expr'))
   # vector value -> array syntax
   yaml_arr = as.character(taml_save(list(a = c(1L, 2L, 3L))))
-  (any(grepl('^a: \\[', yaml_arr)))
+  (has_match(yaml_arr, '(?m)^a: \\['))
   # AsIs scalar -> still array
   yaml_asis = as.character(taml_save(list(a = I(1L))))
-  (any(grepl('^a: \\[', yaml_asis)))
+  (has_match(yaml_asis, '(?m)^a: \\['))
 })
 
 assert('taml_save() writes to a file when path is provided', {

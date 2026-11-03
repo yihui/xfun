@@ -35,7 +35,7 @@ assert('do_once() emits a hint message and sets option to FALSE', {
     }
   )
   # the hint message should mention the option name
-  (any(grepl(opt, msgs, fixed = TRUE)))
+  (has_match(msgs, I(opt)))
   # option is now FALSE so subsequent calls are no-ops
   (identical(getOption(opt), FALSE))
   options(setNames(list(NULL), opt))
