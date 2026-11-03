@@ -241,11 +241,12 @@ cdp_size = function(s, size) {
   ))
 }
 
-# evaluate a JavaScript expression on the page and return its value as a string
-# (base64 avoids unescaping the JSON string)
+# evaluate JavaScript code on the page and return the value of its last
+# statement as a string (indirect eval() allows multiple statements; base64
+# avoids unescaping the JSON string)
 cdp_eval = function(s, expr) {
   m = s$call('Runtime.evaluate', sprintf('{"expression":%s}', tojson(sprintf(
-    'btoa(unescape(encodeURIComponent(String(%s))))', expr
+    'btoa(unescape(encodeURIComponent(String((0, eval)(%s)))))', tojson(expr)
   ))))
   raw_to_utf8(cdp_data(m, '"value":"'))
 }
@@ -263,8 +264,8 @@ cdp_eval = function(s, expr) {
 #'   `NULL`.
 #' @return A list of functions: `open(input, query, wait)` loads a page (see
 #'   [browser_print()] for the arguments) and returns the session invisibly;
-#'   `eval(expr)` evaluates a JavaScript expression on the current page and
-#'   returns its value as a string; `dom()` returns the HTML of the current
+#'   `eval(expr)` evaluates JavaScript code on the current page and returns
+#'   the value of its last statement as a string; `dom()` returns the HTML of the current
 #'   page; `close()` closes the browser (it is also closed when the session is
 #'   garbage-collected or R exits).
 #' @export

@@ -115,5 +115,6 @@ assert('browser_session() reuses one browser for several pages', {
   (s$eval('document.getElementById("a").textContent') %==% 'one')
   s$open(f2)
   (s$eval('document.getElementById("a").textContent') %==% 'two')
+  (s$eval('var x = 1; x + 1') %==% '2')  # multiple statements
   (s$dom() %==% '<html><head></head><body><p id="a">two</p>\n</body></html>')
 })

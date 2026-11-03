@@ -30,8 +30,8 @@ page (when \code{query} or \code{wait} is used).}
 \value{
 A list of functions: \code{open(input, query, wait)} loads a page (see
 \code{\link[=browser_print]{browser_print()}} for the arguments) and returns the session invisibly;
-\code{eval(expr)} evaluates a JavaScript expression on the current page and
-returns its value as a string; \code{dom()} returns the HTML of the current
+\code{eval(expr)} evaluates JavaScript code on the current page and returns
+the value of its last statement as a string; \code{dom()} returns the HTML of the current
 page; \code{close()} closes the browser (it is also closed when the session is
 garbage-collected or R exits).
 }
