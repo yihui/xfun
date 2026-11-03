@@ -103,3 +103,17 @@ assert('browser_print() prints and takes screenshots via DevTools', {
   (readBin(out[1], 'raw', 4) %==% charToRaw('%PDF'))
   (readBin(out[2], 'raw', 4)[2:4] %==% charToRaw('PNG'))
 })
+
+assert('browser_session() reuses one browser for several pages', {
+  f1 = tempfile(fileext = '.html'); f2 = tempfile(fileext = '.html')
+  on.exit(unlink(c(f1, f2)), add = TRUE)
+  writeLines('<p id="a">one</p><script>document.body.dataset.r = 1</script>', f1)
+  writeLines('<p id="a">two</p>', f2)
+  s = browser_session()
+  on.exit(s$close(), add = TRUE)
+  (s$open(f1, wait = 'document.body.dataset.r === "1"') %==% s)
+  (s$eval('document.getElementById("a").textContent') %==% 'one')
+  s$open(f2)
+  (s$eval('document.getElementById("a").textContent') %==% 'two')
+  (s$dom() %==% '<html><head></head><body><p id="a">two</p>\n</body></html>')
+})

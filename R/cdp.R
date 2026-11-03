@@ -132,91 +132,180 @@ wait_js = function(wait) {
 browser_cdp = function(...) with_browser_tmp(cdp_session(...))
 
 cdp_session = function(browser, args, url, wait, timeout, size, type) {
-  {
-    dir = tempfile('profile'); err = tempfile()
-    args = c(
-      args, '--remote-debugging-port=0',
-      shQuote(paste0('--user-data-dir=', dir)), 'about:blank'
+  s = cdp_open(browser, args, timeout)
+  on.exit(s$close())
+  call = s$call
+  cdp_size(s, size)
+  cdp_load(s, url, wait, timeout)
+  switch(
+    type,
+    pdf = cdp_data(call(
+      'Page.printToPDF', '{"printBackground":true,"preferCSSPageSize":true}'
+    )),
+    png = , jpeg = cdp_data(call(
+      'Page.captureScreenshot', sprintf('{"format":"%s"}', type)
+    )),
+    dom = cdp_eval(s, 'document.documentElement.outerHTML')
+  )
+}
+
+# a timer that tells if `timeout` seconds have passed since its creation
+cdp_timer = function(timeout) {
+  t0 = Sys.time()
+  function() difftime(Sys.time(), t0, units = 'secs') > timeout
+}
+
+# Start the browser with remote debugging and connect to its page. Return a
+# list of `call(method, params)` (send a command and return the response),
+# and `close()` (close the browser).
+cdp_open = function(browser, args, timeout) {
+  dir = tempfile('profile'); err = tempfile()
+  args = c(
+    args, '--remote-debugging-port=0',
+    shQuote(paste0('--user-data-dir=', dir)), 'about:blank'
+  )
+  timed_out = cdp_timer(timeout)
+  system2(browser, args, wait = FALSE, stdout = FALSE, stderr = err)
+  # the browser tells us the port of the DevTools server in this file
+  f = file.path(dir, 'DevToolsActivePort')
+  # (reading the file may fail on Windows when the browser is still writing it)
+  read_port = function() tryCatch(readLines(f, warn = FALSE), error = function(e) character())
+  while (!(file.exists(f) && length(x <- read_port()) >= 2)) {
+    if (timed_out()) browser_fail(
+      browser, 'Failed to start the browser', err
     )
-    t0 = Sys.time()
-    timed_out = function() difftime(Sys.time(), t0, units = 'secs') > timeout
-    system2(browser, args, wait = FALSE, stdout = FALSE, stderr = err)
-    # the browser tells us the port of the DevTools server in this file
-    f = file.path(dir, 'DevToolsActivePort')
-    # (reading the file may fail on Windows when the browser is still writing it)
-    read_port = function() tryCatch(readLines(f, warn = FALSE), error = function(e) character())
-    while (!(file.exists(f) && length(x <- read_port()) >= 2)) {
-      if (timed_out()) browser_fail(
-        browser, 'Failed to start the browser', err
-      )
-      Sys.sleep(.1)
-    }
-    port = as.integer(x[1]); bpath = x[2]
-    on.exit({
-      # close the whole browser (via its own endpoint) instead of just the page
-      try({
-        con2 = ws_open(port, bpath, timeout)
-        ws_send(con2, '{"id":1,"method":"Browser.close"}')
-        close(con2)
-      }, silent = TRUE)
-      Sys.sleep(.5)  # give the browser time to exit before its profile is deleted
-    }, add = TRUE)
-    con = ws_open(port, get_page(port, timed_out), timeout)
-    id = 0
-    call = function(method, params = '{}') {
-      id <<- id + 1; i = id
-      ws_send(con, sprintf('{"id":%d,"method":"%s","params":%s}', i, method, params))
-      repeat {
-        m = ws_recv(con)
-        if (startsWith(m, sprintf('{"id":%d,', i))) break
-      }
-      if (grepl('^\\{"id":\\d+,"error":', m)) stop2('DevTools error: ', m)
-      m
-    }
-    on.exit(try(close(con), silent = TRUE), add = TRUE)
-    if (!is.null(size)) call('Emulation.setDeviceMetricsOverride', sprintf(
-      '{"width":%d,"height":%d,"deviceScaleFactor":1,"mobile":false}',
-      size[1], size[2]
-    ))
-    call('Page.navigate', sprintf('{"url":%s}', tojson(url)))
-    # `wait` can be a value (ready when it is true) or a promise (ready when it
-    # is resolved)
-    ready = tojson(sprintf(paste0(
-      "(async () => {",
-      "if (location.href === 'about:blank' || document.readyState !== 'complete') return false;",
-      "const v = (%s); if (typeof v?.then !== 'function') return !!v; await v; return true;",
-      "})()"
-    ), wait_js(wait)))
-    repeat {
-      ok = tryCatch(grepl('"value":true', call(
-        'Runtime.evaluate',
-        sprintf('{"expression":%s,"returnByValue":true,"awaitPromise":true}', ready)
-      ), fixed = TRUE), error = function(e) FALSE)
-      if (ok) break
-      if (timed_out()) stop2(
-        'The page was not ready in ', timeout, ' seconds. Please check the ',
-        "argument 'wait', or increase 'timeout'."
-      )
-      Sys.sleep(.2)
-    }
-    switch(
-      type,
-      pdf = cdp_data(call(
-        'Page.printToPDF', '{"printBackground":true,"preferCSSPageSize":true}'
-      )),
-      png = , jpeg = cdp_data(call(
-        'Page.captureScreenshot', sprintf('{"format":"%s"}', type)
-      )),
-      dom = {
-        # base64 avoids unescaping the JSON string
-        m = call('Runtime.evaluate', sprintf('{"expression":%s}', tojson(paste0(
-          'btoa(unescape(encodeURIComponent(',
-          'document.documentElement.outerHTML)))'
-        ))))
-        raw_to_utf8(cdp_data(m, '"value":"'))
-      }
-    )
+    Sys.sleep(.1)
   }
+  port = as.integer(x[1]); bpath = x[2]
+  con = NULL
+  shut = function() {
+    try(close(con), silent = TRUE)
+    # close the whole browser (via its own endpoint) instead of just the page
+    try({
+      con2 = ws_open(port, bpath, timeout)
+      ws_send(con2, '{"id":1,"method":"Browser.close"}')
+      close(con2)
+    }, silent = TRUE)
+    Sys.sleep(.5)  # give the browser time to exit before its profile is deleted
+  }
+  ok = FALSE
+  on.exit(if (!ok) shut())
+  con = ws_open(port, get_page(port, timed_out), timeout)
+  id = 0
+  call = function(method, params = '{}') {
+    id <<- id + 1; i = id
+    ws_send(con, sprintf('{"id":%d,"method":"%s","params":%s}', i, method, params))
+    repeat {
+      m = ws_recv(con)
+      if (startsWith(m, sprintf('{"id":%d,', i))) break
+    }
+    if (grepl('^\\{"id":\\d+,"error":', m)) stop2('DevTools error: ', m)
+    m
+  }
+  ok = TRUE
+  list(call = call, close = shut)
+}
+
+# Navigate to `url` and wait until the page is ready (`wait` is a JavaScript
+# expression).
+cdp_load = function(s, url, wait, timeout) {
+  timed_out = cdp_timer(timeout)
+  s$call('Page.navigate', sprintf('{"url":%s}', tojson(url)))
+  # `wait` can be a value (ready when it is true) or a promise (ready when it
+  # is resolved)
+  ready = tojson(sprintf(paste0(
+    "(async () => {",
+    "if (location.href === 'about:blank' || document.readyState !== 'complete') return false;",
+    "const v = (%s); if (typeof v?.then !== 'function') return !!v; await v; return true;",
+    "})()"
+  ), wait_js(wait)))
+  repeat {
+    ok = tryCatch(grepl('"value":true', s$call(
+      'Runtime.evaluate',
+      sprintf('{"expression":%s,"returnByValue":true,"awaitPromise":true}', ready)
+    ), fixed = TRUE), error = function(e) FALSE)
+    if (ok) break
+    if (timed_out()) stop2(
+      'The page was not ready in ', timeout, ' seconds. Please check the ',
+      "argument 'wait', or increase 'timeout'."
+    )
+    Sys.sleep(.2)
+  }
+}
+
+# set the window size (if provided)
+cdp_size = function(s, size) {
+  if (!is.null(size)) s$call('Emulation.setDeviceMetricsOverride', sprintf(
+    '{"width":%d,"height":%d,"deviceScaleFactor":1,"mobile":false}',
+    size[1], size[2]
+  ))
+}
+
+# evaluate a JavaScript expression on the page and return its value as a string
+# (base64 avoids unescaping the JSON string)
+cdp_eval = function(s, expr) {
+  m = s$call('Runtime.evaluate', sprintf('{"expression":%s}', tojson(sprintf(
+    'btoa(unescape(encodeURIComponent(String(%s))))', expr
+  ))))
+  raw_to_utf8(cdp_data(m, '"value":"'))
+}
+
+#' A persistent headless browser session
+#'
+#' Start a headless browser (Chromium/Chrome/Edge) once and reuse it to load
+#' pages and evaluate JavaScript on them via the Chrome DevTools Protocol,
+#' instead of starting a new browser for every page as [browser_dom()] does.
+#' This is much faster for running many checks against different pages.
+#' @inheritParams browser_dom
+#' @param args Command-line arguments passed to the browser, by default
+#'   `xfun:::browser_args()`.
+#' @param size The window size, e.g., `c(1280, 1024)`; the browser default if
+#'   `NULL`.
+#' @return A list of functions: `open(input, query, wait)` loads a page (see
+#'   [browser_print()] for the arguments) and returns the session invisibly;
+#'   `eval(expr)` evaluates a JavaScript expression on the current page and
+#'   returns its value as a string; `dom()` returns the HTML of the current
+#'   page; `close()` closes the browser (it is also closed when the session is
+#'   garbage-collected or R exits).
+#' @export
+#' @examplesIf interactive()
+#' s = xfun::browser_session()
+#' f = tempfile(fileext = ".html")
+#' writeLines('<p id="a">hello</p>', f)
+#' s$open(f)
+#' s$eval('document.getElementById("a").textContent')
+#' s$close()
+browser_session = function(
+  browser = NULL, args = browser_args(), size = NULL, timeout = 60
+) {
+  browser = check_browser(browser)
+  # keep the scratch files of the browser in a directory deleted on close
+  d = tempfile('browser-'); dir.create(d)
+  old = set_envvar(c(TMPDIR = d))
+  s = tryCatch(cdp_open(browser, args, timeout), finally = set_envvar(old), error = function(e) {
+    unlink(d, recursive = TRUE, force = TRUE)
+    stop(e)
+  })
+  cdp_size(s, size)
+  closed = FALSE
+  close = function() {
+    if (closed) return(invisible())
+    closed <<- TRUE
+    s$close()
+    unlink(d, recursive = TRUE, force = TRUE)
+  }
+  self = list(
+    open = function(input, query = NULL, wait = NULL) {
+      cdp_load(s, browser_url(input, query), wait, timeout)
+      invisible(self)
+    },
+    eval = function(expr) cdp_eval(s, expr),
+    dom = function() cdp_eval(s, 'document.documentElement.outerHTML'),
+    close = close
+  )
+  e = environment(close)
+  reg.finalizer(e, function(e) close(), onexit = TRUE)
+  self
 }
 
 # turn a path into a file:// URL and append query parameters (a named list or
