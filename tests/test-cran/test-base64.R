@@ -49,7 +49,7 @@ assert('base64_decode() returns the same result when the same string is used as 
 
 assert('base64_uri() returns proper data type', {
   f = R_logo()
-  (!grepl('[.]svg$', f) || strsplit(base64_uri(f), split = ';')[[1]][1] %==% 'data:image/svg+xml')
+  (has_match(f, !'[.]svg$') || strsplit(base64_uri(f), split = ';')[[1]][1] %==% 'data:image/svg+xml')
 })
 
 assert('base64_encode_r() handles all remainder cases (n mod 3)', {

@@ -196,5 +196,5 @@ assert('record() with src keeps source references pointing to the file', {
   # no source references by default
   loc = NULL
   res = record(code, envir = env)
-  (!any(grepl('b.Rmd', loc)))
+  (has_match(loc, !I('b.Rmd')))
 })
