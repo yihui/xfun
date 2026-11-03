@@ -44,6 +44,12 @@
 #'   print the value of the last expression; `0` means no special handling
 #'   (i.e., print only when the value is visible).
 #' @param envir An environment in which the code is evaluated.
+#' @param src If provided, a list of two elements: `file` (the path of the file
+#'   that `code` comes from) and `line` (the line number of the first line of
+#'   `code` in the file). The code is then parsed with source references that
+#'   point to the file (via `#line` directives), so that [sys.calls()] and
+#'   [traceback()] can tell where in the file an error occurred. By default,
+#'   source references are not kept.
 #' @return `record()` returns a list of the class `xfun_record_results` that
 #'   contains elements with these possible classes: `record_source` (source
 #'   code), `record_output` (text output), `record_plot` (plot file paths),
@@ -69,7 +75,8 @@ record = function(
   code = NULL, dev = 'png', dev.path = 'xfun-record', dev.ext = dev_ext(dev),
   dev.args = list(), dev.keep = TRUE, message = TRUE, warning = TRUE, error = NA,
   cache = list(), print = record_print, print.args = list(),
-  verbose = getOption('xfun.record.verbose', 0), envir = parent.frame()
+  verbose = getOption('xfun.record.verbose', 0), envir = parent.frame(),
+  src = NULL
 ) {
   new_result = function(x = list()) structure(x, class = 'xfun_record_results')
   res = new_result()
@@ -257,7 +264,7 @@ record = function(
   n = length(codes)
   for (i in seq_len(n)) {
     add_result(code <- codes[[i]], 'source')
-    expr = parse_only(code)
+    expr = parse_src(code, src)
     if (length(expr) == 0) next
     # evaluate the code and capture output
     out = handle_output(handle_eval(withVisible(eval(expr, envir))))
@@ -516,4 +523,12 @@ print.xfun_record_results = function(
     cat(res, sep = '\n')
   }
   invisible(x)
+}
+
+# parse code with source references that point to a file, using a #line
+# directive (the line numbers of code pieces are in the attribute `lines`)
+parse_src = function(code, src) {
+  if (is.null(src) || is.null(l <- attr(code, 'lines'))) return(parse_only(code))
+  d = sprintf('#line %d "%s"', src$line + l[1] - 1L, gsub('\\\\', '/', src$file))
+  parse(text = c(d, code), keep.source = TRUE)
 }

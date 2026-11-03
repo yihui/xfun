@@ -97,3 +97,12 @@ assert('.resolve_path_to_httpd() maps to R httpd response shape', {
     (r$header %==% 'Location: /404.html')
   })
 })
+
+assert('app handlers run in the directory where the app was registered', {
+  d = tempfile(); dir.create(d)
+  on.exit({ unlink(d, recursive = TRUE); rm_vars('xfun-wd-test', .httpd_env()) })
+  # getwd() must be evaluated at registration time, not at the first request
+  in_dir(d, .register_app('xfun-wd-test', '/custom/wd', function(path, ...) getwd()))
+  h = get('xfun-wd-test', envir = .httpd_env())
+  (same_path(h('/custom/wd/x'), d))
+})

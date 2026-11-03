@@ -1,6 +1,16 @@
 # CHANGES IN xfun VERSION 0.63
 
+- `record()` gained an argument `src` to keep source references that point to a source file (e.g., an R Markdown document) for the code being evaluated, so that tracebacks of errors can be linked to lines in the file.
+
+- `browser_print()` and `browser_dom()` gained arguments `query`, `wait`, and `timeout`. `query` appends URL query parameters to the page (e.g., `list(paged = 1)`; a file path is converted to a `file://` URL), and `wait` is a JavaScript expression that must be true before the page is printed or its DOM is dumped (the functions always wait until the page is loaded; if the expression returns a promise, it is awaited; `c(event = , trigger = )` waits for an event on `window`, after dispatching the `trigger` event if provided). When either of them is used, the browser is controlled via the Chrome DevTools Protocol (implemented in base R with a WebSocket over `socketConnection()`, no extra dependencies) instead of command-line flags, which can only wait for a fixed time (e.g., `--virtual-time-budget`) and are not reliable for pages that update themselves after they are loaded.
+
+- `browser_print()` and `browser_dom()` now include the browser's exit status, version, and (deduplicated) stderr in the error message when the browser fails, instead of just "Failed to print" / "Failed to dump DOM".
+
+- `post_release()` now keeps the trailing `.0` in the next `NEWS.md` header for `X.Y.0` versions (e.g., `1.2.0` gives `1.3.0`). Two-part versions like `10.0` now get the next patch `10.0.1` and the next release `10.1`.
+
 - The JavaScript `unpack()` in `json_unpack` (and `json_reviver`) now returns plain arrays and already-decoded typed arrays unchanged, instead of `undefined`. This fixes errors when a consumer calls `unpack()` on a vector that `tojson()` left unpacked because it was too short, or on a value it had already decoded.
+
+- `new_app()` now serves requests from the working directory when it was called, instead of the working directory at the time of the first request (e.g., `in_dir(dir, new_app(...))` previously served the wrong directory if R had been moved elsewhere by then).
 
 # CHANGES IN xfun VERSION 0.62
 

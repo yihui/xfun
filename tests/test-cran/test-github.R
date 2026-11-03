@@ -1,25 +1,18 @@
 library(testit)
 
 assert('release_versions() handles X.Y and X.Y.0 formats', {
-  r = release_versions('0.59')
-  (r$next_ver %==% '0.60')
-  (r$patch %==% '0.59.1')
+  rv = function(next_ver, patch) list(next_ver = next_ver, patch = patch)
 
-  r = release_versions('1.2.0')
-  (r$next_ver %==% '1.3')
-  (r$patch %==% '1.2.1')
-
-  r = release_versions('10.0')
-  (r$next_ver %==% '11')
-  (r$patch %==% '10.1')
-
-  r = release_versions('10.0.1', 2)
-  (r$next_ver %==% '10.1.0')
-  (r$patch %==% '10.0.1.1')
-
-  r = release_versions('10.0', patch = '.0001')
-  (r$next_ver %==% '11')
-  (r$patch %==% '10.0001')
+  (release_versions('0.59') %==% rv('0.60', '0.59.1'))
+  (release_versions('1.2.0') %==% rv('1.3.0', '1.2.1'))
+  (release_versions('10.0') %==% rv('10.1', '10.0.1'))
+  (release_versions('0') %==% rv('1', '0.1'))
+  (release_versions('10.0.1', 2) %==% rv('10.1.0', '10.0.1.1'))
+  (release_versions('1.2.3') %==% rv('1.2.4', '1.2.3.1'))
+  (release_versions('1.0.0') %==% rv('1.1.0', '1.0.1'))
+  (release_versions('1.2.0', 1) %==% rv('2.0.0', '1.2.1'))
+  (release_versions('1.2.3', 9) %==% rv('1.2.4', '1.2.3.1'))
+  (release_versions('10.0', patch = '.0001') %==% rv('10.1', '10.0.0001'))
 })
 
 assert('news_tpl() detects header format and falls back correctly', {

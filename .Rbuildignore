@@ -6,5 +6,5 @@
 ^NEWS\.md$
 ^\.positai$
 ^\.claude$
-^CLAUDE\.md$
+^AGENTS\.md$
 ^\.githooks$

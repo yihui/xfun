@@ -20,7 +20,8 @@ record(
   print = record_print,
   print.args = list(),
   verbose = getOption("xfun.record.verbose", 0),
-  envir = parent.frame()
+  envir = parent.frame(),
+  src = NULL
 )
 
 \method{format}{xfun_record_results}(
@@ -89,6 +90,13 @@ print the value of the last expression; \code{0} means no special handling
 (i.e., print only when the value is visible).}
 
 \item{envir}{An environment in which the code is evaluated.}
+
+\item{src}{If provided, a list of two elements: \code{file} (the path of the file
+that \code{code} comes from) and \code{line} (the line number of the first line of
+\code{code} in the file). The code is then parsed with source references that
+point to the file (via \verb{#line} directives), so that \code{\link[=sys.calls]{sys.calls()}} and
+\code{\link[=traceback]{traceback()}} can tell where in the file an error occurred. By default,
+source references are not kept.}
 
 \item{x}{An object returned by \code{record()}.}
 
