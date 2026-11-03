@@ -212,7 +212,7 @@ assert('embed_files() compresses multiple files into a zip link', {
   f2 = file.path(d, 'b.txt'); writeLines('bbb', f2)
   link = embed_files(c(f1, f2))
   (inherits(link, 'xfun_html'))
-  (has_match(link, '\\.zip'))
+  (has_match(link, I('.zip')))
   unlink(d, recursive = TRUE)
 })
 
@@ -221,6 +221,6 @@ assert('embed_dir() compresses a directory into a zip link', {
   writeLines('aaa', file.path(d, 'file.txt'))
   link = embed_dir(d)
   (inherits(link, 'xfun_html'))
-  (has_match(link, '\\.zip'))
+  (has_match(link, I('.zip')))
   unlink(d, recursive = TRUE)
 })

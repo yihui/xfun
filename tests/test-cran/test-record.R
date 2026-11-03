@@ -106,7 +106,7 @@ assert('format.xfun_record_results() works for text output', {
   res = record(c('1 + 1', 'cat("hi")'))
   txt = format(res, to = 'text')
   (is.character(txt))
-  (has_match(txt, '1 \\+ 1'))
+  (has_match(txt, I('1 + 1')))
   (has_match(txt, 'hi'))
 })
 

@@ -2,9 +2,9 @@ library(testit)
 
 assert('session_info() strips BLAS/LAPACK/matrix-products and base-packages noise', {
   si = session_info()
-  (has_match(si, !I('BLAS')))
-  (has_match(si, !I('LAPACK')))
-  (has_match(si, !I('Matrix products')))
+  (has_match(si, !'BLAS'))
+  (has_match(si, !'LAPACK'))
+  (has_match(si, !'Matrix products'))
   (has_match(si, !'(?i)attached base packages'))
   # no consecutive blank lines
   blank = !nzchar(trimws(si))

@@ -203,7 +203,7 @@ assert('relative_path() with .. works across sibling directories', {
   b = file.path(d, 'b'); dir.create(b)
   f = file.path(a, 'file.txt'); file.create(f)
   res = relative_path(f, b)
-  (has_match(res, '\\.\\.'))
+  (has_match(res, I('..')))
   unlink(d, recursive = TRUE)
 })
 

@@ -123,24 +123,26 @@ assert('tojson(dict = ) dictionary-encodes repeated values when it is shorter', 
   # enabled: runnable JS expression, 0-based codes indexing unique values (in
   # order of appearance), chosen because it is shorter than the plain form
   d = .tojson(x, dict = 1)
-  (has_match(d, '\\.map\\(i => \\["alpha", "bravo"\\]\\[i\\]\\)$'))
+  (has_match(d, I('.map(i => ["alpha", "bravo"][i])')))
   (nchar(d) < nchar(json_atomic(x)))
   # numeric vectors encode too
-  (has_match(.tojson(rep(c(45, 52), 20), dict = 1), '\\.map\\(i => \\[45, 52\\]\\[i\\]\\)$'))
+  (has_match(.tojson(rep(c(45, 52), 20), dict = 1), I('.map(i => [45, 52][i])')))
   # NA is a normal dict entry (null in the unique array), so no `?? null` tail
   d2 = .tojson(rep(c('a', NA, 'b'), 10), dict = 1)
-  (has_match(d2, '\\[i\\]\\)$'))
-  (has_match(d2, !'\\?\\?'))
-  (has_match(d2, 'null'))
+  (has_match(d2, I('[i])')))
+  (has_match(d2, !I('??')))
+  (has_match(d2, I('null')))
   # near-unique vectors stay plain even when enabled (encoding would be longer)
   u = as.character(1:50)
   (.tojson(u, dict = 1) %==% json_atomic(u))
   # a numeric threshold gates candidacy: 2 uniques / 20 rows = 0.1
   (.tojson(x, dict = 0.05) %==% json_atomic(x))
-  (has_match(.tojson(x, dict = 0.1), '\\.map'))
+  (has_match(.tojson(x, dict = 0.1), I('.map')))
   # threads through data-frame columns
   df = data.frame(g = rep(c('alpha', 'bravo'), 20), stringsAsFactors = FALSE)
-  (has_match(.tojson(df, dict = 1), '"g": \\[0, 1,.*\\.map\\(i => \\["alpha", "bravo"\\]\\[i\\]\\)'))
+  d3 = .tojson(df, dict = 1)
+  (has_match(d3, I('"g": [0, 1,')))
+  (has_match(d3, I('.map(i => ["alpha", "bravo"][i])')))
 })
 
 assert('tojson(mode = "json") emits pure static JSON', {
