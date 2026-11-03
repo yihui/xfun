@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<meta name="generator" content="litedown 1.0">
+<meta name="generator" content="litedown 1.0.3">
 <title>An Introduction to xfun</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.140/css/default.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.140/css/article.min.css">
@@ -14,7 +14,7 @@
 <div class="title"><h1>An Introduction to xfun</h1></div>
 <div class="subtitle"><h2>A Collection of Miscellaneous Functions</h2></div>
 <div class="author"><h2>Yihui Xie</h2></div>
-<div class="date"><h3>2026-11-02</h3></div>
+<div class="date"><h3>2026-11-03</h3></div>
 </header>
 <main>
 <article class="">
@@ -386,7 +386,7 @@ read_utf8(f)
 <pre><code class="language-r">scripts = system.file(&quot;scripts&quot;, c(&quot;call-fun.R&quot;, &quot;child-pids.sh&quot;), package = &quot;xfun&quot;)
 read_all(scripts, before = function(f) paste(&quot;##&quot;, f), after = &quot;&quot;)
 </code></pre>
-<pre><code>## /private/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/RtmpJGHlR6/Rinst15427807e4cc/xfun/scripts/call-fun.R
+<pre><code>## /private/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/Rtmp8OXYOZ/Rinstf205d9a8f00/xfun/scripts/call-fun.R
 # This script is executed via the command line `Rscript call-fun.R arg1 arg2
 # arg3`, where arg1 is a path to an .rds file, which contains the function and
 # its arguments saved as a list; arg2 is a path to an .rds file to which the
@@ -404,7 +404,7 @@ local({
   saveRDS(r, a[2])
 })
 
-## /private/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/RtmpJGHlR6/Rinst15427807e4cc/xfun/scripts/child-pids.sh
+## /private/var/folders/n6/hn37q6pj7sj_9dmqqc2113800000gn/T/Rtmp8OXYOZ/Rinstf205d9a8f00/xfun/scripts/child-pids.sh
 # given a PID, output all its child PIDs recursively
 list_children() {
   for j in $(pgrep -P $1); do
@@ -544,7 +544,7 @@ substr(base64_uri(f), 1, 60)
 <pre><code class="language-r">tojson(list(d = Sys.Date(), x = c(1, Inf, -Inf)), mode = &quot;json&quot;)
 </code></pre>
 <pre><code class="language-json plain">{
-  &quot;d&quot;: &quot;2026-11-02&quot;,
+  &quot;d&quot;: &quot;2026-11-03&quot;,
   &quot;x&quot;: [1, null, null]
 }
 </code></pre>
@@ -732,7 +732,7 @@ Running under: macOS Tahoe 26.6.2
 Locale: en_US.UTF-8 / en_US.UTF-8 / en_US.UTF-8 / C / en_US.UTF-8 / en_US.UTF-8
 
 Package version:
-  litedown_1.0 xfun_0.62.9 
+  litedown_1.0.3 xfun_0.62.9   
 </code></pre>
 <h3 id="sec:run-a-task-only-once-per-session"><span class="section-number">18.2</span> Run a task only once per session</h3>
 <p><code>do_once()</code> executes a task the first time it is called and skips it on subsequent calls in the same R session. Useful for showing a deprecation notice or one-time setup:</p>
