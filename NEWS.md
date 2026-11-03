@@ -6,6 +6,8 @@
 
 - `browser_print()` and `browser_dom()` now include the browser's exit status, version, and (deduplicated) stderr in the error message when the browser fails, instead of just "Failed to print" / "Failed to dump DOM".
 
+- Added `browser_session()` to start a headless browser once and reuse it to load several pages and evaluate JavaScript on them (via the Chrome DevTools Protocol), instead of starting a new browser for every page like `browser_dom()`.
+
 - `post_release()` now keeps the trailing `.0` in the next `NEWS.md` header for `X.Y.0` versions (e.g., `1.2.0` gives `1.3.0`). Two-part versions like `10.0` now get the next patch `10.0.1` and the next release `10.1`.
 
 - The JavaScript `unpack()` in `json_unpack` (and `json_reviver`) now returns plain arrays and already-decoded typed arrays unchanged, instead of `undefined`. This fixes errors when a consumer calls `unpack()` on a vector that `tojson()` left unpacked because it was too short, or on a value it had already decoded.
