@@ -15,9 +15,14 @@
 #' will have each _column_ as an individual element. For matrices, the JSON
 #' array will have each row as an individual element, and names are discarded.
 #'
-#' Dates and times are coerced to character using UTC as the timezone. By
+#' Dates are coerced to plain strings (`"YYYY-MM-DD"`), since a calendar day has
+#' no timezone and a JavaScript `Date` (an instant) would show a different day
+#' in some timezones. Date-times are coerced to ISO 8601 instants in UTC
+#' (`YYYY-MM-DDTHH:MM:SSZ`), so the browser gets the right moment whatever its
+#' timezone; missing values become `null`. By
 #' default (`mode = "js"`) they are represented via the JavaScript expression
-#' `new Date(value)` (not standard JSON but practically more useful), and
+#' `new Date(value)` for date-times (not standard JSON but practically more
+#' useful), and
 #' `Inf`/`-Inf` as the JavaScript literals `Infinity`/`-Infinity`; with
 #' `mode = "json"` they become a plain quoted string and `null`, respectively,
 #' so the output is standard JSON (see the `mode` argument).
@@ -249,12 +254,15 @@ json_atomic = function(x, to_array = NA, sep = ', ', mode = 'js') {
   asis = inherits(x, 'AsIs')
   if (is.factor(x)) x = as.character(x)
   if (is.logical(x)) x = tolower(as.character(x))
-  if (inherits(x, c('Date', 'POSIXct', 'POSIXt'))) {
+  # a Date is a calendar day, left as its "YYYY-MM-DD" string (quoted below)
+  if (inherits(x, 'POSIXt')) {
     if (asis) class(x) = setdiff(class(x), 'AsIs')
-    x = format(x, tz = 'UTC')
-    # 'js': the non-standard new Date(); 'json': a plain quoted (ISO-like) string
+    # the trailing Z keeps JavaScript from reading the time as local
+    x = format(x, '%Y-%m-%dT%H:%M:%SZ', tz = 'UTC')
     if (mode == 'js') {
+      na = is.na(x)
       x = sprintf('new Date("%s")', x)
+      x[na] = NA
       use_quote = FALSE
     }
   }

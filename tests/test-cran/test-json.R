@@ -56,13 +56,17 @@ assert('json_vector() converts atomic vectors to JSON', {
 
 assert('json_atomic() handles Date, POSIXct, and factor', {
   d = as.Date('2024-01-15')
-  (json_atomic(d) %==% 'new Date("2024-01-15")')
+  (json_atomic(d) %==% '"2024-01-15"')
   # Date/POSIXt in data.frames (I() must not trigger format.AsIs truncation)
   t = as.POSIXct(c('2024-01-15 09:30:00', '2024-01-15 17:45:00'), tz = 'UTC')
   (.tojson(data.frame(t = t)) %==%
-    '{\n  "t": [new Date("2024-01-15 09:30:00"), new Date("2024-01-15 17:45:00")]\n}')
+    '{\n  "t": [new Date("2024-01-15T09:30:00Z"), new Date("2024-01-15T17:45:00Z")]\n}')
+  # other timezones are converted to UTC; NA becomes null
+  t2 = as.POSIXct(c('2024-01-15 09:30:00', NA), tz = 'America/New_York')
+  (json_atomic(t2) %==% '[new Date("2024-01-15T14:30:00Z"), null]')
+  (json_atomic(as.Date(c('2024-01-15', NA))) %==% '["2024-01-15", null]')
   # single-row Date data.frame still produces an array
-  (.tojson(data.frame(d = d)) %==% '{\n  "d": [new Date("2024-01-15")]\n}')
+  (.tojson(data.frame(d = d)) %==% '{\n  "d": ["2024-01-15"]\n}')
   f = factor(c('a', 'b', 'a'))
   (json_atomic(f) %==% '["a", "b", "a"]')
 })
@@ -154,7 +158,7 @@ assert('tojson(mode = "json") emits pure static JSON', {
   d = as.Date('2024-01-15')
   (json_atomic(d, mode = 'json') %==% '"2024-01-15"')
   t = as.POSIXct('2024-01-15 09:30:00', tz = 'UTC')
-  (json_atomic(t, mode = 'json') %==% '"2024-01-15 09:30:00"')
+  (json_atomic(t, mode = 'json') %==% '"2024-01-15T09:30:00Z"')
   (.tojson(data.frame(d = d), mode = 'json') %==% '{\n  "d": ["2024-01-15"]\n}')
   # dict uses the valid-JSON tagged object (json_reviver rebuilds it), not .map
   (.tojson(rep(c('a', 'b'), 10), dict = 1, mode = 'json') %==%
