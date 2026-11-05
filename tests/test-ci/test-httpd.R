@@ -160,6 +160,15 @@ if (
     (http_body(resp) %==% make_body('hdr', method = 'GET', x_custom = 'test-value'))
   })
 
+  assert('proxy is not blocked by a client that sends nothing', {
+    idle = socketConnection('127.0.0.1', port = port, open = 'r+b', blocking = FALSE)
+    on.exit(close(idle), add = TRUE)
+    t0 = Sys.time()
+    resp = http_request_full('127.0.0.1', port, 'GET', '/idle')
+    (http_body(resp) %==% make_body('idle', method = 'GET'))
+    (!is_timeout(t0, 3))
+  })
+
   assert('.find_proxy_port() excludes ports used by new_app(name = \"\")', {
     old_apps = .proxy$apps
     old_help = .proxy$help

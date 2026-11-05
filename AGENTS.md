@@ -8,6 +8,14 @@ R CMD INSTALL *_*.tar.gz
 Rscript tests/*.R
 ```
 
+Run only the relevant tests during development, never the full suite, by
+passing `--filter` (a regex on test file names) to `tests/test-all.R`:
+
+``` bash
+Rscript tests/test-all.R --filter=socket
+CI=true Rscript tests/test-all.R --filter=httpd  # also runs tests/test-ci/
+```
+
 Tests in `tests/testit/test-*.R`. Also `tests/test-cran/` (CRAN-safe) and
 `tests/test-ci/` (CI only, gated by `tolower(Sys.getenv('CI')) == 'true'`).
 

@@ -249,46 +249,80 @@ proxy_stop = function(slot) {
   FALSE
 }
 
-# Main proxy loop running in a background R process.
+# Main proxy loop running in a background R process. Clients are polled with
+# select() while their request arrives, so one that sends nothing (e.g., a
+# browser's speculative connection) cannot block the others.
 .proxy_run = function(port, backend_port, passthrough = FALSE, host = '127.0.0.1') {
-  server_socket = base::serverSocket
-  socket_accept = base::socketAccept
-
-  listener = server_socket(port)
+  listener = base::serverSocket(port)
   on.exit(close(listener), add = TRUE)
 
-  # Exit when the backend httpd is gone (e.g., parent R process died).
-  n_fail = 0L
+  pending = list()  # requests that are still being received
+  idle = 0L
   repeat {
-    con = tryCatch(
-      socket_accept(listener, blocking = FALSE, open = 'r+b', timeout = 1),
-      error = function(e) NULL
-    )
-    if (is.null(con)) {
-      n_fail = n_fail + 1L
-      if (n_fail >= 5L && !port_open(backend_port)) break
-      next
+    n = length(pending)
+    ready = socketSelect(c(list(listener), lapply(pending, `[[`, 'con')), FALSE, 1)
+    if (any(ready)) idle = 0L else {
+      # exit when the backend httpd is gone (e.g., parent R process died)
+      idle = idle + 1L
+      if (idle >= 5L && !port_open(backend_port)) break
     }
-    n_fail = 0L
-    try_silent(.proxy_forward(con, port, backend_port, passthrough))
-    try_silent(close(con))
+    done = logical(n)
+    for (i in seq_len(n)) {
+      r = pending[[i]]
+      done[i] = .request_poll(r, ready[i + 1L], port, backend_port, passthrough)
+      if (done[i]) try_silent(close(r$con))
+    }
+    pending = pending[!done]
+    if (ready[1L]) {
+      con = tryCatch(
+        base::socketAccept(listener, blocking = FALSE, open = 'r+b'),
+        error = function(e) NULL
+      )
+      if (!is.null(con)) pending = c(pending, list(.new_request(con)))
+    }
   }
 }
 
-# Read from a non-blocking connection until done(buf) is TRUE, the peer closes
-# it, or the tries (0.05 s each) run out; return the bytes read.
-.read_until = function(con, done, tries = 200L) {
-  buf = raw(0)
-  for (i in seq_len(tries)) {
-    Sys.sleep(0.05)
-    ready = tryCatch(socketSelect(list(con), write = FALSE, timeout = 0), error = function(e) FALSE)
-    if (!isTRUE(ready[1L])) next
-    x = tryCatch(readBin(con, raw(), 65536L), error = function(e) raw(0))
-    if (!length(x)) break
-    buf = c(buf, x)
-    if (done(buf)) break
+.new_request = function(con) {
+  r = new.env(parent = emptyenv())
+  r$con = con; r$buf = raw(0); r$head = NULL; r$body = NULL; r$n = 0L
+  r$t0 = Sys.time()
+  r
+}
+
+# Read what has arrived for a request, and forward it once it is complete.
+# Return TRUE if the request is finished (or dead) and its connection can close.
+.request_poll = function(r, ready, port, backend_port, passthrough) {
+  if (isTRUE(ready)) {
+    x = tryCatch(readBin(r$con, raw(), 65536L), error = function(e) raw(0))
+    if (!length(x)) return(TRUE)  # the client closed the connection
+    r$t0 = Sys.time()
+    s = .request_add(r, x)
+    if (is.na(s)) return(TRUE)
+    if (s) {
+      try_silent(.proxy_forward(r, port, backend_port, passthrough))
+      return(TRUE)
+    }
   }
-  buf
+  is_timeout(r$t0, 10)  # give up on a client that went quiet
+}
+
+# Add bytes to a request. Return TRUE if the request is complete, FALSE if more
+# is needed, and NA if it is invalid (a head larger than 64 KB).
+.request_add = function(r, x) {
+  if (is.null(r$head)) {
+    r$buf = c(r$buf, x)
+    h = .http_head(r$buf)
+    if (is.null(h)) return(if (length(r$buf) < 65536L) FALSE else NA)
+    r$head = h$lines
+    x = r$buf[seq_len(length(r$buf) - h$end) + h$end]
+    r$clen = content_length(h$lines)
+    if (is.na(r$clen)) r$clen = 0L
+    r$buf = NULL
+  }
+  r$body = c(r$body, list(x))
+  r$n = r$n + length(x)
+  r$n >= r$clen
 }
 
 # Split the head of an HTTP message in `buf` into lines: list(lines, end), where
@@ -302,12 +336,14 @@ proxy_stop = function(slot) {
   list(lines = strsplit(hs, '\r\n|\n', perl = TRUE)[[1L]], end = end)
 }
 
-# Read a client request, forward it to backend httpd, and relay the response.
-.proxy_forward = function(client, port, backend_port, passthrough = FALSE) {
-  req = .proxy_read_request(client)
-  if (is.null(req)) return()
+# Forward a complete request to the backend httpd and relay the response.
+.proxy_forward = function(r, port, backend_port, passthrough = FALSE) {
+  req = strsplit(r$head[1L], ' ', fixed = TRUE)[[1L]]
+  req = req[nzchar(req)]
+  if (length(req) < 2L) return()
+  method = req[[1L]]; path = req[[2L]]; headers = r$head[-1L]
+  body = .as_raw(unlist(r$body))[seq_len(r$clen)]
 
-  path  = req$path
   path2 = if (isTRUE(passthrough)) path else sprintf('/custom/xfun:%d%s', port, path)
   q_pos = regexpr('\\?', path)[1L]
   query = if (q_pos > 0L) substring(path, q_pos + 1L) else ''
@@ -319,44 +355,35 @@ proxy_stop = function(slot) {
   if (is.null(backend)) return()
   on.exit(try(close(backend), silent = TRUE), add = TRUE)
 
-  headers = req$headers
   if (length(headers)) {
     keep = !grepl('^(connection|keep-alive|proxy-connection):', headers, ignore.case = TRUE)
     headers = headers[keep]
   }
   if (nzchar(query)) headers = c(headers, paste0('X-Xfun-Query: ', query))
-  txt = paste(c(sprintf('%s %s HTTP/1.0', req$method, path2), headers, '', ''), collapse = '\r\n')
-  writeBin(charToRaw(txt), backend)
-  if (length(req$body)) writeBin(req$body, backend)
+  txt = paste(c(sprintf('%s %s HTTP/1.0', method, path2), headers, '', ''), collapse = '\r\n')
+  writeBin(c(charToRaw(txt), body), backend)
   flush(backend)
 
-  # done when the body is complete, which requires a Content-Length
-  buf = .read_until(backend, function(b) {
-    h = .http_head(b)
-    !is.null(h) && !is.na(n <- content_length(h$lines)) && length(b) - h$end >= n
-  })
-  if (length(buf)) { writeBin(buf, client); flush(client) }
+  .proxy_relay(backend, r$con)
 }
 
-# Parse one HTTP request from a non-blocking socket connection.
-.proxy_read_request = function(con) {
-  # up to 10 s, and give up on a head larger than 64 KB
-  buf = .read_until(con, function(b) length(b) >= 65536L || !is.null(.http_head(b)))
-  head = .http_head(buf)
-  if (is.null(head) || !length(head$lines)) return()
-
-  req = strsplit(head$lines[[1L]], ' ', fixed = TRUE)[[1L]]
-  req = req[nzchar(req)]
-  if (length(req) < 2L) return()
-  method = req[[1L]]; path = req[[2L]]; headers = head$lines[-1L]
-
-  clen = content_length(headers)
-  if (is.na(clen)) clen = 0L
-  body0 = buf[seq_len(length(buf) - head$end) + head$end]
-  body = if (length(body0) < clen)
-    c(body0, tryCatch(readBin(con, raw(), clen - length(body0)), error = function(e) raw(0)))
-  else body0[seq_len(clen)]
-  list(method = method, path = path, headers = headers, body = body)
+# Copy an HTTP response from `from` to `to` as it arrives. Stop at the end of
+# the body when Content-Length says where it is, or else when `from` closes.
+.proxy_relay = function(from, to, timeout = 10) {
+  buf = raw(0); head = NULL; left = NA_integer_
+  repeat {
+    if (!isTRUE(socketSelect(list(from), FALSE, timeout))) break
+    x = readBin(from, raw(), 262144L)
+    if (!length(x)) break
+    writeBin(x, to)
+    if (is.null(head)) {
+      buf = c(buf, x)
+      if (is.null(head <- .http_head(buf))) next
+      left = content_length(head$lines) - (length(buf) - head$end)
+    } else left = left - length(x)
+    if (!is.na(left) && left <= 0L) break
+  }
+  flush(to)
 }
 
 # Parse the X-Xfun-Query header (added by the proxy) into a named, URL-decoded

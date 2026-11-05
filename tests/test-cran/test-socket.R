@@ -33,3 +33,15 @@ assert('.http_head() finds the end of the head of an HTTP message', {
 assert('port_open() detects a listening port', {
   (port_open(random_port(), timeout = .2) %==% FALSE)
 })
+
+assert('.request_add() collects a request in pieces', {
+  r = .new_request(NULL)
+  (.request_add(r, charToRaw('POST / HTTP/1.1\r\nContent-Length: 5\r\n\r\nab')) %==% FALSE)
+  (.request_add(r, charToRaw('cde')) %==% TRUE)
+  (rawToChar(unlist(r$body)) %==% 'abcde')
+  (r$head %==% c('POST / HTTP/1.1', 'Content-Length: 5'))
+  r = .new_request(NULL)
+  (.request_add(r, charToRaw('GET / HTTP/1.1\r\n')) %==% FALSE)
+  (.request_add(r, charToRaw('\r\n')) %==% TRUE)
+  (is.na(.request_add(.new_request(NULL), raw(70000))))
+})
