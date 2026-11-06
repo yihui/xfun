@@ -165,6 +165,6 @@ mimemap = c(
   css = 'text/css', csv = 'text/csv', gif = 'image/gif', jpeg = 'image/jpeg',
   jpg = 'image/jpeg', js = 'text/javascript', pdf = 'application/pdf',
   png = 'image/png', r = 'text/plain', rmd = 'text/x-markdown',
-  svg = 'image/svg+xml', ttf = 'font/ttf', woff = 'font/woff',
-  woff2 = 'font/woff2'
+  svg = 'image/svg+xml', ttf = 'font/ttf', txt = 'text/plain',
+  woff = 'font/woff', woff2 = 'font/woff2'
 )

@@ -113,6 +113,38 @@ assert('proj_root() works', {
   unlink(tmp_dir, recursive = TRUE)
 })
 
+assert('proj_root() handles files, missing paths, relative paths, and roots', {
+  dir.create(tmp_dir <- tempfile())
+  dir.create(child <- file.path(tmp_dir, 'a', 'b'), recursive = TRUE)
+  writeLines('Package: abc', file.path(tmp_dir, 'DESCRIPTION'))
+  writeLines('x', f <- file.path(child, 'foo.R'))
+  none = cbind('^no-such-file$', '')  # rules that never match
+  on.exit(unlink(tmp_dir, recursive = TRUE), add = TRUE)
+
+  # a file, a nonexistent path, a path with a trailing slash
+  (same_path(proj_root(f), tmp_dir) %==% TRUE)
+  (same_path(proj_root(file.path(child, 'x', 'y.R')), tmp_dir) %==% TRUE)
+  (same_path(proj_root(paste0(child, '/')), tmp_dir) %==% TRUE)
+
+  # relative paths
+  owd = setwd(child)
+  (same_path(proj_root('.'), tmp_dir) %==% TRUE)
+  (same_path(proj_root('../..'), tmp_dir) %==% TRUE)
+  setwd(owd)
+
+  # no root found: the search must end at the filesystem root, not recurse
+  # forever (e.g., '//..' is '//' not '/' on Alpine Linux)
+  root = tempdir()
+  while (!same_path(root, up <- dirname(root))) root = up
+  (proj_root(child, none) %==% NULL)
+  (proj_root(root, none) %==% NULL)
+  (proj_root('/', none) %==% NULL)
+  if (is_windows()) {
+    (proj_root('//', none) %==% NULL)
+    (proj_root('C:/', none) %==% NULL)
+  }
+})
+
 assert('file_rename() works', {
   # work in temp dir
   dir.create(tmp_dir <- tempfile())

@@ -161,7 +161,9 @@ existing_files = function(x, first = FALSE, error = TRUE) {
 proj_root = function(path = './', rules = root_rules) {
   path = normalize_path(path)
   dir = if (dir_exists(path)) path else dirname(path)
-  if (same_path(dir, file.path(dir, '..'))) return()
+  # at a filesystem root ('/', 'C:/', UNC '//'), dirname() doesn't shorten the
+  # path; avoid comparing with '..': normalizePath('//..') is '//' on musl
+  if (nchar(dirname(dir)) >= nchar(dir)) return()
   if (is.null(dim(rules))) dim(rules) = c(1, length(rules))
   for (i in seq_len(nrow(rules))) {
     file = rules[i, 1]; pattern = rules[i, 2]
