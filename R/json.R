@@ -279,7 +279,8 @@ json_atomic = function(x, to_array = NA, sep = ', ', mode = 'js') {
 json_vector = function(x, to_array = FALSE, quote = TRUE, sep = ', ', mode = 'js') {
   i = is.na(x)
   if (quote) {
-    x = quote_string(x)
+    # plain strings, so that `x[i] = 'null'` below can't go through a class's `[<-`
+    x = quote_string(as.character(x))
     # escape control chars only when present (avoid 5 full passes otherwise)
     if (any(grepl('[\n\b\f\r\t]', x, useBytes = TRUE))) {
       x = gsubf('\n', '\\n', x)
