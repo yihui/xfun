@@ -65,7 +65,7 @@ assert('json_atomic() handles Date, POSIXct, and factor', {
   t2 = as.POSIXct(c('2024-01-15 09:30:00', NA), tz = 'America/New_York')
   (json_atomic(t2) %==% '[new Date("2024-01-15T14:30:00Z"), null]')
   (json_atomic(as.Date(c('2024-01-15', NA))) %==% '["2024-01-15", null]')
-  (json_atomic(I(as.Date(numeric()))) %==% '[]')
+  (json_atomic(I(as.Date(character()))) %==% '[]')
   # single-row Date data.frame still produces an array
   (.tojson(data.frame(d = d)) %==% '{\n  "d": ["2024-01-15"]\n}')
   f = factor(c('a', 'b', 'a'))
