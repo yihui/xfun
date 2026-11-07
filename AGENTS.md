@@ -46,6 +46,8 @@ assert('message', {
    files (it also runs on commit if `git config core.hooksPath .githooks` is
    set). Don't hand-edit that formatting; discard unrelated `man/*.Rd` churn
 3. Run tests before pushing
-4. Update `NEWS.md`: first heading form `# PKG x.y` (next CRAN release)
+4. Update `NEWS.md`: first heading form `# PKG x.y` (next CRAN release). Order
+   entries by importance (breaking changes and new features first, minor bug
+   fixes last), not chronologically: don't just prepend a new entry.
 5. Clean up before committing: `rm -rf *.tar.gz *.Rcheck/ tests/R-lib-*`
 6. Never create a branch/PR without confirming first

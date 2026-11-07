@@ -18,6 +18,8 @@
 
 - `proj_root()` no longer fails with "node stack overflow" when it finds no project root on systems such as Alpine Linux, where `normalizePath('//..')` is `'//'` instead of `'/'` (thanks, @bastistician, yihui/litedown#196).
 
+- `mime_type()` no longer needs the system command `file` to recognize `.txt`, `.md`, and `.markdown` files (it is not installed on Alpine Linux by default) (thanks, @bastistician, yihui/litedown#197).
+
 - `new_app()` now serves requests from the working directory when it was called, instead of the working directory at the time of the first request (e.g., `in_dir(dir, new_app(...))` previously served the wrong directory if R had been moved elsewhere by then).
 
 # CHANGES IN xfun VERSION 0.62

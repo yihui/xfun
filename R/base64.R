@@ -164,7 +164,8 @@ mime_type = function(x, use_mime = loadable('mime'), empty = 'text/plain') {
 mimemap = c(
   css = 'text/css', csv = 'text/csv', gif = 'image/gif', jpeg = 'image/jpeg',
   jpg = 'image/jpeg', js = 'text/javascript', pdf = 'application/pdf',
-  png = 'image/png', r = 'text/plain', rmd = 'text/x-markdown',
-  svg = 'image/svg+xml', ttf = 'font/ttf', txt = 'text/plain',
+  markdown = 'text/x-markdown', md = 'text/x-markdown', png = 'image/png',
+  r = 'text/plain', rmd = 'text/x-markdown', svg = 'image/svg+xml',
+  ttf = 'font/ttf', txt = 'text/plain',
   woff = 'font/woff', woff2 = 'font/woff2'
 )
