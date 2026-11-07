@@ -100,12 +100,11 @@ base64_uri = function(x, type = mime_type(x)) {
 #'   cached to `xfun:::cache_dir()`. This will make future queries much faster,
 #'   since running the command in real time can be a little slow.
 #' @export
-#' @examplesIf tolower(Sys.getenv('CI')) == 'true'
+#' @examplesIf tolower(Sys.getenv('CI')) == 'true' && nzchar(Sys.which('file'))
 #' f = list.files(R.home("doc"), full.names = TRUE)
 #' mime_type(f)
 #' mime_type(f, FALSE)  # don't use mime
-#' # run command for files without extension (if the `file` command exists)
-#' if (nzchar(Sys.which("file"))) mime_type(f, FALSE, NA)
+#' mime_type(f, FALSE, NA)  # run command for files without extension
 mime_type = function(x, use_mime = loadable('mime'), empty = 'text/plain') {
   if (use_mime) return(mime::guess_type(x))
   ext = tolower(file_ext(x))
