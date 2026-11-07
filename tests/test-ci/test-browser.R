@@ -1,6 +1,9 @@
 library(testit)
 
-assert('browser_dom() executes JS, returns rendered DOM, and strips scripts', {
+# skip tests that need a browser (e.g., on Alpine) when none is found
+has_browser = !has_error(find_browser())
+
+if (has_browser) assert('browser_dom() executes JS, returns rendered DOM, and strips scripts', {
   f = tempfile(fileext = '.html')
   on.exit(unlink(f), add = TRUE)
   writeLines(c(
@@ -11,7 +14,7 @@ assert('browser_dom() executes JS, returns rendered DOM, and strips scripts', {
   (unclass(browser_dom(f)) %==% '<html><head></head><body><div id="out">2</div></body></html>')
 })
 
-assert('browser_dom() saves to output file', {
+if (has_browser) assert('browser_dom() saves to output file', {
   f = tempfile(fileext = '.html')
   out = tempfile(fileext = '.html')
   on.exit(unlink(c(f, out)), add = TRUE)
@@ -35,7 +38,7 @@ assert('with_browser_tmp() isolates and cleans the browser temp dir', {
   (identical(Sys.getenv('TMPDIR', unset = NA), old) %==% TRUE)
 })
 
-assert('browser_dom(fragment = TRUE) returns body content only', {
+if (has_browser) assert('browser_dom(fragment = TRUE) returns body content only', {
   f = tempfile(fileext = '.html')
   on.exit(unlink(f), add = TRUE)
   writeLines('<html><head><title>test</title></head>\n<body>\n <p>content\n</p>\t\n</body></html>', f)
@@ -43,7 +46,7 @@ assert('browser_dom(fragment = TRUE) returns body content only', {
   (unclass(res) %==% '<p>content\n</p>')
 })
 
-assert('json_unpack unpack() decodes packed ints and passes arrays/typed arrays through', {
+if (has_browser) assert('json_unpack unpack() decodes packed ints and passes arrays/typed arrays through', {
   x = rep(1:3, 50)
   f = tempfile(fileext = '.html')
   on.exit(unlink(f), add = TRUE)
@@ -57,7 +60,7 @@ assert('json_unpack unpack() decodes packed ints and passes arrays/typed arrays 
   (has_match(browser_dom(f), I('<div id="out">150;2;true;7,8</div>')))
 })
 
-assert('browser_dom() waits for a condition and accepts query params', {
+if (has_browser) assert('browser_dom() waits for a condition and accepts query params', {
   f = tempfile(fileext = '.html')
   on.exit(unlink(f), add = TRUE)
   writeLines(c(
@@ -88,7 +91,7 @@ assert('browser_dom() waits for a condition and accepts query params', {
   (has_error(browser_dom(f, wait = 'window.never', timeout = 3)))
 })
 
-assert('browser_print() prints and takes screenshots via DevTools', {
+if (has_browser) assert('browser_print() prints and takes screenshots via DevTools', {
   f = tempfile(fileext = '.html')
   out = tempfile(fileext = c('.pdf', '.png', '.jpeg'))
   on.exit(unlink(c(f, out)), add = TRUE)
@@ -104,7 +107,7 @@ assert('browser_print() prints and takes screenshots via DevTools', {
   (readBin(out[2], 'raw', 4)[2:4] %==% charToRaw('PNG'))
 })
 
-assert('browser_session() reuses one browser for several pages', {
+if (has_browser) assert('browser_session() reuses one browser for several pages', {
   f1 = tempfile(fileext = '.html'); f2 = tempfile(fileext = '.html')
   on.exit(unlink(c(f1, f2)), add = TRUE)
   writeLines('<p id="a">one</p><script>document.body.dataset.r = 1</script>', f1)
