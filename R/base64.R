@@ -104,7 +104,8 @@ base64_uri = function(x, type = mime_type(x)) {
 #' f = list.files(R.home("doc"), full.names = TRUE)
 #' mime_type(f)
 #' mime_type(f, FALSE)  # don't use mime
-#' mime_type(f, FALSE, NA)  # run command for files without extension
+#' # run command for files without extension (if the `file` command exists)
+#' if (nzchar(Sys.which("file"))) mime_type(f, FALSE, NA)
 mime_type = function(x, use_mime = loadable('mime'), empty = 'text/plain') {
   if (use_mime) return(mime::guess_type(x))
   ext = tolower(file_ext(x))

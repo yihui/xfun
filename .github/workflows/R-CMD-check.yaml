@@ -95,10 +95,13 @@ jobs:
 
     steps:
       - name: Install system dependencies
-        run: apk add --no-cache bash tar curl git R R-dev R-doc g++ make musl-dev
+        run: apk add --no-cache bash tar curl git zip R R-dev R-doc g++ make musl-dev
 
       - uses: actions/checkout@HEAD
 
       - uses: yihui/actions/setup-r-dependencies@HEAD
+        with:
+          dependencies: Depends, Imports, LinkingTo
+          extra-packages: testit
 
       - uses: yihui/actions/check-r-package@HEAD
