@@ -1,0 +1,51 @@
+site:
+  manual:
+    Read and write files:
+      desc: Read, write, and process text and binary files.
+      contents: [read_utf8, read_bin, read_all, file_string, split_lines, process_file, gsub_file]
+    Paths and directories:
+      desc: Manipulate, compare, and locate file paths and directories.
+      contents: [file_ext, file_rename, rename_seq, dir_create, dir_exists, del_empty_dir, existing_files, mark_dirs, normalize_path, relative_path, same_path, is_abs_path, is_sub_path, is_web_path, proj_root, from_root, magic_path, in_dir, mime_type]
+    Strings and numbers:
+      desc: Format, wrap, test, and encode text, numbers, and IDs.
+      contents: [str_wrap, join_words, numbers_to_words, format_bytes, grep_sub, raw_string, native_encode, is_ascii, is_blank, alnum_id, radix_id, rand_unit, md5]
+    Markdown and HTML:
+      desc: Generate and process Markdown and HTML, and embed files in pages.
+      contents: [md_table, fenced_block, protect_math, prose_index, news2md, html_tag, strip_html, tabset, embed_file, base64_encode, base64_uri]
+    Data formats:
+      desc: Read and write JSON, YAML, and base64.
+      contents: [tojson, yaml_load, taml_load, yaml_body]
+    Parse code and documents:
+      desc: Split, parse, and analyze R code, code chunks, and object structures.
+      contents: [csv_options, divide_chunk, split_source, parse_only, valid_syntax, find_globals, tree]
+    Run and record code:
+      desc: Evaluate code, record output, cache results, and handle errors.
+      contents: [record, record_print, cache_rds, cache_exec, lazy_save, do_once, retry, try_error, try_silent, exit_call, decimal_dot]
+    Objects and options:
+      desc: Strict lists, attributes, options, and environment variables.
+      contents: [strict_list, attr2, env_option, set_envvar, msg_cat]
+    Processes and sessions:
+      desc: Run external commands and R in new sessions, and inspect the system.
+      contents: [Rscript, Rscript_call, system3, bg_process, proc_kill, session_info, os, random_port, rstudio_type]
+    Web and network:
+      desc: Download files, query URLs and REST APIs, and upload files.
+      contents: [download_file, download_cache, url_accessible, url_destination, url_filename, rest_api, github_releases, upload_imgur, upload_ftp]
+    Local apps and browsers:
+      desc: Serve local web apps and drive a headless browser.
+      contents: [new_app, serve_dir, browser_session, browser_print, browser_dom]
+    Images:
+      desc: Shrink and compress images.
+      contents: [shrink_images, optipng, tinify]
+    Packages:
+      desc: Attach, install, and inspect R packages.
+      contents: [pkg_attach, pkg_bib, base_pkgs, broken_packages, install_dir, install_github, is_R_CMD_check]
+    Package release:
+      desc: Bump versions, check reverse dependencies, and submit to CRAN.
+      contents: [bump_version, post_release, submit_cran, rev_check, crandalf_check]
+
+output:
+  html:
+    meta:
+      include_after: "_footer.md"
+    options:
+      number_sections: true
