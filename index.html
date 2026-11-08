@@ -26,6 +26,13 @@
 </header>
 <main>
 <article class="">
+<nav id="TOC" class="side side-left">
+<ul class="numbered">
+<li><a href="#sec:installation"><span class="section-number main-number">1</span> Installation</a></li>
+<li><a href="#sec:a-taste-of-what-is-inside"><span class="section-number main-number">2</span> A taste of what is inside</a></li>
+<li><a href="#sec:citation">Citation</a></li>
+</ul>
+</nav>
 <div class="side side-right">
 <dl class="pkg-desc">
 <dt>Version</dt>
@@ -55,10 +62,75 @@
 <a href="https://github.com/yihui/xfun/actions/workflows/litedown-site.yml"><img src="https://github.com/yihui/xfun/actions/workflows/litedown-site.yml/badge.svg" alt="Build site" /></a></p>
 <!-- badges: end -->
 </div>
-<p>This package contains several utility functions that I frequently use in other packages, and also miscellaneous functions that I use by myself from time to time. For more information, see <a href="https://yihui.org/xfun/">https://yihui.org/xfun/</a>.</p>
-<p>To install the package from CRAN, use <code>install.packages('xfun')</code>. To install the development version here, you may set the <code>repos</code> option to <a href="https://yihui.r-universe.dev">https://yihui.r-universe.dev</a>:</p>
+<p><strong>xfun</strong> is a collection of small utility functions that I use across my own packages (<strong>knitr</strong>, <strong>litedown</strong>, <strong>tinytex</strong>, and others), plus miscellaneous helpers that I reach for in everyday scripting. It only imports base R packages (<strong>grDevices</strong>, <strong>stats</strong>, <strong>tools</strong>), and a few features use optional packages such as <strong>knitr</strong>, <strong>jsonlite</strong>, or <strong>yaml</strong>, so you can use it without bloating your own package’s dependencies.</p>
+<p>Browse the manual, the book, and a live playground at <a href="https://pkg.yihui.org/xfun/">https://pkg.yihui.org/xfun/</a>.</p>
+<h2 id="sec:installation"><span class="section-number main-number">1</span> Installation</h2>
+<pre><code class="language-r">install.packages('xfun')
+</code></pre>
+<p>To install the development version from R-universe:</p>
 <pre><code class="language-r">install.packages('xfun', repos = 'https://yihui.r-universe.dev')
 </code></pre>
+<h2 id="sec:a-taste-of-what-is-inside"><span class="section-number main-number">2</span> A taste of what is inside</h2>
+<p>Turn numbers into words, and join words into a sentence:</p>
+<pre><code class="language-r">xfun::numbers_to_words(c(12, 305))
+#&gt; [1] &quot;twelve&quot;             &quot;three hundred five&quot;
+xfun::join_words(c('apples', 'pears', 'plums'))
+#&gt; [1] &quot;apples, pears, and plums&quot;
+</code></pre>
+<p>Write a Markdown table without any dependencies:</p>
+<pre><code class="language-r">cat(xfun::md_table(data.frame(name = c('xfun', 'knitr'), stars = c(1.5, 2))), sep = '\n')
+#&gt; |name|stars|
+#&gt; |---|--:|
+#&gt; |xfun|1.5|
+#&gt; |knitr|2.0|
+</code></pre>
+<p>Serialize to JSON and parse YAML with no extra packages:</p>
+<pre><code class="language-r">cat(xfun::tojson(list(a = 1:3, b = 'x')))
+#&gt; {
+#&gt;   &quot;a&quot;: [1, 2, 3],
+#&gt;   &quot;b&quot;: &quot;x&quot;
+#&gt; }
+str(xfun::taml_load('title: Hello\nn: 3\n'))
+#&gt; List of 2
+#&gt;  $ title: chr &quot;Hello&quot;
+#&gt;  $ n    : int 3
+</code></pre>
+<p>Cache a slow computation on disk; the second call returns instantly because the expression has not changed:</p>
+<pre><code class="language-r">x = xfun::cache_rds({ Sys.sleep(10); 42 })
+x = xfun::cache_rds({ Sys.sleep(10); 42 })  # reads cache/cache_&lt;hash&gt;.rds
+</code></pre>
+<p>Retry something flaky:</p>
+<pre><code class="language-r">xfun::retry(function() download.file(url, 'data.zip'), .times = 5, .pause = 2)
+</code></pre>
+<p>Search and replace in a file, rewriting it only when the content changes:</p>
+<pre><code class="language-r">xfun::gsub_file('README.md', 'colour', 'color', fixed = TRUE)
+</code></pre>
+<p>Turn the output of <code>str()</code> into a tree diagram:</p>
+<pre><code class="language-r">xfun::tree(list(a = 1, b = list(c = 'x', d = 1:3)))
+#&gt; List of 2
+#&gt;  |-a: num 1
+#&gt;  |-b:List of 2
+#&gt;     |-c: chr &quot;x&quot;
+#&gt;     |-d: int [1:3] 1 2 3
+</code></pre>
+<p>Avoid partial matching bugs with a strict list:</p>
+<pre><code class="language-r">l = xfun::strict_list(abc = 1)
+l$abc
+#&gt; [1] 1
+l$a  # NULL, not 1
+#&gt; NULL
+</code></pre>
+<p>Embed a file in an HTML page as a base64 download link, with no external file needed:</p>
+<pre><code class="language-r">xfun::embed_file('data.csv', text = 'Download the data')
+#&gt; &lt;a href=&quot;data:text/csv;base64,...&quot; download=&quot;data.csv&quot;&gt;Download the data&lt;/a&gt;
+</code></pre>
+<p>Compute relative paths and strip extensions:</p>
+<pre><code class="language-r">xfun::relative_path('/a/b/c', '/a/d')
+#&gt; [1] &quot;../b/c&quot;
+xfun::sans_ext('a/b.tar.gz')
+#&gt; [1] &quot;a/b&quot;
+</code></pre>
+<p>And much more: record R output as a structured object (<code>record()</code>), run R in a fresh session (<code>Rscript_call()</code>), print web pages to PDF with a headless browser (<code>browser_print()</code>), serve a directory (<code>serve_dir()</code>), check reverse dependencies (<code>rev_check()</code>), and so on. The manual groups every function by topic.</p>
 <h2 id="sec:citation" class="unnumbered">Citation</h2>
 <p>To cite the package <strong>xfun</strong> in publications, please use:</p>
 <p>Xie Y (2026). <em>xfun: Supporting Functions for Packages Maintained by
