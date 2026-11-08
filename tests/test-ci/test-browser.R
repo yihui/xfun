@@ -7,5 +7,5 @@ assert('with_browser_tmp() isolates and cleans the browser temp dir', {
   (startsWith(basename(seen), 'browser-') %==% TRUE)
   # afterward that dir is removed and TMPDIR restored to its prior value
   (dir.exists(seen) %==% FALSE)
-  (Sys.getenv('TMPDIR', unset = NA %==% old)
+  (Sys.getenv('TMPDIR', unset = NA) %==% old)
 })

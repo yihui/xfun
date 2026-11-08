@@ -92,7 +92,6 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
       _R_CHECK_FORCE_SUGGESTS_: false
       _R_CHECK_RD_XREFS_: false
-      R_ZIPCMD: /usr/bin/zip
 
     steps:
       - name: Install system dependencies
