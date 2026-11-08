@@ -1,0 +1,226 @@
+# Paths and Project Roots {#chp:paths}
+
+Paths are a quiet source of bugs. Extensions come in odd shapes, `~` expands
+differently across systems, and a document in a subfolder sees the world from
+a different working directory than a script at the top. The recipes here make
+paths predictable.
+
+## Take apart and rebuild extensions {#sec:file-ext}
+
+`file_ext()`, `sans_ext()`, and `with_ext()` get, drop, and swap the extension
+of a path. They understand double extensions such as `.tar.gz` and `.nb.html`,
+which `tools::file_ext()` splits differently:
+
+```{r}
+p = c("report.Rmd", "archive.tar.gz", "notes.nb.html", "script.R")
+file_ext(p)
+sans_ext(p)
+with_ext(p, ".html")
+with_ext(p, c(".pdf", ".zip", ".html", ".txt"))
+```
+
+The last call shows that `with_ext()` is vectorized over the new extension too.
+
+## Normalize and compare paths {#sec:normalize}
+
+`normalize_path()` wraps `normalizePath()`, always uses `/`, and does not fail
+on paths that do not exist. `same_path()` compares two paths after
+normalizing both, so you do not need to care how each was written:
+
+```{r}
+# "~" expands to the home directory, so both point to the same place
+same_path("~/foo", file.path(Sys.getenv("HOME"), "foo"))
+same_path("~/foo", "~/bar")
+```
+
+## Find files relative to the project root {#sec:from-root}
+
+Inside a document in `docs/`, the data folder is one level up. Counting `../`
+by hand breaks as soon as the document moves. `from_root()` returns a path
+relative to the project root, which `proj_root()` detects for you:
+
+```r
+# in docs/report.Rmd, this returns ../data/cars.csv
+from_root("data", "cars.csv")
+```
+
+## Find a file by name, wherever it lives {#sec:magic-path}
+
+If you only remember the name of a file, `magic_path()` finds it anywhere under
+the project. You can then move files around without breaking references:
+
+```r
+# finds data/raw/survey.csv wherever it lives
+magic_path("survey.csv")
+```
+
+## Work in another directory for a moment {#sec:in-dir}
+
+`in_dir()` switches the working directory, evaluates an expression, and then
+goes back, even if the expression fails:
+
+```{r}
+in_dir(tempdir(), {
+  writeLines("hello", "tmp.txt")
+  file.exists("tmp.txt")
+})
+file.exists(file.path(tempdir(), "tmp.txt"))
+```
+
+## Create a directory only if needed {#sec:dir-create}
+
+`dir_create()` returns `TRUE` when the directory exists or has just been
+created, and it creates parent directories by default. No more warnings from
+`dir.create()` about existing folders:
+
+```{r}
+d = file.path(tempdir(), 'a', 'b', 'c')
+dir_create(d)
+dir_create(d)  # already there, still TRUE
+```
+
+## Check if a directory exists {#sec:dir-exists}
+
+`dir_exists()` is a vectorized test for directories:
+
+```{r}
+dir_exists(c(tempdir(), file.path(tempdir(), 'nope')))
+```
+
+## Check if a file exists, but not a directory {#sec:file-exists}
+
+Base `file.exists()` says `TRUE` for directories too. `file_exists()` only
+accepts real files:
+
+```{r}
+f = tempfile()
+write_utf8('x', f)
+x = c(tempdir(), f)
+file.exists(x)
+file_exists(x)
+```
+
+## Keep only the files that exist {#sec:existing-files}
+
+`existing_files()` is `x[file.exists(x)]`. With `first = TRUE` it returns the
+first hit, handy for a list of candidate config locations. It errors if none
+exist, unless `error = FALSE`:
+
+```{r}
+in_dir(tempdir(), {
+  write_utf8('x', 'config.txt')
+  x = c('no-such-file.txt', 'config.txt')
+  print(existing_files(x))
+  print(existing_files(x, first = TRUE))
+  print(existing_files('no-such-file.txt', first = TRUE, error = FALSE))
+})
+```
+
+## Remove a directory only if it is empty {#sec:del-empty-dir}
+
+`del_empty_dir()` checks for files and subdirectories first and deletes the
+directory only when nothing is inside. It silently does nothing for `NULL` or a
+missing directory:
+
+```{r}
+d1 = tempfile(); d2 = tempfile()
+dir_create(d1); dir_create(d2)
+write_utf8('x', file.path(d2, 'keep.txt'))
+del_empty_dir(d1)
+del_empty_dir(d2)
+dir_exists(c(d1, d2))
+```
+
+## Tell absolute paths from relative ones {#sec:abs-rel-path}
+
+`is_abs_path()` treats a leading `/` or `~` as absolute (and drive letters and
+UNC prefixes on Windows). `is_rel_path()` is its negation:
+
+```{r}
+x = c('/usr/bin', '~/notes', 'data/a.csv', '../up.txt')
+is_abs_path(x)
+is_rel_path(x)
+```
+
+## Check if a path is inside a directory {#sec:is-sub-path}
+
+`is_sub_path()` tests whether each path starts with the directory path. It is a
+plain string comparison, so normalize both sides with `normalize_path()` first
+if they may be written differently:
+
+```{r}
+is_sub_path('a/b/c.txt', 'a/b')
+is_sub_path('a/b/c.txt', 'd/b')
+```
+
+## Spot URLs among paths {#sec:is-web-path}
+
+`is_web_path()` flags paths starting with `http://`, `https://`, `ftp://` or
+`ftps://`, so you can treat local files and remote resources differently:
+
+```{r}
+is_web_path(c('https://www.r-project.org', 'www.r-project.org', 'img/a.png'))
+```
+
+## Tell files from directories in messages {#sec:mark-dirs}
+
+`mark_dirs()` appends a slash to directories, which makes listings easier to
+read. Relative paths are tested against the working directory, so use full
+paths or `in_dir()`:
+
+```{r}
+d = tempfile()
+dir_create(file.path(d, 'sub'))
+write_utf8('x', file.path(d, 'a.txt'))
+in_dir(d, mark_dirs(list.files()))
+```
+
+## Guess the MIME type of a file {#sec:mime-type}
+
+`mime_type()` uses the **mime** package when installed, else the system `file`
+command. Either way you get a type like `text/html` for each path. Results from
+the command are cached, because running it is slow:
+
+```r
+mime_type(c('index.html', 'logo.png', 'script.R', 'data.csv'))
+# "text/html" "image/png" "text/plain" "text/csv"
+```
+
+Files without an extension (such as `Makefile`) get `empty`, which defaults to
+`text/plain`. Set `empty = NA` (with `use_mime = FALSE`) to ask the system
+command instead.
+
+## Express a path relative to a directory {#sec:relative-path}
+
+`relative_path()` works out how to get from a directory to a file, using `..`
+when needed:
+
+```{r}
+relative_path('foo/bar.txt', 'foo/')
+relative_path('/a/b/c.txt', '/d/e/')
+relative_path('/a/b/c.txt', '/d/e/', use.. = FALSE, error = FALSE)
+```
+
+With `use.. = FALSE`, a path outside `dir` cannot be made relative; `error =
+FALSE` returns it unchanged instead of failing.
+
+## Teach `proj_root()` about your own project type {#sec:root-rules}
+
+`proj_root()` walks up from a path until a rule matches. `root_rules` is the
+default rule matrix: column one is a regex for file names, column two a regex
+for the file content (empty matches anything). By default it recognizes R
+packages (`DESCRIPTION` with `Package:`) and RStudio projects (`.Rproj`). Add a
+row to support another marker, here a `project.toml` file:
+
+```r
+root_rules
+#>      file            pattern
+#> [1,] "^DESCRIPTION$" "^Package: "
+#> [2,] ".+[.]Rproj$"   "^Version: "
+
+rules = rbind(root_rules, c('^project[.]toml$', ''))
+proj_root('~/work/myproj/src/deep', rules)  # ~/work/myproj
+```
+
+`proj_root()` returns `NULL` if no ancestor matches. Note the file regex is
+matched with `list.files()`, which skips hidden files such as `.git`.

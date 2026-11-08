@@ -103,7 +103,8 @@ expression as the previous version of the code. For example, if you have
 run \code{cache_rds({Sys.sleep(5);1+1})} before, running \code{cache_rds({ Sys.sleep( 5 ) ; 1 + 1 })} will use the cache, because the two expressions are
 essentially the same (they only differ in white spaces). Usually you can
 add/delete white spaces or comments to your code in \code{expr} without
-invalidating the cache. See the package vignette \code{vignette('xfun', package = 'xfun')} for more examples.
+invalidating the cache. See the book \url{https://pkg.yihui.org/xfun/book/} for
+more examples.
 
 When this function is called in a code chunk of a \pkg{knitr} document, you
 may not want to provide the filename or directory of the cache file,

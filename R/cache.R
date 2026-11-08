@@ -324,8 +324,8 @@ io_methods = list(
 #'   5 ) ; 1 + 1 })` will use the cache, because the two expressions are
 #'   essentially the same (they only differ in white spaces). Usually you can
 #'   add/delete white spaces or comments to your code in `expr` without
-#'   invalidating the cache. See the package vignette `vignette('xfun', package
-#'   = 'xfun')` for more examples.
+#'   invalidating the cache. See the book <https://pkg.yihui.org/xfun/book/> for
+#'   more examples.
 #'
 #'   When this function is called in a code chunk of a \pkg{knitr} document, you
 #'   may not want to provide the filename or directory of the cache file,

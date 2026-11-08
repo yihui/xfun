@@ -1,0 +1,164 @@
+# Working with R Code {#chp:code}
+
+Code is just text until you parse it, run it, or remember what it computed.
+The recipes here check syntax, split a script into expressions, capture
+everything a piece of code prints, and cache slow results. Several of them are
+the very functions that power **litedown** and **knitr**, so they have seen
+some real use.
+
+## Check that code parses {#sec:valid-syntax}
+
+Before running a snippet from a user, you can ask if it is even valid.
+`valid_syntax()` parses without evaluating:
+
+```{r}
+valid_syntax("1 + 1")
+valid_syntax("1 +")           # incomplete
+valid_syntax("if(T) {1 + 1")  # unclosed brace
+```
+
+## Split a script into expressions {#sec:split-source}
+
+A script is a vector of lines, but a statement can span several lines.
+`split_source()` groups lines into complete expressions. Set
+`merge_comments = TRUE` to glue comments to the expression below them:
+
+```{r}
+code = c("# comment", "if (TRUE) {", "  1 + 1", "}", "print('done')")
+split_source(code)
+split_source(code, merge_comments = TRUE)
+```
+
+## Record everything the code does {#sec:record}
+
+`record()` runs a character vector of R code and captures every kind of output
+(text, plots, messages, warnings, and errors) as a structured list:
+
+```{r}
+code = c(
+  "1 + 1",
+  "message('hello from record()')",
+  "warning('a warning')",
+  "head(mtcars, 2)"
+)
+res = record(code, dev.path = FALSE, error = TRUE)
+tree(res)
+```
+
+Each element has a class such as `record_source`, `record_output`,
+`record_message`, or `record_warning`, so you can pick out the pieces you
+care about. This is the engine behind **litedown**'s code chunk execution.
+
+## Cache an expensive expression {#sec:cache-exec}
+
+When a computation takes minutes, you do not want to repeat it for nothing.
+`cache_exec()` stores the result on disk. It detects which global variables the
+expression uses and invalidates the cache when any of them change, so you never
+see stale results:
+
+```{r}
+path = tempfile()
+x = 42
+result = cache_exec(
+  { Sys.sleep(0); x^2 },
+  path = path, id = "square"
+)
+result  # 1764
+
+# change x: the cache is invalidated
+x = 10
+result = cache_exec(
+  { Sys.sleep(0); x^2 },
+  path = path, id = "square"
+)
+result  # 100
+```
+
+Running the same expression again with the same `x` loads the cached value
+instead of recomputing. Pass `extra = file.mtime("data.csv")` to invalidate
+the cache when an external file changes, too.
+
+
+## Cache with a plain RDS file {#sec:cache-rds}
+
+`cache_rds()` is the simpler predecessor of `cache_exec()`. It saves the value
+of an expression to an `.rds` file and reads it back next time. The file name
+carries a hash of the code, so editing the code invalidates the cache. Use
+`hash = list(x, y)` (or `"auto"`) to also depend on variables, and
+`rerun = TRUE` to force a refresh:
+
+```{r}
+dir = paste0(tempfile(), "/")
+compute = function(...) cache_rds({
+  cat("computing...\n")
+  1:3
+}, file = "demo.rds", dir = dir, ...)
+compute()  # runs
+compute()  # loads from cache, no message
+compute(rerun = TRUE)
+list.files(dir)
+```
+
+## Parse chunk options in comma-separated form {#sec:csv-options}
+
+`csv_options()` parses knitr-style chunk options such as `foo, eval=TRUE`. An
+unnamed first item becomes the `label`:
+
+```{r}
+str(csv_options("foo, eval=TRUE, fig.width=5, echo=if (TRUE) FALSE"))
+```
+
+## Pull chunk options out of a chunk {#sec:divide-chunk}
+
+`divide_chunk()` separates leading `#|` option comments from the code. It
+understands both YAML-like and comma-separated options, and returns the parsed
+`options`, the option lines in `src`, and the remaining `code`:
+
+```{r}
+str(divide_chunk("r", c("#| label: mine", "#| fig.width: 8", "1 + 1")))
+str(divide_chunk("r", c("#| mine, echo = FALSE", "1 + 1")))
+```
+
+## Find the variables code depends on {#sec:find-globals}
+
+`find_globals()` lists variables that code uses but does not create, and that
+exist in `envir`. This is how `cache_exec()` knows what to watch:
+
+```{r}
+x = 2
+find_globals("y = x + 1; z = y * 2")
+find_globals("y = zzz + 1")  # zzz does not exist, so it is not reported
+```
+
+## Find the variables code creates {#sec:find-locals}
+
+`find_locals()` is the opposite: it returns variables the code assigns
+(including via `assign()`). It cannot see through `eval(parse(...))`:
+
+```{r}
+find_locals("a = 1; b = a + 2; f = function(u) u")
+find_locals("assign('y', 1)")
+```
+
+## Parse code without source references {#sec:parse-only}
+
+`parse_only()` is `parse(keep.source = FALSE)` with a shorter name. Comments
+are dropped and empty input gives an empty expression:
+
+```{r}
+parse_only(c("y ~ x", "1:5  # a comment"))
+parse_only(character(0))
+```
+
+## Mark output as a record type {#sec:new-record}
+
+`new_record()` tags a character vector with a `record_*` class, so `record()`
+and friends know what kind of output it is. Return one from a
+`record_print()` method to say your output is, for example, raw Markdown
+(`"asis"`) rather than console text. Classes are `source`, `output`,
+`message`, `warning`, `error`, `plot`, and `asis`:
+
+```{r}
+x = new_record("**bold**", "asis")
+class(x)
+```

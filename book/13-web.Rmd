@@ -1,0 +1,185 @@
+# Downloads and Web APIs {#chp:web}
+
+Fetching a file, checking that a link is alive, asking GitHub for the latest
+release: these chores all hit the network. The examples that need a connection
+are shown but not run here; the URL-parsing helpers work offline and are run.
+
+## Pull the file name out of a URL {#sec:url-filename}
+
+Query strings and hashes make `basename()` unreliable on URLs. `url_filename()`
+strips them, and falls back to a default when the URL ends in a slash or a bare
+domain. It is pure string work, so no request is sent:
+
+```{r}
+url_filename(c(
+  'https://yihui.org/images/logo.png',
+  'https://yihui.org/index.html?foo=bar#about',
+  'https://yihui.org/'
+))
+url_filename('https://yihui.org', default = 'home.html')
+```
+
+## Download a file, whatever works {#sec:download-file}
+
+`download.file()` has several methods, and which one works depends on the
+machine and proxy. `download_file()` tries them all (libcurl, curl, wget,
+wininet, ...) and stops with an error only if none succeeds. The output
+defaults to the file name from `url_filename()`:
+
+```r
+f = download_file('https://yihui.org/images/logo.png')
+f  # "logo.png", the path of the downloaded file
+
+download_file('https://yihui.org/images/logo.png', tempfile(fileext = '.png'))
+```
+
+It returns the output path. Extra arguments go to `download.file()`. The
+`timeout` option is raised to an hour for the call if you left it at the default
+60 seconds, so big files are fine.
+
+## Download once, reuse forever {#sec:download-cache}
+
+`download_cache` is an object of methods that saves downloads on disk, so a
+second request for the same URL is instant (and works offline):
+
+```r
+x1 = download_cache$get('https://www.r-project.org/')  # downloads
+x2 = download_cache$get('https://www.r-project.org/')  # from cache
+identical(x1, x2)
+
+# binary file, or transform the content once and cache the result
+logo = download_cache$get('https://yihui.org/images/logo.png', 'raw')
+n = download_cache$get('https://www.r-project.org/', 'text', nchar)
+```
+
+The `type` is `'text'`, `'raw'`, `'base64'`, or the default `'auto'`, which
+picks text or raw from the response headers. Manage the cache with the other
+methods:
+
+```r
+download_cache$summary()  # what is cached, with sizes
+download_cache$remove('https://yihui.org/images/logo.png', 'raw')
+download_cache$purge()    # delete everything
+```
+
+## Check that a link is alive {#sec:url-accessible}
+
+`url_accessible()` sends a `HEAD` request and returns `TRUE` if the status is
+below 400, `FALSE` otherwise (including when the request fails outright):
+
+```r
+url_accessible('https://yihui.org')
+url_accessible('https://yihui.org/no-such-page-here')
+```
+
+Handy for filtering a vector of links: `Filter(url_accessible, urls)`.
+
+## Find where a redirect really goes {#sec:url-destination}
+
+Short links and canonical URLs redirect. `url_destination()` follows the
+`Location` header and returns the final address, or the original URL if there is
+no redirect. Status codes of 400 and above raise an error. Results are cached
+for the session; use `force = TRUE` to ask again:
+
+```r
+url_destination('https://cran.r-project.org/package=xfun')
+url_destination('https://cran.r-project.org/package=xfun', force = TRUE)
+```
+
+## Read JSON from a REST API {#sec:rest-api}
+
+`rest_api()` sends a `GET` request and parses the JSON reply into a list.
+Give it a root, an endpoint, and optionally a token and query parameters:
+
+```r
+res = rest_api('https://mockhttp.org', '/get')
+str(res)
+
+# query parameters, and an authorization token
+rest_api('https://mockhttp.org', '/response-headers',
+  params = list(foo = 'bar'))
+rest_api('https://mockhttp.org', '/headers', token = 'YOUR_TOKEN')
+```
+
+By default the token is sent as `Authorization: Basic TOKEN`; name it to change
+the scheme, e.g. `token = c(Bearer = 'YOUR_TOKEN')`. Only `GET` is supported.
+For `POST` and friends, use the curl or httr package. `rest_api()` needs
+jsonlite.
+
+## Get the raw response instead {#sec:rest-api-raw}
+
+If the API returns something other than JSON, or you prefer your own parser,
+`rest_api_raw()` takes the same arguments and returns the response text
+untouched. Extra request headers go in `headers`:
+
+```r
+txt = rest_api_raw('https://mockhttp.org', '/get',
+  headers = c(Accept = 'application/json'))
+cat(txt)
+```
+
+## Call the GitHub API {#sec:github-api}
+
+`github_api()` is `rest_api_raw()` pointed at `https://api.github.com`, with
+token handling built in. It reads a token from the `token` argument or from the
+`GITHUB_PAT`, `GITHUB_TOKEN`, or `GH_TOKEN` environment variables. Without one
+you get only 60 calls an hour:
+
+```r
+repo = github_api('/repos/yihui/xfun')
+repo$stargazers_count
+
+github_api('/repos/yihui/xfun/issues', params = list(state = 'open'))
+github_api('/repos/yihui/xfun', raw = TRUE)  # unparsed JSON text
+```
+
+The reply is parsed when jsonlite is available, raw text otherwise. Set the
+token in the environment rather than in code:
+`Sys.setenv(GITHUB_PAT = 'YOUR_TOKEN')`, ideally in `~/.Renviron`.
+
+## List a repository's release tags {#sec:github-releases}
+
+`github_releases()` returns release tags, filtered by a regular expression
+(default `'v[0-9.]+'`). Pass a tag to check that it exists, or `'latest'` for
+the newest release:
+
+```r
+github_releases('yihui/litedown')
+github_releases('gohugoio/hugo', 'latest')
+github_releases('yihui/xfun', pattern = 'v0[.]4[0-9.]*')
+```
+
+## Upload a file to an FTP server {#sec:upload-ftp}
+
+`upload_ftp()` runs `curl -T file server` when the curl command exists, and
+falls back to the curl package otherwise. It returns the status code, where `0`
+means success for the command-line route:
+
+```r
+upload_ftp('report.pdf', 'ftp://user:PASSWORD@ftp.example.com', dir = 'reports')
+```
+
+## Host an image on Imgur {#sec:upload-imgur}
+
+`upload_imgur()` uploads an image and returns its public link, which is useful
+for documents that should point to hosted images instead of local files. With
+`include_xml = TRUE`, the full response from Imgur is attached as an attribute:
+
+```r
+f = tempfile(fileext = '.png')
+png(f); plot(1:10); dev.off()
+
+link = upload_imgur(f, key = 'YOUR_IMGUR_CLIENT_ID')
+link
+attr(link, 'XML')  # only with include_xml = TRUE
+
+# or set the key once
+options(xfun.upload_imgur.key = 'YOUR_IMGUR_CLIENT_ID')
+```
+
+::: {.callout-warning}
+`upload_ftp()` and `upload_imgur()` send your files to third-party servers.
+Imgur uploads are public to anyone with the link. Without your own client ID,
+`upload_imgur()` uses a shared one registered by the xfun author, which can hit
+rate limits, so register your own.
+:::

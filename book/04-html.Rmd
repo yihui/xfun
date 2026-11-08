@@ -1,0 +1,87 @@
+# Writing HTML by Hand (Without Pain) {#chp:html}
+
+You do not need a template engine to produce a bit of HTML. You need to get
+the escaping right, and that is where most of the pain lives. The recipes in
+this chapter build tags safely, escape what needs escaping, and strip tags
+when you want plain text back.
+
+## Build a tag from R {#sec:html-tag}
+
+`html_tag()` builds one tag, with attributes and content. Attributes are passed
+as named arguments:
+
+```{r}
+html_tag("a", "R Project", href = "https://www.r-project.org", target = "_blank")
+html_tag("br")
+html_tag("p", list("Visit ", html_tag("a", "CRAN", href = "https://cran.r-project.org")))
+```
+
+Content is escaped by default, so a stray `<` in your text stays a `<`. When a
+piece of content is already valid HTML and you do not want it escaped again,
+wrap it in `html_value()`:
+
+```{r}
+html_tag("p", html_value("<em>already escaped</em>"))
+```
+
+## Escape text for HTML {#sec:html-escape}
+
+When you build HTML by pasting strings together, `html_escape()` replaces `&`,
+`<`, and `>`. Set `attr = TRUE` when the text goes inside an attribute, so
+quotes and line breaks are escaped too:
+
+```{r}
+html_escape('2 < 3 & "quotes"')
+html_escape('attr="val"', attr = TRUE)
+```
+
+## Strip tags and comments {#sec:strip-html}
+
+Sometimes you have HTML and want only the text. `strip_html()` removes tags and
+comments and leaves the words behind:
+
+```{r}
+strip_html('<p>Hello <strong>world</strong><!-- comment -->!</p>')
+```
+
+## Preview HTML in a browser {#sec:html-view}
+
+To check how a snippet looks, `html_view()` serves it from a temporary local web
+server and opens it in the browser or the RStudio viewer. It is meant for
+interactive use:
+
+```r
+html_view(html_tag('h1', 'Hello', style = 'color: tomato'))
+```
+
+Relative resources (images, stylesheets) are looked up in the working
+directory.
+
+## Offer a folder as a download {#sec:embed-dir}
+
+In an HTML report, you can let readers download a whole folder without hosting
+anything. `embed_dir()` zips the directory and inlines the archive as a base64
+link:
+
+```r
+d = tempfile()
+dir.create(d)
+write.csv(head(cars), file.path(d, 'cars.csv'))
+embed_dir(d, text = 'Download the data')
+```
+
+The result is an `<a download>` tag, so put it in a chunk with
+`results = 'asis'` or print it in the document. Zipping needs the `zip` command
+(Rtools on Windows).
+
+## Offer several files as one download {#sec:embed-files}
+
+For a handful of files that do not share a folder, `embed_files()` zips them
+into a single archive. Pick the download name with `name`:
+
+```r
+f = c('data.csv', 'notes.txt')
+embed_files(f, name = 'materials.zip')
+```
+
+For one file, use `embed_file()` directly: it skips the zip step.

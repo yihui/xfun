@@ -1,0 +1,56 @@
+# Lists That Do What You Mean {#chp:lists}
+
+R is generous with partial matching. Type `z$a` and R will happily hand you
+`z$aaa`, without a word of complaint. Most of the time that is a convenience.
+Sometimes it is a bug that waits quietly until the worst moment. This chapter
+gives you lists and attributes that refuse to guess.
+
+## Stop `$` from guessing {#sec:strict-list}
+
+You want `$` to return only exact name matches. Use `strict_list()` to build
+such a list:
+
+```{r}
+library(xfun)
+
+z = strict_list(aaa = "I am aaa", b = 1:5)
+z$a    # NULL: no partial match
+z$aaa  # the element you asked for
+```
+
+Partial matching is switched off for this list, so `z$a` comes back empty
+instead of pretending to be `aaa`.
+
+## Make an existing list strict {#sec:as-strict}
+
+Maybe the list came from someone else's code, and you cannot change how it was
+built. `as_strict_list()` converts it for you. Here is the trap, first:
+
+```{r}
+z = strict_list(aaa = "I am aaa", b = 1:5)
+z2 = unclass(z)  # back to an ordinary list
+z2$a             # "I am aaa": partial match fires
+```
+
+And the fix:
+
+```{r}
+z3 = as_strict_list(z2)
+z3$a  # NULL again
+```
+
+## Stop `attr()` from guessing {#sec:attr2}
+
+Attributes have the same problem, because `attr()` also matches partial names.
+`attr2()` is an alias for `attr(exact = TRUE)`, so it only matches what you
+spell out:
+
+```{r}
+x = structure(list(), foobar = 42)
+base::attr(x, "foo")  # 42: partial match
+attr2(x, "foo")       # NULL
+attr2(x, "foobar")    # 42
+```
+
+Use `attr2()` by default in your own code and you will skip a whole class of
+head-scratching moments.

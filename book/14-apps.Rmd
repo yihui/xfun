@@ -1,0 +1,118 @@
+# Local Apps and Browsers {#chp:apps}
+
+R can serve web pages to itself and drive a headless browser to render them.
+Together these give you a tiny local web app, plus PDFs, screenshots and
+JavaScript-rendered HTML. None of the examples run here, since they start
+servers or need Chrome/Chromium.
+
+## Serve a folder in your browser {#sec:serve-dir}
+
+To preview static files (an HTML report, a built site) over HTTP rather than
+`file://`, serve the directory:
+
+```r
+serve_dir('_site')
+```
+
+In an interactive session this opens the browser. It uses R's built-in HTTP
+server, so no extra packages are needed. The app is named `xfun-dir` by
+default; pass `name` to serve several folders at once. Extra arguments go to
+`new_app()`.
+
+## Write your own tiny web app {#sec:new-app}
+
+`new_app()` takes a name and a handler function `function(path, query, post,
+headers)` that returns a response list. A minimal app that greets whoever is
+in the query string:
+
+```r
+new_app('hello', function(path, query, post, headers) {
+  who = if (is.null(query[['name']])) 'world' else query[['name']]
+  list(
+    payload = sprintf('<h1>Hello, %s!</h1>', who),
+    `content-type` = 'text/html'
+  )
+}, open = FALSE)
+```
+
+It returns the URL invisibly, something like `http://127.0.0.1:PORT/custom/hello/`.
+Visit it with `?name=R` to see the query used. With `name = ''` the app is
+served at the root `http://127.0.0.1:PORT/` through a small proxy, and `port`
+picks the candidate ports. Calling `new_app()` with an existing name replaces
+that app.
+
+In a non-interactive script, `open` also decides whether the call blocks.
+Pass `open = FALSE` explicitly to return right away.
+
+## Shut an app down {#sec:stop-app}
+
+Apps live as long as the R session. Stop one by name, or all of them:
+
+```r
+stop_app('hello')
+stop_app()  # every running app
+```
+
+## Print a page to PDF or an image {#sec:browser-print}
+
+`browser_print()` loads a page in headless Chrome, Chromium, or Edge and
+saves it. The output extension picks the format: `.pdf`, `.png`, or `.jpeg`.
+A bare extension reuses the name from the input:
+
+```r
+browser_print('report.html')                    # report.pdf
+browser_print('report.html', 'shot.png')        # screenshot
+browser_print('https://www.r-project.org', '.jpeg', window_size = c(800, 600))
+```
+
+It returns the output path. If the browser is not found, set
+`options(xfun.browser = '/path/to/chrome')` or the `R_XFUN_BROWSER`
+environment variable.
+
+For pages that finish rendering after load, use `wait` with a JavaScript
+expression that becomes true when the page is ready, or a named event. `query`
+appends URL parameters:
+
+```r
+browser_print('slides.html', wait = 'window.pageReady', query = list(print = 1))
+browser_print('slides.html', wait = c(event = 'pageReady'))
+```
+
+## See the HTML after JavaScript runs {#sec:browser-dom}
+
+The source of a page that builds itself with JavaScript is nearly empty.
+`browser_dom()` loads it, lets the scripts run, and gives back the final DOM:
+
+```r
+f = tempfile(fileext = '.html')
+writeLines(c(
+  '<html><body><div id="out"></div>',
+  '<script>document.getElementById("out").textContent = "hello";</script>',
+  '</body></html>'
+), f)
+browser_dom(f)                  # full document as a string
+browser_dom(f, fragment = TRUE) # only the inner body
+browser_dom(f, output = 'rendered.html')
+```
+
+It takes `wait` and `query` like `browser_print()`.
+
+## Run many JavaScript checks in one browser {#sec:browser-session}
+
+Starting a browser per page is slow. `browser_session()` starts one and keeps
+it open. You get a list of functions: `open()` to load a page, `eval()` to run
+JavaScript on it, `dom()` for the current HTML, and `close()`:
+
+```r
+s = browser_session()
+for (p in c('a.html', 'b.html')) {
+  s$open(p)
+  print(s$eval('document.title'))
+}
+s$dom()
+s$close()
+```
+
+`eval()` returns the value of the last statement as a string. The browser also
+closes when the session is garbage-collected or R exits, but calling `close()`
+is tidier.

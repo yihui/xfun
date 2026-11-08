@@ -22,6 +22,10 @@
 
 - `new_app()` now serves requests from the working directory when it was called, instead of the working directory at the time of the first request (e.g., `in_dir(dir, new_app(...))` previously served the wrong directory if R had been moved elsewhere by then).
 
+- `tabset()` now works out of the box in **litedown** code chunks: when recorded, the result also includes the CSS/JS assets it needs (`@tabsets`), so they no longer have to be enabled in the document's metadata.
+
+- Replaced the package vignette with a recipe-style book, available at <https://pkg.yihui.org/xfun/book/>.
+
 # CHANGES IN xfun VERSION 0.62
 
 - Added `radix_id()` and `radix_group()`: `radix_id()` encodes row combinations as a mixed-radix numeric code (equal rows share a code, faster than `paste()`); `radix_group()` returns a 1-based group index in first-appearance order.

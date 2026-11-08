@@ -1,0 +1,74 @@
+---
+title: "xfun: Recipes for Everyday R"
+author: "Yihui Xie"
+date: "`{r} Sys.Date()`"
+---
+
+# Preface {.unnumbered}
+
+Every R package author ends up with a drawer full of small helpers. A function
+to turn `c("apples", "pears", "plums")` into a sentence. A function to check
+whether a string is blank. A function to read a file without worrying about
+encodings. You write them once, copy them into the next project, and then
+forget where the good version lives.
+
+**xfun** is that drawer, opened and labeled. It started as the helpers I kept
+needing across about twenty R packages, including **knitr**, **litedown**, and
+**tinytex**. I pulled them out so they could be used openly instead of living
+as buried internal functions. It only imports base R packages, so pulling it
+into your own project does not drag in a pile of dependencies.
+
+This book is a cookbook. Each chapter is a set of recipes, and each recipe
+starts with a problem you probably have, shows the function that solves it,
+and then explains what happened. Read the chapters in any order you like, or
+jump straight to the recipe you need. The code is meant to be typed, run, and
+tweaked. Change the input and see what breaks.
+
+## Getting the ingredients {#sec:install}
+
+Install the released version from CRAN:
+
+```r
+install.packages('xfun')
+```
+
+Or the development version from R-universe:
+
+```r
+install.packages('xfun', repos = 'https://yihui.r-universe.dev')
+```
+
+Then load it. Every recipe in this book assumes you have done so:
+
+```{r}
+library(xfun)
+```
+
+Some recipes use optional packages such as **knitr**, **jsonlite**, or
+**litedown**. They are only needed for the recipes that mention them, and
+xfun checks for them before using them.
+
+## How the recipes are organized {#sec:organize}
+
+The chapters group recipes by the kind of problem they solve:
+
+- @chp:lists keeps lists honest, and attributes too.
+- @chp:printing makes objects easier to look at.
+- @chp:strings handles text, words, numbers, and IDs.
+- @chp:html builds, cleans, and embeds HTML.
+- @chp:markdown writes Markdown tables, fences, and news.
+- @chp:files reads, writes, and rewrites files.
+- @chp:paths wrangles file paths and project roots.
+- @chp:data ships data as JSON, YAML, and base64.
+- @chp:code parses, records, and caches R code.
+- @chp:env deals with options, environment variables, packages, and the OS.
+- @chp:errors makes failure less painful.
+- @chp:processes runs other programs and R sessions.
+- @chp:web downloads files and talks to web APIs.
+- @chp:apps serves local apps and drives a headless browser.
+- @chp:images shrinks images.
+- @chp:maintain covers package maintenance, releases, and demos.
+
+Nothing here is a grand framework. Each function does one job, and most of them
+are short enough that you can read the source when you are curious. That is
+deliberate.

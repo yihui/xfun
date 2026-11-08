@@ -1,0 +1,85 @@
+# Looking at Things {#chp:printing}
+
+Printing is where you find out whether your object is what you think it is.
+The base R printers are fine, but they often add quotes, indices, and escape
+sequences that get in the way. This chapter covers recipes that show you the
+content as it really is, and a few that draw structure you can scan at a
+glance.
+
+## Print strings without the noise {#sec:raw-string}
+
+Printing a character vector shows indices, quotes, and escape sequences. That is
+useful for debugging, but not when you want to see the text itself. `raw_string()`
+drops all of that:
+
+```{r}
+x = c("line one", "say \"hello\"", "tab\there")
+x            # with indices and escapes
+raw_string(x)  # what the strings actually contain
+```
+
+## Read a text file into the console {#sec:file-string}
+
+`file_string()` reads a whole file into one string and prints it cleanly as a
+side effect. Pass `comment = ''` to the chunk and the output looks like the file
+itself:
+
+```{r comment=''}
+f = system.file("LICENSE", package = "xfun")
+file_string(f)
+```
+
+## Draw the shape of a nested object {#sec:tree}
+
+Nested lists are hard to read through `str()`, since the depth markers `..`
+all look alike. `tree()` redraws `str()` output as a tree, with vertical pipes
+connecting parents and children:
+
+```{r}
+fit = lm(dist ~ speed, data = cars)
+tree(fit)
+```
+
+## Show a list as tabs {#sec:tabset}
+
+When a list is too big to print in one go, put each member in its own tab.
+`tabset()` turns a list into Markdown tabsets, one tab per member. Nested lists
+become nested tabsets. By default each tab shows `str()` output, but you can
+pass any function you like:
+
+```{r}
+survey = list(
+  meta = list(date = '2026-11-07', n = 6),
+  scores = list(
+    math = c(90, 85, 72, 64, 98, 80),
+    reading = c(70, 95, 88, 91, 60, 77)
+  ),
+  notes = 'Two students retook the reading test.'
+)
+tabset(survey)
+```
+
+The top level has three tabs, and `meta` and `scores` each hold a nested set of
+tabs. Pass a
+function to change what each tab shows, such as a numeric summary instead of
+`str()`. If the function returns `tab_content()`, the Markdown you give it is
+used as the tab content as is:
+
+```{r}
+tabset(survey, function(x) {
+  if (is.numeric(x) && length(x) > 1) print(summary(x))
+  else tab_content(paste('**Value:**', x))
+})
+```
+
+Inside a **litedown** document, the CSS and JS that the tabs need are added for
+you. You don't have to enable them in the document metadata.
+
+## Make file sizes readable {#sec:format-bytes}
+
+Raw byte counts are hard to scan. `format_bytes()` turns them into strings with
+sensible units:
+
+```{r}
+format_bytes(c(500, 2048, 1.5e6, 3e9))
+```
