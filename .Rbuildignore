@@ -3,6 +3,7 @@
 ^codecov\.yml$
 ^\.github$
 ^book$
+^site$
 ^README\.md$
 ^NEWS\.md$
 ^\.positai$

@@ -1,0 +1,33 @@
+---
+title: Hello xfun
+---
+
+**xfun** is a grab bag of utility functions shared by packages maintained by
+Yihui Xie. Run the code below to see the output, then change it to try your
+own inputs.
+
+## Strings
+
+```{r}
+library(xfun)
+
+numbers_to_words(c(12, 305))
+join_words(c('apples', 'pears', 'plums'))
+format_bytes(123456789)
+```
+
+## Paths
+
+```{r}
+sans_ext(c('report.tar.gz', 'slides.Rmd'))
+relative_path('docs/intro/index.md', 'docs')
+```
+
+## HTML and fenced blocks
+
+```{r}
+html_escape('<b>Tom & Jerry</b>')
+cat(fenced_block('x = 1:10\nmean(x)', 'r'), sep = '\n')
+```
+
+Learn more at <https://github.com/yihui/xfun>.
