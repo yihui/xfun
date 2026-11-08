@@ -48,8 +48,8 @@ are built on top of it, so once you know this one, the rest follow:
 
 ```{r}
 f = tempfile()
-write_utf8(c("color", "favourite", "grey"), f)
-gsub_file(f, "colour|grey", c(colour = "color", grey = "gray"))
+write_utf8(c("colour", "favourite", "flavour"), f)
+gsub_file(f, "ou", "o")  # arguments after the file go to gsub()
 read_utf8(f)
 ```
 
