@@ -16,9 +16,9 @@
 </head>
 <body>
 <nav class="site-nav"><p><a href="index.html" class="brand">xfun</a> <small class="version">v0.62.16</small>
-<a href="articles.html">Articles</a>
 <a href="manual.html">Manual</a>
 <a href="news.html">News</a>
+<a href="book/">Book</a>
 <a href="playground/">Playground</a>
 <a href="https://github.com/yihui/xfun/" class="right"><img src="https://cdn.jsdelivr.net/npm/@primer/octicons@19/build/svg/mark-github-24.svg" alt="GitHub" class="no-invert" /></a></p></nav>
 <header class="frontmatter">
@@ -1369,11 +1369,10 @@ License: MIT + file LICENSE
 URL: https://github.com/yihui/xfun
 BugReports: https://github.com/yihui/xfun/issues
 Encoding: UTF-8
-VignetteBuilder: litedown
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.1.1
 NeedsCompilation: yes
-Packaged: 2026-11-08 04:31:26 UTC; runner
+Packaged: 2026-11-08 05:16:28 UTC; runner
 Author: Yihui Xie [aut, cre, cph] (ORCID:
     &lt;https://orcid.org/0000-0003-0645-5666&gt;, URL: https://yihui.org),
   Wush Wu [ctb],
@@ -1382,7 +1381,7 @@ Author: Yihui Xie [aut, cre, cph] (ORCID:
   Salim Brüggemann [ctb] (ORCID: &lt;https://orcid.org/0000-0002-5329-5987&gt;),
   Christophe Dervieux [ctb]
 Maintainer: Yihui Xie &lt;xie@yihui.name&gt;
-Built: R 4.6.2; aarch64-apple-darwin23; 2026-11-08 04:31:27 UTC; unix
+Built: R 4.6.2; aarch64-apple-darwin23; 2026-11-08 05:16:29 UTC; unix
 </code></pre>
 <h2 id="sec:man-gsub_file"><span class="section-number main-number">2</span> Search and replace strings in files</h2>
 <h3 id="sec:description_2" class="unnumbered">Description</h3>
@@ -1980,8 +1979,8 @@ working directory.
 <pre><code class="language-r">library(xfun)
 in_dir(tempdir(), {print(getwd()); list.files()})
 </code></pre>
-<pre><code>#&gt; [1] &quot;/private/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/RtmpE7Q8Se&quot;
-#&gt; [1] &quot;file1466310023d7&quot;
+<pre><code>#&gt; [1] &quot;/private/var/folders/h5/t85nd63d71x27_8gl5gw3l_w0000gn/T/RtmpVrZyl6&quot;
+#&gt; [1] &quot;file3749139a30db&quot;
 </code></pre>
 <h2 id="sec:man-is_abs_path"><span class="section-number main-number">16</span> Test if paths are relative or absolute</h2>
 <h3 id="sec:description_16" class="unnumbered">Description</h3>
@@ -2159,18 +2158,17 @@ paths.
 <pre><code class="language-r">mark_dirs(list.files(find.package(&quot;xfun&quot;), full.names = TRUE))
 </code></pre>
 <pre><code>#&gt;  [1] &quot;/Users/runner/work/_temp/Library/xfun/DESCRIPTION&quot;
-#&gt;  [2] &quot;/Users/runner/work/_temp/Library/xfun/doc/&quot;       
-#&gt;  [3] &quot;/Users/runner/work/_temp/Library/xfun/help/&quot;      
-#&gt;  [4] &quot;/Users/runner/work/_temp/Library/xfun/html/&quot;      
-#&gt;  [5] &quot;/Users/runner/work/_temp/Library/xfun/INDEX&quot;      
-#&gt;  [6] &quot;/Users/runner/work/_temp/Library/xfun/libs/&quot;      
-#&gt;  [7] &quot;/Users/runner/work/_temp/Library/xfun/LICENSE&quot;    
-#&gt;  [8] &quot;/Users/runner/work/_temp/Library/xfun/Meta/&quot;      
-#&gt;  [9] &quot;/Users/runner/work/_temp/Library/xfun/NAMESPACE&quot;  
-#&gt; [10] &quot;/Users/runner/work/_temp/Library/xfun/NEWS.Rd&quot;    
-#&gt; [11] &quot;/Users/runner/work/_temp/Library/xfun/R/&quot;         
-#&gt; [12] &quot;/Users/runner/work/_temp/Library/xfun/resources/&quot; 
-#&gt; [13] &quot;/Users/runner/work/_temp/Library/xfun/scripts/&quot;   
+#&gt;  [2] &quot;/Users/runner/work/_temp/Library/xfun/help/&quot;      
+#&gt;  [3] &quot;/Users/runner/work/_temp/Library/xfun/html/&quot;      
+#&gt;  [4] &quot;/Users/runner/work/_temp/Library/xfun/INDEX&quot;      
+#&gt;  [5] &quot;/Users/runner/work/_temp/Library/xfun/libs/&quot;      
+#&gt;  [6] &quot;/Users/runner/work/_temp/Library/xfun/LICENSE&quot;    
+#&gt;  [7] &quot;/Users/runner/work/_temp/Library/xfun/Meta/&quot;      
+#&gt;  [8] &quot;/Users/runner/work/_temp/Library/xfun/NAMESPACE&quot;  
+#&gt;  [9] &quot;/Users/runner/work/_temp/Library/xfun/NEWS.Rd&quot;    
+#&gt; [10] &quot;/Users/runner/work/_temp/Library/xfun/R/&quot;         
+#&gt; [11] &quot;/Users/runner/work/_temp/Library/xfun/resources/&quot; 
+#&gt; [12] &quot;/Users/runner/work/_temp/Library/xfun/scripts/&quot;   
 </code></pre>
 <h2 id="sec:man-mime_type"><span class="section-number main-number">21</span> Get the MIME types of files</h2>
 <h3 id="sec:description_21" class="unnumbered">Description</h3>
@@ -2970,8 +2968,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 <h3 id="sec:examples_31" class="unnumbered">Examples</h3>
 <pre><code class="language-r">rand_unit(10)
 </code></pre>
-<pre><code>#&gt;  [1] 0.7639072 0.7274638 0.2980770 0.8024250 0.9074458 0.7522777 0.8380993
-#&gt;  [8] 0.4243387 0.8289392 0.3186798
+<pre><code>#&gt;  [1] 0.79902251 0.05879277 0.46026055 0.15816962 0.39014267 0.79042257
+#&gt;  [7] 0.20800617 0.12001395 0.41836407 0.46021553
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = 0)
 </code></pre>
@@ -2983,8 +2981,8 @@ generators&quot;. <em>Software: Practice and Experience.</em> 52 (2): 443–458.
 </code></pre>
 <pre><code class="language-r">rand_unit(10, seed = Sys.getpid())
 </code></pre>
-<pre><code>#&gt;  [1] 0.06784031 0.28605248 0.87011562 0.84117589 0.09087796 0.71779229
-#&gt;  [7] 0.65654971 0.50418643 0.09026151 0.32153144
+<pre><code>#&gt;  [1] 0.18386518 0.12552676 0.01642021 0.19861400 0.06533815 0.67290584
+#&gt;  [7] 0.12737420 0.09799896 0.04777311 0.59606176
 </code></pre>
 <h2 id="sec:man-raw_string"><span class="section-number main-number">38</span> Print a character vector in its raw form</h2>
 <h3 id="sec:description_38" class="unnumbered">Description</h3>
@@ -3051,16 +3049,17 @@ formed by concatenating wrapped strings by <code>\n</code>.
 x = rep(paste(x, collapse = &quot;&quot;), 2)
 strwrap(x, width = 30)
 </code></pre>
-<pre><code>#&gt;  [1] &quot;d n gd fdo qhghk t m p q v q&quot;  &quot;j k w d mm gu r g fh teon lh&quot; 
-#&gt;  [3] &quot;b vts qn k g q t em c hv m z&quot;  &quot;ip h eb e q c nm fnb o o g fz&quot;
-#&gt;  [5] &quot;z t ixk to e blmk f u fx etoo&quot; &quot;d n gd fdo qhghk t m p q v q&quot; 
-#&gt;  [7] &quot;j k w d mm gu r g fh teon lh&quot;  &quot;b vts qn k g q t em c hv m z&quot; 
-#&gt;  [9] &quot;ip h eb e q c nm fnb o o g fz&quot; &quot;z t ixk to e blmk f u fx etoo&quot;
+<pre><code>#&gt;  [1] &quot;k j uk w mv p z ut cbdgt cca&quot; &quot;p rgasuc d e n z jvi e n ji&quot; 
+#&gt;  [3] &quot;tp vax t a aa r sa zi lb p&quot;   &quot;kzic nnp vh q dn m h a jjs x&quot;
+#&gt;  [5] &quot;m q u f ls k d l j zs h ix l&quot; &quot;n mu tx k y ocw fy&quot;          
+#&gt;  [7] &quot;k j uk w mv p z ut cbdgt cca&quot; &quot;p rgasuc d e n z jvi e n ji&quot; 
+#&gt;  [9] &quot;tp vax t a aa r sa zi lb p&quot;   &quot;kzic nnp vh q dn m h a jjs x&quot;
+#&gt; [11] &quot;m q u f ls k d l j zs h ix l&quot; &quot;n mu tx k y ocw fy&quot;          
 </code></pre>
 <pre><code class="language-r">xfun::str_wrap(x, width = 30)  # same length as x
 </code></pre>
-<pre><code>#&gt; [1] &quot;d n gd fdo qhghk t m p q v q\nj k w d mm gu r g fh teon lh\nb vts qn k g q t em c hv m z\nip h eb e q c nm fnb o o g fz\nz t ixk to e blmk f u fx etoo&quot;
-#&gt; [2] &quot;d n gd fdo qhghk t m p q v q\nj k w d mm gu r g fh teon lh\nb vts qn k g q t em c hv m z\nip h eb e q c nm fnb o o g fz\nz t ixk to e blmk f u fx etoo&quot;
+<pre><code>#&gt; [1] &quot;k j uk w mv p z ut cbdgt cca\np rgasuc d e n z jvi e n ji\ntp vax t a aa r sa zi lb p\nkzic nnp vh q dn m h a jjs x\nm q u f ls k d l j zs h ix l\nn mu tx k y ocw fy&quot;
+#&gt; [2] &quot;k j uk w mv p z ut cbdgt cca\np rgasuc d e n z jvi e n ji\ntp vax t a aa r sa zi lb p\nkzic nnp vh q dn m h a jjs x\nm q u f ls k d l j zs h ix l\nn mu tx k y ocw fy&quot;
 </code></pre>
 <h2 id="sec:man-base64_encode"><span class="section-number main-number">40</span> Encode/decode data into/from base64 encoding.</h2>
 <h3 id="sec:description_40" class="unnumbered">Description</h3>
@@ -4863,7 +4862,8 @@ expression as the previous version of the code. For example, if you have
 run <code>cache_rds({Sys.sleep(5);1+1})</code> before, running <code>cache_rds({ Sys.sleep( 5 ) ; 1 + 1 })</code> will use the cache, because the two expressions are
 essentially the same (they only differ in white spaces). Usually you can
 add/delete white spaces or comments to your code in <code>expr</code> without
-invalidating the cache. See the package vignette <code>vignette('xfun', package = 'xfun')</code> for more examples.
+invalidating the cache. See the book <a href="https://pkg.yihui.org/xfun/book/">https://pkg.yihui.org/xfun/book/</a> for
+more examples.
 </p>
 <p>When this function is called in a code chunk of a <span class="pkg">knitr</span> document, you
 may not want to provide the filename or directory of the cache file,
@@ -6347,13 +6347,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;gzip, br&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.239&quot;
+#&gt; [1] &quot;13.105.220.32&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a571d9a1ba5fd6bf&quot;
+#&gt; [1] &quot;a5721ba2bf8b3f2a&quot;
 #&gt; 
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
@@ -6374,7 +6374,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.239&quot;
+#&gt; [1] &quot;13.105.220.32&quot;
 #&gt; 
 #&gt; 
 #&gt; $queryParams
@@ -6382,7 +6382,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
 <pre><code class="language-r">xfun::rest_api_raw(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
-<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;accept&quot;:&quot;*/*&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.117.239&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-ray&quot;:&quot;a571d9a72d2efbc5&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;connection&quot;:&quot;Keep-Alive&quot;,&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;user-agent&quot;:&quot;R/4.6.2 R (4.6.2 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;x-mockhttp-forwarded-proto&quot;:&quot;https&quot;,&quot;x-real-ip&quot;:&quot;13.105.117.239&quot;},&quot;queryParams&quot;:{}}
+<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;accept&quot;:&quot;*/*&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.220.32&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-ray&quot;:&quot;a5721ba7e96e9af3&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;connection&quot;:&quot;Keep-Alive&quot;,&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;user-agent&quot;:&quot;R/4.6.2 R (4.6.2 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;x-mockhttp-forwarded-proto&quot;:&quot;https&quot;,&quot;x-real-ip&quot;:&quot;13.105.220.32&quot;},&quot;queryParams&quot;:{}}
 </code></pre>
 <pre><code class="language-r"># send the request with an auth header
 xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPEN SESAME!&quot;)
@@ -6398,13 +6398,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;Basic OPEN SESAME!&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.239&quot;
+#&gt; [1] &quot;13.105.220.32&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a571d9aa3ef13151&quot;
+#&gt; [1] &quot;a5721bab7abae82c&quot;
 #&gt; 
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
@@ -6425,7 +6425,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.239&quot;
+#&gt; [1] &quot;13.105.220.32&quot;
 </code></pre>
 <pre><code class="language-r"># with query parameters
 xfun::rest_api(
@@ -6445,13 +6445,13 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$core$used
-#&gt; [1] 15
+#&gt; [1] 4
 #&gt; 
 #&gt; $resources$core$remaining
-#&gt; [1] 4985
+#&gt; [1] 4996
 #&gt; 
 #&gt; $resources$core$reset
-#&gt; [1] 1794112477
+#&gt; [1] 1794118301
 #&gt; 
 #&gt; 
 #&gt; $resources$search
@@ -6465,7 +6465,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 30
 #&gt; 
 #&gt; $resources$search$reset
-#&gt; [1] 1794112370
+#&gt; [1] 1794115074
 #&gt; 
 #&gt; 
 #&gt; $resources$graphql
@@ -6473,13 +6473,13 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$graphql$used
-#&gt; [1] 2
+#&gt; [1] 0
 #&gt; 
 #&gt; $resources$graphql$remaining
-#&gt; [1] 4998
+#&gt; [1] 5000
 #&gt; 
 #&gt; $resources$graphql$reset
-#&gt; [1] 1794113144
+#&gt; [1] 1794118614
 #&gt; 
 #&gt; 
 #&gt; $resources$integration_manifest
@@ -6493,7 +6493,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$integration_manifest$reset
-#&gt; [1] 1794115910
+#&gt; [1] 1794118614
 #&gt; 
 #&gt; 
 #&gt; $resources$source_import
@@ -6507,7 +6507,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$source_import$reset
-#&gt; [1] 1794112370
+#&gt; [1] 1794115074
 #&gt; 
 #&gt; 
 #&gt; $resources$code_scanning_autofix
@@ -6521,7 +6521,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_scanning_autofix$reset
-#&gt; [1] 1794112370
+#&gt; [1] 1794115074
 #&gt; 
 #&gt; 
 #&gt; $resources$actions_runner_registration
@@ -6535,7 +6535,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10000
 #&gt; 
 #&gt; $resources$actions_runner_registration$reset
-#&gt; [1] 1794115910
+#&gt; [1] 1794118614
 #&gt; 
 #&gt; 
 #&gt; $resources$scim
@@ -6549,7 +6549,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15000
 #&gt; 
 #&gt; $resources$scim$reset
-#&gt; [1] 1794115910
+#&gt; [1] 1794118614
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_snapshots
@@ -6563,7 +6563,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_snapshots$reset
-#&gt; [1] 1794112370
+#&gt; [1] 1794115074
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_sbom
@@ -6577,7 +6577,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_sbom$reset
-#&gt; [1] 1794112370
+#&gt; [1] 1794115074
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log
@@ -6591,7 +6591,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$audit_log$reset
-#&gt; [1] 1794115910
+#&gt; [1] 1794118614
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log_streaming
@@ -6605,7 +6605,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15
 #&gt; 
 #&gt; $resources$audit_log_streaming$reset
-#&gt; [1] 1794115910
+#&gt; [1] 1794118614
 #&gt; 
 #&gt; 
 #&gt; $resources$code_search
@@ -6619,7 +6619,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_search$reset
-#&gt; [1] 1794112370
+#&gt; [1] 1794115074
 #&gt; 
 #&gt; 
 #&gt; $resources$copilot_usage_records
@@ -6633,7 +6633,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$copilot_usage_records$reset
-#&gt; [1] 1794115910
+#&gt; [1] 1794118614
 #&gt; 
 #&gt; 
 #&gt; $resources$enterprise_token_inventory
@@ -6647,7 +6647,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$enterprise_token_inventory$reset
-#&gt; [1] 1794115910
+#&gt; [1] 1794118614
 #&gt; 
 #&gt; 
 #&gt; 
@@ -6656,13 +6656,13 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $rate$used
-#&gt; [1] 15
+#&gt; [1] 4
 #&gt; 
 #&gt; $rate$remaining
-#&gt; [1] 4985
+#&gt; [1] 4996
 #&gt; 
 #&gt; $rate$reset
-#&gt; [1] 1794112477
+#&gt; [1] 1794118301
 </code></pre>
 <h2 id="sec:man-upload_ftp"><span class="section-number main-number">91</span> Upload to an FTP server via <code>curl</code></h2>
 <h3 id="sec:description_91" class="unnumbered">Description</h3>

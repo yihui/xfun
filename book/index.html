@@ -1,0 +1,2758 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="generator" content="litedown 1.0.9">
+<title>xfun: Recipes for Everyday R</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/css/default.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/css/article.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/css/copy-button.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/css/heading-anchor.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/css/pages.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/css/book.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/css/book-litedown.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/css/key-buttons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/css/callout.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/css/prism-xcode.min.css">
+</head>
+<body>
+<header class="frontmatter">
+<div class="title"><h1>xfun: Recipes for Everyday R</h1></div>
+<div class="author"><h2>Yihui Xie</h2></div>
+<div class="date"><h3>2026-11-08</h3></div>
+</header>
+<main>
+<div class="">
+<nav id="TOC" class="side side-left">
+<ul class="numbered">
+<li><a href="#chp:preface">Preface</a>
+<ul>
+<li><a href="#sec:install">Getting the ingredients</a></li>
+<li><a href="#sec:organize">How the recipes are organized</a></li>
+</ul>
+</li>
+<li><a href="#chp:lists"><span class="section-number main-number">1</span> Lists That Do What You Mean</a>
+<ul>
+<li><a href="#sec:strict-list"><span class="section-number">1.1</span> Stop <code>$</code> from guessing</a></li>
+<li><a href="#sec:as-strict"><span class="section-number">1.2</span> Make an existing list strict</a></li>
+<li><a href="#sec:attr2"><span class="section-number">1.3</span> Stop <code>attr()</code> from guessing</a></li>
+</ul>
+</li>
+<li><a href="#chp:printing"><span class="section-number main-number">2</span> Looking at Things</a>
+<ul>
+<li><a href="#sec:raw-string"><span class="section-number">2.1</span> Print strings without the noise</a></li>
+<li><a href="#sec:file-string"><span class="section-number">2.2</span> Read a text file into the console</a></li>
+<li><a href="#sec:tree"><span class="section-number">2.3</span> Draw the shape of a nested object</a></li>
+<li><a href="#sec:tabset"><span class="section-number">2.4</span> Show a list as tabs</a></li>
+<li><a href="#sec:format-bytes"><span class="section-number">2.5</span> Make file sizes readable</a></li>
+</ul>
+</li>
+<li><a href="#chp:strings"><span class="section-number main-number">3</span> Words and Numbers</a>
+<ul>
+<li><a href="#sec:grep-sub"><span class="section-number">3.1</span> Filter and transform in one step</a></li>
+<li><a href="#sec:is-blank"><span class="section-number">3.2</span> Spot blank strings</a></li>
+<li><a href="#sec:join-words"><span class="section-number">3.3</span> Join words into a sentence</a></li>
+<li><a href="#sec:alnum-id"><span class="section-number">3.4</span> Make safe IDs from any text</a></li>
+<li><a href="#sec:n2w"><span class="section-number">3.5</span> Spell out numbers</a></li>
+<li><a href="#sec:str-wrap"><span class="section-number">3.6</span> Wrap long text into single strings</a></li>
+<li><a href="#sec:split-lines"><span class="section-number">3.7</span> Split text into lines safely</a></li>
+<li><a href="#sec:is-ascii"><span class="section-number">3.8</span> Check for non-ASCII characters</a></li>
+<li><a href="#sec:native-encode"><span class="section-number">3.9</span> Convert text to the native encoding</a></li>
+<li><a href="#sec:md5"><span class="section-number">3.10</span> Fingerprint any R object</a></li>
+<li><a href="#sec:radix-id"><span class="section-number">3.11</span> Label rows by their combination of values</a></li>
+<li><a href="#sec:radix-group"><span class="section-number">3.12</span> Number the groups</a></li>
+<li><a href="#sec:rand-unit"><span class="section-number">3.13</span> Generate reproducible random numbers</a></li>
+<li><a href="#sec:decimal-dot"><span class="section-number">3.14</span> Force a dot as the decimal separator</a></li>
+</ul>
+</li>
+<li><a href="#chp:html"><span class="section-number main-number">4</span> Writing HTML by Hand (Without Pain)</a>
+<ul>
+<li><a href="#sec:html-tag"><span class="section-number">4.1</span> Build a tag from R</a></li>
+<li><a href="#sec:html-escape"><span class="section-number">4.2</span> Escape text for HTML</a></li>
+<li><a href="#sec:strip-html"><span class="section-number">4.3</span> Strip tags and comments</a></li>
+<li><a href="#sec:html-view"><span class="section-number">4.4</span> Preview HTML in a browser</a></li>
+<li><a href="#sec:embed-dir"><span class="section-number">4.5</span> Offer a folder as a download</a></li>
+<li><a href="#sec:embed-files"><span class="section-number">4.6</span> Offer several files as one download</a></li>
+</ul>
+</li>
+<li><a href="#chp:markdown"><span class="section-number main-number">5</span> Markdown in, Markdown out</a>
+<ul>
+<li><a href="#sec:md-table"><span class="section-number">5.1</span> Turn a data frame into a table</a></li>
+<li><a href="#sec:fenced-block"><span class="section-number">5.2</span> Wrap content in a fenced block</a></li>
+<li><a href="#sec:fenced-div"><span class="section-number">5.3</span> Build a fenced Div</a></li>
+<li><a href="#sec:make-fence"><span class="section-number">5.4</span> Pick a fence that cannot be broken</a></li>
+<li><a href="#sec:protect-math"><span class="section-number">5.5</span> Shield math from the Markdown parser</a></li>
+<li><a href="#sec:prose-index"><span class="section-number">5.6</span> Find the prose lines in Markdown</a></li>
+<li><a href="#sec:news2md"><span class="section-number">5.7</span> Convert R package news to Markdown</a></li>
+<li><a href="#sec:msg-cat"><span class="section-number">5.8</span> Write a message to stdout</a></li>
+<li><a href="#sec:record-print"><span class="section-number">5.9</span> Control how values print when recording code</a></li>
+</ul>
+</li>
+<li><a href="#chp:files"><span class="section-number main-number">6</span> Files Without Surprises</a>
+<ul>
+<li><a href="#sec:utf8"><span class="section-number">6.1</span> Read and write UTF-8 text</a></li>
+<li><a href="#sec:append-unique"><span class="section-number">6.2</span> Append only the new lines</a></li>
+<li><a href="#sec:read-all"><span class="section-number">6.3</span> Concatenate several files</a></li>
+<li><a href="#sec:gsub-file"><span class="section-number">6.4</span> Replace text in a file</a></li>
+<li><a href="#sec:gsub-dir"><span class="section-number">6.5</span> Replace text across a whole directory</a></li>
+<li><a href="#sec:process-file"><span class="section-number">6.6</span> Transform a file with any function</a></li>
+<li><a href="#sec:append-utf8"><span class="section-number">6.7</span> Append lines and keep the file sorted</a></li>
+<li><a href="#sec:read-bin"><span class="section-number">6.8</span> Read a binary file as bytes</a></li>
+<li><a href="#sec:gsub-files"><span class="section-number">6.9</span> Replace text in a list of files</a></li>
+<li><a href="#sec:gsub-ext"><span class="section-number">6.10</span> Replace text in files with a given extension</a></li>
+<li><a href="#sec:sort-file"><span class="section-number">6.11</span> Sort the lines of a file</a></li>
+<li><a href="#sec:rename-seq"><span class="section-number">6.12</span> Number files in sequence</a></li>
+<li><a href="#sec:file-rename"><span class="section-number">6.13</span> Move files, even across disks</a></li>
+<li><a href="#sec:lazy-save"><span class="section-number">6.14</span> Save objects to disk and load them lazily</a></li>
+<li><a href="#sec:lazy-load"><span class="section-number">6.15</span> Load lazily-saved objects</a></li>
+</ul>
+</li>
+<li><a href="#chp:paths"><span class="section-number main-number">7</span> Paths and Project Roots</a>
+<ul>
+<li><a href="#sec:file-ext"><span class="section-number">7.1</span> Take apart and rebuild extensions</a></li>
+<li><a href="#sec:normalize"><span class="section-number">7.2</span> Normalize and compare paths</a></li>
+<li><a href="#sec:from-root"><span class="section-number">7.3</span> Find files relative to the project root</a></li>
+<li><a href="#sec:magic-path"><span class="section-number">7.4</span> Find a file by name, wherever it lives</a></li>
+<li><a href="#sec:in-dir"><span class="section-number">7.5</span> Work in another directory for a moment</a></li>
+<li><a href="#sec:dir-create"><span class="section-number">7.6</span> Create a directory only if needed</a></li>
+<li><a href="#sec:dir-exists"><span class="section-number">7.7</span> Check if a directory exists</a></li>
+<li><a href="#sec:file-exists"><span class="section-number">7.8</span> Check if a file exists, but not a directory</a></li>
+<li><a href="#sec:existing-files"><span class="section-number">7.9</span> Keep only the files that exist</a></li>
+<li><a href="#sec:del-empty-dir"><span class="section-number">7.10</span> Remove a directory only if it is empty</a></li>
+<li><a href="#sec:abs-rel-path"><span class="section-number">7.11</span> Tell absolute paths from relative ones</a></li>
+<li><a href="#sec:is-sub-path"><span class="section-number">7.12</span> Check if a path is inside a directory</a></li>
+<li><a href="#sec:is-web-path"><span class="section-number">7.13</span> Spot URLs among paths</a></li>
+<li><a href="#sec:mark-dirs"><span class="section-number">7.14</span> Tell files from directories in messages</a></li>
+<li><a href="#sec:mime-type"><span class="section-number">7.15</span> Guess the MIME type of a file</a></li>
+<li><a href="#sec:relative-path"><span class="section-number">7.16</span> Express a path relative to a directory</a></li>
+<li><a href="#sec:root-rules"><span class="section-number">7.17</span> Teach <code>proj_root()</code> about your own project type</a></li>
+</ul>
+</li>
+<li><a href="#chp:data"><span class="section-number main-number">8</span> Moving Data Around</a>
+<ul>
+<li><a href="#sec:base64"><span class="section-number">8.1</span> Base64</a>
+<ul>
+<li><a href="#sec:base64-bytes"><span class="section-number">8.1.1</span> Encode and decode bytes</a></li>
+<li><a href="#sec:base64-uri"><span class="section-number">8.1.2</span> Embed a file as a data URI</a></li>
+</ul>
+</li>
+<li><a href="#sec:json"><span class="section-number">8.2</span> JSON</a>
+<ul>
+<li><a href="#sec:tojson"><span class="section-number">8.2.1</span> Turn R objects into JSON</a></li>
+<li><a href="#sec:js"><span class="section-number">8.2.2</span> Embed JavaScript in the JSON</a></li>
+<li><a href="#sec:json-mode"><span class="section-number">8.2.3</span> Choose between JavaScript and strict JSON</a></li>
+<li><a href="#sec:dict"><span class="section-number">8.2.4</span> Shrink repeated values</a></li>
+<li><a href="#sec:json-pack"><span class="section-number">8.2.5</span> Ship big integer vectors compactly</a></li>
+<li><a href="#sec:json-unpack"><span class="section-number">8.2.6</span> Unpack packed values in the browser</a></li>
+<li><a href="#sec:json-reviver"><span class="section-number">8.2.7</span> Revive packed values while parsing</a></li>
+<li><a href="#sec:json-vector"><span class="section-number">8.2.8</span> Convert a single vector to JSON</a></li>
+</ul>
+</li>
+<li><a href="#sec:yaml"><span class="section-number">8.3</span> YAML and TAML</a>
+<ul>
+<li><a href="#sec:taml-load"><span class="section-number">8.3.1</span> Read simple YAML without dependencies</a></li>
+<li><a href="#sec:taml-file"><span class="section-number">8.3.2</span> Read TAML from a file</a></li>
+<li><a href="#sec:taml-save"><span class="section-number">8.3.3</span> Write a list as TAML</a></li>
+<li><a href="#sec:yaml-load"><span class="section-number">8.3.4</span> Parse YAML with whatever is available</a></li>
+<li><a href="#sec:yaml-body"><span class="section-number">8.3.5</span> Split YAML metadata from the body</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a href="#chp:code"><span class="section-number main-number">9</span> Working with R Code</a>
+<ul>
+<li><a href="#sec:valid-syntax"><span class="section-number">9.1</span> Check that code parses</a></li>
+<li><a href="#sec:split-source"><span class="section-number">9.2</span> Split a script into expressions</a></li>
+<li><a href="#sec:record"><span class="section-number">9.3</span> Record everything the code does</a></li>
+<li><a href="#sec:cache-exec"><span class="section-number">9.4</span> Cache an expensive expression</a></li>
+<li><a href="#sec:cache-rds"><span class="section-number">9.5</span> Cache with a plain RDS file</a></li>
+<li><a href="#sec:csv-options"><span class="section-number">9.6</span> Parse chunk options in comma-separated form</a></li>
+<li><a href="#sec:divide-chunk"><span class="section-number">9.7</span> Pull chunk options out of a chunk</a></li>
+<li><a href="#sec:find-globals"><span class="section-number">9.8</span> Find the variables code depends on</a></li>
+<li><a href="#sec:find-locals"><span class="section-number">9.9</span> Find the variables code creates</a></li>
+<li><a href="#sec:parse-only"><span class="section-number">9.10</span> Parse code without source references</a></li>
+<li><a href="#sec:new-record"><span class="section-number">9.11</span> Mark output as a record type</a></li>
+</ul>
+</li>
+<li><a href="#chp:env"><span class="section-number main-number">10</span> Your Environment</a>
+<ul>
+<li><a href="#sec:pkg-attach"><span class="section-number">10.1</span> Attach several packages at once</a></li>
+<li><a href="#sec:loadable"><span class="section-number">10.2</span> Test whether a package is available</a></li>
+<li><a href="#sec:env-option"><span class="section-number">10.3</span> Let an option fall back to an environment variable</a></li>
+<li><a href="#sec:set-envvar"><span class="section-number">10.4</span> Set an environment variable for a while</a></li>
+<li><a href="#sec:os"><span class="section-number">10.5</span> Know which OS you are on</a></li>
+<li><a href="#sec:session-info"><span class="section-number">10.6</span> Get a compact session summary</a></li>
+<li><a href="#sec:do-once"><span class="section-number">10.7</span> Do something only once</a></li>
+<li><a href="#sec:base-pkgs"><span class="section-number">10.8</span> List the base R packages</a></li>
+<li><a href="#sec:pkg-available"><span class="section-number">10.9</span> Require a minimal package version</a></li>
+<li><a href="#sec:pkg-load"><span class="section-number">10.10</span> Load packages without attaching them</a></li>
+<li><a href="#sec:pkg-load2"><span class="section-number">10.11</span> Install missing packages while loading</a></li>
+<li><a href="#sec:is-check"><span class="section-number">10.12</span> Detect <code>R CMD check</code> and CRAN incoming checks</a></li>
+</ul>
+</li>
+<li><a href="#chp:errors"><span class="section-number main-number">11</span> When Things Fail</a>
+<ul>
+<li><a href="#sec:try-error"><span class="section-number">11.1</span> Ask whether code throws an error</a></li>
+<li><a href="#sec:try-silent"><span class="section-number">11.2</span> Try quietly</a></li>
+<li><a href="#sec:retry"><span class="section-number">11.3</span> Retry a flaky operation</a></li>
+<li><a href="#sec:exit-call"><span class="section-number">11.4</span> Run cleanup when the caller exits</a></li>
+</ul>
+</li>
+<li><a href="#chp:processes"><span class="section-number main-number">12</span> Running Programs</a>
+<ul>
+<li><a href="#sec:system3"><span class="section-number">12.1</span> Run a command and fail loudly</a></li>
+<li><a href="#sec:rscript"><span class="section-number">12.2</span> Run Rscript and R CMD</a></li>
+<li><a href="#sec:rscript-call"><span class="section-number">12.3</span> Call a function in a fresh R session</a></li>
+<li><a href="#sec:random-port"><span class="section-number">12.4</span> Find a free port</a></li>
+<li><a href="#sec:bg-process"><span class="section-number">12.5</span> Start a background process and stop it</a></li>
+</ul>
+</li>
+<li><a href="#chp:web"><span class="section-number main-number">13</span> Downloads and Web APIs</a>
+<ul>
+<li><a href="#sec:url-filename"><span class="section-number">13.1</span> Pull the file name out of a URL</a></li>
+<li><a href="#sec:download-file"><span class="section-number">13.2</span> Download a file, whatever works</a></li>
+<li><a href="#sec:download-cache"><span class="section-number">13.3</span> Download once, reuse forever</a></li>
+<li><a href="#sec:url-accessible"><span class="section-number">13.4</span> Check that a link is alive</a></li>
+<li><a href="#sec:url-destination"><span class="section-number">13.5</span> Find where a redirect really goes</a></li>
+<li><a href="#sec:rest-api"><span class="section-number">13.6</span> Read JSON from a REST API</a></li>
+<li><a href="#sec:rest-api-raw"><span class="section-number">13.7</span> Get the raw response instead</a></li>
+<li><a href="#sec:github-api"><span class="section-number">13.8</span> Call the GitHub API</a></li>
+<li><a href="#sec:github-releases"><span class="section-number">13.9</span> List a repository’s release tags</a></li>
+<li><a href="#sec:upload-ftp"><span class="section-number">13.10</span> Upload a file to an FTP server</a></li>
+<li><a href="#sec:upload-imgur"><span class="section-number">13.11</span> Host an image on Imgur</a></li>
+</ul>
+</li>
+<li><a href="#chp:apps"><span class="section-number main-number">14</span> Local Apps and Browsers</a>
+<ul>
+<li><a href="#sec:serve-dir"><span class="section-number">14.1</span> Serve a folder in your browser</a></li>
+<li><a href="#sec:new-app"><span class="section-number">14.2</span> Write your own tiny web app</a></li>
+<li><a href="#sec:stop-app"><span class="section-number">14.3</span> Shut an app down</a></li>
+<li><a href="#sec:browser-print"><span class="section-number">14.4</span> Print a page to PDF or an image</a></li>
+<li><a href="#sec:browser-dom"><span class="section-number">14.5</span> See the HTML after JavaScript runs</a></li>
+<li><a href="#sec:browser-session"><span class="section-number">14.6</span> Run many JavaScript checks in one browser</a></li>
+</ul>
+</li>
+<li><a href="#chp:images"><span class="section-number main-number">15</span> Shrinking Images</a>
+<ul>
+<li><a href="#sec:shrink-images"><span class="section-number">15.1</span> Cap image width</a></li>
+<li><a href="#sec:optipng"><span class="section-number">15.2</span> Squeeze PNGs losslessly with optipng</a></li>
+<li><a href="#sec:tinify"><span class="section-number">15.3</span> Compress images with TinyPNG</a></li>
+<li><a href="#sec:tinify-dir"><span class="section-number">15.4</span> Compress a whole folder</a></li>
+</ul>
+</li>
+<li><a href="#chp:maintain"><span class="section-number main-number">16</span> Package Maintenance and Demos</a>
+<ul>
+<li><a href="#sec:rev-check"><span class="section-number">16.1</span> Check reverse dependencies</a></li>
+<li><a href="#sec:rstudio-type"><span class="section-number">16.2</span> Type code into RStudio for a demo</a></li>
+<li><a href="#sec:pkg-bib"><span class="section-number">16.3</span> Write a bibliography for your packages</a></li>
+<li><a href="#sec:bump-version"><span class="section-number">16.4</span> Bump a version number</a></li>
+<li><a href="#sec:check-old"><span class="section-number">16.5</span> Skip checks for old package versions</a></li>
+<li><a href="#sec:install-dir"><span class="section-number">16.6</span> Install a package from its source directory</a></li>
+<li><a href="#sec:broken-packages"><span class="section-number">16.7</span> Reinstall broken packages</a></li>
+<li><a href="#sec:crandalf"><span class="section-number">16.8</span> Check reverse dependencies on GitHub Actions</a></li>
+<li><a href="#sec:win-builder"><span class="section-number">16.9</span> Upload a package to win-builder</a></li>
+<li><a href="#sec:submit-cran"><span class="section-number">16.10</span> Submit a package to CRAN</a></li>
+<li><a href="#sec:post-release"><span class="section-number">16.11</span> Tag and prepare the next version after a release</a></li>
+</ul>
+</li>
+</ul>
+</nav>
+<article class="chapter" data-source="book/index.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/index.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:preface" class="unnumbered">Preface</h1>
+<p>Every R package author ends up with a drawer full of small helpers. A function
+to turn <code>c(&quot;apples&quot;, &quot;pears&quot;, &quot;plums&quot;)</code> into a sentence. A function to check
+whether a string is blank. A function to read a file without worrying about
+encodings. You write them once, copy them into the next project, and then
+forget where the good version lives.</p>
+<p><strong>xfun</strong> is that drawer, opened and labeled. It started as the helpers I kept
+needing across about twenty R packages, including <strong>knitr</strong>, <strong>litedown</strong>, and
+<strong>tinytex</strong>. I pulled them out so they could be used openly instead of living
+as buried internal functions. It only imports base R packages, so pulling it
+into your own project does not drag in a pile of dependencies.</p>
+<p>This book is a cookbook. Each chapter is a set of recipes, and each recipe
+starts with a problem you probably have, shows the function that solves it,
+and then explains what happened. Read the chapters in any order you like, or
+jump straight to the recipe you need. The code is meant to be typed, run, and
+tweaked. Change the input and see what breaks.</p>
+<h2 id="sec:install">Getting the ingredients</h2>
+<p>Install the released version from CRAN:</p>
+<pre><code class="language-r">install.packages('xfun')
+</code></pre>
+<p>Or the development version from R-universe:</p>
+<pre><code class="language-r">install.packages('xfun', repos = 'https://yihui.r-universe.dev')
+</code></pre>
+<p>Then load it. Every recipe in this book assumes you have done so:</p>
+<pre><code class="language-r">library(xfun)
+</code></pre>
+<p>Some recipes use optional packages such as <strong>knitr</strong>, <strong>jsonlite</strong>, or
+<strong>litedown</strong>. They are only needed for the recipes that mention them, and
+xfun checks for them before using them.</p>
+<h2 id="sec:organize">How the recipes are organized</h2>
+<p>The chapters group recipes by the kind of problem they solve:</p>
+<ul>
+<li><a class="cross-ref-chp" href="#chp:lists">1</a> keeps lists honest, and attributes too.</li>
+<li><a class="cross-ref-chp" href="#chp:printing">2</a> makes objects easier to look at.</li>
+<li><a class="cross-ref-chp" href="#chp:strings">3</a> handles text, words, numbers, and IDs.</li>
+<li><a class="cross-ref-chp" href="#chp:html">4</a> builds, cleans, and embeds HTML.</li>
+<li><a class="cross-ref-chp" href="#chp:markdown">5</a> writes Markdown tables, fences, and news.</li>
+<li><a class="cross-ref-chp" href="#chp:files">6</a> reads, writes, and rewrites files.</li>
+<li><a class="cross-ref-chp" href="#chp:paths">7</a> wrangles file paths and project roots.</li>
+<li><a class="cross-ref-chp" href="#chp:data">8</a> ships data as JSON, YAML, and base64.</li>
+<li><a class="cross-ref-chp" href="#chp:code">9</a> parses, records, and caches R code.</li>
+<li><a class="cross-ref-chp" href="#chp:env">10</a> deals with options, environment variables, packages, and the OS.</li>
+<li><a class="cross-ref-chp" href="#chp:errors">11</a> makes failure less painful.</li>
+<li><a class="cross-ref-chp" href="#chp:processes">12</a> runs other programs and R sessions.</li>
+<li><a class="cross-ref-chp" href="#chp:web">13</a> downloads files and talks to web APIs.</li>
+<li><a class="cross-ref-chp" href="#chp:apps">14</a> serves local apps and drives a headless browser.</li>
+<li><a class="cross-ref-chp" href="#chp:images">15</a> shrinks images.</li>
+<li><a class="cross-ref-chp" href="#chp:maintain">16</a> covers package maintenance, releases, and demos.</li>
+</ul>
+<p>Nothing here is a grand framework. Each function does one job, and most of them
+are short enough that you can read the source when you are curious. That is
+deliberate.</p>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/01-lists.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/01-lists.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:lists"><span class="section-number main-number">1</span> Lists That Do What You Mean</h1>
+<p>R is generous with partial matching. Type <code>z$a</code> and R will happily hand you
+<code>z$aaa</code>, without a word of complaint. Most of the time that is a convenience.
+Sometimes it is a bug that waits quietly until the worst moment. This chapter
+gives you lists and attributes that refuse to guess.</p>
+<h2 id="sec:strict-list"><span class="section-number">1.1</span> Stop <code>$</code> from guessing</h2>
+<p>You want <code>$</code> to return only exact name matches. Use <code>strict_list()</code> to build
+such a list:</p>
+<pre><code class="language-r">library(xfun)
+
+z = strict_list(aaa = &quot;I am aaa&quot;, b = 1:5)
+z$a    # NULL: no partial match
+</code></pre>
+<pre><code>#&gt; NULL
+</code></pre>
+<pre><code class="language-r">z$aaa  # the element you asked for
+</code></pre>
+<pre><code>#&gt; [1] &quot;I am aaa&quot;
+</code></pre>
+<p>Partial matching is switched off for this list, so <code>z$a</code> comes back empty
+instead of pretending to be <code>aaa</code>.</p>
+<h2 id="sec:as-strict"><span class="section-number">1.2</span> Make an existing list strict</h2>
+<p>Maybe the list came from someone else’s code, and you cannot change how it was
+built. <code>as_strict_list()</code> converts it for you. Here is the trap, first:</p>
+<pre><code class="language-r">z = strict_list(aaa = &quot;I am aaa&quot;, b = 1:5)
+z2 = unclass(z)  # back to an ordinary list
+z2$a             # &quot;I am aaa&quot;: partial match fires
+</code></pre>
+<pre><code>#&gt; [1] &quot;I am aaa&quot;
+</code></pre>
+<p>And the fix:</p>
+<pre><code class="language-r">z3 = as_strict_list(z2)
+z3$a  # NULL again
+</code></pre>
+<pre><code>#&gt; NULL
+</code></pre>
+<h2 id="sec:attr2"><span class="section-number">1.3</span> Stop <code>attr()</code> from guessing</h2>
+<p>Attributes have the same problem, because <code>attr()</code> also matches partial names.
+<code>attr2()</code> is an alias for <code>attr(exact = TRUE)</code>, so it only matches what you
+spell out:</p>
+<pre><code class="language-r">x = structure(list(), foobar = 42)
+base::attr(x, &quot;foo&quot;)  # 42: partial match
+</code></pre>
+<pre><code>#&gt; [1] 42
+</code></pre>
+<pre><code class="language-r">attr2(x, &quot;foo&quot;)       # NULL
+</code></pre>
+<pre><code>#&gt; NULL
+</code></pre>
+<pre><code class="language-r">attr2(x, &quot;foobar&quot;)    # 42
+</code></pre>
+<pre><code>#&gt; [1] 42
+</code></pre>
+<p>Use <code>attr2()</code> by default in your own code and you will skip a whole class of
+head-scratching moments.</p>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/02-printing.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/02-printing.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:printing"><span class="section-number main-number">2</span> Looking at Things</h1>
+<p>Printing is where you find out whether your object is what you think it is.
+The base R printers are fine, but they often add quotes, indices, and escape
+sequences that get in the way. This chapter covers recipes that show you the
+content as it really is, and a few that draw structure you can scan at a
+glance.</p>
+<h2 id="sec:raw-string"><span class="section-number">2.1</span> Print strings without the noise</h2>
+<p>Printing a character vector shows indices, quotes, and escape sequences. That is
+useful for debugging, but not when you want to see the text itself. <code>raw_string()</code>
+drops all of that:</p>
+<pre><code class="language-r">x = c(&quot;line one&quot;, &quot;say \&quot;hello\&quot;&quot;, &quot;tab\there&quot;)
+x            # with indices and escapes
+</code></pre>
+<pre><code>#&gt; [1] &quot;line one&quot;      &quot;say \&quot;hello\&quot;&quot; &quot;tab\there&quot;    
+</code></pre>
+<pre><code class="language-r">raw_string(x)  # what the strings actually contain
+</code></pre>
+<pre><code>line one
+say &quot;hello&quot;
+tab	here
+</code></pre>
+<h2 id="sec:file-string"><span class="section-number">2.2</span> Read a text file into the console</h2>
+<p><code>file_string()</code> reads a whole file into one string and prints it cleanly as a
+side effect. Pass <code>comment = ''</code> to the chunk and the output looks like the file
+itself:</p>
+<pre><code class="language-r">f = system.file(&quot;LICENSE&quot;, package = &quot;xfun&quot;)
+file_string(f)
+</code></pre>
+<pre><code>YEAR: 2018-2026
+COPYRIGHT HOLDER: Yihui Xie
+</code></pre>
+<h2 id="sec:tree"><span class="section-number">2.3</span> Draw the shape of a nested object</h2>
+<p>Nested lists are hard to read through <code>str()</code>, since the depth markers <code>..</code>
+all look alike. <code>tree()</code> redraws <code>str()</code> output as a tree, with vertical pipes
+connecting parents and children:</p>
+<pre><code class="language-r">fit = lm(dist ~ speed, data = cars)
+tree(fit)
+</code></pre>
+<pre><code>List of 12
+ |-coefficients : Named num [1:2] -17.58 3.93
+ |  - attr(*, &quot;names&quot;)= chr [1:2] &quot;(Intercept)&quot; &quot;speed&quot;
+ |-residuals    : Named num [1:50] 3.85 11.85 -5.95 12.05 2.12 ...
+ |  - attr(*, &quot;names&quot;)= chr [1:50] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
+ |-effects      : Named num [1:50] -303.914 145.552 -8.115 9.885 0.194 ...
+ |  - attr(*, &quot;names&quot;)= chr [1:50] &quot;(Intercept)&quot; &quot;speed&quot; &quot;&quot; &quot;&quot; ...
+ |-rank         : int 2
+ |-fitted.values: Named num [1:50] -1.85 -1.85 9.95 9.95 13.88 ...
+ |  - attr(*, &quot;names&quot;)= chr [1:50] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
+ |-assign       : int [1:2] 0 1
+ |-qr           :List of 5
+ |  |-qr   : num [1:50, 1:2] -7.071 0.141 0.141 0.141 0.141 ...
+ |  |  - attr(*, &quot;dimnames&quot;)=List of 2
+ |  |     |-: chr [1:50] &quot;1&quot; &quot;2&quot; &quot;3&quot; &quot;4&quot; ...
+ |  |     |-: chr [1:2] &quot;(Intercept)&quot; &quot;speed&quot;
+ |  |  - attr(*, &quot;assign&quot;)= int [1:2] 0 1
+ |  |-qraux: num [1:2] 1.14 1.27
+ |  |-pivot: int [1:2] 1 2
+ |  |-tol  : num 1e-07
+ |  |-rank : int 2
+ |  - attr(*, &quot;class&quot;)= chr &quot;qr&quot;
+ |-df.residual  : int 48
+ |-xlevels      : Named list()
+ |-call         : language lm(formula = dist ~ speed, data = cars)
+ |-terms        :Classes 'terms', 'formula'  language dist ~ speed
+ |     - attr(*, &quot;variables&quot;)= language list(dist, speed)
+ |     - attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
+ |        - attr(*, &quot;dimnames&quot;)=List of 2
+ |           |-: chr [1:2] &quot;dist&quot; &quot;speed&quot;
+ |           |-: chr &quot;speed&quot;
+ |     - attr(*, &quot;term.labels&quot;)= chr &quot;speed&quot;
+ |     - attr(*, &quot;order&quot;)= int 1
+ |     - attr(*, &quot;intercept&quot;)= int 1
+ |     - attr(*, &quot;response&quot;)= int 1
+ |     - attr(*, &quot;.Environment&quot;)=&lt;environment: R_GlobalEnv&gt; 
+ |     - attr(*, &quot;predvars&quot;)= language list(dist, speed)
+ |     - attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
+ |        - attr(*, &quot;names&quot;)= chr [1:2] &quot;dist&quot; &quot;speed&quot;
+ |-model        :'data.frame':	50 obs. of  2 variables:
+    |-dist : num [1:50] 2 10 4 22 16 10 18 26 34 17 ...
+    |-speed: num [1:50] 4 4 7 7 8 9 10 10 10 11 ...
+    - attr(*, &quot;terms&quot;)=Classes 'terms', 'formula'  language dist ~ speed
+          - attr(*, &quot;variables&quot;)= language list(dist, speed)
+          - attr(*, &quot;factors&quot;)= int [1:2, 1] 0 1
+             - attr(*, &quot;dimnames&quot;)=List of 2
+                |-: chr [1:2] &quot;dist&quot; &quot;speed&quot;
+                |-: chr &quot;speed&quot;
+          - attr(*, &quot;term.labels&quot;)= chr &quot;speed&quot;
+          - attr(*, &quot;order&quot;)= int 1
+          - attr(*, &quot;intercept&quot;)= int 1
+          - attr(*, &quot;response&quot;)= int 1
+          - attr(*, &quot;.Environment&quot;)=&lt;environment: R_GlobalEnv&gt; 
+          - attr(*, &quot;predvars&quot;)= language list(dist, speed)
+          - attr(*, &quot;dataClasses&quot;)= Named chr [1:2] &quot;numeric&quot; &quot;numeric&quot;
+             - attr(*, &quot;names&quot;)= chr [1:2] &quot;dist&quot; &quot;speed&quot;
+ - attr(*, &quot;class&quot;)= chr &quot;lm&quot;
+</code></pre>
+<h2 id="sec:tabset"><span class="section-number">2.4</span> Show a list as tabs</h2>
+<p>When a list is too big to print in one go, put each member in its own tab.
+<code>tabset()</code> turns a list into Markdown tabsets, one tab per member. Nested lists
+become nested tabsets. By default each tab shows <code>str()</code> output, but you can
+pass any function you like:</p>
+<pre><code class="language-r">survey = list(
+  meta = list(date = '2026-11-07', n = 6),
+  scores = list(
+    math = c(90, 85, 72, 64, 98, 80),
+    reading = c(70, 95, 88, 91, 60, 77)
+  ),
+  notes = 'Two students retook the reading test.'
+)
+tabset(survey)
+</code></pre>
+<div class="tabset">
+<ul>
+<li>
+<p><code>meta</code></p>
+<div class="tabset">
+<ul>
+<li>
+<p><code>date</code></p>
+<pre><code class="language-r"> chr &quot;2026-11-07&quot;
+</code></pre>
+</li>
+<li>
+<p><code>n</code></p>
+<pre><code class="language-r"> num 6
+</code></pre>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>scores</code></p>
+<div class="tabset">
+<ul>
+<li>
+<p><code>math</code></p>
+<pre><code class="language-r"> num [1:6] 90 85 72 64 98 80
+</code></pre>
+</li>
+<li>
+<p><code>reading</code></p>
+<pre><code class="language-r"> num [1:6] 70 95 88 91 60 77
+</code></pre>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>notes</code></p>
+<pre><code class="language-r"> chr &quot;Two students retook the reading test.&quot;
+</code></pre>
+</li>
+</ul>
+</div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/css/tabsets.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/js/tabsets.min.js" defer></script>
+<p>The top level has three tabs, and <code>meta</code> and <code>scores</code> each hold a nested set of
+tabs. Pass a
+function to change what each tab shows, such as a numeric summary instead of
+<code>str()</code>. If the function returns <code>tab_content()</code>, the Markdown you give it is
+used as the tab content as is:</p>
+<pre><code class="language-r">tabset(survey, function(x) {
+  if (is.numeric(x) &amp;&amp; length(x) &gt; 1) print(summary(x))
+  else tab_content(paste('**Value:**', x))
+})
+</code></pre>
+<div class="tabset">
+<ul>
+<li>
+<p><code>meta</code></p>
+<div class="tabset">
+<ul>
+<li>
+<p><code>date</code></p>
+<p><strong>Value:</strong> 2026-11-07</p>
+</li>
+<li>
+<p><code>n</code></p>
+<p><strong>Value:</strong> 6</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>scores</code></p>
+<div class="tabset">
+<ul>
+<li>
+<p><code>math</code></p>
+<pre><code class="language-r">   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  64.00   74.00   82.50   81.50   88.75   98.00 
+</code></pre>
+</li>
+<li>
+<p><code>reading</code></p>
+<pre><code class="language-r">   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  60.00   71.75   82.50   80.17   90.25   95.00 
+</code></pre>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>notes</code></p>
+<p><strong>Value:</strong> Two students retook the reading test.</p>
+</li>
+</ul>
+</div>
+<p>Inside a <strong>litedown</strong> document, the CSS and JS that the tabs need are added for
+you. You don’t have to enable them in the document metadata.</p>
+<h2 id="sec:format-bytes"><span class="section-number">2.5</span> Make file sizes readable</h2>
+<p>Raw byte counts are hard to scan. <code>format_bytes()</code> turns them into strings with
+sensible units:</p>
+<pre><code class="language-r">format_bytes(c(500, 2048, 1.5e6, 3e9))
+</code></pre>
+<pre><code>#&gt; [1] &quot;500 bytes&quot; &quot;2 Kb&quot;      &quot;1.4 Mb&quot;    &quot;2.8 Gb&quot;   
+</code></pre>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/03-strings.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/03-strings.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:strings"><span class="section-number main-number">3</span> Words and Numbers</h1>
+<p>Text is where most of the everyday fiddling happens: matching a pattern and
+rewriting it, deciding whether a string is empty, stitching words into a
+sentence, or turning a label into something safe to use as an HTML ID. The
+recipes here cover those jobs, plus spelling out numbers for reports.</p>
+<h2 id="sec:grep-sub"><span class="section-number">3.1</span> Filter and transform in one step</h2>
+<p>You often want the elements that match a pattern, and you want them rewritten
+too. <code>grep_sub()</code> combines <code>grep(..., value = TRUE)</code> and <code>gsub()</code> into one call:</p>
+<pre><code class="language-r">grep_sub('(\\w+)@(\\w+)', '\\2/\\1', c('alice@corp', 'bob@org', 'not-an-email'))
+</code></pre>
+<pre><code>#&gt; [1] &quot;corp/alice&quot; &quot;org/bob&quot;   
+</code></pre>
+<p>The emails that did not match are dropped, and the ones that did come back
+rewritten.</p>
+<h2 id="sec:is-blank"><span class="section-number">3.2</span> Spot blank strings</h2>
+<p>An empty string is not <code>NA</code>, and a string of spaces is not empty, yet both look
+blank on screen. <code>is_blank()</code> catches empty strings and strings made only of
+whitespace:</p>
+<pre><code class="language-r">is_blank(c(&quot;&quot;, &quot;   &quot;, &quot;\t\n&quot;, &quot;hello&quot;))
+</code></pre>
+<pre><code>#&gt; [1]  TRUE  TRUE  TRUE FALSE
+</code></pre>
+<h2 id="sec:join-words"><span class="section-number">3.3</span> Join words into a sentence</h2>
+<p>Turning a vector into a readable list is a small task that everyone rewrites
+from scratch. <code>join_words()</code> adds the conjunction, and the Oxford comma, for
+you:</p>
+<pre><code class="language-r">join_words(c(&quot;apples&quot;, &quot;oranges&quot;, &quot;pears&quot;))
+</code></pre>
+<pre><code>apples, oranges, and pears
+</code></pre>
+<pre><code class="language-r">join_words(c(&quot;R&quot;, &quot;Python&quot;, &quot;Julia&quot;), and = &quot;or &quot;)
+</code></pre>
+<pre><code>R, Python, or Julia
+</code></pre>
+<pre><code class="language-r">join_words(c(&quot;one&quot;, &quot;two&quot;, &quot;three&quot;), before = &quot;'&quot;, after = &quot;'&quot;)
+</code></pre>
+<pre><code>'one', 'two', and 'three'
+</code></pre>
+<h2 id="sec:alnum-id"><span class="section-number">3.4</span> Make safe IDs from any text</h2>
+<p>Headings and labels often end up as HTML IDs, and spaces, punctuation, or tags
+in them are trouble. <code>alnum_id()</code> replaces non-alphanumeric characters with
+dashes and strips HTML tags on the way:</p>
+<pre><code class="language-r">alnum_id(c(&quot;Hello world 123!&quot;, &quot;a  &amp;b*^c&quot;))
+</code></pre>
+<pre><code>#&gt; [1] &quot;hello-world-123&quot; &quot;a-b-c&quot;          
+</code></pre>
+<pre><code class="language-r">alnum_id(&quot;&lt;h1&gt;Section &lt;em&gt;1.2&lt;/em&gt;&lt;/h1&gt;&quot;)
+</code></pre>
+<pre><code>#&gt; [1] &quot;section-1-2&quot;
+</code></pre>
+<h2 id="sec:n2w"><span class="section-number">3.5</span> Spell out numbers</h2>
+<p>In a report, “three hundred five” often reads better than “305”, and it is
+tedious to type by hand. <code>n2w()</code> (the alias <code>numbers_to_words()</code> is also
+available) does it for you. It handles capitalization, the word “and”, and
+negative numbers:</p>
+<pre><code class="language-r">n2w(c(0, 1, 13, 42, 100, 1001), cap = TRUE)
+</code></pre>
+<pre><code>#&gt; [1] &quot;Zero&quot;              &quot;One&quot;               &quot;Thirteen&quot;         
+#&gt; [4] &quot;Forty-two&quot;         &quot;One hundred&quot;       &quot;One thousand, one&quot;
+</code></pre>
+<pre><code class="language-r">n2w(1e6 + 234567, and = TRUE)
+</code></pre>
+<pre><code>#&gt; [1] &quot;one million, two hundred and thirty-four thousand, five hundred and sixty-seven&quot;
+</code></pre>
+<pre><code class="language-r">n2w(-987654321)
+</code></pre>
+<pre><code>#&gt; [1] &quot;minus nine hundred eighty-seven million, six hundred fifty-four thousand, three hundred twenty-one&quot;
+</code></pre>
+<h2 id="sec:str-wrap"><span class="section-number">3.6</span> Wrap long text into single strings</h2>
+<p><code>strwrap()</code> returns a flat vector of lines, so the output no longer lines up
+with the input. <code>str_wrap()</code> takes the same arguments but returns one string per
+input element, with the lines joined by <code>\n</code>:</p>
+<pre><code class="language-r">x = c('The quick brown fox jumps over the lazy dog.', 'Short one.')
+str_wrap(x, 20)
+</code></pre>
+<pre><code>#&gt; [1] &quot;The quick brown fox\njumps over the lazy\ndog.&quot;
+#&gt; [2] &quot;Short one.&quot;                                    
+</code></pre>
+<pre><code class="language-r">cat(str_wrap(x, 20), sep = '\n\n')
+</code></pre>
+<pre><code>#&gt; The quick brown fox
+#&gt; jumps over the lazy
+#&gt; dog.
+#&gt; 
+#&gt; Short one.
+</code></pre>
+<p>Two strings in, two strings out, so the result still fits in a data frame
+column.</p>
+<h2 id="sec:split-lines"><span class="section-number">3.7</span> Split text into lines safely</h2>
+<p><code>strsplit(x, '\n')</code> has two surprises: an empty string becomes
+<code>character(0)</code>, and a trailing newline is silently dropped. <code>split_lines()</code>
+splits on <code>\n</code> and keeps both:</p>
+<pre><code class="language-r">strsplit(c('', 'a\nb\n'), '\n')
+</code></pre>
+<pre><code>#&gt; [[1]]
+#&gt; character(0)
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] &quot;a&quot; &quot;b&quot;
+#&gt; 
+</code></pre>
+<pre><code class="language-r">split_lines(c('', 'a\nb\n'))
+</code></pre>
+<pre><code>#&gt; [1] &quot;&quot;  &quot;a&quot; &quot;b&quot; &quot;&quot; 
+</code></pre>
+<p>The result is always one flat vector, so <code>length()</code> counts lines the way an
+editor would.</p>
+<h2 id="sec:is-ascii"><span class="section-number">3.8</span> Check for non-ASCII characters</h2>
+<p>Before writing text to a file or package that insists on ASCII, find out which
+elements will cause trouble. <code>is_ascii()</code> tells you element by element:</p>
+<pre><code class="language-r">is_ascii(c('abc', 'café', '你好'))
+</code></pre>
+<pre><code>#&gt; [1]  TRUE FALSE FALSE
+</code></pre>
+<h2 id="sec:native-encode"><span class="section-number">3.9</span> Convert text to the native encoding</h2>
+<p>On a system whose native encoding is not UTF-8, writing UTF-8 strings may
+garble them. <code>native_encode()</code> converts to the native encoding only if no
+information is lost; otherwise it returns the input unchanged, with a warning:</p>
+<pre><code class="language-r">native_encode('café')
+</code></pre>
+<pre><code>#&gt; [1] &quot;café&quot;
+</code></pre>
+<p>On UTF-8 platforms the conversion is skipped, so this is a no-op there.</p>
+<h2 id="sec:md5"><span class="section-number">3.10</span> Fingerprint any R object</h2>
+<p><code>tools::md5sum()</code> only works on files. <code>md5()</code> serializes any R objects and
+returns their checksums, which is handy for cache keys or for checking whether
+a result changed. Named arguments give named results:</p>
+<pre><code class="language-r">md5(1:10, mtcars)
+</code></pre>
+<pre><code>#&gt; [1] &quot;80e76ade6af799c5b55e6447e7bf0d7b&quot; &quot;d3c150cab8d0f0f0ce7285bca02ba5d3&quot;
+</code></pre>
+<pre><code class="language-r">md5(a = 'x', b = 'y')
+</code></pre>
+<pre><code>#&gt;                                  a                                  b 
+#&gt; &quot;092dcfbb4b937156105b332745eb44d5&quot; &quot;0bf1502c277f08ef661b6037f743ba78&quot; 
+</code></pre>
+<h2 id="sec:radix-id"><span class="section-number">3.11</span> Label rows by their combination of values</h2>
+<p>To flag duplicates across several columns, pasting them into one string is slow
+on big data. <code>radix_id()</code> encodes each row as a single number instead, with
+<code>NA</code> as its own category. Equal combinations get equal codes:</p>
+<pre><code class="language-r">g = c('a', 'b', 'a', 'b', NA)
+h = c(1, 1, 1, 2, 1)
+id = radix_id(g, h)
+id
+</code></pre>
+<pre><code>#&gt; [1] 4 7 4 8 1
+</code></pre>
+<pre><code class="language-r">!duplicated(id)
+</code></pre>
+<pre><code>#&gt; [1]  TRUE  TRUE FALSE  TRUE  TRUE
+</code></pre>
+<p>The codes themselves are only good for equality checks, not for ordering or
+arithmetic.</p>
+<h2 id="sec:radix-group"><span class="section-number">3.12</span> Number the groups</h2>
+<p>When you need group numbers you can actually use, <code>radix_group()</code> returns
+integers <code>1:k</code> in order of first appearance:</p>
+<pre><code class="language-r">radix_group(g, h)
+</code></pre>
+<pre><code>#&gt; [1] 1 2 1 3 4
+</code></pre>
+<p>Rows 1 and 3 share group 1, and the <code>NA</code> row gets its own group.</p>
+<h2 id="sec:rand-unit"><span class="section-number">3.13</span> Generate reproducible random numbers</h2>
+<p><code>rand_unit()</code> is a tiny linear congruential generator that returns numbers in
+<code>[0, 1)</code>. Unlike <code>runif()</code>, it does not touch R’s <code>.Random.seed</code>, and the same
+seed gives the same numbers on any machine:</p>
+<pre><code class="language-r">rand_unit(3, seed = 1)
+</code></pre>
+<pre><code>#&gt; [1] 1.299125e-05 7.248729e-01 7.307296e-01
+</code></pre>
+<pre><code class="language-r">rand_unit(3, seed = 1)
+</code></pre>
+<pre><code>#&gt; [1] 1.299125e-05 7.248729e-01 7.307296e-01
+</code></pre>
+<p>Without <code>seed</code>, a call continues from where the previous call stopped.</p>
+<h2 id="sec:decimal-dot"><span class="section-number">3.14</span> Force a dot as the decimal separator</h2>
+<p>In some locales, or after <code>options(OutDec = ',')</code>, converting a number to
+character gives <code>1,5</code>. That breaks anything that expects machine-readable
+numbers, such as JSON or code. <code>decimal_dot()</code> evaluates an expression with the
+dot restored:</p>
+<pre><code class="language-r">op = options(OutDec = ',')
+paste(1.5)
+</code></pre>
+<pre><code>#&gt; [1] &quot;1,5&quot;
+</code></pre>
+<pre><code class="language-r">decimal_dot(paste(1.5))
+</code></pre>
+<pre><code>#&gt; [1] &quot;1.5&quot;
+</code></pre>
+<pre><code class="language-r">options(op)
+</code></pre>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/04-html.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/04-html.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:html"><span class="section-number main-number">4</span> Writing HTML by Hand (Without Pain)</h1>
+<p>You do not need a template engine to produce a bit of HTML. You need to get
+the escaping right, and that is where most of the pain lives. The recipes in
+this chapter build tags safely, escape what needs escaping, and strip tags
+when you want plain text back.</p>
+<h2 id="sec:html-tag"><span class="section-number">4.1</span> Build a tag from R</h2>
+<p><code>html_tag()</code> builds one tag, with attributes and content. Attributes are passed
+as named arguments:</p>
+<pre><code class="language-r">html_tag(&quot;a&quot;, &quot;R Project&quot;, href = &quot;https://www.r-project.org&quot;, target = &quot;_blank&quot;)
+</code></pre>
+<pre><code class="language-html plain">&lt;a href=&quot;https://www.r-project.org&quot; target=&quot;_blank&quot;&gt;R Project&lt;/a&gt;
+</code></pre>
+<pre><code class="language-r">html_tag(&quot;br&quot;)
+</code></pre>
+<pre><code class="language-html plain">&lt;br /&gt;
+</code></pre>
+<pre><code class="language-r">html_tag(&quot;p&quot;, list(&quot;Visit &quot;, html_tag(&quot;a&quot;, &quot;CRAN&quot;, href = &quot;https://cran.r-project.org&quot;)))
+</code></pre>
+<pre><code class="language-html plain">&lt;p&gt;Visit 
+&lt;a href=&quot;https://cran.r-project.org&quot;&gt;CRAN&lt;/a&gt;&lt;/p&gt;
+</code></pre>
+<p>Content is escaped by default, so a stray <code>&lt;</code> in your text stays a <code>&lt;</code>. When a
+piece of content is already valid HTML and you do not want it escaped again,
+wrap it in <code>html_value()</code>:</p>
+<pre><code class="language-r">html_tag(&quot;p&quot;, html_value(&quot;&lt;em&gt;already escaped&lt;/em&gt;&quot;))
+</code></pre>
+<pre><code class="language-html plain">&lt;p&gt;&lt;em&gt;already escaped&lt;/em&gt;&lt;/p&gt;
+</code></pre>
+<h2 id="sec:html-escape"><span class="section-number">4.2</span> Escape text for HTML</h2>
+<p>When you build HTML by pasting strings together, <code>html_escape()</code> replaces <code>&amp;</code>,
+<code>&lt;</code>, and <code>&gt;</code>. Set <code>attr = TRUE</code> when the text goes inside an attribute, so
+quotes and line breaks are escaped too:</p>
+<pre><code class="language-r">html_escape('2 &lt; 3 &amp; &quot;quotes&quot;')
+</code></pre>
+<pre><code>#&gt; [1] &quot;2 &amp;lt; 3 &amp;amp; \&quot;quotes\&quot;&quot;
+</code></pre>
+<pre><code class="language-r">html_escape('attr=&quot;val&quot;', attr = TRUE)
+</code></pre>
+<pre><code>#&gt; [1] &quot;attr=&amp;quot;val&amp;quot;&quot;
+</code></pre>
+<h2 id="sec:strip-html"><span class="section-number">4.3</span> Strip tags and comments</h2>
+<p>Sometimes you have HTML and want only the text. <code>strip_html()</code> removes tags and
+comments and leaves the words behind:</p>
+<pre><code class="language-r">strip_html('&lt;p&gt;Hello &lt;strong&gt;world&lt;/strong&gt;&lt;!-- comment --&gt;!&lt;/p&gt;')
+</code></pre>
+<pre><code>#&gt; [1] &quot;Hello world!&quot;
+</code></pre>
+<h2 id="sec:html-view"><span class="section-number">4.4</span> Preview HTML in a browser</h2>
+<p>To check how a snippet looks, <code>html_view()</code> serves it from a temporary local web
+server and opens it in the browser or the RStudio viewer. It is meant for
+interactive use:</p>
+<pre><code class="language-r">html_view(html_tag('h1', 'Hello', style = 'color: tomato'))
+</code></pre>
+<p>Relative resources (images, stylesheets) are looked up in the working
+directory.</p>
+<h2 id="sec:embed-dir"><span class="section-number">4.5</span> Offer a folder as a download</h2>
+<p>In an HTML report, you can let readers download a whole folder without hosting
+anything. <code>embed_dir()</code> zips the directory and inlines the archive as a base64
+link:</p>
+<pre><code class="language-r">d = tempfile()
+dir.create(d)
+write.csv(head(cars), file.path(d, 'cars.csv'))
+embed_dir(d, text = 'Download the data')
+</code></pre>
+<p>The result is an <code>&lt;a download&gt;</code> tag, so put it in a chunk with
+<code>results = 'asis'</code> or print it in the document. Zipping needs the <code>zip</code> command
+(Rtools on Windows).</p>
+<h2 id="sec:embed-files"><span class="section-number">4.6</span> Offer several files as one download</h2>
+<p>For a handful of files that do not share a folder, <code>embed_files()</code> zips them
+into a single archive. Pick the download name with <code>name</code>:</p>
+<pre><code class="language-r">f = c('data.csv', 'notes.txt')
+embed_files(f, name = 'materials.zip')
+</code></pre>
+<p>For one file, use <code>embed_file()</code> directly: it skips the zip step.</p>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/05-markdown.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/05-markdown.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:markdown"><span class="section-number main-number">5</span> Markdown in, Markdown out</h1>
+<p>Markdown is plain text, so generating it is mostly string work, as long as you
+get the fences, pipes, and dollar signs right. The recipes here write
+Markdown from R objects, and read it back without being fooled by code blocks.</p>
+<h2 id="sec:md-table"><span class="section-number">5.1</span> Turn a data frame into a table</h2>
+<p><code>md_table()</code> makes a pipe table, ready to paste into any Markdown document:</p>
+<pre><code class="language-r">md_table(head(mtcars[, 1:4], 3))
+</code></pre>
+<pre><code>#&gt; [1] &quot;| |mpg|cyl|disp|hp|&quot;            &quot;|---|--:|--:|--:|--:|&quot;         
+#&gt; [3] &quot;|Mazda RX4|21.0|6|160|110|&quot;     &quot;|Mazda RX4 Wag|21.0|6|160|110|&quot;
+#&gt; [5] &quot;|Datsun 710|22.8|4|108| 93|&quot;   
+</code></pre>
+<p>The result is a character vector, one line per element. Use <code>digits</code> and <code>na</code>
+to tidy the cells, and <code>escape = TRUE</code> when the text contains Markdown
+characters that should stay literal:</p>
+<pre><code class="language-r">df = data.frame(x = c(1.23456, NA), y = c('a|b', '&lt;foo:bar&gt;'))
+md_table(df, digits = 2, na = 'n/a', escape = TRUE)
+</code></pre>
+<pre><code>#&gt; [1] &quot;|x|y|&quot;               &quot;|--:|---|&quot;           &quot;|1.23|a\\|b|&quot;       
+#&gt; [4] &quot;|n/a|\\&lt;foo:bar\\&gt;|&quot;
+</code></pre>
+<p>For long data, <code>limit = 10</code> keeps only the first and last rows and omits the
+middle.</p>
+<h2 id="sec:fenced-block"><span class="section-number">5.2</span> Wrap content in a fenced block</h2>
+<p>Code blocks and fenced Divs are just content between delimiter lines.
+<code>fenced_block()</code> writes them, with optional attributes:</p>
+<pre><code class="language-r">fenced_block(c('x = 1', 'y = 2'), attrs = '.r')
+</code></pre>
+<pre><code>#&gt; [1] &quot;&quot;         &quot;``` {.r}&quot; &quot;x = 1&quot;    &quot;y = 2&quot;    &quot;```&quot;     
+</code></pre>
+<p>Because the output starts with a blank line and the vector is easy to
+<code>cat()</code>, it composes well with other text.</p>
+<h2 id="sec:fenced-div"><span class="section-number">5.3</span> Build a fenced Div</h2>
+<p>A fenced Div uses colons instead of backticks. <code>fenced_div()</code> is shorthand for
+<code>fenced_block(char = ':')</code>:</p>
+<pre><code class="language-r">fenced_div('Careful with this one.', attrs = c('.callout-warning', '#risk'))
+</code></pre>
+<pre><code>#&gt; [1] &quot;&quot;                             &quot;::: {.callout-warning #risk}&quot;
+#&gt; [3] &quot;Careful with this one.&quot;       &quot;:::&quot;                         
+</code></pre>
+<h2 id="sec:make-fence"><span class="section-number">5.4</span> Pick a fence that cannot be broken</h2>
+<p>If your content already contains three backticks, a three-backtick fence ends
+the block too early. <code>make_fence()</code> returns a fence one character longer than
+the longest run in the content, and <code>fenced_block()</code> uses it automatically:</p>
+<pre><code class="language-r">x = c('```r', '1 + 1', '```')
+make_fence(x)
+</code></pre>
+<pre><code>#&gt; [1] &quot;````&quot;
+</code></pre>
+<pre><code class="language-r">fenced_block(x, attrs = '.md')
+</code></pre>
+<pre><code>#&gt; [1] &quot;&quot;           &quot;```` {.md}&quot; &quot;```r&quot;       &quot;1 + 1&quot;      &quot;```&quot;       
+#&gt; [6] &quot;````&quot;      
+</code></pre>
+<h2 id="sec:protect-math"><span class="section-number">5.5</span> Shield math from the Markdown parser</h2>
+<p>Underscores in <code>$a_1 + b_2$</code> can make Markdown italicize the text between them.
+<code>protect_math()</code> wraps math in backticks so that the parser leaves it alone, and
+you can restore it after rendering (the <code>token</code> argument marks the spots):</p>
+<pre><code class="language-r">protect_math('Inline $a_1 + b_2$ and display $$x_1^2$$ done.')
+</code></pre>
+<pre><code>#&gt; [1] &quot;Inline `\\(a_1 + b_2\\)` and display `$$x_1^2$$` done.&quot;
+</code></pre>
+<p>Inline math becomes <code>\(...\)</code> inside backticks, and display math keeps its
+dollar signs.</p>
+<h2 id="sec:prose-index"><span class="section-number">5.6</span> Find the prose lines in Markdown</h2>
+<p>A <code>#</code> inside a code block is not a heading. <code>prose_index()</code> returns the indices
+of lines outside code fences, so you can search or rewrite only the text:</p>
+<pre><code class="language-r">x = c('Intro', '```r', '# a comment, not a heading', '```', 'The end')
+i = prose_index(x)
+i
+</code></pre>
+<pre><code>#&gt; [1] 1 5
+</code></pre>
+<pre><code class="language-r">x[i]
+</code></pre>
+<pre><code>#&gt; [1] &quot;Intro&quot;   &quot;The end&quot;
+</code></pre>
+<p>If the fences are unbalanced, all lines are treated as prose and you get a
+warning.</p>
+<h2 id="sec:news2md"><span class="section-number">5.7</span> Convert R package news to Markdown</h2>
+<p><code>news2md()</code> reads a package’s news through <code>news()</code> and writes it as Markdown,
+with versions as first-level headers and categories as second-level ones. Set
+<code>output = NA</code> to get the lines back instead of writing <code>NEWS.md</code>:</p>
+<pre><code class="language-r">head(news2md('R', output = NA), 4)
+</code></pre>
+<pre><code>#&gt; [1] &quot;# CHANGES IN R VERSION 4.6.2&quot; &quot;&quot;                            
+#&gt; [3] &quot;## Bug Fixes&quot;                 &quot;&quot;                            
+</code></pre>
+<h2 id="sec:msg-cat"><span class="section-number">5.8</span> Write a message to stdout</h2>
+<p><code>message()</code> goes to stderr, which is awkward when you capture stdout, as
+knitr-style tools often do. <code>msg_cat()</code> writes to stdout but can still be
+silenced by <code>suppressMessages()</code>. It does not add a newline for you:</p>
+<pre><code class="language-r">msg_cat('Working...\n')
+</code></pre>
+<pre><code class="language-plain message">#&gt; Working...
+</code></pre>
+<pre><code class="language-r">suppressMessages(msg_cat('You will not see this.\n'))
+</code></pre>
+<h2 id="sec:record-print"><span class="section-number">5.9</span> Control how values print when recording code</h2>
+<p><code>record()</code> runs code and keeps the output. For each visible value, it calls the
+generic <code>record_print()</code>, so you can decide how your class shows up. Return a
+<code>new_record()</code> with the content and its type:</p>
+<pre><code class="language-r">m = structure(3.5, class = 'money')
+record_print.money = function(x, ...) {
+  new_record(paste('USD', unclass(x)), 'output')
+}
+record('m')
+</code></pre>
+<pre><code>#&gt; m
+#&gt; 
+#&gt; #&gt; USD 3.5
+#&gt; 
+</code></pre>
+<p>Without the method, <code>m</code> would print through the normal <code>print()</code> output.</p>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/06-files.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/06-files.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:files"><span class="section-number main-number">6</span> Files Without Surprises</h1>
+<p>Reading and writing text files sounds trivial until a file with a stray byte
+in it shows up in your pipeline. This chapter covers UTF-8 reading and writing,
+appending without duplicates, joining several files, and rewriting text in
+place. The last two are powerful, so read their warnings carefully.</p>
+<h2 id="sec:utf8"><span class="section-number">6.1</span> Read and write UTF-8 text</h2>
+<p><code>read_utf8()</code> and <code>write_utf8()</code> assume UTF-8 and warn you if a file contains
+invalid bytes. They are thin wrappers around <code>readLines()</code> and <code>writeLines()</code>,
+with the encoding set correctly:</p>
+<pre><code class="language-r">f = tempfile()
+write_utf8(c(&quot;héllo&quot;, &quot;wörld&quot;), f)
+read_utf8(f)
+</code></pre>
+<pre><code>#&gt; [1] &quot;héllo&quot; &quot;wörld&quot;
+</code></pre>
+<h2 id="sec:append-unique"><span class="section-number">6.2</span> Append only the new lines</h2>
+<p>Logging a list of things into a file over and over creates duplicates.
+<code>append_unique()</code> adds only the lines that are not already there:</p>
+<pre><code class="language-r">f = tempfile()
+write_utf8(&quot;apple&quot;, f)
+append_unique(c(&quot;apple&quot;, &quot;banana&quot;, &quot;cherry&quot;), f)
+read_utf8(f)
+</code></pre>
+<pre><code>#&gt; [1] &quot;apple&quot;  &quot;banana&quot; &quot;cherry&quot;
+</code></pre>
+<h2 id="sec:read-all"><span class="section-number">6.3</span> Concatenate several files</h2>
+<p>You have a handful of scripts and want one document with a heading above each.
+<code>read_all()</code> reads the files and combines them. The <code>before</code> and <code>after</code>
+arguments add text around each file, and each can be a function of the file
+path:</p>
+<pre><code class="language-r">scripts = system.file(&quot;scripts&quot;, c(&quot;call-fun.R&quot;, &quot;child-pids.sh&quot;), package = &quot;xfun&quot;)
+read_all(scripts, before = function(f) paste(&quot;##&quot;, basename(f)), after = &quot;&quot;)
+</code></pre>
+<pre><code>## call-fun.R
+# This script is executed via the command line `Rscript call-fun.R arg1 arg2
+# arg3`, where arg1 is a path to an .rds file, which contains the function and
+# its arguments saved as a list; arg2 is a path to an .rds file to which the
+# returned value of the function call is saved; arg3 saves the error message.
+
+local({
+  if (length(a &lt;- commandArgs(TRUE)) != 3)
+    stop('The number of arguments passed to Rscript should be 3.')
+  # save the error message on exit if an error occurred
+  on.exit(if (!file.exists(a[2])) saveRDS(geterrmessage(), a[3]))
+  x = readRDS(a[1])  # list(fun, args)
+  f = x[[1]]
+  if (is.character(f)) f = eval(parse(text = f), envir = globalenv())
+  r = do.call(f, x[[2]], envir = globalenv())
+  saveRDS(r, a[2])
+})
+
+## child-pids.sh
+# given a PID, output all its child PIDs recursively
+list_children() {
+  for j in $(pgrep -P $1); do
+    echo $j
+    echo $(list_children $j)
+  done
+}
+
+for i in $@; do
+  list_children $i
+done
+
+</code></pre>
+<h2 id="sec:gsub-file"><span class="section-number">6.4</span> Replace text in a file</h2>
+<p><code>gsub_file()</code> runs <code>gsub()</code> on a file in place. The other <code>gsub_*()</code> functions
+are built on top of it, so once you know this one, the rest follow:</p>
+<pre><code class="language-r">f = tempfile()
+write_utf8(c(&quot;colour&quot;, &quot;favourite&quot;, &quot;flavour&quot;), f)
+gsub_file(f, &quot;ou&quot;, &quot;o&quot;)  # arguments after the file go to gsub()
+read_utf8(f)
+</code></pre>
+<pre><code>#&gt; [1] &quot;color&quot;    &quot;favorite&quot; &quot;flavor&quot;  
+</code></pre>
+<div class="callout-warning">
+<p>These functions modify files in place. Back up the files or put them under
+version control first.</p>
+</div>
+<h2 id="sec:gsub-dir"><span class="section-number">6.5</span> Replace text across a whole directory</h2>
+<p>Renaming a package across a project means touching many files. <code>gsub_dir()</code>
+applies a substitution to every file in a directory. Narrow the scope with <code>ext</code>
+(file extensions) or <code>mimetype</code> (a regex on MIME types):</p>
+<pre><code class="language-r"># change &quot;rmarkdown&quot; to &quot;litedown&quot; in all .Rmd files
+gsub_dir(&quot;rmarkdown&quot;, &quot;litedown&quot;, ext = &quot;Rmd&quot;)
+
+# only in text files
+gsub_dir(&quot;foo&quot;, &quot;bar&quot;, mimetype = &quot;^text/&quot;)
+</code></pre>
+<h2 id="sec:process-file"><span class="section-number">6.6</span> Transform a file with any function</h2>
+<p>When the change is not a simple substitution, pass your own function.
+<code>process_file()</code> reads the lines, runs them through the function, and writes
+the result back:</p>
+<pre><code class="language-r">f = tempfile()
+write_utf8(c(&quot;a&quot;, &quot;b&quot;, &quot;c&quot;), f)
+process_file(f, rev)  # reverse the order of lines
+read_utf8(f)
+</code></pre>
+<pre><code>#&gt; [1] &quot;c&quot; &quot;b&quot; &quot;a&quot;
+</code></pre>
+<h2 id="sec:append-utf8"><span class="section-number">6.7</span> Append lines and keep the file sorted</h2>
+<p><code>append_utf8()</code> adds lines to a file and sorts the result by default, which suits
+lists like ignore patterns or dependencies. Use <code>sort = FALSE</code> to keep the new
+lines at the end. (<code>append_unique()</code> in <a class="cross-ref-sec" href="#sec:append-unique">6.2</a> also drops
+duplicates.)</p>
+<pre><code class="language-r">f = tempfile()
+write_utf8(c('pear', 'apple'), f)
+append_utf8('banana', f)
+read_utf8(f)
+</code></pre>
+<pre><code>#&gt; [1] &quot;apple&quot;  &quot;banana&quot; &quot;pear&quot;  
+</code></pre>
+<pre><code class="language-r">append_utf8('aaa', f, sort = FALSE)
+read_utf8(f)
+</code></pre>
+<pre><code>#&gt; [1] &quot;apple&quot;  &quot;banana&quot; &quot;pear&quot;   &quot;aaa&quot;   
+</code></pre>
+<h2 id="sec:read-bin"><span class="section-number">6.8</span> Read a binary file as bytes</h2>
+<p><code>read_bin()</code> is <code>readBin()</code> with sensible defaults: it returns the whole file as
+a raw vector. No need to look up the file size or open a connection:</p>
+<pre><code class="language-r">f = tempfile()
+cat('abc', file = f)
+read_bin(f)
+</code></pre>
+<pre><code>#&gt; [1] 61 62 63
+</code></pre>
+<pre><code class="language-r">rawToChar(read_bin(f))
+</code></pre>
+<pre><code>#&gt; [1] &quot;abc&quot;
+</code></pre>
+<pre><code class="language-r">read_bin(f, n = 2)  # only the first two bytes
+</code></pre>
+<pre><code>#&gt; [1] 61 62
+</code></pre>
+<h2 id="sec:gsub-files"><span class="section-number">6.9</span> Replace text in a list of files</h2>
+<p>When you already know which files to change, <code>gsub_files()</code> takes a vector of
+paths. The remaining arguments go to <code>gsub_file()</code>, so the pattern and
+replacement work as before:</p>
+<pre><code class="language-r">d = tempfile()
+dir_create(d)
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">fs = file.path(d, c('a.txt', 'b.txt'))
+for (f in fs) write_utf8('foo bar', f)
+gsub_files(fs, 'foo', 'baz')
+sapply(fs, read_utf8, USE.NAMES = FALSE)
+</code></pre>
+<pre><code>#&gt; [1] &quot;baz bar&quot; &quot;baz bar&quot;
+</code></pre>
+<h2 id="sec:gsub-ext"><span class="section-number">6.10</span> Replace text in files with a given extension</h2>
+<p><code>gsub_ext()</code> is a shortcut for <code>gsub_dir(ext = )</code>: pass the extension first,
+then the pattern and replacement. It searches the directory recursively by
+default:</p>
+<pre><code class="language-r">d = tempfile()
+dir_create(d)
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">for (n in c('a.Rmd', 'b.md', 'c.Rmd')) write_utf8('foo bar', file.path(d, n))
+gsub_ext('Rmd', 'foo', 'baz', dir = d)
+sapply(list.files(d, full.names = TRUE), read_utf8, USE.NAMES = FALSE)
+</code></pre>
+<pre><code>#&gt; [1] &quot;baz bar&quot; &quot;foo bar&quot; &quot;baz bar&quot;
+</code></pre>
+<p>Only the two <code>.Rmd</code> files changed.</p>
+<h2 id="sec:sort-file"><span class="section-number">6.11</span> Sort the lines of a file</h2>
+<p><code>sort_file()</code> is <code>process_file()</code> with <code>sort()</code> as the function. Pass <code>fun</code> for a
+different order:</p>
+<pre><code class="language-r">f = tempfile()
+write_utf8(c('c', 'a', 'b'), f)
+sort_file(f)
+read_utf8(f)
+</code></pre>
+<pre><code>#&gt; [1] &quot;a&quot; &quot;b&quot; &quot;c&quot;
+</code></pre>
+<pre><code class="language-r">sort_file(f, fun = function(x) sort(x, decreasing = TRUE))
+read_utf8(f)
+</code></pre>
+<pre><code>#&gt; [1] &quot;c&quot; &quot;b&quot; &quot;a&quot;
+</code></pre>
+<h2 id="sec:rename-seq"><span class="section-number">6.12</span> Number files in sequence</h2>
+<p>Chapters named <code>intro.Rmd</code>, <code>methods.Rmd</code> and so on sort alphabetically, not in
+reading order. <code>rename_seq()</code> adds an incremental prefix to files matching a
+<code>pattern</code>. It defaults to a dry run that only shows the plan, so you can
+inspect it before setting <code>dry_run = FALSE</code>:</p>
+<pre><code class="language-r">d = tempfile()
+dir.create(d)
+for (n in c('intro.Rmd', '1-setup.Rmd', 'methods.Rmd')) write_utf8('x', file.path(d, n))
+in_dir(d, {
+  rename_seq('[.]Rmd$')  # dry run
+  rename_seq('[.]Rmd$', dry_run = FALSE)
+  list.files()
+})
+</code></pre>
+<pre><code>#&gt; [1] &quot;1-setup.Rmd&quot;   &quot;2-intro.Rmd&quot;   &quot;3-methods.Rmd&quot;
+</code></pre>
+<p>Existing numeric prefixes are replaced (<code>replace = TRUE</code>), so rerunning after
+adding a file renumbers everything. Use <code>start = 0</code> to count from zero or
+<code>format = '%03d'</code> to control the padding.</p>
+<h2 id="sec:file-rename"><span class="section-number">6.13</span> Move files, even across disks</h2>
+<p><code>file.rename()</code> fails when the target lives on another volume. <code>file_rename()</code>
+falls back to copying and then deletes the original. It returns <code>TRUE</code> or
+<code>FALSE</code> per file:</p>
+<pre><code class="language-r">from = tempfile()
+to = tempfile()
+write_utf8('hi', from)
+file_rename(from, to)
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">file.exists(c(from, to))
+</code></pre>
+<pre><code>#&gt; [1] FALSE  TRUE
+</code></pre>
+<h2 id="sec:lazy-save"><span class="section-number">6.14</span> Save objects to disk and load them lazily</h2>
+<p><code>lazy_save()</code> writes each object to its own file (<code>1.rds</code>, <code>2.rds</code>, …) plus an
+index file <code>0.rds</code>. <code>lazy_load()</code> then creates promises for them, so a file is
+read only when you first touch the object. That keeps start-up quick when most
+objects are never used. End <code>path</code> with a slash since file names are appended
+to it:</p>
+<pre><code class="language-r">path = file.path(tempfile(), '')
+dir_create(path)
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">x = 1:3
+y = letters
+lazy_save(c('x', 'y'), path)
+list.files(path)
+</code></pre>
+<pre><code>#&gt; [1] &quot;0.rds&quot; &quot;1.rds&quot; &quot;2.rds&quot;
+</code></pre>
+<pre><code class="language-r">rm(x, y)
+lazy_load(path)  # names of the objects, now lazily bound
+sum(x)
+</code></pre>
+<pre><code>#&gt; [1] 6
+</code></pre>
+<h2 id="sec:lazy-load"><span class="section-number">6.15</span> Load lazily-saved objects</h2>
+<p><code>lazy_load()</code> finds the index file and picks the format (<code>rds</code>, <code>raw</code>, <code>qs2</code>)
+for you. Objects go into the calling environment unless you give <code>envir</code>, which
+keeps your workspace clean:</p>
+<pre><code class="language-r">e = new.env()
+lazy_load(path, envir = e)
+ls(e)
+</code></pre>
+<pre><code>#&gt; [1] &quot;x&quot; &quot;y&quot;
+</code></pre>
+<pre><code class="language-r">e$y[1:5]
+</code></pre>
+<pre><code>#&gt; [1] &quot;a&quot; &quot;b&quot; &quot;c&quot; &quot;d&quot; &quot;e&quot;
+</code></pre>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/07-paths.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/07-paths.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:paths"><span class="section-number main-number">7</span> Paths and Project Roots</h1>
+<p>Paths are a quiet source of bugs. Extensions come in odd shapes, <code>~</code> expands
+differently across systems, and a document in a subfolder sees the world from
+a different working directory than a script at the top. The recipes here make
+paths predictable.</p>
+<h2 id="sec:file-ext"><span class="section-number">7.1</span> Take apart and rebuild extensions</h2>
+<p><code>file_ext()</code>, <code>sans_ext()</code>, and <code>with_ext()</code> get, drop, and swap the extension
+of a path. They understand double extensions such as <code>.tar.gz</code> and <code>.nb.html</code>,
+which <code>tools::file_ext()</code> splits differently:</p>
+<pre><code class="language-r">p = c(&quot;report.Rmd&quot;, &quot;archive.tar.gz&quot;, &quot;notes.nb.html&quot;, &quot;script.R&quot;)
+file_ext(p)
+</code></pre>
+<pre><code>#&gt; [1] &quot;Rmd&quot;     &quot;tar.gz&quot;  &quot;nb.html&quot; &quot;R&quot;      
+</code></pre>
+<pre><code class="language-r">sans_ext(p)
+</code></pre>
+<pre><code>#&gt; [1] &quot;report&quot;  &quot;archive&quot; &quot;notes&quot;   &quot;script&quot; 
+</code></pre>
+<pre><code class="language-r">with_ext(p, &quot;.html&quot;)
+</code></pre>
+<pre><code>#&gt; [1] &quot;report.html&quot;  &quot;archive.html&quot; &quot;notes.html&quot;   &quot;script.html&quot; 
+</code></pre>
+<pre><code class="language-r">with_ext(p, c(&quot;.pdf&quot;, &quot;.zip&quot;, &quot;.html&quot;, &quot;.txt&quot;))
+</code></pre>
+<pre><code>#&gt; [1] &quot;report.pdf&quot;  &quot;archive.zip&quot; &quot;notes.html&quot;  &quot;script.txt&quot; 
+</code></pre>
+<p>The last call shows that <code>with_ext()</code> is vectorized over the new extension too.</p>
+<h2 id="sec:normalize"><span class="section-number">7.2</span> Normalize and compare paths</h2>
+<p><code>normalize_path()</code> wraps <code>normalizePath()</code>, always uses <code>/</code>, and does not fail
+on paths that do not exist. <code>same_path()</code> compares two paths after
+normalizing both, so you do not need to care how each was written:</p>
+<pre><code class="language-r"># &quot;~&quot; expands to the home directory, so both point to the same place
+same_path(&quot;~/foo&quot;, file.path(Sys.getenv(&quot;HOME&quot;), &quot;foo&quot;))
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">same_path(&quot;~/foo&quot;, &quot;~/bar&quot;)
+</code></pre>
+<pre><code>#&gt; [1] FALSE
+</code></pre>
+<h2 id="sec:from-root"><span class="section-number">7.3</span> Find files relative to the project root</h2>
+<p>Inside a document in <code>docs/</code>, the data folder is one level up. Counting <code>../</code>
+by hand breaks as soon as the document moves. <code>from_root()</code> returns a path
+relative to the project root, which <code>proj_root()</code> detects for you:</p>
+<pre><code class="language-r"># in docs/report.Rmd, this returns ../data/cars.csv
+from_root(&quot;data&quot;, &quot;cars.csv&quot;)
+</code></pre>
+<h2 id="sec:magic-path"><span class="section-number">7.4</span> Find a file by name, wherever it lives</h2>
+<p>If you only remember the name of a file, <code>magic_path()</code> finds it anywhere under
+the project. You can then move files around without breaking references:</p>
+<pre><code class="language-r"># finds data/raw/survey.csv wherever it lives
+magic_path(&quot;survey.csv&quot;)
+</code></pre>
+<h2 id="sec:in-dir"><span class="section-number">7.5</span> Work in another directory for a moment</h2>
+<p><code>in_dir()</code> switches the working directory, evaluates an expression, and then
+goes back, even if the expression fails:</p>
+<pre><code class="language-r">in_dir(tempdir(), {
+  writeLines(&quot;hello&quot;, &quot;tmp.txt&quot;)
+  file.exists(&quot;tmp.txt&quot;)
+})
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">file.exists(file.path(tempdir(), &quot;tmp.txt&quot;))
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<h2 id="sec:dir-create"><span class="section-number">7.6</span> Create a directory only if needed</h2>
+<p><code>dir_create()</code> returns <code>TRUE</code> when the directory exists or has just been
+created, and it creates parent directories by default. No more warnings from
+<code>dir.create()</code> about existing folders:</p>
+<pre><code class="language-r">d = file.path(tempdir(), 'a', 'b', 'c')
+dir_create(d)
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">dir_create(d)  # already there, still TRUE
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<h2 id="sec:dir-exists"><span class="section-number">7.7</span> Check if a directory exists</h2>
+<p><code>dir_exists()</code> is a vectorized test for directories:</p>
+<pre><code class="language-r">dir_exists(c(tempdir(), file.path(tempdir(), 'nope')))
+</code></pre>
+<pre><code>#&gt; [1]  TRUE FALSE
+</code></pre>
+<h2 id="sec:file-exists"><span class="section-number">7.8</span> Check if a file exists, but not a directory</h2>
+<p>Base <code>file.exists()</code> says <code>TRUE</code> for directories too. <code>file_exists()</code> only
+accepts real files:</p>
+<pre><code class="language-r">f = tempfile()
+write_utf8('x', f)
+x = c(tempdir(), f)
+file.exists(x)
+</code></pre>
+<pre><code>#&gt; [1] TRUE TRUE
+</code></pre>
+<pre><code class="language-r">file_exists(x)
+</code></pre>
+<pre><code>#&gt; [1] FALSE  TRUE
+</code></pre>
+<h2 id="sec:existing-files"><span class="section-number">7.9</span> Keep only the files that exist</h2>
+<p><code>existing_files()</code> is <code>x[file.exists(x)]</code>. With <code>first = TRUE</code> it returns the
+first hit, handy for a list of candidate config locations. It errors if none
+exist, unless <code>error = FALSE</code>:</p>
+<pre><code class="language-r">in_dir(tempdir(), {
+  write_utf8('x', 'config.txt')
+  x = c('no-such-file.txt', 'config.txt')
+  print(existing_files(x))
+  print(existing_files(x, first = TRUE))
+  print(existing_files('no-such-file.txt', first = TRUE, error = FALSE))
+})
+</code></pre>
+<pre><code>#&gt; [1] &quot;config.txt&quot;
+#&gt; [1] &quot;config.txt&quot;
+#&gt; character(0)
+</code></pre>
+<h2 id="sec:del-empty-dir"><span class="section-number">7.10</span> Remove a directory only if it is empty</h2>
+<p><code>del_empty_dir()</code> checks for files and subdirectories first and deletes the
+directory only when nothing is inside. It silently does nothing for <code>NULL</code> or a
+missing directory:</p>
+<pre><code class="language-r">d1 = tempfile(); d2 = tempfile()
+dir_create(d1); dir_create(d2)
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">write_utf8('x', file.path(d2, 'keep.txt'))
+del_empty_dir(d1)
+del_empty_dir(d2)
+dir_exists(c(d1, d2))
+</code></pre>
+<pre><code>#&gt; [1] FALSE  TRUE
+</code></pre>
+<h2 id="sec:abs-rel-path"><span class="section-number">7.11</span> Tell absolute paths from relative ones</h2>
+<p><code>is_abs_path()</code> treats a leading <code>/</code> or <code>~</code> as absolute (and drive letters and
+UNC prefixes on Windows). <code>is_rel_path()</code> is its negation:</p>
+<pre><code class="language-r">x = c('/usr/bin', '~/notes', 'data/a.csv', '../up.txt')
+is_abs_path(x)
+</code></pre>
+<pre><code>#&gt; [1]  TRUE  TRUE FALSE FALSE
+</code></pre>
+<pre><code class="language-r">is_rel_path(x)
+</code></pre>
+<pre><code>#&gt; [1] FALSE FALSE  TRUE  TRUE
+</code></pre>
+<h2 id="sec:is-sub-path"><span class="section-number">7.12</span> Check if a path is inside a directory</h2>
+<p><code>is_sub_path()</code> tests whether each path starts with the directory path. It is a
+plain string comparison, so normalize both sides with <code>normalize_path()</code> first
+if they may be written differently:</p>
+<pre><code class="language-r">is_sub_path('a/b/c.txt', 'a/b')
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">is_sub_path('a/b/c.txt', 'd/b')
+</code></pre>
+<pre><code>#&gt; [1] FALSE
+</code></pre>
+<h2 id="sec:is-web-path"><span class="section-number">7.13</span> Spot URLs among paths</h2>
+<p><code>is_web_path()</code> flags paths starting with <code>http://</code>, <code>https://</code>, <code>ftp://</code> or
+<code>ftps://</code>, so you can treat local files and remote resources differently:</p>
+<pre><code class="language-r">is_web_path(c('https://www.r-project.org', 'www.r-project.org', 'img/a.png'))
+</code></pre>
+<pre><code>#&gt; [1]  TRUE FALSE FALSE
+</code></pre>
+<h2 id="sec:mark-dirs"><span class="section-number">7.14</span> Tell files from directories in messages</h2>
+<p><code>mark_dirs()</code> appends a slash to directories, which makes listings easier to
+read. Relative paths are tested against the working directory, so use full
+paths or <code>in_dir()</code>:</p>
+<pre><code class="language-r">d = tempfile()
+dir_create(file.path(d, 'sub'))
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">write_utf8('x', file.path(d, 'a.txt'))
+in_dir(d, mark_dirs(list.files()))
+</code></pre>
+<pre><code>#&gt; [1] &quot;a.txt&quot; &quot;sub/&quot; 
+</code></pre>
+<h2 id="sec:mime-type"><span class="section-number">7.15</span> Guess the MIME type of a file</h2>
+<p><code>mime_type()</code> uses the <strong>mime</strong> package when installed, else the system <code>file</code>
+command. Either way you get a type like <code>text/html</code> for each path. Results from
+the command are cached, because running it is slow:</p>
+<pre><code class="language-r">mime_type(c('index.html', 'logo.png', 'script.R', 'data.csv'))
+# &quot;text/html&quot; &quot;image/png&quot; &quot;text/plain&quot; &quot;text/csv&quot;
+</code></pre>
+<p>Files without an extension (such as <code>Makefile</code>) get <code>empty</code>, which defaults to
+<code>text/plain</code>. Set <code>empty = NA</code> (with <code>use_mime = FALSE</code>) to ask the system
+command instead.</p>
+<h2 id="sec:relative-path"><span class="section-number">7.16</span> Express a path relative to a directory</h2>
+<p><code>relative_path()</code> works out how to get from a directory to a file, using <code>..</code>
+when needed:</p>
+<pre><code class="language-r">relative_path('foo/bar.txt', 'foo/')
+</code></pre>
+<pre><code>#&gt; [1] &quot;bar.txt&quot;
+</code></pre>
+<pre><code class="language-r">relative_path('/a/b/c.txt', '/d/e/')
+</code></pre>
+<pre><code>#&gt; [1] &quot;../../a/b/c.txt&quot;
+</code></pre>
+<pre><code class="language-r">relative_path('/a/b/c.txt', '/d/e/', use.. = FALSE, error = FALSE)
+</code></pre>
+<pre><code>#&gt; [1] &quot;/a/b/c.txt&quot;
+</code></pre>
+<p>With <code>use.. = FALSE</code>, a path outside <code>dir</code> cannot be made relative; <code>error = FALSE</code> returns it unchanged instead of failing.</p>
+<h2 id="sec:root-rules"><span class="section-number">7.17</span> Teach <code>proj_root()</code> about your own project type</h2>
+<p><code>proj_root()</code> walks up from a path until a rule matches. <code>root_rules</code> is the
+default rule matrix: column one is a regex for file names, column two a regex
+for the file content (empty matches anything). By default it recognizes R
+packages (<code>DESCRIPTION</code> with <code>Package:</code>) and RStudio projects (<code>.Rproj</code>). Add a
+row to support another marker, here a <code>project.toml</code> file:</p>
+<pre><code class="language-r">root_rules
+#&gt;      file            pattern
+#&gt; [1,] &quot;^DESCRIPTION$&quot; &quot;^Package: &quot;
+#&gt; [2,] &quot;.+[.]Rproj$&quot;   &quot;^Version: &quot;
+
+rules = rbind(root_rules, c('^project[.]toml$', ''))
+proj_root('~/work/myproj/src/deep', rules)  # ~/work/myproj
+</code></pre>
+<p><code>proj_root()</code> returns <code>NULL</code> if no ancestor matches. Note the file regex is
+matched with <code>list.files()</code>, which skips hidden files such as <code>.git</code>.</p>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/08-data.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/08-data.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:data"><span class="section-number main-number">8</span> Moving Data Around</h1>
+<p>Sooner or later you need to hand data to something that is not R: a web page,
+a JavaScript library, a config file, or an HTML file that must carry its own
+attachments. This chapter covers the encodings that make that easy: base64, JSON,
+and YAML.</p>
+<h2 id="sec:base64"><span class="section-number">8.1</span> Base64</h2>
+<p>Base64 turns any bytes into plain text, which is how a file can travel inside an
+HTML page or a JSON string.</p>
+<h3 id="sec:base64-bytes"><span class="section-number">8.1.1</span> Encode and decode bytes</h3>
+<p><code>base64_encode()</code> and <code>base64_decode()</code> convert between raw bytes and base64
+strings:</p>
+<pre><code class="language-r">raw_bytes = charToRaw(&quot;Hello, xfun!&quot;)
+(b64 = base64_encode(raw_bytes))
+</code></pre>
+<pre><code>#&gt; [1] &quot;SGVsbG8sIHhmdW4h&quot;
+</code></pre>
+<pre><code class="language-r">rawToChar(base64_decode(b64))
+</code></pre>
+<pre><code>#&gt; [1] &quot;Hello, xfun!&quot;
+</code></pre>
+<h3 id="sec:base64-uri"><span class="section-number">8.1.2</span> Embed a file as a data URI</h3>
+<p><code>base64_uri()</code> goes one step further and makes a data URI, which embeds a file
+directly in HTML. It is the mechanism behind <code>xfun::embed_file()</code>. Here are the
+first characters of one:</p>
+<pre><code class="language-r">f = system.file(&quot;LICENSE&quot;, package = &quot;xfun&quot;)
+substr(base64_uri(f), 1, 60)
+</code></pre>
+<pre><code>#&gt; [1] &quot;data:text/plain;base64,WUVBUjogMjAxOC0yMDI2CkNPUFlSSUdIVCBIT&quot;
+</code></pre>
+<h2 id="sec:json"><span class="section-number">8.2</span> JSON</h2>
+<p><code>tojson()</code> is a small JSON serializer with no dependencies. It was written to
+send data from R to JavaScript, so it has a few extras: it can emit JavaScript
+instead of strict JSON, and it can shrink long vectors. The examples below use
+<code>cat()</code> so you see the text exactly as a browser would receive it.</p>
+<h3 id="sec:tojson"><span class="section-number">8.2.1</span> Turn R objects into JSON</h3>
+<p>Named lists become objects, unnamed lists become arrays, matrices go by row, and
+data frames go by column:</p>
+<pre><code class="language-r">tojson(list(x = 1:3, y = c(TRUE, FALSE), z = NULL))
+</code></pre>
+<pre><code class="language-json plain">{
+  &quot;x&quot;: [1, 2, 3],
+  &quot;y&quot;: [true, false],
+  &quot;z&quot;: null
+}
+</code></pre>
+<pre><code class="language-r">tojson(head(iris, 3))   # data frame: columns
+</code></pre>
+<pre><code class="language-json plain">{
+  &quot;Sepal.Length&quot;: [5.1, 4.9, 4.7],
+  &quot;Sepal.Width&quot;: [3.5, 3, 3.2],
+  &quot;Petal.Length&quot;: [1.4, 1.4, 1.3],
+  &quot;Petal.Width&quot;: [0.2, 0.2, 0.2],
+  &quot;Species&quot;: [&quot;setosa&quot;, &quot;setosa&quot;, &quot;setosa&quot;]
+}
+</code></pre>
+<pre><code class="language-r">tojson(matrix(1:6, 2))  # matrix: rows
+</code></pre>
+<pre><code class="language-json plain">[
+  [1, 3, 5],
+  [2, 4, 6]
+]
+</code></pre>
+<h3 id="sec:js"><span class="section-number">8.2.2</span> Embed JavaScript in the JSON</h3>
+<p>Need a callback in your configuration? Wrap a string in <code>js()</code> and it is written
+as raw JavaScript, with no quotes:</p>
+<pre><code class="language-r">tojson(list(n = 42, callback = js(&quot;function(x) { return x * 2; }&quot;)))
+</code></pre>
+<pre><code class="language-json plain">{
+  &quot;n&quot;: 42,
+  &quot;callback&quot;: function(x) { return x * 2; }
+}
+</code></pre>
+<p>That is not valid JSON anymore, but it is valid JavaScript, which is often all
+you need.</p>
+<h3 id="sec:json-mode"><span class="section-number">8.2.3</span> Choose between JavaScript and strict JSON</h3>
+<p>By default (<code>mode = &quot;js&quot;</code>) the output is JavaScript, which can hold things that
+JSON cannot. Compare the same object in both modes. In JavaScript mode, a
+date-time becomes <code>new Date(...)</code> and infinity stays <code>Infinity</code>:</p>
+<pre><code class="language-r">x = list(
+  day = as.Date(&quot;2026-11-08&quot;),
+  time = as.POSIXct(&quot;2026-11-08 09:30:00&quot;, tz = &quot;UTC&quot;),
+  values = c(1, Inf, -Inf, NA)
+)
+tojson(x)
+</code></pre>
+<pre><code class="language-json plain">{
+  &quot;day&quot;: &quot;2026-11-08&quot;,
+  &quot;time&quot;: new Date(&quot;2026-11-08T09:30:00Z&quot;),
+  &quot;values&quot;: [1, Infinity, -Infinity, null]
+}
+</code></pre>
+<p>For output that <code>JSON.parse()</code> accepts, use <code>mode = &quot;json&quot;</code>. The date-time
+becomes an ISO 8601 string, and <code>Inf</code> becomes <code>null</code>, just like <code>NA</code>:</p>
+<pre><code class="language-r">tojson(x, mode = &quot;json&quot;)
+</code></pre>
+<pre><code class="language-json plain">{
+  &quot;day&quot;: &quot;2026-11-08&quot;,
+  &quot;time&quot;: &quot;2026-11-08T09:30:00Z&quot;,
+  &quot;values&quot;: [1, null, null, null]
+}
+</code></pre>
+<h3 id="sec:dict"><span class="section-number">8.2.4</span> Shrink repeated values</h3>
+<p>When a vector repeats the same few values many times, writing every copy is
+wasteful. With <code>dict = 1</code>, <code>tojson()</code> stores the unique values once and the
+vector as indices into them. In JavaScript mode it rebuilds the strings right in
+the output with <code>.map()</code>:</p>
+<pre><code class="language-r">x = rep(c(&quot;apple&quot;, &quot;banana&quot;, &quot;cherry&quot;), 4)
+tojson(x, pretty = FALSE)
+</code></pre>
+<pre><code class="language-json plain">[&quot;apple&quot;,&quot;banana&quot;,&quot;cherry&quot;,&quot;apple&quot;,&quot;banana&quot;,&quot;cherry&quot;,&quot;apple&quot;,&quot;banana&quot;,&quot;cherry&quot;,&quot;apple&quot;,&quot;banana&quot;,&quot;cherry&quot;]
+</code></pre>
+<pre><code class="language-r">tojson(x, dict = 1, pretty = FALSE)
+</code></pre>
+<pre><code class="language-json plain">[0,1,2,0,1,2,0,1,2,0,1,2].map(i =&gt; [&quot;apple&quot;,&quot;banana&quot;,&quot;cherry&quot;][i])
+</code></pre>
+<p>In strict JSON mode, the two parts are stored as an object, with the unique values
+under one key and the indices under another (the keys start with an invisible
+control character, so they never clash with your own names):</p>
+<pre><code class="language-r">tojson(x, dict = 1, mode = &quot;json&quot;, pretty = FALSE)
+</code></pre>
+<pre><code class="language-json plain">{&quot;\u0001u&quot;:[&quot;apple&quot;,&quot;banana&quot;,&quot;cherry&quot;],&quot;\u0001c&quot;:[0,1,2,0,1,2,0,1,2,0,1,2]}
+</code></pre>
+<p>On a longer vector the saving is real. Here are 300 values:</p>
+<pre><code class="language-r">x = rep(c(&quot;apple&quot;, &quot;banana&quot;, &quot;cherry&quot;), 100)
+nchar(tojson(x, pretty = FALSE))            # without dict encoding
+</code></pre>
+<pre><code>#&gt; [1] 2601
+</code></pre>
+<pre><code class="language-r">nchar(tojson(x, dict = 1, pretty = FALSE))  # with dict encoding
+</code></pre>
+<pre><code>#&gt; [1] 642
+</code></pre>
+<p>The number you give <code>dict</code> is a threshold on the share of unique values: a
+vector is encoded when its unique values are at most <code>dict</code> times its length.
+Here 3 of 12 values are unique (0.25), so <code>dict = 0.5</code> encodes it and
+<code>dict = 0.2</code> leaves it alone. <code>tojson()</code> also skips the encoding whenever it
+would not make the output shorter, which is why short or nearly unique vectors
+come out unchanged.</p>
+<h3 id="sec:json-pack"><span class="section-number">8.2.5</span> Ship big integer vectors compactly</h3>
+<p>Long integer vectors can be packed as base64 with <code>tojson(pack = n)</code>, where <code>n</code>
+is the minimum length to pack. The array of numbers becomes one short string.
+Here is the start of each version of a vector of 1 to 200:</p>
+<pre><code class="language-r">x = list(a = 1:200)
+cat(substr(tojson(x, pretty = FALSE), 1, 60), &quot;...&quot;)
+</code></pre>
+<pre><code class="language-json">{&quot;a&quot;:[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21, ...
+</code></pre>
+<pre><code class="language-r">cat(substr(tojson(x, pack = 10, mode = &quot;json&quot;, pretty = FALSE), 1, 60), &quot;...&quot;)
+</code></pre>
+<pre><code class="language-json">{&quot;a&quot;:{&quot;\u0001u8&quot;:&quot;AQIDBAUGBwgJCgsMDQ4PEBESExQVFhcYGRobHB0eHy ...
+</code></pre>
+<p>Mind the byte counts:</p>
+<pre><code class="language-r">nchar(tojson(x, pretty = FALSE))
+</code></pre>
+<pre><code>#&gt; [1] 699
+</code></pre>
+<pre><code class="language-r">nchar(tojson(x, pack = 10, mode = &quot;json&quot;, pretty = FALSE))
+</code></pre>
+<pre><code>#&gt; [1] 289
+</code></pre>
+<p>The packed object has a key that names the type of the typed array (<code>u8</code> for
+unsigned 8-bit integers here), and the base64 string holds the bytes. In the
+default JavaScript mode, the same vector appears as an <code>unpack({...})</code> call.</p>
+<p>The browser needs to turn the base64 string back into a typed array. That is
+what <code>json_unpack</code> and <code>json_reviver</code> are for. Both are plain character strings
+of JavaScript, ready to paste into a <code>&lt;script&gt;</code>.</p>
+<h3 id="sec:json-unpack"><span class="section-number">8.2.6</span> Unpack packed values in the browser</h3>
+<p><code>json_unpack</code> defines a JavaScript function <code>unpack(o)</code> that decodes one packed
+object (a plain array is returned as is) on demand. Use it when you parse the JSON yourself and want to unpack only the
+fields you need:</p>
+<pre><code class="language-r">cat(json_unpack)
+</code></pre>
+<pre><code class="language-js">const W = {u8: Uint8Array, u16: Uint16Array, u32: Uint32Array, i8: Int8Array, i16: Int16Array, i32: Int32Array},
+unpack = o =&gt; { if (Array.isArray(o) || ArrayBuffer.isView(o)) return o; for (const k in o) { const T = W[k.slice(1)]; if (!T) continue;
+  const s = atob(o[k]), b = new Uint8Array(s.length);
+  for (let i = 0; i &lt; b.length; i++) b[i] = s.charCodeAt(i);
+  return new T(b.buffer); } };
+</code></pre>
+<h3 id="sec:json-reviver"><span class="section-number">8.2.7</span> Revive packed values while parsing</h3>
+<p><code>json_reviver</code> includes <code>unpack()</code> and also defines <code>reviver</code>, so
+<code>JSON.parse(text, reviver)</code> expands packed and dictionary-encoded values
+automatically as it parses. Prefer <code>unpack()</code> for large payloads, since a reviver
+runs on every parsed value. Here is the part that <code>json_reviver</code> adds on top of
+<code>json_unpack</code>:</p>
+<pre><code class="language-r">cat(substr(json_reviver, nchar(json_unpack) + 2, nchar(json_reviver)))
+</code></pre>
+<pre><code class="language-js">const _P = &quot;\u0001&quot;, _U = &quot;\u0001u&quot;, _C = &quot;\u0001c&quot;,
+reviver = (k, v) =&gt; {
+  if (!v || typeof v !== &quot;object&quot; || Array.isArray(v)) return v;
+  if (_U in v &amp;&amp; _C in v) return Array.from(v[_C], i =&gt; v[_U][i]);
+  for (const k in v) if (k[0] === _P) return unpack(v) ?? v;
+  return v; };
+</code></pre>
+<h3 id="sec:json-vector"><span class="section-number">8.2.8</span> Convert a single vector to JSON</h3>
+<p><code>tojson()</code> handles whole objects. For one atomic vector, <code>json_vector()</code> is the
+building block underneath. It returns the elements as strings (quoted by
+default, <code>NA</code> becomes <code>null</code>), or a single array string with <code>to_array = TRUE</code>:</p>
+<pre><code class="language-r">json_vector(c(&quot;a&quot;, &quot;b&quot;, NA))
+</code></pre>
+<pre><code>#&gt; [1] &quot;\&quot;a\&quot;&quot; &quot;\&quot;b\&quot;&quot; &quot;null&quot; 
+</code></pre>
+<pre><code class="language-r">json_vector(c(&quot;a&quot;, &quot;b&quot;, NA), to_array = TRUE)
+</code></pre>
+<pre><code>#&gt; [1] &quot;[\&quot;a\&quot;, \&quot;b\&quot;, null]&quot;
+</code></pre>
+<pre><code class="language-r">json_vector(c(1, NA, Inf), to_array = TRUE, quote = FALSE)
+</code></pre>
+<pre><code>#&gt; [1] &quot;[1, null, Infinity]&quot;
+</code></pre>
+<h2 id="sec:yaml"><span class="section-number">8.3</span> YAML and TAML</h2>
+<p>YAML is the usual choice for configuration and document metadata. The <strong>yaml</strong>
+package parses all of it, but it is a dependency. TAML (“tiny YAML”) is the small
+subset that covers most config files, parsed with no packages at all.</p>
+<h3 id="sec:taml-load"><span class="section-number">8.3.1</span> Read simple YAML without dependencies</h3>
+<p><code>taml_load()</code> parses TAML, a tiny subset of YAML (scalars, one-level nesting,
+and inline arrays like <code>[1, 2]</code>), with no need for the <strong>yaml</strong> package.
+R code tagged with <code>!expr</code> is evaluated unless you pass <code>envir = FALSE</code>:</p>
+<pre><code class="language-r">x = c(&quot;a: 1&quot;, &quot;b: [1, 2]&quot;, &quot;c: !expr 1 + 1&quot;, &quot;d:&quot;, &quot;  e: true&quot;)
+str(taml_load(x))
+</code></pre>
+<pre><code>#&gt; List of 4
+#&gt;  $ a: int 1
+#&gt;  $ b: int [1:2] 1 2
+#&gt;  $ c: num 2
+#&gt;  $ d:List of 1
+#&gt;   ..$ e: logi TRUE
+</code></pre>
+<pre><code class="language-r">str(taml_load(x, envir = FALSE))
+</code></pre>
+<pre><code>#&gt; List of 4
+#&gt;  $ a: int 1
+#&gt;  $ b: int [1:2] 1 2
+#&gt;  $ c:  expression(1 + 1)
+#&gt;  $ d:List of 1
+#&gt;   ..$ e: logi TRUE
+</code></pre>
+<h3 id="sec:taml-file"><span class="section-number">8.3.2</span> Read TAML from a file</h3>
+<p><code>taml_file()</code> is <code>taml_load()</code> for a path:</p>
+<pre><code class="language-r">f = tempfile(fileext = &quot;.yml&quot;)
+writeLines(c(&quot;title: Hello&quot;, &quot;tags: [\&quot;a\&quot;, \&quot;b\&quot;]&quot;), f)
+str(taml_file(f))
+</code></pre>
+<pre><code>#&gt; List of 2
+#&gt;  $ title: chr &quot;Hello&quot;
+#&gt;  $ tags : chr [1:2] &quot;a&quot; &quot;b&quot;
+</code></pre>
+<h3 id="sec:taml-save"><span class="section-number">8.3.3</span> Write a list as TAML</h3>
+<p><code>taml_save()</code> is the inverse. It returns the lines, or writes them to a file
+when you give <code>path</code>:</p>
+<pre><code class="language-r">cfg = list(title = &quot;Hi&quot;, n = 2, tags = c(&quot;a&quot;, &quot;b&quot;), sub = list(ok = TRUE))
+taml_save(cfg)
+</code></pre>
+<pre><code class="language-yaml plain">title: &quot;Hi&quot;
+n: 2
+tags: [&quot;a&quot;, &quot;b&quot;]
+sub: 
+  ok: true
+</code></pre>
+<pre><code class="language-r">f = tempfile(fileext = &quot;.yml&quot;)
+taml_save(cfg, f)
+str(taml_file(f))
+</code></pre>
+<pre><code>#&gt; List of 4
+#&gt;  $ title: chr &quot;Hi&quot;
+#&gt;  $ n    : int 2
+#&gt;  $ tags : chr [1:2] &quot;a&quot; &quot;b&quot;
+#&gt;  $ sub  :List of 1
+#&gt;   ..$ ok: logi TRUE
+</code></pre>
+<h3 id="sec:yaml-load"><span class="section-number">8.3.4</span> Parse YAML with whatever is available</h3>
+<p><code>yaml_load()</code> uses the <strong>yaml</strong> package when it is installed and falls back to
+<code>taml_load()</code> otherwise. Force the fallback with <code>use_yaml = FALSE</code>:</p>
+<pre><code class="language-r">yaml_load(&quot;a: 1\nb: [x, y]&quot;, use_yaml = FALSE)
+</code></pre>
+<pre><code>#&gt; $a
+#&gt; [1] 1
+#&gt; 
+#&gt; $b
+#&gt; [1] &quot;x&quot; &quot;y&quot;
+#&gt; 
+</code></pre>
+<h3 id="sec:yaml-body"><span class="section-number">8.3.5</span> Split YAML metadata from the body</h3>
+<p><code>yaml_body()</code> splits a document into its front matter and the rest. The result
+has the parsed <code>yaml</code>, its <code>lines</code> range, and the <code>body</code>, in which the YAML
+lines are blanked so line numbers stay put. Use <code>parse = FALSE</code> to get the raw
+YAML text:</p>
+<pre><code class="language-r">doc = c(&quot;---&quot;, &quot;title: Hello&quot;, &quot;---&quot;, &quot;&quot;, &quot;Content.&quot;)
+str(yaml_body(doc))
+</code></pre>
+<pre><code>#&gt; List of 3
+#&gt;  $ yaml :List of 1
+#&gt;   ..$ title: chr &quot;Hello&quot;
+#&gt;  $ body : chr [1:5] &quot;&quot; &quot;&quot; &quot;&quot; &quot;&quot; ...
+#&gt;  $ lines: int [1:2] 1 3
+</code></pre>
+<pre><code class="language-r">yaml_body(doc, parse = FALSE)$yaml
+</code></pre>
+<pre><code>#&gt; [1] &quot;title: Hello&quot;
+</code></pre>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/09-code.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/09-code.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:code"><span class="section-number main-number">9</span> Working with R Code</h1>
+<p>Code is just text until you parse it, run it, or remember what it computed.
+The recipes here check syntax, split a script into expressions, capture
+everything a piece of code prints, and cache slow results. Several of them are
+the very functions that power <strong>litedown</strong> and <strong>knitr</strong>, so they have seen
+some real use.</p>
+<h2 id="sec:valid-syntax"><span class="section-number">9.1</span> Check that code parses</h2>
+<p>Before running a snippet from a user, you can ask if it is even valid.
+<code>valid_syntax()</code> parses without evaluating:</p>
+<pre><code class="language-r">valid_syntax(&quot;1 + 1&quot;)
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">valid_syntax(&quot;1 +&quot;)           # incomplete
+</code></pre>
+<pre><code>#&gt; [1] FALSE
+</code></pre>
+<pre><code class="language-r">valid_syntax(&quot;if(T) {1 + 1&quot;)  # unclosed brace
+</code></pre>
+<pre><code>#&gt; [1] FALSE
+</code></pre>
+<h2 id="sec:split-source"><span class="section-number">9.2</span> Split a script into expressions</h2>
+<p>A script is a vector of lines, but a statement can span several lines.
+<code>split_source()</code> groups lines into complete expressions. Set
+<code>merge_comments = TRUE</code> to glue comments to the expression below them:</p>
+<pre><code class="language-r">code = c(&quot;# comment&quot;, &quot;if (TRUE) {&quot;, &quot;  1 + 1&quot;, &quot;}&quot;, &quot;print('done')&quot;)
+split_source(code)
+</code></pre>
+<pre><code>#&gt; [[1]]
+#&gt; [1] &quot;# comment&quot;
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] &quot;if (TRUE) {&quot; &quot;  1 + 1&quot;     &quot;}&quot;          
+#&gt; 
+#&gt; [[3]]
+#&gt; [1] &quot;print('done')&quot;
+#&gt; 
+</code></pre>
+<pre><code class="language-r">split_source(code, merge_comments = TRUE)
+</code></pre>
+<pre><code>#&gt; [[1]]
+#&gt; [1] &quot;# comment&quot;   &quot;if (TRUE) {&quot; &quot;  1 + 1&quot;     &quot;}&quot;          
+#&gt; 
+#&gt; [[2]]
+#&gt; [1] &quot;print('done')&quot;
+#&gt; 
+</code></pre>
+<h2 id="sec:record"><span class="section-number">9.3</span> Record everything the code does</h2>
+<p><code>record()</code> runs a character vector of R code and captures every kind of output
+(text, plots, messages, warnings, and errors) as a structured list:</p>
+<pre><code class="language-r">code = c(
+  &quot;1 + 1&quot;,
+  &quot;message('hello from record()')&quot;,
+  &quot;warning('a warning')&quot;,
+  &quot;head(mtcars, 2)&quot;
+)
+res = record(code, dev.path = FALSE, error = TRUE)
+tree(res)
+</code></pre>
+<pre><code>List of 8
+ |-: 'record_source' chr &quot;1 + 1&quot;
+ |  - attr(*, &quot;lines&quot;)= int [1:2] 1 1
+ |-: 'record_output' chr &quot;[1] 2&quot;
+ |-: 'record_source' chr &quot;message('hello from record()')&quot;
+ |  - attr(*, &quot;lines&quot;)= int [1:2] 2 2
+ |-: 'record_message' chr &quot;hello from record()\n&quot;
+ |-: 'record_source' chr &quot;warning('a warning')&quot;
+ |  - attr(*, &quot;lines&quot;)= int [1:2] 3 3
+ |-: 'record_warning' chr &quot;a warning&quot;
+ |-: 'record_source' chr &quot;head(mtcars, 2)&quot;
+ |  - attr(*, &quot;lines&quot;)= int [1:2] 4 4
+ |-: 'record_asis' chr [1:5] &quot;| |mpg|cyl|disp|hp|drat|wt|qsec|vs|am|gear|carb|&quot; &quot;|---|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|&quot; &quot;|Mazda RX4|21|6|160|110|3.9|2.620|16.46|0|1|4|4|&quot; &quot;|Mazda RX4 Wag|21|6|160|110|3.9|2.875|17.02|0|1|4|4|&quot; ...
+ - attr(*, &quot;class&quot;)= chr &quot;xfun_record_results&quot;
+</code></pre>
+<p>Each element has a class such as <code>record_source</code>, <code>record_output</code>,
+<code>record_message</code>, or <code>record_warning</code>, so you can pick out the pieces you
+care about. This is the engine behind <strong>litedown</strong>’s code chunk execution.</p>
+<h2 id="sec:cache-exec"><span class="section-number">9.4</span> Cache an expensive expression</h2>
+<p>When a computation takes minutes, you do not want to repeat it for nothing.
+<code>cache_exec()</code> stores the result on disk. It detects which global variables the
+expression uses and invalidates the cache when any of them change, so you never
+see stale results:</p>
+<pre><code class="language-r">path = tempfile()
+x = 42
+result = cache_exec(
+  { Sys.sleep(0); x^2 },
+  path = path, id = &quot;square&quot;
+)
+result  # 1764
+</code></pre>
+<pre><code>#&gt; [1] 1764
+</code></pre>
+<pre><code class="language-r"># change x: the cache is invalidated
+x = 10
+result = cache_exec(
+  { Sys.sleep(0); x^2 },
+  path = path, id = &quot;square&quot;
+)
+result  # 100
+</code></pre>
+<pre><code>#&gt; [1] 100
+</code></pre>
+<p>Running the same expression again with the same <code>x</code> loads the cached value
+instead of recomputing. Pass <code>extra = file.mtime(&quot;data.csv&quot;)</code> to invalidate
+the cache when an external file changes, too.</p>
+<h2 id="sec:cache-rds"><span class="section-number">9.5</span> Cache with a plain RDS file</h2>
+<p><code>cache_rds()</code> is the simpler predecessor of <code>cache_exec()</code>. It saves the value
+of an expression to an <code>.rds</code> file and reads it back next time. The file name
+carries a hash of the code, so editing the code invalidates the cache. Use
+<code>hash = list(x, y)</code> (or <code>&quot;auto&quot;</code>) to also depend on variables, and
+<code>rerun = TRUE</code> to force a refresh:</p>
+<pre><code class="language-r">dir = paste0(tempfile(), &quot;/&quot;)
+compute = function(...) cache_rds({
+  cat(&quot;computing...\n&quot;)
+  1:3
+}, file = &quot;demo.rds&quot;, dir = dir, ...)
+compute()  # runs
+</code></pre>
+<pre><code>#&gt; computing...
+#&gt; [1] 1 2 3
+</code></pre>
+<pre><code class="language-r">compute()  # loads from cache, no message
+</code></pre>
+<pre><code>#&gt; [1] 1 2 3
+</code></pre>
+<pre><code class="language-r">compute(rerun = TRUE)
+</code></pre>
+<pre><code>#&gt; computing...
+#&gt; [1] 1 2 3
+</code></pre>
+<pre><code class="language-r">list.files(dir)
+</code></pre>
+<pre><code>#&gt; [1] &quot;demo_d8ad984d42f915f5b556844bfea2860c.rds&quot;
+</code></pre>
+<h2 id="sec:csv-options"><span class="section-number">9.6</span> Parse chunk options in comma-separated form</h2>
+<p><code>csv_options()</code> parses knitr-style chunk options such as <code>foo, eval=TRUE</code>. An
+unnamed first item becomes the <code>label</code>:</p>
+<pre><code class="language-r">str(csv_options(&quot;foo, eval=TRUE, fig.width=5, echo=if (TRUE) FALSE&quot;))
+</code></pre>
+<pre><code>#&gt; List of 4
+#&gt;  $ label    : chr &quot;foo&quot;
+#&gt;  $ eval     : logi TRUE
+#&gt;  $ fig.width: num 5
+#&gt;  $ echo     : language if (TRUE) FALSE
+</code></pre>
+<h2 id="sec:divide-chunk"><span class="section-number">9.7</span> Pull chunk options out of a chunk</h2>
+<p><code>divide_chunk()</code> separates leading <code>#|</code> option comments from the code. It
+understands both YAML-like and comma-separated options, and returns the parsed
+<code>options</code>, the option lines in <code>src</code>, and the remaining <code>code</code>:</p>
+<pre><code class="language-r">str(divide_chunk(&quot;r&quot;, c(&quot;#| label: mine&quot;, &quot;#| fig.width: 8&quot;, &quot;1 + 1&quot;)))
+</code></pre>
+<pre><code>#&gt; List of 3
+#&gt;  $ options:List of 2
+#&gt;   ..$ label    : chr &quot;mine&quot;
+#&gt;   ..$ fig.width: int 8
+#&gt;  $ src    : chr [1:2] &quot;#| label: mine&quot; &quot;#| fig.width: 8&quot;
+#&gt;  $ code   : chr &quot;1 + 1&quot;
+</code></pre>
+<pre><code class="language-r">str(divide_chunk(&quot;r&quot;, c(&quot;#| mine, echo = FALSE&quot;, &quot;1 + 1&quot;)))
+</code></pre>
+<pre><code>#&gt; List of 3
+#&gt;  $ options:List of 2
+#&gt;   ..$ label: chr &quot;mine&quot;
+#&gt;   ..$ echo : logi FALSE
+#&gt;  $ src    : chr &quot;#| mine, echo = FALSE&quot;
+#&gt;  $ code   : chr &quot;1 + 1&quot;
+</code></pre>
+<h2 id="sec:find-globals"><span class="section-number">9.8</span> Find the variables code depends on</h2>
+<p><code>find_globals()</code> lists variables that code uses but does not create, and that
+exist in <code>envir</code>. This is how <code>cache_exec()</code> knows what to watch:</p>
+<pre><code class="language-r">x = 2
+find_globals(&quot;y = x + 1; z = y * 2&quot;)
+</code></pre>
+<pre><code>#&gt; [1] &quot;x&quot;
+</code></pre>
+<pre><code class="language-r">find_globals(&quot;y = zzz + 1&quot;)  # zzz does not exist, so it is not reported
+</code></pre>
+<pre><code>#&gt; character(0)
+</code></pre>
+<h2 id="sec:find-locals"><span class="section-number">9.9</span> Find the variables code creates</h2>
+<p><code>find_locals()</code> is the opposite: it returns variables the code assigns
+(including via <code>assign()</code>). It cannot see through <code>eval(parse(...))</code>:</p>
+<pre><code class="language-r">find_locals(&quot;a = 1; b = a + 2; f = function(u) u&quot;)
+</code></pre>
+<pre><code>#&gt; [1] &quot;a&quot; &quot;b&quot; &quot;f&quot;
+</code></pre>
+<pre><code class="language-r">find_locals(&quot;assign('y', 1)&quot;)
+</code></pre>
+<pre><code>#&gt; [1] &quot;y&quot;
+</code></pre>
+<h2 id="sec:parse-only"><span class="section-number">9.10</span> Parse code without source references</h2>
+<p><code>parse_only()</code> is <code>parse(keep.source = FALSE)</code> with a shorter name. Comments
+are dropped and empty input gives an empty expression:</p>
+<pre><code class="language-r">parse_only(c(&quot;y ~ x&quot;, &quot;1:5  # a comment&quot;))
+</code></pre>
+<pre><code>#&gt; expression(y ~ x, 1:5)
+</code></pre>
+<pre><code class="language-r">parse_only(character(0))
+</code></pre>
+<pre><code>#&gt; expression()
+</code></pre>
+<h2 id="sec:new-record"><span class="section-number">9.11</span> Mark output as a record type</h2>
+<p><code>new_record()</code> tags a character vector with a <code>record_*</code> class, so <code>record()</code>
+and friends know what kind of output it is. Return one from a
+<code>record_print()</code> method to say your output is, for example, raw Markdown
+(<code>&quot;asis&quot;</code>) rather than console text. Classes are <code>source</code>, <code>output</code>,
+<code>message</code>, <code>warning</code>, <code>error</code>, <code>plot</code>, and <code>asis</code>:</p>
+<pre><code class="language-r">x = new_record(&quot;**bold**&quot;, &quot;asis&quot;)
+class(x)
+</code></pre>
+<pre><code>#&gt; [1] &quot;record_asis&quot;
+</code></pre>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/10-env.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/10-env.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:env"><span class="section-number main-number">10</span> Your Environment</h1>
+<p>Code runs somewhere: on some operating system, with some packages installed,
+some options set, and some environment variables defined. This chapter helps
+you read that environment and change it temporarily without leaving a mess.</p>
+<h2 id="sec:pkg-attach"><span class="section-number">10.1</span> Attach several packages at once</h2>
+<p><code>pkg_attach()</code> is a vectorized <code>library()</code>. <code>pkg_attach2()</code> goes a step further
+and installs packages that are missing first:</p>
+<pre><code class="language-r">pkg_attach(&quot;stats&quot;, &quot;utils&quot;)  # equivalent to two library() calls
+</code></pre>
+<pre><code class="language-r">pkg_attach2(&quot;ggplot2&quot;, &quot;dplyr&quot;)  # installs any that are missing, then attaches
+</code></pre>
+<h2 id="sec:loadable"><span class="section-number">10.2</span> Test whether a package is available</h2>
+<p><code>loadable()</code> is a concise alternative to <code>requireNamespace(quietly = TRUE)</code>.
+It is useful for optional dependencies:</p>
+<pre><code class="language-r">loadable(&quot;stats&quot;)
+loadable(&quot;nonexistent.package.xyz&quot;)
+</code></pre>
+<h2 id="sec:env-option"><span class="section-number">10.3</span> Let an option fall back to an environment variable</h2>
+<p>Package authors often want users to configure behavior either with
+<code>options()</code> in <code>.Rprofile</code>, or with an environment variable in <code>.Renviron</code>.
+<code>env_option()</code> checks <code>options()</code> first, then looks for an environment variable
+named <code>R_&lt;NAME&gt;</code> (uppercased, dots turned into underscores):</p>
+<pre><code class="language-r">Sys.setenv(R_XFUN_TEST_OPTION = &quot;from-env&quot;)
+env_option(&quot;xfun.test.option&quot;)     # &quot;from-env&quot;
+</code></pre>
+<pre><code>#&gt; [1] &quot;from-env&quot;
+</code></pre>
+<pre><code class="language-r">options(xfun.test.option = TRUE)
+env_option(&quot;xfun.test.option&quot;)     # TRUE: options() wins
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">options(xfun.test.option = NULL)   # reset
+env_option(&quot;xfun.test.option&quot;)     # &quot;from-env&quot; again
+</code></pre>
+<pre><code>#&gt; [1] &quot;from-env&quot;
+</code></pre>
+<pre><code class="language-r">Sys.unsetenv(&quot;R_XFUN_TEST_OPTION&quot;)
+</code></pre>
+<h2 id="sec:set-envvar"><span class="section-number">10.4</span> Set an environment variable for a while</h2>
+<p><code>set_envvar()</code> sets variables and returns their previous values, so you can put
+things back when you are done:</p>
+<pre><code class="language-r">old = set_envvar(c(MY_TOKEN = &quot;secret&quot;))
+Sys.getenv(&quot;MY_TOKEN&quot;)
+</code></pre>
+<pre><code>#&gt; [1] &quot;secret&quot;
+</code></pre>
+<pre><code class="language-r">set_envvar(old)  # restore
+Sys.getenv(&quot;MY_TOKEN&quot;)
+</code></pre>
+<pre><code>#&gt; [1] &quot;&quot;
+</code></pre>
+<h2 id="sec:os"><span class="section-number">10.5</span> Know which OS you are on</h2>
+<p>The <code>is_*()</code> family tells you the current operating system, without parsing
+<code>R.version</code> yourself:</p>
+<pre><code class="language-r">is_windows()
+</code></pre>
+<pre><code>#&gt; [1] FALSE
+</code></pre>
+<pre><code class="language-r">is_macos()
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">is_linux()
+</code></pre>
+<pre><code>#&gt; [1] FALSE
+</code></pre>
+<pre><code class="language-r">is_unix()   # TRUE on macOS and Linux
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">is_arm64()  # TRUE on Apple silicon
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<h2 id="sec:session-info"><span class="section-number">10.6</span> Get a compact session summary</h2>
+<p>When you report a bug, you want session info that is short and focused.
+<code>session_info()</code> trims <code>sessionInfo()</code>: no base-package noise, no BLAS details.
+Give it a list of packages for a focused summary:</p>
+<pre><code class="language-r">session_info(c(&quot;xfun&quot;, &quot;litedown&quot;), dependencies = FALSE)
+</code></pre>
+<pre><code>R version 4.6.2 (2026-10-29)
+Platform: aarch64-apple-darwin23
+Running under: macOS Tahoe 26.7.2
+
+Locale: en_US.UTF-8 / en_US.UTF-8 / en_US.UTF-8 / C / en_US.UTF-8 / en_US.UTF-8
+
+Package version:
+  litedown_1.0.9 xfun_0.62.16  
+</code></pre>
+<h2 id="sec:do-once"><span class="section-number">10.7</span> Do something only once</h2>
+<p>A deprecation message that prints on every call is annoying. <code>do_once()</code> runs
+a task the first time and skips it afterward in the same R session:</p>
+<pre><code class="language-r">for (i in 1:3) {
+  do_once(message(&quot;This prints once.&quot;), &quot;my-one-time-task&quot;)
+}
+</code></pre>
+<pre><code class="language-plain message">#&gt; This prints once.
+#&gt; You will not see this message again in this R session. If you never want to see this message, you may set options(my-one-time-task = FALSE) in your .Rprofile.
+</code></pre>
+<h2 id="sec:base-pkgs"><span class="section-number">10.8</span> List the base R packages</h2>
+<p>Sometimes you need to tell the packages that ship with R from the ones people
+installed. <code>base_pkgs()</code> returns the names of the base packages:</p>
+<pre><code class="language-r">base_pkgs()
+</code></pre>
+<pre><code>#&gt;  [1] &quot;base&quot;      &quot;tools&quot;     &quot;utils&quot;     &quot;grDevices&quot; &quot;graphics&quot;  &quot;stats&quot;    
+#&gt;  [7] &quot;datasets&quot;  &quot;methods&quot;   &quot;grid&quot;      &quot;splines&quot;   &quot;stats4&quot;    &quot;tcltk&quot;    
+#&gt; [13] &quot;compiler&quot;  &quot;parallel&quot; 
+</code></pre>
+<pre><code class="language-r">setdiff(c(&quot;stats&quot;, &quot;xfun&quot;), base_pkgs())  # keep only the non-base ones
+</code></pre>
+<pre><code>#&gt; [1] &quot;xfun&quot;
+</code></pre>
+<h2 id="sec:pkg-available"><span class="section-number">10.9</span> Require a minimal package version</h2>
+<p><code>loadable()</code> says whether a package can be loaded. <code>pkg_available()</code> also checks
+the version, which is handy when your code needs a feature from a recent
+release:</p>
+<pre><code class="language-r">pkg_available(&quot;stats&quot;)
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<pre><code class="language-r">pkg_available(&quot;stats&quot;, &quot;99.0&quot;)          # too new
+</code></pre>
+<pre><code>#&gt; [1] FALSE
+</code></pre>
+<pre><code class="language-r">pkg_available(&quot;nonexistent.package.xyz&quot;)
+</code></pre>
+<pre><code>#&gt; [1] FALSE
+</code></pre>
+<h2 id="sec:pkg-load"><span class="section-number">10.10</span> Load packages without attaching them</h2>
+<p><code>pkg_load()</code> is a vectorized <code>requireNamespace()</code>: it loads packages but does
+not put them on the search path. It returns (invisibly) a logical vector, and
+signals an error if any package is missing. Set <code>error = FALSE</code> to get the
+vector without the error:</p>
+<pre><code class="language-r">pkg_load(&quot;stats&quot;, &quot;utils&quot;)
+ok = pkg_load(&quot;stats&quot;, &quot;nonexistent.package.xyz&quot;, error = FALSE)
+ok
+</code></pre>
+<pre><code>#&gt; [1]  TRUE FALSE
+</code></pre>
+<h2 id="sec:pkg-load2"><span class="section-number">10.11</span> Install missing packages while loading</h2>
+<p><code>pkg_load2()</code> is <code>pkg_load(install = TRUE)</code>: whatever is missing gets installed
+first with <code>install.packages()</code>. Set a CRAN mirror in <code>options(repos = )</code> before
+you rely on this:</p>
+<pre><code class="language-r">pkg_load2(&quot;jsonlite&quot;, &quot;yaml&quot;)  # install if needed, load without attaching
+</code></pre>
+<h2 id="sec:is-check"><span class="section-number">10.12</span> Detect <code>R CMD check</code> and CRAN incoming checks</h2>
+<p>Tests and examples sometimes need to behave differently under <code>R CMD check</code>
+(skip slow or network-bound code, for example). <code>is_R_CMD_check()</code> tells you
+whether you are inside a check, and <code>is_CRAN_incoming()</code> whether it is the
+extra check CRAN runs on submissions:</p>
+<pre><code class="language-r">is_R_CMD_check()
+</code></pre>
+<pre><code>#&gt; [1] FALSE
+</code></pre>
+<pre><code class="language-r">is_CRAN_incoming()
+</code></pre>
+<pre><code>#&gt; [1] FALSE
+</code></pre>
+<p>Both are <code>FALSE</code> in an ordinary session. Under a check, <code>is_R_CMD_check()</code>
+returns <code>TRUE</code>, so a typical use is <code>if (!is_R_CMD_check()) { ...slow code... }</code>.</p>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/11-errors.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/11-errors.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:errors"><span class="section-number main-number">11</span> When Things Fail</h1>
+<p>Errors are normal, especially with networks and files. What matters is how
+little code you need to handle them. This chapter has three short recipes.</p>
+<h2 id="sec:try-error"><span class="section-number">11.1</span> Ask whether code throws an error</h2>
+<p>You do not always need the error, only whether there was one. <code>try_error()</code>
+returns <code>TRUE</code> or <code>FALSE</code> and does not stop the script, which is less clunky
+than a <code>tryCatch()</code>:</p>
+<pre><code class="language-r">try_error(log(1))
+</code></pre>
+<pre><code>#&gt; [1] FALSE
+</code></pre>
+<pre><code class="language-r">try_error(log(&quot;a&quot;))
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<h2 id="sec:try-silent"><span class="section-number">11.2</span> Try quietly</h2>
+<p><code>try_silent()</code> behaves like <code>try(silent = TRUE)</code>: it does not print the error
+message, and returns an object of class <code>try-error</code> if something went wrong:</p>
+<pre><code class="language-r">z = try_silent(sqrt(&quot;x&quot;))
+inherits(z, &quot;try-error&quot;)
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<h2 id="sec:retry"><span class="section-number">11.3</span> Retry a flaky operation</h2>
+<p>Network calls fail for no good reason. <code>retry()</code> calls a function repeatedly
+until it succeeds or the attempts run out, pausing between tries:</p>
+<pre><code class="language-r"># retry a download up to 3 times, waiting 5 seconds between attempts
+retry(download.file, url = &quot;https://example.com/data.csv&quot;, destfile = &quot;data.csv&quot;)
+</code></pre>
+<h2 id="sec:exit-call"><span class="section-number">11.4</span> Run cleanup when the caller exits</h2>
+<p><code>on.exit()</code> only works for the function it is written in. <code>exit_call()</code> lets a
+helper register cleanup in its <em>parent</em> function, as if the parent had called
+<code>on.exit()</code> itself. Here <code>setup()</code> registers the message, and it fires when
+<code>task()</code> finishes:</p>
+<pre><code class="language-r">setup = function() {
+  cat(&quot;setting up\n&quot;)
+  exit_call(function() cat(&quot;cleaning up\n&quot;))
+}
+task = function() {
+  setup()
+  cat(&quot;working\n&quot;)
+}
+task()
+</code></pre>
+<pre><code>#&gt; setting up
+#&gt; working
+#&gt; cleaning up
+</code></pre>
+<p>Use <code>n = 3</code> to target the grandparent, and so on.</p>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/12-processes.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/12-processes.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:processes"><span class="section-number main-number">12</span> Running Programs</h1>
+<p>Sometimes R has to hand work to something else: a shell command, a fresh R
+session, or a server that keeps running while you do other things. These recipes
+make that less fiddly.</p>
+<h2 id="sec:system3"><span class="section-number">12.1</span> Run a command and fail loudly</h2>
+<p><code>system2()</code> quietly returns a nonzero status when a command fails, and it does
+not mark its output as UTF-8. <code>system3()</code> quotes <code>args</code> for you, marks UTF-8
+output properly, and signals an error on a nonzero exit status:</p>
+<pre><code class="language-r">x = system3(&quot;Rscript&quot;, c(&quot;-e&quot;, &quot;cat(intToUtf8(c(20320, 22909)))&quot;), stdout = TRUE)
+x
+</code></pre>
+<pre><code>#&gt; [1] &quot;你好&quot;
+</code></pre>
+<pre><code class="language-r">Encoding(x)
+</code></pre>
+<pre><code>#&gt; [1] &quot;UTF-8&quot;
+</code></pre>
+<p>Note that you pass <code>args</code> as a plain vector, without <code>shQuote()</code>. A failing
+command stops with an error such as <code>command 'Rscript' failed with code: 3</code>.</p>
+<h2 id="sec:rscript"><span class="section-number">12.2</span> Run Rscript and R CMD</h2>
+<p><code>Rscript()</code> and <code>Rcmd()</code> run the <code>Rscript</code> and <code>R CMD</code> that belong to the
+current R installation, not whichever one is first on your <code>PATH</code>. Extra
+arguments go to <code>system2()</code>. Unlike <code>system3()</code>, they do not quote <code>args</code>, so
+quote code yourself:</p>
+<pre><code class="language-r">Rscript(c(&quot;-e&quot;, shQuote(&quot;cat(R.version.string)&quot;)))
+Rcmd(c(&quot;config&quot;, &quot;--version&quot;), stdout = TRUE)[1]
+</code></pre>
+<pre><code>#&gt; [1] &quot;R configuration information retrieval script: 4.6.2 (r89241)&quot;
+</code></pre>
+<h2 id="sec:rscript-call"><span class="section-number">12.3</span> Call a function in a fresh R session</h2>
+<p><code>Rscript_call()</code> runs a function in a new R process and returns the result. It
+is good for work that should not touch your session’s state, such as loading
+conflicting packages. Arguments are passed as a list:</p>
+<pre><code class="language-r">Rscript_call(function(x, y) x + y, list(1, 2))
+</code></pre>
+<pre><code>#&gt; [1] 3
+</code></pre>
+<pre><code class="language-r">Rscript_call(function(pid) Sys.getpid() != pid, list(Sys.getpid()))
+</code></pre>
+<pre><code>#&gt; [1] TRUE
+</code></pre>
+<p>The second call returns <code>TRUE</code>, as the function ran in another process. Use
+<code>options = &quot;--vanilla&quot;</code> to skip startup files. If the function fails, you get an
+error that includes the message from the new session. With <code>wait = FALSE</code>, it
+returns immediately with the paths of the files used to communicate with the new
+session.</p>
+<h2 id="sec:random-port"><span class="section-number">12.4</span> Find a free port</h2>
+<p>Starting a local server needs a port that nobody else is using. <code>random_port()</code>
+tries <code>port</code> (default 4321) first, then random ports between 3000 and 8000:</p>
+<pre><code class="language-r">random_port()
+</code></pre>
+<pre><code>#&gt; [1] 4321
+</code></pre>
+<pre><code class="language-r">random_port(8000, exclude = 8000)  # skip a port you know is taken
+</code></pre>
+<pre><code>#&gt; [1] 6960
+</code></pre>
+<p>With <code>error = FALSE</code>, it returns <code>NULL</code> rather than an error when nothing is
+free.</p>
+<h2 id="sec:bg-process"><span class="section-number">12.5</span> Start a background process and stop it</h2>
+<p><code>bg_process()</code> starts a command without waiting for it and returns its process
+ID. <code>proc_kill()</code> ends it later (and its children, unless <code>recursive = FALSE</code>).
+Both work on Windows and Unix:</p>
+<pre><code class="language-r">pid = bg_process(&quot;sleep&quot;, &quot;60&quot;)
+pid
+</code></pre>
+<pre><code>#&gt; [1] &quot;15468&quot;
+</code></pre>
+<pre><code class="language-r">proc_kill(pid)  # 0 means the kill succeeded
+</code></pre>
+<p>Output from the process is hidden by default. Use <code>verbose = TRUE</code> to see it.</p>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/13-web.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/13-web.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:web"><span class="section-number main-number">13</span> Downloads and Web APIs</h1>
+<p>Fetching a file, checking that a link is alive, asking GitHub for the latest
+release: these chores all hit the network. The examples that need a connection
+are shown but not run here; the URL-parsing helpers work offline and are run.</p>
+<h2 id="sec:url-filename"><span class="section-number">13.1</span> Pull the file name out of a URL</h2>
+<p>Query strings and hashes make <code>basename()</code> unreliable on URLs. <code>url_filename()</code>
+strips them, and falls back to a default when the URL ends in a slash or a bare
+domain. It is pure string work, so no request is sent:</p>
+<pre><code class="language-r">url_filename(c(
+  'https://yihui.org/images/logo.png',
+  'https://yihui.org/index.html?foo=bar#about',
+  'https://yihui.org/'
+))
+</code></pre>
+<pre><code>#&gt; [1] &quot;logo.png&quot;   &quot;index.html&quot; &quot;index.html&quot;
+</code></pre>
+<pre><code class="language-r">url_filename('https://yihui.org', default = 'home.html')
+</code></pre>
+<pre><code>#&gt; [1] &quot;home.html&quot;
+</code></pre>
+<h2 id="sec:download-file"><span class="section-number">13.2</span> Download a file, whatever works</h2>
+<p><code>download.file()</code> has several methods, and which one works depends on the
+machine and proxy. <code>download_file()</code> tries them all (libcurl, curl, wget,
+wininet, …) and stops with an error only if none succeeds. The output
+defaults to the file name from <code>url_filename()</code>:</p>
+<pre><code class="language-r">f = download_file('https://yihui.org/images/logo.png')
+f  # &quot;logo.png&quot;, the path of the downloaded file
+
+download_file('https://yihui.org/images/logo.png', tempfile(fileext = '.png'))
+</code></pre>
+<p>It returns the output path. Extra arguments go to <code>download.file()</code>. The
+<code>timeout</code> option is raised to an hour for the call if you left it at the default
+60 seconds, so big files are fine.</p>
+<h2 id="sec:download-cache"><span class="section-number">13.3</span> Download once, reuse forever</h2>
+<p><code>download_cache</code> is an object of methods that saves downloads on disk, so a
+second request for the same URL is instant (and works offline):</p>
+<pre><code class="language-r">x1 = download_cache$get('https://www.r-project.org/')  # downloads
+x2 = download_cache$get('https://www.r-project.org/')  # from cache
+identical(x1, x2)
+
+# binary file, or transform the content once and cache the result
+logo = download_cache$get('https://yihui.org/images/logo.png', 'raw')
+n = download_cache$get('https://www.r-project.org/', 'text', nchar)
+</code></pre>
+<p>The <code>type</code> is <code>'text'</code>, <code>'raw'</code>, <code>'base64'</code>, or the default <code>'auto'</code>, which
+picks text or raw from the response headers. Manage the cache with the other
+methods:</p>
+<pre><code class="language-r">download_cache$summary()  # what is cached, with sizes
+download_cache$remove('https://yihui.org/images/logo.png', 'raw')
+download_cache$purge()    # delete everything
+</code></pre>
+<h2 id="sec:url-accessible"><span class="section-number">13.4</span> Check that a link is alive</h2>
+<p><code>url_accessible()</code> sends a <code>HEAD</code> request and returns <code>TRUE</code> if the status is
+below 400, <code>FALSE</code> otherwise (including when the request fails outright):</p>
+<pre><code class="language-r">url_accessible('https://yihui.org')
+url_accessible('https://yihui.org/no-such-page-here')
+</code></pre>
+<p>Handy for filtering a vector of links: <code>Filter(url_accessible, urls)</code>.</p>
+<h2 id="sec:url-destination"><span class="section-number">13.5</span> Find where a redirect really goes</h2>
+<p>Short links and canonical URLs redirect. <code>url_destination()</code> follows the
+<code>Location</code> header and returns the final address, or the original URL if there is
+no redirect. Status codes of 400 and above raise an error. Results are cached
+for the session; use <code>force = TRUE</code> to ask again:</p>
+<pre><code class="language-r">url_destination('https://cran.r-project.org/package=xfun')
+url_destination('https://cran.r-project.org/package=xfun', force = TRUE)
+</code></pre>
+<h2 id="sec:rest-api"><span class="section-number">13.6</span> Read JSON from a REST API</h2>
+<p><code>rest_api()</code> sends a <code>GET</code> request and parses the JSON reply into a list.
+Give it a root, an endpoint, and optionally a token and query parameters:</p>
+<pre><code class="language-r">res = rest_api('https://mockhttp.org', '/get')
+str(res)
+
+# query parameters, and an authorization token
+rest_api('https://mockhttp.org', '/response-headers',
+  params = list(foo = 'bar'))
+rest_api('https://mockhttp.org', '/headers', token = 'YOUR_TOKEN')
+</code></pre>
+<p>By default the token is sent as <code>Authorization: Basic TOKEN</code>; name it to change
+the scheme, e.g. <code>token = c(Bearer = 'YOUR_TOKEN')</code>. Only <code>GET</code> is supported.
+For <code>POST</code> and friends, use the curl or httr package. <code>rest_api()</code> needs
+jsonlite.</p>
+<h2 id="sec:rest-api-raw"><span class="section-number">13.7</span> Get the raw response instead</h2>
+<p>If the API returns something other than JSON, or you prefer your own parser,
+<code>rest_api_raw()</code> takes the same arguments and returns the response text
+untouched. Extra request headers go in <code>headers</code>:</p>
+<pre><code class="language-r">txt = rest_api_raw('https://mockhttp.org', '/get',
+  headers = c(Accept = 'application/json'))
+cat(txt)
+</code></pre>
+<h2 id="sec:github-api"><span class="section-number">13.8</span> Call the GitHub API</h2>
+<p><code>github_api()</code> is <code>rest_api_raw()</code> pointed at <code>https://api.github.com</code>, with
+token handling built in. It reads a token from the <code>token</code> argument or from the
+<code>GITHUB_PAT</code>, <code>GITHUB_TOKEN</code>, or <code>GH_TOKEN</code> environment variables. Without one
+you get only 60 calls an hour:</p>
+<pre><code class="language-r">repo = github_api('/repos/yihui/xfun')
+repo$stargazers_count
+
+github_api('/repos/yihui/xfun/issues', params = list(state = 'open'))
+github_api('/repos/yihui/xfun', raw = TRUE)  # unparsed JSON text
+</code></pre>
+<p>The reply is parsed when jsonlite is available, raw text otherwise. Set the
+token in the environment rather than in code:
+<code>Sys.setenv(GITHUB_PAT = 'YOUR_TOKEN')</code>, ideally in <code>~/.Renviron</code>.</p>
+<h2 id="sec:github-releases"><span class="section-number">13.9</span> List a repository’s release tags</h2>
+<p><code>github_releases()</code> returns release tags, filtered by a regular expression
+(default <code>'v[0-9.]+'</code>). Pass a tag to check that it exists, or <code>'latest'</code> for
+the newest release:</p>
+<pre><code class="language-r">github_releases('yihui/litedown')
+github_releases('gohugoio/hugo', 'latest')
+github_releases('yihui/xfun', pattern = 'v0[.]4[0-9.]*')
+</code></pre>
+<h2 id="sec:upload-ftp"><span class="section-number">13.10</span> Upload a file to an FTP server</h2>
+<p><code>upload_ftp()</code> runs <code>curl -T file server</code> when the curl command exists, and
+falls back to the curl package otherwise. It returns the status code, where <code>0</code>
+means success for the command-line route:</p>
+<pre><code class="language-r">upload_ftp('report.pdf', 'ftp://user:PASSWORD@ftp.example.com', dir = 'reports')
+</code></pre>
+<h2 id="sec:upload-imgur"><span class="section-number">13.11</span> Host an image on Imgur</h2>
+<p><code>upload_imgur()</code> uploads an image and returns its public link, which is useful
+for documents that should point to hosted images instead of local files. With
+<code>include_xml = TRUE</code>, the full response from Imgur is attached as an attribute:</p>
+<pre><code class="language-r">f = tempfile(fileext = '.png')
+png(f); plot(1:10); dev.off()
+
+link = upload_imgur(f, key = 'YOUR_IMGUR_CLIENT_ID')
+link
+attr(link, 'XML')  # only with include_xml = TRUE
+
+# or set the key once
+options(xfun.upload_imgur.key = 'YOUR_IMGUR_CLIENT_ID')
+</code></pre>
+<div class="callout-warning">
+<p><code>upload_ftp()</code> and <code>upload_imgur()</code> send your files to third-party servers.
+Imgur uploads are public to anyone with the link. Without your own client ID,
+<code>upload_imgur()</code> uses a shared one registered by the xfun author, which can hit
+rate limits, so register your own.</p>
+</div>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/14-apps.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/14-apps.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:apps"><span class="section-number main-number">14</span> Local Apps and Browsers</h1>
+<p>R can serve web pages to itself and drive a headless browser to render them.
+Together these give you a tiny local web app, plus PDFs, screenshots and
+JavaScript-rendered HTML. None of the examples run here, since they start
+servers or need Chrome/Chromium.</p>
+<h2 id="sec:serve-dir"><span class="section-number">14.1</span> Serve a folder in your browser</h2>
+<p>To preview static files (an HTML report, a built site) over HTTP rather than
+<code>file://</code>, serve the directory:</p>
+<pre><code class="language-r">serve_dir('_site')
+</code></pre>
+<p>In an interactive session this opens the browser. It uses R’s built-in HTTP
+server, so no extra packages are needed. The app is named <code>xfun-dir</code> by
+default; pass <code>name</code> to serve several folders at once. Extra arguments go to
+<code>new_app()</code>.</p>
+<h2 id="sec:new-app"><span class="section-number">14.2</span> Write your own tiny web app</h2>
+<p><code>new_app()</code> takes a name and a handler function <code>function(path, query, post, headers)</code> that returns a response list. A minimal app that greets whoever is
+in the query string:</p>
+<pre><code class="language-r">new_app('hello', function(path, query, post, headers) {
+  who = if (is.null(query[['name']])) 'world' else query[['name']]
+  list(
+    payload = sprintf('&lt;h1&gt;Hello, %s!&lt;/h1&gt;', who),
+    `content-type` = 'text/html'
+  )
+}, open = FALSE)
+</code></pre>
+<p>It returns the URL invisibly, something like <code>http://127.0.0.1:PORT/custom/hello/</code>.
+Visit it with <code>?name=R</code> to see the query used. With <code>name = ''</code> the app is
+served at the root <code>http://127.0.0.1:PORT/</code> through a small proxy, and <code>port</code>
+picks the candidate ports. Calling <code>new_app()</code> with an existing name replaces
+that app.</p>
+<p>In a non-interactive script, <code>open</code> also decides whether the call blocks.
+Pass <code>open = FALSE</code> explicitly to return right away.</p>
+<h2 id="sec:stop-app"><span class="section-number">14.3</span> Shut an app down</h2>
+<p>Apps live as long as the R session. Stop one by name, or all of them:</p>
+<pre><code class="language-r">stop_app('hello')
+stop_app()  # every running app
+</code></pre>
+<h2 id="sec:browser-print"><span class="section-number">14.4</span> Print a page to PDF or an image</h2>
+<p><code>browser_print()</code> loads a page in headless Chrome, Chromium, or Edge and
+saves it. The output extension picks the format: <code>.pdf</code>, <code>.png</code>, or <code>.jpeg</code>.
+A bare extension reuses the name from the input:</p>
+<pre><code class="language-r">browser_print('report.html')                    # report.pdf
+browser_print('report.html', 'shot.png')        # screenshot
+browser_print('https://www.r-project.org', '.jpeg', window_size = c(800, 600))
+</code></pre>
+<p>It returns the output path. If the browser is not found, set
+<code>options(xfun.browser = '/path/to/chrome')</code> or the <code>R_XFUN_BROWSER</code>
+environment variable.</p>
+<p>For pages that finish rendering after load, use <code>wait</code> with a JavaScript
+expression that becomes true when the page is ready, or a named event. <code>query</code>
+appends URL parameters:</p>
+<pre><code class="language-r">browser_print('slides.html', wait = 'window.pageReady', query = list(print = 1))
+browser_print('slides.html', wait = c(event = 'pageReady'))
+</code></pre>
+<h2 id="sec:browser-dom"><span class="section-number">14.5</span> See the HTML after JavaScript runs</h2>
+<p>The source of a page that builds itself with JavaScript is nearly empty.
+<code>browser_dom()</code> loads it, lets the scripts run, and gives back the final DOM:</p>
+<pre><code class="language-r">f = tempfile(fileext = '.html')
+writeLines(c(
+  '&lt;html&gt;&lt;body&gt;&lt;div id=&quot;out&quot;&gt;&lt;/div&gt;',
+  '&lt;script&gt;document.getElementById(&quot;out&quot;).textContent = &quot;hello&quot;;&lt;/script&gt;',
+  '&lt;/body&gt;&lt;/html&gt;'
+), f)
+browser_dom(f)                  # full document as a string
+browser_dom(f, fragment = TRUE) # only the inner body
+browser_dom(f, output = 'rendered.html')
+</code></pre>
+<p>It takes <code>wait</code> and <code>query</code> like <code>browser_print()</code>.</p>
+<h2 id="sec:browser-session"><span class="section-number">14.6</span> Run many JavaScript checks in one browser</h2>
+<p>Starting a browser per page is slow. <code>browser_session()</code> starts one and keeps
+it open. You get a list of functions: <code>open()</code> to load a page, <code>eval()</code> to run
+JavaScript on it, <code>dom()</code> for the current HTML, and <code>close()</code>:</p>
+<pre><code class="language-r">s = browser_session()
+for (p in c('a.html', 'b.html')) {
+  s$open(p)
+  print(s$eval('document.title'))
+}
+s$dom()
+s$close()
+</code></pre>
+<p><code>eval()</code> returns the value of the last statement as a string. The browser also
+closes when the session is garbage-collected or R exits, but calling <code>close()</code>
+is tidier.</p>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/15-images.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/15-images.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:images"><span class="section-number main-number">15</span> Shrinking Images</h1>
+<p>Big screenshots and plots bloat a repository and slow a site. Two steps help:
+resize images down to a sensible width, then compress them. None of the
+examples are run here since they change files in place or need an external
+tool or service.</p>
+<h2 id="sec:shrink-images"><span class="section-number">15.1</span> Cap image width</h2>
+<p><code>shrink_images()</code> resizes every PNG, JPEG and WebP under a directory that is
+wider than <code>width</code> (default 800 pixels), keeping the aspect ratio. Narrower
+images are left alone. It needs the magick package and <strong>overwrites files</strong>, so
+work on a copy or under version control:</p>
+<pre><code class="language-r">shrink_images(800, 'figures')
+shrink_images(400, files = c('a.png', 'b.jpg'))
+</code></pre>
+<p>Check the result with <code>magick::image_info(magick::image_read('a.png'))</code>.
+Setting <code>tinify = TRUE</code> also compresses the images afterwards (see
+<a class="cross-ref-sec" href="#sec:tinify">15.3</a>).</p>
+<h2 id="sec:optipng"><span class="section-number">15.2</span> Squeeze PNGs losslessly with optipng</h2>
+<p><code>optipng()</code> runs the <code>optipng</code> command on all PNGs under a directory, which
+shrinks files without changing a single pixel. If the command is not on the
+<code>PATH</code>, it quietly does nothing, so check first:</p>
+<pre><code class="language-r">Sys.which('optipng')  # empty string means not installed
+optipng('figures')
+</code></pre>
+<p>Extra arguments go to <code>system2()</code>, e.g. <code>stdout = FALSE</code> to silence the tool.</p>
+<h2 id="sec:tinify"><span class="section-number">15.3</span> Compress images with TinyPNG</h2>
+<p><code>tinify()</code> compresses PNG and JPEG files through the TinyPNG web API, which
+usually cuts file size a lot. It needs the curl and jsonlite packages and an
+API key from tinypng.com. Put the key in <code>~/.Renviron</code> rather than in code:</p>
+<pre><code class="language-r"># in ~/.Renviron
+# R_XFUN_TINIFY_KEY=YOUR_API_KEY
+
+out = tinify('plot.png')              # writes plot-min.png
+tinify('plot.png', output = identity) # overwrite the original
+tinify('plot.png', 'small.png', quiet = TRUE)
+</code></pre>
+<p>Unless <code>quiet = TRUE</code>, each file prints a line like
+<code>plot.png (120 Kb) ==&gt; plot-min.png (45 Kb, 38%); compression count: 42</code>. The
+count is your usage this month, and the free tier is limited, so avoid
+recompressing. Set <code>history</code> to a file, and tinify records checksums of
+compressed images and skips them next time (it also overwrites in place):</p>
+<pre><code class="language-r">options(xfun.tinify.history = 'tinify-history.txt')
+tinify('plot.png')              # compresses
+tinify('plot.png')              # skipped
+tinify('plot.png', force = TRUE) # compress again
+</code></pre>
+<div class="callout-warning">
+<p><code>tinify()</code> uploads your images to <code>api.tinify.com</code>. Do not use it on images
+that must stay private.</p>
+</div>
+<h2 id="sec:tinify-dir"><span class="section-number">15.4</span> Compress a whole folder</h2>
+<p><code>tinify_dir()</code> finds all PNG, JPEG and WebP files under a directory and passes
+them to <code>tinify()</code>, so the same arguments apply:</p>
+<pre><code class="language-r">tinify_dir('figures', output = identity)
+tinify_dir('figures')  # with a history file set, overwrites in place
+</code></pre>
+<p>A typical pipeline resizes first, so fewer pixels are sent and billed:</p>
+<pre><code class="language-r">shrink_images(800, 'figures')
+optipng('figures')
+tinify_dir('figures', output = identity)
+</code></pre>
+<div class="chapter-after side side-right">
+</div>
+</article>
+<article class="chapter" data-source="book/16-maintain.Rmd">
+<div class="chapter-before side side-right">
+<p><a href="https://github.com/yihui/xfun/edit/main/book/16-maintain.Rmd">Edit this chapter</a> on GitHub</p>
+</div>
+<h1 id="chp:maintain"><span class="section-number main-number">16</span> Package Maintenance and Demos</h1>
+<p>The last chapter is for people who maintain R packages, and for people who
+give talks about them. Both groups have chores that are easy to automate once
+somebody writes the function.</p>
+<h2 id="sec:rev-check"><span class="section-number">16.1</span> Check reverse dependencies</h2>
+<p>The scariest part of releasing a package is wondering whether the new version
+breaks packages that depend on it. <code>rev_check()</code> runs <code>R CMD check</code> on the
+reverse dependencies for you. It downloads them, checks them in parallel, and
+compares the results against the current CRAN version so that new failures
+stand out:</p>
+<pre><code class="language-r"># check all reverse dependencies of knitr, using 4 cores
+rev_check(&quot;knitr&quot;, src = &quot;path/to/knitr_source&quot;, n = 4)
+</code></pre>
+<p>After the run, <code>compare_Rcheck()</code> writes a Markdown diff of only the packages
+whose check status changed. You get to focus on regressions rather than old
+failures.</p>
+<h2 id="sec:rstudio-type"><span class="section-number">16.2</span> Type code into RStudio for a demo</h2>
+<p>Pasting code into the editor during a talk looks abrupt. <code>rstudio_type()</code> feeds
+characters into the RStudio source editor as if a person typed them, which is
+nice for live demos and screencasts:</p>
+<pre><code class="language-r">rstudio_type(&quot;1 + 1\n&quot;, pause = function() 0.05)
+</code></pre>
+<p>The <code>mistake</code> argument introduces random typos and then fixes them, for an
+even more realistic effect.</p>
+<h2 id="sec:pkg-bib"><span class="section-number">16.3</span> Write a bibliography for your packages</h2>
+<p>Citing the packages you used in a report should not mean typing BibTeX by hand.
+<code>pkg_bib()</code> turns <code>citation()</code> output into entries keyed <code>R-&lt;package&gt;</code>:</p>
+<pre><code class="language-r">suppressWarnings(pkg_bib(&quot;xfun&quot;, width = 60))
+</code></pre>
+<pre><code>#&gt; @Manual{R-xfun,
+#&gt;   title = {xfun: Supporting Functions for Packages
+#&gt;     Maintained by Yihui Xie},
+#&gt;   author = {Yihui Xie},
+#&gt;   year = {2026},
+#&gt;   note = {R package version 0.62.16},
+#&gt;   url = {https://github.com/yihui/xfun},
+#&gt; }
+#&gt; 
+</code></pre>
+<p>Write to a file with <code>file = &quot;packages.bib&quot;</code>, change the key prefix with
+<code>prefix</code>, or stamp the entries with a retrieval date via <code>date = &quot;today&quot;</code>. With
+no <code>x</code>, it covers all attached packages.</p>
+<h2 id="sec:bump-version"><span class="section-number">16.4</span> Bump a version number</h2>
+<p><code>bump_version()</code> increases the last component of a version, and works on a
+vector:</p>
+<pre><code class="language-r">bump_version(c(&quot;0.1&quot;, &quot;91.2.14&quot;, &quot;7.23.9&quot;))
+</code></pre>
+<pre><code>#&gt; [1] ‘0.2’     ‘91.2.15’ ‘7.23.10’
+</code></pre>
+<h2 id="sec:check-old"><span class="section-number">16.5</span> Skip checks for old package versions</h2>
+<p>When a package breaks under a new R, you may want to skip its tests only while
+<code>R CMD check</code> runs on an old version of it. These helpers read the package
+being checked from the check environment:</p>
+<pre><code class="language-r">check_package_name()  # NA outside R CMD check
+</code></pre>
+<pre><code>#&gt; [1] NA
+</code></pre>
+<pre><code class="language-r">check_old_package(&quot;mypkg&quot;, &quot;1.0&quot;)  # FALSE outside R CMD check
+</code></pre>
+<pre><code>#&gt; [1] FALSE
+</code></pre>
+<p>Inside a check of <code>mypkg</code>, <code>check_package_name()</code> returns <code>&quot;mypkg&quot;</code>, and
+<code>check_old_package(&quot;mypkg&quot;, &quot;1.0&quot;)</code> is <code>TRUE</code> if the installed version is <code>1.0</code>
+or lower. Use it to guard a test:</p>
+<pre><code class="language-r">if (!check_old_package(&quot;mypkg&quot;, &quot;1.0&quot;)) {
+  # tests that need version &gt; 1.0
+}
+</code></pre>
+<h2 id="sec:install-dir"><span class="section-number">16.6</span> Install a package from its source directory</h2>
+<p><code>install_dir()</code> runs <code>R CMD build</code> and then <code>R CMD INSTALL</code>, so vignettes get
+built just as they would in a release. Run it from the package root:</p>
+<pre><code class="language-r">install_dir()                 # build a tarball, then install it
+install_dir(&quot;path/to/pkg&quot;, build = FALSE)  # install the directory directly
+</code></pre>
+<h2 id="sec:broken-packages"><span class="section-number">16.7</span> Reinstall broken packages</h2>
+<p>After upgrading R to a new <code>x.y</code> version, installed packages may no longer load.
+<code>broken_packages()</code> finds them, and reinstalls them by default. Use
+<code>reinstall = FALSE</code> to only list the culprits:</p>
+<pre><code class="language-r">broken_packages(reinstall = FALSE)  # names of packages that fail to load
+broken_packages()                   # find and reinstall them
+</code></pre>
+<h2 id="sec:crandalf"><span class="section-number">16.8</span> Check reverse dependencies on GitHub Actions</h2>
+<p>If your machine is too slow for <code>rev_check()</code> (see <a class="cross-ref-sec" href="#sec:rev-check">16.1</a>), push the
+job to the <a href="https://github.com/yihui/crandalf">crandalf</a> repo. Run these inside
+a clone of it. <code>crandalf_check()</code> splits the reverse dependencies into batches
+and pushes one branch per batch to trigger GitHub Actions. <code>crandalf_results()</code>
+waits for the jobs, then merges and summarizes the results. It needs <code>git</code>, and
+the GitHub CLI <code>gh</code> for the results.</p>
+<pre><code class="language-r">xfun::crandalf_check(&quot;knitr&quot;, size = 400)
+xfun::crandalf_results(&quot;knitr&quot;)
+</code></pre>
+<h2 id="sec:win-builder"><span class="section-number">16.9</span> Upload a package to win-builder</h2>
+<p><code>upload_win_builder()</code> builds the package in the current directory and uploads
+the tarball to win-builder, which emails you the check results from R-devel,
+R-release, and R-oldrelease (pick with <code>version</code>). It also runs <code>git pull</code> first
+when the directory is a Git repo.</p>
+<pre><code class="language-r">xfun::upload_win_builder()
+xfun::upload_win_builder(version = &quot;R-devel&quot;, server = &quot;https&quot;)
+</code></pre>
+<h2 id="sec:submit-cran"><span class="section-number">16.10</span> Submit a package to CRAN</h2>
+<p><code>submit_cran()</code> builds the package in the current directory and submits it to
+CRAN through the web form, using <code>cran-comments.md</code> as the comment if it exists.
+CRAN then emails you a confirmation link.</p>
+<pre><code class="language-r">xfun::submit_cran()
+</code></pre>
+<div class="callout-warning">
+<p>This sends your package to CRAN for real. It also syncs the Git branch with the
+remote first (<code>sync = TRUE</code>). Run <code>R CMD check --as-cran</code> and win-builder
+first.</p>
+</div>
+<h2 id="sec:post-release"><span class="section-number">16.11</span> Tag and prepare the next version after a release</h2>
+<p>Once CRAN accepts a release, <code>post_release()</code> does the paperwork: it tags the
+release in Git, bumps <code>DESCRIPTION</code> to the next dev version (<code>1.2.3</code> becomes
+<code>1.2.3.1</code>), adds a header for the next release to <code>NEWS.md</code>, pushes, and creates
+a GitHub release from the news items.</p>
+<pre><code class="language-r">xfun::post_release()
+</code></pre>
+<div class="chapter-after side side-right">
+</div>
+</article>
+</div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/js/sidenotes.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/js/toc-highlight.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/js/copy-button.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/js/heading-anchor.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/js/pages.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/js/chapter-toc.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/js/external-link.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/js/right-quote.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/js/key-buttons.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.154/js/callout.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+</body>
+</html>

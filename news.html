@@ -15,9 +15,9 @@
 </head>
 <body>
 <nav class="site-nav"><p><a href="index.html" class="brand">xfun</a> <small class="version">v0.62.16</small>
-<a href="articles.html">Articles</a>
 <a href="manual.html">Manual</a>
 <a href="news.html">News</a>
+<a href="book/">Book</a>
 <a href="playground/">Playground</a>
 <a href="https://github.com/yihui/xfun/" class="right"><img src="https://cdn.jsdelivr.net/npm/@primer/octicons@19/build/svg/mark-github-24.svg" alt="GitHub" class="no-invert" /></a></p></nav>
 <header class="frontmatter">
@@ -229,6 +229,12 @@
 </li>
 <li>
 <p><code>new_app()</code> now serves requests from the working directory when it was called, instead of the working directory at the time of the first request (e.g., <code>in_dir(dir, new_app(...))</code> previously served the wrong directory if R had been moved elsewhere by then).</p>
+</li>
+<li>
+<p><code>tabset()</code> now works out of the box in <strong>litedown</strong> code chunks: when recorded, the result also includes the CSS/JS assets it needs (<code>@tabsets</code>), so they no longer have to be enabled in the document’s metadata.</p>
+</li>
+<li>
+<p>Replaced the package vignette with a recipe-style book, available at <a href="https://pkg.yihui.org/xfun/book/">https://pkg.yihui.org/xfun/book/</a>.</p>
 </li>
 </ul>
 <h2 id="sec:xfun-0-62" class="unnumbered">xfun 0.62</h2>
