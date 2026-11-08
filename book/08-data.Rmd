@@ -1,60 +1,111 @@
 # Moving Data Around {#chp:data}
 
 Sooner or later you need to hand data to something that is not R: a web page,
-a JavaScript library, or an HTML file that must carry its own attachments.
-This chapter covers two encodings that make that easy, JSON and base64.
+a JavaScript library, a config file, or an HTML file that must carry its own
+attachments. This chapter covers the encodings that make that easy: base64, JSON,
+and YAML.
 
-## Encode and decode base64 {#sec:base64}
+## Base64 {#sec:base64}
+
+Base64 turns any bytes into plain text, which is how a file can travel inside an
+HTML page or a JSON string.
+
+### Encode and decode bytes {#sec:base64-bytes}
 
 `base64_encode()` and `base64_decode()` convert between raw bytes and base64
-strings. `base64_uri()` goes one step further and makes a data URI, which embeds
-a file directly in HTML. It is the mechanism behind `xfun::embed_file()`:
+strings:
 
 ```{r}
 raw_bytes = charToRaw("Hello, xfun!")
 (b64 = base64_encode(raw_bytes))
 rawToChar(base64_decode(b64))
+```
 
-# data URI for a small file
+### Embed a file as a data URI {#sec:base64-uri}
+
+`base64_uri()` goes one step further and makes a data URI, which embeds a file
+directly in HTML. It is the mechanism behind `xfun::embed_file()`. Here are the
+first characters of one:
+
+```{r}
 f = system.file("LICENSE", package = "xfun")
 substr(base64_uri(f), 1, 60)
 ```
 
-## Turn R objects into JSON {#sec:tojson}
+## JSON {#sec:json}
 
-`tojson()` converts R objects to JSON (or JavaScript). Named lists become
-objects, unnamed lists become arrays, matrices go by row, and data frames go
-by column:
+`tojson()` is a small JSON serializer with no dependencies. It was written to
+send data from R to JavaScript, so it has a few extras: it can emit JavaScript
+instead of strict JSON, and it can shrink long vectors. The examples below use
+`cat()` so you see the text exactly as a browser would receive it.
 
-```{r}
-tojson(list(x = 1:3, y = c(TRUE, FALSE), z = NULL))
-tojson(head(iris, 3))   # data frame: columns
-tojson(matrix(1:6, 2))  # matrix: rows
+### Turn R objects into JSON {#sec:tojson}
+
+Named lists become objects, unnamed lists become arrays, matrices go by row, and
+data frames go by column:
+
+```{r, comment='', attr.output='.js'}
+cat(tojson(list(x = 1:3, y = c(TRUE, FALSE), z = NULL)))
+cat(tojson(head(iris, 3)))   # data frame: columns
+cat(tojson(matrix(1:6, 2)))  # matrix: rows
 ```
 
-## Embed JavaScript in the JSON {#sec:js}
+### Embed JavaScript in the JSON {#sec:js}
 
-Need a callback in your configuration? Wrap a string in `js()` and it is
-written as raw JavaScript, with no quotes:
+Need a callback in your configuration? Wrap a string in `js()` and it is written
+as raw JavaScript, with no quotes:
 
-```{r}
-tojson(list(n = 42, callback = js("function(x) { return x * 2; }")))
+```{r, comment='', attr.output='.js'}
+cat(tojson(list(n = 42, callback = js("function(x) { return x * 2; }"))))
 ```
 
-## Get strict JSON {#sec:json-mode}
+That is not valid JSON anymore, but it is valid JavaScript, which is often all
+you need.
 
-By default the output is JavaScript, which can contain things that JSON does
-not allow. For output that is valid for `JSON.parse()`, use `mode = "json"`.
-Dates become strings and `Inf` becomes `null`:
+### Choose between JavaScript and strict JSON {#sec:json-mode}
 
-```{r}
-tojson(list(d = Sys.Date(), x = c(1, Inf, -Inf)), mode = "json")
+By default (`mode = "js"`) the output is JavaScript, which can hold things that
+JSON cannot. Compare the same object in both modes. In JavaScript mode, a
+date-time becomes `new Date(...)` and infinity stays `Infinity`:
+
+```{r, comment='', attr.output='.js'}
+x = list(
+  day = as.Date("2026-11-08"),
+  time = as.POSIXct("2026-11-08 09:30:00", tz = "UTC"),
+  values = c(1, Inf, -Inf, NA)
+)
+cat(tojson(x))
 ```
 
-## Shrink repeated values {#sec:dict}
+For output that `JSON.parse()` accepts, use `mode = "json"`. The date-time
+becomes an ISO 8601 string, and `Inf` becomes `null`, just like `NA`:
 
-When a vector repeats the same few values many times, `dict` encodes it as an
-index plus a list of unique values, which can be much shorter:
+```{r, comment='', attr.output='.json'}
+cat(tojson(x, mode = "json"))
+```
+
+### Shrink repeated values {#sec:dict}
+
+When a vector repeats the same few values many times, writing every copy is
+wasteful. With `dict = 1`, `tojson()` stores the unique values once and the
+vector as indices into them. In JavaScript mode it rebuilds the strings right in
+the output with `.map()`:
+
+```{r, comment='', attr.output='.js'}
+x = rep(c("apple", "banana", "cherry"), 4)
+cat(tojson(x, pretty = FALSE))
+cat(tojson(x, dict = 1, pretty = FALSE))
+```
+
+In strict JSON mode, the two parts are stored as an object, with the unique values
+under one key and the indices under another (the keys start with an invisible
+control character, so they never clash with your own names):
+
+```{r, comment='', attr.output='.json'}
+cat(tojson(x, dict = 1, mode = "json", pretty = FALSE))
+```
+
+On a longer vector the saving is real. Here are 300 values:
 
 ```{r}
 x = rep(c("apple", "banana", "cherry"), 100)
@@ -62,7 +113,63 @@ nchar(tojson(x, pretty = FALSE))            # without dict encoding
 nchar(tojson(x, dict = 1, pretty = FALSE))  # with dict encoding
 ```
 
-## Convert a single vector to JSON {#sec:json-vector}
+The number you give `dict` is a threshold on the share of unique values: a
+vector is encoded when its unique values are at most `dict` times its length.
+Here 3 of 12 values are unique (0.25), so `dict = 0.5` encodes it and
+`dict = 0.2` leaves it alone. `tojson()` also skips the encoding whenever it
+would not make the output shorter, which is why short or nearly unique vectors
+come out unchanged.
+
+### Ship big integer vectors compactly {#sec:json-pack}
+
+Long integer vectors can be packed as base64 with `tojson(pack = n)`, where `n`
+is the minimum length to pack. The array of numbers becomes one short string.
+Here is the start of each version of a vector of 1 to 200:
+
+```{r, comment='', attr.output='.json'}
+x = list(a = 1:200)
+cat(substr(tojson(x, pretty = FALSE), 1, 60), "...")
+cat(substr(tojson(x, pack = 10, mode = "json", pretty = FALSE), 1, 60), "...")
+```
+
+Mind the byte counts:
+
+```{r}
+nchar(tojson(x, pretty = FALSE))
+nchar(tojson(x, pack = 10, mode = "json", pretty = FALSE))
+```
+
+The packed object has a key that names the type of the typed array (`u8` for
+unsigned 8-bit integers here), and the base64 string holds the bytes. In the
+default JavaScript mode, the same vector appears as an `unpack({...})` call.
+
+The browser needs to turn the base64 string back into a typed array. That is
+what `json_unpack` and `json_reviver` are for. Both are plain character strings
+of JavaScript, ready to paste into a `<script>`.
+
+### Unpack packed values in the browser {#sec:json-unpack}
+
+`json_unpack` defines a JavaScript function `unpack(o)` that decodes one packed
+object (a plain array is returned as is) on demand. Use it when you parse the JSON yourself and want to unpack only the
+fields you need:
+
+```{r, comment='', attr.output='.js'}
+cat(json_unpack)
+```
+
+### Revive packed values while parsing {#sec:json-reviver}
+
+`json_reviver` includes `unpack()` and also defines `reviver`, so
+`JSON.parse(text, reviver)` expands packed and dictionary-encoded values
+automatically as it parses. Prefer `unpack()` for large payloads, since a reviver
+runs on every parsed value. Here is the part that `json_reviver` adds on top of
+`json_unpack`:
+
+```{r, comment='', attr.output='.js'}
+cat(substr(json_reviver, nchar(json_unpack) + 2, nchar(json_reviver)))
+```
+
+### Convert a single vector to JSON {#sec:json-vector}
 
 `tojson()` handles whole objects. For one atomic vector, `json_vector()` is the
 building block underneath. It returns the elements as strings (quoted by
@@ -74,45 +181,13 @@ json_vector(c("a", "b", NA), to_array = TRUE)
 json_vector(c(1, NA, Inf), to_array = TRUE, quote = FALSE)
 ```
 
-## Ship big integer vectors compactly {#sec:json-pack}
+## YAML and TAML {#sec:yaml}
 
-Long integer vectors can be packed as base64 with `tojson(pack = n)`, where `n`
-is the minimum length to pack. In `mode = "json"` the output is still valid
-JSON, and much shorter than the plain array:
+YAML is the usual choice for configuration and document metadata. The **yaml**
+package parses all of it, but it is a dependency. TAML ("tiny YAML") is the small
+subset that covers most config files, parsed with no packages at all.
 
-```{r}
-x = list(a = 1:200)
-nchar(tojson(x, pretty = FALSE))
-nchar(tojson(x, pack = 10, mode = "json", pretty = FALSE))
-```
-
-The browser needs to turn the base64 string back into a typed array. That is
-what `json_unpack` and `json_reviver` are for. Both are plain character strings
-of JavaScript, ready to paste into a `<script>`.
-
-## Unpack packed values in the browser {#sec:json-unpack}
-
-`json_unpack` defines a JavaScript function `unpack(o)` that decodes one packed
-object on demand. Use it when you parse the JSON yourself and want to unpack
-only the fields you need:
-
-```{r}
-cat(json_unpack)
-```
-
-## Revive packed values while parsing {#sec:json-reviver}
-
-`json_reviver` includes `unpack()` and also defines `reviver`, so
-`JSON.parse(text, reviver)` expands packed and dictionary-encoded values
-automatically as it parses (`tojson(dict = 1, mode = "json")` produces the
-latter). Prefer `unpack()` for large payloads, since a reviver runs on every
-parsed value:
-
-```{r}
-substr(json_reviver, nchar(json_unpack) + 2, nchar(json_reviver))
-```
-
-## Read simple YAML without dependencies {#sec:taml-load}
+### Read simple YAML without dependencies {#sec:taml-load}
 
 `taml_load()` parses TAML, a tiny subset of YAML (scalars, one-level nesting,
 and inline arrays like `[1, 2]`), with no need for the **yaml** package.
@@ -124,7 +199,7 @@ str(taml_load(x))
 str(taml_load(x, envir = FALSE))
 ```
 
-## Read TAML from a file {#sec:taml-file}
+### Read TAML from a file {#sec:taml-file}
 
 `taml_file()` is `taml_load()` for a path:
 
@@ -134,7 +209,7 @@ writeLines(c("title: Hello", "tags: [\"a\", \"b\"]"), f)
 str(taml_file(f))
 ```
 
-## Write a list as TAML {#sec:taml-save}
+### Write a list as TAML {#sec:taml-save}
 
 `taml_save()` is the inverse. It returns the lines, or writes them to a file
 when you give `path`:
@@ -147,7 +222,7 @@ taml_save(cfg, f)
 str(taml_file(f))
 ```
 
-## Parse YAML with whatever is available {#sec:yaml-load}
+### Parse YAML with whatever is available {#sec:yaml-load}
 
 `yaml_load()` uses the **yaml** package when it is installed and falls back to
 `taml_load()` otherwise. Force the fallback with `use_yaml = FALSE`:
@@ -156,7 +231,7 @@ str(taml_file(f))
 yaml_load("a: 1\nb: [x, y]", use_yaml = FALSE)
 ```
 
-## Split YAML metadata from the body {#sec:yaml-body}
+### Split YAML metadata from the body {#sec:yaml-body}
 
 `yaml_body()` splits a document into its front matter and the rest. The result
 has the parsed `yaml`, its `lines` range, and the `body`, in which the YAML
