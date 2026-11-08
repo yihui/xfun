@@ -1,0 +1,229 @@
+# Files Without Surprises {#chp:files}
+
+Reading and writing text files sounds trivial until a file with a stray byte
+in it shows up in your pipeline. This chapter covers UTF-8 reading and writing,
+appending without duplicates, joining several files, and rewriting text in
+place. The last two are powerful, so read their warnings carefully.
+
+## Read and write UTF-8 text {#sec:utf8}
+
+`read_utf8()` and `write_utf8()` assume UTF-8 and warn you if a file contains
+invalid bytes. They are thin wrappers around `readLines()` and `writeLines()`,
+with the encoding set correctly:
+
+```{r}
+f = tempfile()
+write_utf8(c("héllo", "wörld"), f)
+read_utf8(f)
+```
+
+## Append only the new lines {#sec:append-unique}
+
+Logging a list of things into a file over and over creates duplicates.
+`append_unique()` adds only the lines that are not already there:
+
+```{r}
+f = tempfile()
+write_utf8("apple", f)
+append_unique(c("apple", "banana", "cherry"), f)
+read_utf8(f)
+```
+
+## Concatenate several files {#sec:read-all}
+
+You have a handful of scripts and want one document with a heading above each.
+`read_all()` reads the files and combines them. The `before` and `after`
+arguments add text around each file, and each can be a function of the file
+path:
+
+```{r}
+scripts = system.file("scripts", c("call-fun.R", "child-pids.sh"), package = "xfun")
+read_all(scripts, before = function(f) paste("##", f), after = "")
+```
+
+## Replace text in a file {#sec:gsub-file}
+
+`gsub_file()` runs `gsub()` on a file in place. The other `gsub_*()` functions
+are built on top of it, so once you know this one, the rest follow:
+
+```{r}
+f = tempfile()
+write_utf8(c("color", "favourite", "grey"), f)
+gsub_file(f, "colour|grey", c(colour = "color", grey = "gray"))
+read_utf8(f)
+```
+
+::: {.callout-warning}
+These functions modify files in place. Back up the files or put them under
+version control first.
+:::
+
+## Replace text across a whole directory {#sec:gsub-dir}
+
+Renaming a package across a project means touching many files. `gsub_dir()`
+applies a substitution to every file in a directory. Narrow the scope with `ext`
+(file extensions) or `mimetype` (a regex on MIME types):
+
+```r
+# change "rmarkdown" to "litedown" in all .Rmd files
+gsub_dir("rmarkdown", "litedown", ext = "Rmd")
+
+# only in text files
+gsub_dir("foo", "bar", mimetype = "^text/")
+```
+
+## Transform a file with any function {#sec:process-file}
+
+When the change is not a simple substitution, pass your own function.
+`process_file()` reads the lines, runs them through the function, and writes
+the result back:
+
+```{r}
+f = tempfile()
+write_utf8(c("a", "b", "c"), f)
+process_file(f, rev)  # reverse the order of lines
+read_utf8(f)
+```
+
+## Append lines and keep the file sorted {#sec:append-utf8}
+
+`append_utf8()` adds lines to a file and sorts the result by default, which suits
+lists like ignore patterns or dependencies. Use `sort = FALSE` to keep the new
+lines at the end. (`append_unique()` in @sec:append-unique also drops
+duplicates.)
+
+```{r}
+f = tempfile()
+write_utf8(c('pear', 'apple'), f)
+append_utf8('banana', f)
+read_utf8(f)
+append_utf8('aaa', f, sort = FALSE)
+read_utf8(f)
+```
+
+## Read a binary file as bytes {#sec:read-bin}
+
+`read_bin()` is `readBin()` with sensible defaults: it returns the whole file as
+a raw vector. No need to look up the file size or open a connection:
+
+```{r}
+f = tempfile()
+cat('abc', file = f)
+read_bin(f)
+rawToChar(read_bin(f))
+read_bin(f, n = 2)  # only the first two bytes
+```
+
+## Replace text in a list of files {#sec:gsub-files}
+
+When you already know which files to change, `gsub_files()` takes a vector of
+paths. The remaining arguments go to `gsub_file()`, so the pattern and
+replacement work as before:
+
+```{r}
+d = tempfile()
+dir_create(d)
+fs = file.path(d, c('a.txt', 'b.txt'))
+for (f in fs) write_utf8('foo bar', f)
+gsub_files(fs, 'foo', 'baz')
+sapply(fs, read_utf8, USE.NAMES = FALSE)
+```
+
+## Replace text in files with a given extension {#sec:gsub-ext}
+
+`gsub_ext()` is a shortcut for `gsub_dir(ext = )`: pass the extension first,
+then the pattern and replacement. It searches the directory recursively by
+default:
+
+```{r}
+d = tempfile()
+dir_create(d)
+for (n in c('a.Rmd', 'b.md', 'c.Rmd')) write_utf8('foo bar', file.path(d, n))
+gsub_ext('Rmd', 'foo', 'baz', dir = d)
+sapply(list.files(d, full.names = TRUE), read_utf8, USE.NAMES = FALSE)
+```
+
+Only the two `.Rmd` files changed.
+
+## Sort the lines of a file {#sec:sort-file}
+
+`sort_file()` is `process_file()` with `sort()` as the function. Pass `fun` for a
+different order:
+
+```{r}
+f = tempfile()
+write_utf8(c('c', 'a', 'b'), f)
+sort_file(f)
+read_utf8(f)
+sort_file(f, fun = function(x) sort(x, decreasing = TRUE))
+read_utf8(f)
+```
+
+## Number files in sequence {#sec:rename-seq}
+
+Chapters named `intro.Rmd`, `methods.Rmd` and so on sort alphabetically, not in
+reading order. `rename_seq()` adds an incremental prefix to files matching a
+`pattern`. It defaults to a dry run that only shows the plan, so you can
+inspect it before setting `dry_run = FALSE`:
+
+```{r}
+d = tempfile()
+dir.create(d)
+for (n in c('intro.Rmd', '1-setup.Rmd', 'methods.Rmd')) write_utf8('x', file.path(d, n))
+in_dir(d, {
+  rename_seq('[.]Rmd$')  # dry run
+  rename_seq('[.]Rmd$', dry_run = FALSE)
+  list.files()
+})
+```
+
+Existing numeric prefixes are replaced (`replace = TRUE`), so rerunning after
+adding a file renumbers everything. Use `start = 0` to count from zero or
+`format = '%03d'` to control the padding.
+
+## Move files, even across disks {#sec:file-rename}
+
+`file.rename()` fails when the target lives on another volume. `file_rename()`
+falls back to copying and then deletes the original. It returns `TRUE` or
+`FALSE` per file:
+
+```{r}
+from = tempfile()
+to = tempfile()
+write_utf8('hi', from)
+file_rename(from, to)
+file.exists(c(from, to))
+```
+
+## Save objects to disk and load them lazily {#sec:lazy-save}
+
+`lazy_save()` writes each object to its own file (`1.rds`, `2.rds`, ...) plus an
+index file `0.rds`. `lazy_load()` then creates promises for them, so a file is
+read only when you first touch the object. That keeps start-up quick when most
+objects are never used. End `path` with a slash since file names are appended
+to it:
+
+```{r}
+path = file.path(tempfile(), '')
+dir_create(path)
+x = 1:3
+y = letters
+lazy_save(c('x', 'y'), path)
+list.files(path)
+rm(x, y)
+lazy_load(path)  # names of the objects, now lazily bound
+sum(x)
+```
+
+## Load lazily-saved objects {#sec:lazy-load}
+
+`lazy_load()` finds the index file and picks the format (`rds`, `raw`, `qs2`)
+for you. Objects go into the calling environment unless you give `envir`, which
+keeps your workspace clean:
+
+```{r}
+e = new.env()
+lazy_load(path, envir = e)
+ls(e)
+e$y[1:5]
+```

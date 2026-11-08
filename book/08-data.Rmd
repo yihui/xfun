@@ -1,0 +1,170 @@
+# Moving Data Around {#chp:data}
+
+Sooner or later you need to hand data to something that is not R: a web page,
+a JavaScript library, or an HTML file that must carry its own attachments.
+This chapter covers two encodings that make that easy, JSON and base64.
+
+## Encode and decode base64 {#sec:base64}
+
+`base64_encode()` and `base64_decode()` convert between raw bytes and base64
+strings. `base64_uri()` goes one step further and makes a data URI, which embeds
+a file directly in HTML. It is the mechanism behind `xfun::embed_file()`:
+
+```{r}
+raw_bytes = charToRaw("Hello, xfun!")
+(b64 = base64_encode(raw_bytes))
+rawToChar(base64_decode(b64))
+
+# data URI for a small file
+f = system.file("LICENSE", package = "xfun")
+substr(base64_uri(f), 1, 60)
+```
+
+## Turn R objects into JSON {#sec:tojson}
+
+`tojson()` converts R objects to JSON (or JavaScript). Named lists become
+objects, unnamed lists become arrays, matrices go by row, and data frames go
+by column:
+
+```{r}
+tojson(list(x = 1:3, y = c(TRUE, FALSE), z = NULL))
+tojson(head(iris, 3))   # data frame: columns
+tojson(matrix(1:6, 2))  # matrix: rows
+```
+
+## Embed JavaScript in the JSON {#sec:js}
+
+Need a callback in your configuration? Wrap a string in `js()` and it is
+written as raw JavaScript, with no quotes:
+
+```{r}
+tojson(list(n = 42, callback = js("function(x) { return x * 2; }")))
+```
+
+## Get strict JSON {#sec:json-mode}
+
+By default the output is JavaScript, which can contain things that JSON does
+not allow. For output that is valid for `JSON.parse()`, use `mode = "json"`.
+Dates become strings and `Inf` becomes `null`:
+
+```{r}
+tojson(list(d = Sys.Date(), x = c(1, Inf, -Inf)), mode = "json")
+```
+
+## Shrink repeated values {#sec:dict}
+
+When a vector repeats the same few values many times, `dict` encodes it as an
+index plus a list of unique values, which can be much shorter:
+
+```{r}
+x = rep(c("apple", "banana", "cherry"), 100)
+nchar(tojson(x, pretty = FALSE))            # without dict encoding
+nchar(tojson(x, dict = 1, pretty = FALSE))  # with dict encoding
+```
+
+## Convert a single vector to JSON {#sec:json-vector}
+
+`tojson()` handles whole objects. For one atomic vector, `json_vector()` is the
+building block underneath. It returns the elements as strings (quoted by
+default, `NA` becomes `null`), or a single array string with `to_array = TRUE`:
+
+```{r}
+json_vector(c("a", "b", NA))
+json_vector(c("a", "b", NA), to_array = TRUE)
+json_vector(c(1, NA, Inf), to_array = TRUE, quote = FALSE)
+```
+
+## Ship big integer vectors compactly {#sec:json-pack}
+
+Long integer vectors can be packed as base64 with `tojson(pack = n)`, where `n`
+is the minimum length to pack. In `mode = "json"` the output is still valid
+JSON, and much shorter than the plain array:
+
+```{r}
+x = list(a = 1:200)
+nchar(tojson(x, pretty = FALSE))
+nchar(tojson(x, pack = 10, mode = "json", pretty = FALSE))
+```
+
+The browser needs to turn the base64 string back into a typed array. That is
+what `json_unpack` and `json_reviver` are for. Both are plain character strings
+of JavaScript, ready to paste into a `<script>`.
+
+## Unpack packed values in the browser {#sec:json-unpack}
+
+`json_unpack` defines a JavaScript function `unpack(o)` that decodes one packed
+object on demand. Use it when you parse the JSON yourself and want to unpack
+only the fields you need:
+
+```{r}
+cat(json_unpack)
+```
+
+## Revive packed values while parsing {#sec:json-reviver}
+
+`json_reviver` includes `unpack()` and also defines `reviver`, so
+`JSON.parse(text, reviver)` expands packed and dictionary-encoded values
+automatically as it parses (`tojson(dict = 1, mode = "json")` produces the
+latter). Prefer `unpack()` for large payloads, since a reviver runs on every
+parsed value:
+
+```{r}
+substr(json_reviver, nchar(json_unpack) + 2, nchar(json_reviver))
+```
+
+## Read simple YAML without dependencies {#sec:taml-load}
+
+`taml_load()` parses TAML, a tiny subset of YAML (scalars, one-level nesting,
+and inline arrays like `[1, 2]`), with no need for the **yaml** package.
+R code tagged with `!expr` is evaluated unless you pass `envir = FALSE`:
+
+```{r}
+x = c("a: 1", "b: [1, 2]", "c: !expr 1 + 1", "d:", "  e: true")
+str(taml_load(x))
+str(taml_load(x, envir = FALSE))
+```
+
+## Read TAML from a file {#sec:taml-file}
+
+`taml_file()` is `taml_load()` for a path:
+
+```{r}
+f = tempfile(fileext = ".yml")
+writeLines(c("title: Hello", "tags: [\"a\", \"b\"]"), f)
+str(taml_file(f))
+```
+
+## Write a list as TAML {#sec:taml-save}
+
+`taml_save()` is the inverse. It returns the lines, or writes them to a file
+when you give `path`:
+
+```{r}
+cfg = list(title = "Hi", n = 2, tags = c("a", "b"), sub = list(ok = TRUE))
+taml_save(cfg)
+f = tempfile(fileext = ".yml")
+taml_save(cfg, f)
+str(taml_file(f))
+```
+
+## Parse YAML with whatever is available {#sec:yaml-load}
+
+`yaml_load()` uses the **yaml** package when it is installed and falls back to
+`taml_load()` otherwise. Force the fallback with `use_yaml = FALSE`:
+
+```{r}
+yaml_load("a: 1\nb: [x, y]", use_yaml = FALSE)
+```
+
+## Split YAML metadata from the body {#sec:yaml-body}
+
+`yaml_body()` splits a document into its front matter and the rest. The result
+has the parsed `yaml`, its `lines` range, and the `body`, in which the YAML
+lines are blanked so line numbers stay put. Use `parse = FALSE` to get the raw
+YAML text:
+
+```{r}
+doc = c("---", "title: Hello", "---", "", "Content.")
+str(yaml_body(doc))
+yaml_body(doc, parse = FALSE)$yaml
+```

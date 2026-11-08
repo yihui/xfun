@@ -1,0 +1,57 @@
+# When Things Fail {#chp:errors}
+
+Errors are normal, especially with networks and files. What matters is how
+little code you need to handle them. This chapter has three short recipes.
+
+## Ask whether code throws an error {#sec:try-error}
+
+You do not always need the error, only whether there was one. `try_error()`
+returns `TRUE` or `FALSE` and does not stop the script, which is less clunky
+than a `tryCatch()`:
+
+```{r}
+try_error(log(1))
+try_error(log("a"))
+```
+
+## Try quietly {#sec:try-silent}
+
+`try_silent()` behaves like `try(silent = TRUE)`: it does not print the error
+message, and returns an object of class `try-error` if something went wrong:
+
+```{r}
+z = try_silent(sqrt("x"))
+inherits(z, "try-error")
+```
+
+## Retry a flaky operation {#sec:retry}
+
+Network calls fail for no good reason. `retry()` calls a function repeatedly
+until it succeeds or the attempts run out, pausing between tries:
+
+```r
+# retry a download up to 3 times, waiting 5 seconds between attempts
+retry(download.file, url = "https://example.com/data.csv", destfile = "data.csv")
+```
+
+
+## Run cleanup when the caller exits {#sec:exit-call}
+
+`on.exit()` only works for the function it is written in. `exit_call()` lets a
+helper register cleanup in its *parent* function, as if the parent had called
+`on.exit()` itself. Here `setup()` registers the message, and it fires when
+`task()` finishes:
+
+```{r}
+setup = function() {
+  cat("setting up\n")
+  exit_call(function() cat("cleaning up\n"))
+}
+task = function() {
+  setup()
+  cat("working\n")
+}
+task()
+```
+
+Use `n = 3` to target the grandparent, and so on.

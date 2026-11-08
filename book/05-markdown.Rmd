@@ -1,0 +1,123 @@
+# Markdown in, Markdown out {#chp:markdown}
+
+Markdown is plain text, so generating it is mostly string work, as long as you
+get the fences, pipes, and dollar signs right. The recipes here write
+Markdown from R objects, and read it back without being fooled by code blocks.
+
+## Turn a data frame into a table {#sec:md-table}
+
+`md_table()` makes a pipe table, ready to paste into any Markdown document:
+
+```{r}
+md_table(head(mtcars[, 1:4], 3))
+```
+
+The result is a character vector, one line per element. Use `digits` and `na`
+to tidy the cells, and `escape = TRUE` when the text contains Markdown
+characters that should stay literal:
+
+```{r}
+df = data.frame(x = c(1.23456, NA), y = c('a|b', '<foo:bar>'))
+md_table(df, digits = 2, na = 'n/a', escape = TRUE)
+```
+
+For long data, `limit = 10` keeps only the first and last rows and omits the
+middle.
+
+## Wrap content in a fenced block {#sec:fenced-block}
+
+Code blocks and fenced Divs are just content between delimiter lines.
+`fenced_block()` writes them, with optional attributes:
+
+```{r}
+fenced_block(c('x = 1', 'y = 2'), attrs = '.r')
+```
+
+Because the output starts with a blank line and the vector is easy to
+`cat()`, it composes well with other text.
+
+## Build a fenced Div {#sec:fenced-div}
+
+A fenced Div uses colons instead of backticks. `fenced_div()` is shorthand for
+`fenced_block(char = ':')`:
+
+```{r}
+fenced_div('Careful with this one.', attrs = c('.callout-warning', '#risk'))
+```
+
+## Pick a fence that cannot be broken {#sec:make-fence}
+
+If your content already contains three backticks, a three-backtick fence ends
+the block too early. `make_fence()` returns a fence one character longer than
+the longest run in the content, and `fenced_block()` uses it automatically:
+
+```{r}
+x = c('```r', '1 + 1', '```')
+make_fence(x)
+fenced_block(x, attrs = '.md')
+```
+
+## Shield math from the Markdown parser {#sec:protect-math}
+
+Underscores in `$a_1 + b_2$` can make Markdown italicize the text between them.
+`protect_math()` wraps math in backticks so that the parser leaves it alone, and
+you can restore it after rendering (the `token` argument marks the spots):
+
+```{r}
+protect_math('Inline $a_1 + b_2$ and display $$x_1^2$$ done.')
+```
+
+Inline math becomes `\(...\)` inside backticks, and display math keeps its
+dollar signs.
+
+## Find the prose lines in Markdown {#sec:prose-index}
+
+A `#` inside a code block is not a heading. `prose_index()` returns the indices
+of lines outside code fences, so you can search or rewrite only the text:
+
+```{r}
+x = c('Intro', '```r', '# a comment, not a heading', '```', 'The end')
+i = prose_index(x)
+i
+x[i]
+```
+
+If the fences are unbalanced, all lines are treated as prose and you get a
+warning.
+
+## Convert R package news to Markdown {#sec:news2md}
+
+`news2md()` reads a package's news through `news()` and writes it as Markdown,
+with versions as first-level headers and categories as second-level ones. Set
+`output = NA` to get the lines back instead of writing `NEWS.md`:
+
+```{r}
+head(news2md('R', output = NA), 4)
+```
+
+## Write a message to stdout {#sec:msg-cat}
+
+`message()` goes to stderr, which is awkward when you capture stdout, as
+knitr-style tools often do. `msg_cat()` writes to stdout but can still be
+silenced by `suppressMessages()`. It does not add a newline for you:
+
+```{r}
+msg_cat('Working...\n')
+suppressMessages(msg_cat('You will not see this.\n'))
+```
+
+## Control how values print when recording code {#sec:record-print}
+
+`record()` runs code and keeps the output. For each visible value, it calls the
+generic `record_print()`, so you can decide how your class shows up. Return a
+`new_record()` with the content and its type:
+
+```{r}
+m = structure(3.5, class = 'money')
+record_print.money = function(x, ...) {
+  new_record(paste('USD', unclass(x)), 'output')
+}
+record('m')
+```
+
+Without the method, `m` would print through the normal `print()` output.
