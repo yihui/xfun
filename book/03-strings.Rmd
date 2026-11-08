@@ -35,7 +35,7 @@ you:
 
 ```{r}
 join_words(c("apples", "oranges", "pears"))
-join_words(c("R", "Python", "Julia"), and = "or")
+join_words(c("R", "Python", "Julia"), and = "or ")
 join_words(c("one", "two", "three"), before = "'", after = "'")
 ```
 
