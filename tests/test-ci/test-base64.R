@@ -1,6 +1,7 @@
 library(testit)
 
-assert('.mime_cmd() works', {
+# Alpine has no `file` by default
+if (is_windows() || Sys.which('file') != '') assert('.mime_cmd() works', {
   # test some common file types
   fs = list.files(R.home('doc'), '[.](html|pdf|png)$', recursive = TRUE, full.names = TRUE)
   fs = fs[!duplicated(file_ext(fs))]

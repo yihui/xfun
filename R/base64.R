@@ -98,7 +98,8 @@ base64_uri = function(x, type = mime_type(x)) {
 #' @return A character vector of MIME types.
 #' @note When querying the MIME type via the system command, the result will be
 #'   cached to `xfun:::cache_dir()`. This will make future queries much faster,
-#'   since running the command in real time can be a little slow.
+#'   since running the command in real time can be a little slow. If the command
+#'   is not available, files with unknown extensions get `application/octet-stream`.
 #' @export
 #' @examplesIf tolower(Sys.getenv('CI')) == 'true'
 #' f = list.files(R.home("doc"), full.names = TRUE)
@@ -121,11 +122,13 @@ mime_type = function(x, use_mime = loadable('mime'), empty = 'text/plain') {
     }
     if (is.na(m)) {
       m = .mime_cmd(x[i])
-      if (grepl('^[a-zA-Z]+/[-a-zA-Z0-9.+]+$', m)) {
-        if (e != '') {
-          db[e] = m; if (dir_create(dirname(p))) saveRDS(db, p)
-        }
-      } else warning("'", m, "' does not appear to be a valid MIME type for '", x[i], "'")
+      # no `file`/`powershell` command: fall back to a generic type, not cached
+      if (is.na(m)) m = 'application/octet-stream'
+      else if (!grepl('^[a-zA-Z]+/[-a-zA-Z0-9.+]+$', m)) {
+        warning("'", m, "' does not appear to be a valid MIME type for '", x[i], "'")
+      } else if (e != '') {
+        db[e] = m; if (dir_create(dirname(p))) saveRDS(db, p)
+      }
     }
     res[i] = m
   }
@@ -156,7 +159,7 @@ mime_type = function(x, use_mime = loadable('mime'), empty = 'text/plain') {
     cmd = 'powershell'
     arg = c('-ExecutionPolicy', 'Bypass', '-File', shQuote(ps1))
   }
-  if (Sys.which(cmd) == '') stop("The '", cmd, "' command is not found")
+  if (Sys.which(cmd) == '') return(NA_character_)
   system2(cmd, c(arg, shQuote(x)), stdout = TRUE)[1]
 }
 

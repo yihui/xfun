@@ -75,3 +75,12 @@ assert('mime_type() without mime package uses system command', {
   (m %==% 'text/css')
   unlink(f)
 })
+
+assert('mime_type() falls back to a generic type if no system command exists', {
+  f = tempfile(fileext = '.xyzq'); file.create(f)
+  d = tempfile(); dir.create(d)
+  opt = Sys.getenv('PATH')
+  on.exit({unlink(c(f, d), recursive = TRUE); Sys.setenv(PATH = opt)}, add = TRUE)
+  Sys.setenv(PATH = d)  # no `file` or `powershell` on PATH
+  (mime_type(f, use_mime = FALSE) %==% 'application/octet-stream')
+})

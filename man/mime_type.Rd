@@ -28,7 +28,8 @@ exist if Cygwin or Rtools is installed. If it is not found, .NET's
 \note{
 When querying the MIME type via the system command, the result will be
 cached to \code{xfun:::cache_dir()}. This will make future queries much faster,
-since running the command in real time can be a little slow.
+since running the command in real time can be a little slow. If the command
+is not available, files with unknown extensions get \code{application/octet-stream}.
 }
 \examples{\dontshow{if (tolower(Sys.getenv('CI')) == 'true') \{}
 f = list.files(R.home("doc"), full.names = TRUE)
