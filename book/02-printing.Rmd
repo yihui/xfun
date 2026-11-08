@@ -48,17 +48,27 @@ become nested tabsets. By default each tab shows `str()` output, but you can
 pass any function you like:
 
 ```{r}
-tabset(head(iris, 3))
+survey = list(
+  meta = list(date = '2026-11-07', n = 6),
+  scores = list(
+    math = c(90, 85, 72, 64, 98, 80),
+    reading = c(70, 95, 88, 91, 60, 77)
+  ),
+  notes = 'Two students retook the reading test.'
+)
+tabset(survey)
 ```
 
-Pass a function to change what each tab shows, such as `print()` instead of
+The top level has three tabs, and `meta` and `scores` each hold a nested set of
+tabs. Pass a
+function to change what each tab shows, such as a numeric summary instead of
 `str()`. If the function returns `tab_content()`, the Markdown you give it is
 used as the tab content as is:
 
 ```{r}
-tabset(head(iris, 3), function(x) {
-  if (is.factor(x)) tab_content(join_words(levels(x), before = "`"))
-  else print(summary(x))
+tabset(survey, function(x) {
+  if (is.numeric(x) && length(x) > 1) print(summary(x))
+  else tab_content(paste('**Value:**', x))
 })
 ```
 
