@@ -47,17 +47,23 @@ When a list is too big to print in one go, put each member in its own tab.
 become nested tabsets. By default each tab shows `str()` output, but you can
 pass any function you like:
 
-```r
-tabset(iris)            # one tab per column
-tabset(iris, print)     # print() instead of str()
-tabset(iris, function(x) {
+```{r}
+tabset(head(iris, 3))
+```
+
+Pass a function to change what each tab shows, such as `print()` instead of
+`str()`. If the function returns `tab_content()`, the Markdown you give it is
+used as the tab content as is:
+
+```{r}
+tabset(head(iris, 3), function(x) {
   if (is.factor(x)) tab_content(join_words(levels(x), before = "`"))
   else print(summary(x))
 })
 ```
 
-The tabsets need **litedown** to render, which is the case when you knit with
-it.
+Inside a **litedown** document, the CSS and JS that the tabs need are added for
+you. You don't have to enable them in the document metadata.
 
 ## Make file sizes readable {#sec:format-bytes}
 

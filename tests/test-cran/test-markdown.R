@@ -224,3 +224,11 @@ assert('embed_dir() compresses a directory into a zip link', {
   (has_match(link, I('.zip')))
   unlink(d, recursive = TRUE)
 })
+
+assert('record_print() on tabset() also emits the CSS/JS it needs', {
+  res = record_print(tabset(list(a = 1)))
+  if (loadable('litedown')) {
+    (length(res) %==% 2L)
+    (any(grepl('tabsets', res[[2]], fixed = TRUE)))
+  } else (inherits(res, 'xfun_md_viewable'))
+})

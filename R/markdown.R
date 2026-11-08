@@ -430,6 +430,15 @@ md_viewable = function(x, ...) {
   structure(x, class = c('xfun_md_viewable', 'record_asis'), ...)
 }
 
+# when recorded (e.g., in a litedown code chunk), also emit the CSS/JS assets
+# that the content needs, so it works without configuring them in the document
+#' @export
+record_print.xfun_md_viewable = function(x, ...) {
+  m = attr2(x, 'meta')
+  if (loadable('litedown') && any(c('css', 'js') %in% names(m)))
+    list(x, litedown::vest(css = m$css, js = m$js)) else x
+}
+
 #' @export
 print.xfun_md_viewable = function(x, ...) {
   if (loadable('litedown')) {
