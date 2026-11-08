@@ -28,8 +28,9 @@ on paths that do not exist. `same_path()` compares two paths after
 normalizing both, so you do not need to care how each was written:
 
 ```{r}
-normalize_path("~")
+# "~" expands to the home directory, so both point to the same place
 same_path("~/foo", file.path(Sys.getenv("HOME"), "foo"))
+same_path("~/foo", "~/bar")
 ```
 
 ## Find files relative to the project root {#sec:from-root}
@@ -106,12 +107,13 @@ first hit, handy for a list of candidate config locations. It errors if none
 exist, unless `error = FALSE`:
 
 ```{r}
-f = tempfile()
-write_utf8('x', f)
-x = c('no-such-file.txt', f)
-existing_files(x)
-existing_files(x, first = TRUE)
-existing_files('no-such-file.txt', first = TRUE, error = FALSE)
+in_dir(tempdir(), {
+  write_utf8('x', 'config.txt')
+  x = c('no-such-file.txt', 'config.txt')
+  print(existing_files(x))
+  print(existing_files(x, first = TRUE))
+  print(existing_files('no-such-file.txt', first = TRUE, error = FALSE))
+})
 ```
 
 ## Remove a directory only if it is empty {#sec:del-empty-dir}
@@ -170,7 +172,7 @@ paths or `in_dir()`:
 d = tempfile()
 dir_create(file.path(d, 'sub'))
 write_utf8('x', file.path(d, 'a.txt'))
-mark_dirs(list.files(d, full.names = TRUE))
+in_dir(d, mark_dirs(list.files()))
 ```
 
 ## Guess the MIME type of a file {#sec:mime-type}

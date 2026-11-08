@@ -38,7 +38,7 @@ path:
 
 ```{r}
 scripts = system.file("scripts", c("call-fun.R", "child-pids.sh"), package = "xfun")
-read_all(scripts, before = function(f) paste("##", f), after = "")
+read_all(scripts, before = function(f) paste("##", basename(f)), after = "")
 ```
 
 ## Replace text in a file {#sec:gsub-file}
