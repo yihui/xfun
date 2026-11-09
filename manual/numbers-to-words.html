@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="generator" content="litedown 1.0.12">
+<title>Convert numbers to English words</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/default.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/article.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/copy-button.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/heading-anchor.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/pages.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/site.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/prism-xcode.min.css">
+</head>
+<body>
+<nav class="site-nav"><p><a href="../index.html" class="brand">xfun</a> <small class="version">v0.62.16</small>
+<a href="../manual.html">Manual</a>
+<a href="../news.html">News</a>
+<a href="../book/">Book</a>
+<a href="../playground/">Playground</a>
+<span class="pagesjs-toggle"></span>
+<a href="https://github.com/yihui/xfun/" class="right"><img src="https://cdn.jsdelivr.net/npm/@primer/octicons@19/build/svg/mark-github-24.svg" alt="GitHub" class="no-invert" /></a></p></nav>
+<header class="frontmatter">
+<div class="title"><h1>Convert numbers to English words</h1></div>
+
+
+
+</header>
+<main>
+<article class="">
+<nav id="TOC" class="side side-left">
+<ul>
+<li><a href="#sec:description">Description</a></li>
+<li><a href="#sec:usage">Usage</a></li>
+<li><a href="#sec:arguments">Arguments</a></li>
+<li><a href="#sec:value">Value</a></li>
+<li><a href="#sec:author-s">Author(s)</a></li>
+<li><a href="#sec:examples">Examples</a></li>
+</ul>
+</nav>
+<h2 id="sec:description" class="unnumbered">Description</h2>
+<p>This can be helpful when writing reports with <span class="pkg">knitr</span>/<span class="pkg">rmarkdown</span> if
+we want to print numbers as English words in the output. The function <code>n2w()</code>
+is an alias of <code>numbers_to_words()</code>.
+</p>
+<h2 id="sec:usage" class="unnumbered">Usage</h2>
+<pre><code class="language-r">numbers_to_words(x, cap = FALSE, hyphen = TRUE, and = FALSE)
+
+n2w(x, cap = FALSE, hyphen = TRUE, and = FALSE)</code></pre>
+<h2 id="sec:arguments" class="unnumbered">Arguments</h2>
+<table class="desc-table" role = "presentation">
+<tr><td><code>x</code></td>
+<td>
+<p>A numeric vector. The absolute values should be less than <code>1e15</code>.</p>
+</td></tr>
+<tr><td><code>cap</code></td>
+<td>
+<p>Whether to capitalize the first letter of the word. This can be
+useful when the word is at the beginning of a sentence. Default is <code>FALSE</code>.</p>
+</td></tr>
+<tr><td><code>hyphen</code></td>
+<td>
+<p>Whether to insert hyphen (-) when the number is between 21 and
+99 (except 30, 40, etc.).</p>
+</td></tr>
+<tr><td><code>and</code></td>
+<td>
+<p>Whether to insert <code>and</code> between hundreds and tens, e.g., write 110
+as &ldquo;one hundred and ten&rdquo; if <code>TRUE</code> instead of &ldquo;one hundred
+ten&rdquo;.</p>
+</td></tr>
+</table>
+<h2 id="sec:value" class="unnumbered">Value</h2>
+<p>A character vector.
+</p>
+<h2 id="sec:author-s" class="unnumbered">Author(s)</h2>
+<p>Daijiang Li
+</p>
+<h2 id="sec:examples" class="unnumbered">Examples</h2>
+<pre><code class="language-r">library(xfun)
+n2w(0, cap = TRUE)
+</code></pre>
+<pre><code>#&gt; [1] &quot;Zero&quot;
+</code></pre>
+<pre><code class="language-r">n2w(0:121, and = TRUE)
+</code></pre>
+<pre><code>#&gt;   [1] &quot;zero&quot;                       &quot;one&quot;                       
+#&gt;   [3] &quot;two&quot;                        &quot;three&quot;                     
+#&gt;   [5] &quot;four&quot;                       &quot;five&quot;                      
+#&gt;   [7] &quot;six&quot;                        &quot;seven&quot;                     
+#&gt;   [9] &quot;eight&quot;                      &quot;nine&quot;                      
+#&gt;  [11] &quot;ten&quot;                        &quot;eleven&quot;                    
+#&gt;  [13] &quot;twelve&quot;                     &quot;thirteen&quot;                  
+#&gt;  [15] &quot;fourteen&quot;                   &quot;fifteen&quot;                   
+#&gt;  [17] &quot;sixteen&quot;                    &quot;seventeen&quot;                 
+#&gt;  [19] &quot;eighteen&quot;                   &quot;nineteen&quot;                  
+#&gt;  [21] &quot;twenty&quot;                     &quot;twenty-one&quot;                
+#&gt;  [23] &quot;twenty-two&quot;                 &quot;twenty-three&quot;              
+#&gt;  [25] &quot;twenty-four&quot;                &quot;twenty-five&quot;               
+#&gt;  [27] &quot;twenty-six&quot;                 &quot;twenty-seven&quot;              
+#&gt;  [29] &quot;twenty-eight&quot;               &quot;twenty-nine&quot;               
+#&gt;  [31] &quot;thirty&quot;                     &quot;thirty-one&quot;                
+#&gt;  [33] &quot;thirty-two&quot;                 &quot;thirty-three&quot;              
+#&gt;  [35] &quot;thirty-four&quot;                &quot;thirty-five&quot;               
+#&gt;  [37] &quot;thirty-six&quot;                 &quot;thirty-seven&quot;              
+#&gt;  [39] &quot;thirty-eight&quot;               &quot;thirty-nine&quot;               
+#&gt;  [41] &quot;forty&quot;                      &quot;forty-one&quot;                 
+#&gt;  [43] &quot;forty-two&quot;                  &quot;forty-three&quot;               
+#&gt;  [45] &quot;forty-four&quot;                 &quot;forty-five&quot;                
+#&gt;  [47] &quot;forty-six&quot;                  &quot;forty-seven&quot;               
+#&gt;  [49] &quot;forty-eight&quot;                &quot;forty-nine&quot;                
+#&gt;  [51] &quot;fifty&quot;                      &quot;fifty-one&quot;                 
+#&gt;  [53] &quot;fifty-two&quot;                  &quot;fifty-three&quot;               
+#&gt;  [55] &quot;fifty-four&quot;                 &quot;fifty-five&quot;                
+#&gt;  [57] &quot;fifty-six&quot;                  &quot;fifty-seven&quot;               
+#&gt;  [59] &quot;fifty-eight&quot;                &quot;fifty-nine&quot;                
+#&gt;  [61] &quot;sixty&quot;                      &quot;sixty-one&quot;                 
+#&gt;  [63] &quot;sixty-two&quot;                  &quot;sixty-three&quot;               
+#&gt;  [65] &quot;sixty-four&quot;                 &quot;sixty-five&quot;                
+#&gt;  [67] &quot;sixty-six&quot;                  &quot;sixty-seven&quot;               
+#&gt;  [69] &quot;sixty-eight&quot;                &quot;sixty-nine&quot;                
+#&gt;  [71] &quot;seventy&quot;                    &quot;seventy-one&quot;               
+#&gt;  [73] &quot;seventy-two&quot;                &quot;seventy-three&quot;             
+#&gt;  [75] &quot;seventy-four&quot;               &quot;seventy-five&quot;              
+#&gt;  [77] &quot;seventy-six&quot;                &quot;seventy-seven&quot;             
+#&gt;  [79] &quot;seventy-eight&quot;              &quot;seventy-nine&quot;              
+#&gt;  [81] &quot;eighty&quot;                     &quot;eighty-one&quot;                
+#&gt;  [83] &quot;eighty-two&quot;                 &quot;eighty-three&quot;              
+#&gt;  [85] &quot;eighty-four&quot;                &quot;eighty-five&quot;               
+#&gt;  [87] &quot;eighty-six&quot;                 &quot;eighty-seven&quot;              
+#&gt;  [89] &quot;eighty-eight&quot;               &quot;eighty-nine&quot;               
+#&gt;  [91] &quot;ninety&quot;                     &quot;ninety-one&quot;                
+#&gt;  [93] &quot;ninety-two&quot;                 &quot;ninety-three&quot;              
+#&gt;  [95] &quot;ninety-four&quot;                &quot;ninety-five&quot;               
+#&gt;  [97] &quot;ninety-six&quot;                 &quot;ninety-seven&quot;              
+#&gt;  [99] &quot;ninety-eight&quot;               &quot;ninety-nine&quot;               
+#&gt; [101] &quot;one hundred&quot;                &quot;one hundred and one&quot;       
+#&gt; [103] &quot;one hundred and two&quot;        &quot;one hundred and three&quot;     
+#&gt; [105] &quot;one hundred and four&quot;       &quot;one hundred and five&quot;      
+#&gt; [107] &quot;one hundred and six&quot;        &quot;one hundred and seven&quot;     
+#&gt; [109] &quot;one hundred and eight&quot;      &quot;one hundred and nine&quot;      
+#&gt; [111] &quot;one hundred and ten&quot;        &quot;one hundred and eleven&quot;    
+#&gt; [113] &quot;one hundred and twelve&quot;     &quot;one hundred and thirteen&quot;  
+#&gt; [115] &quot;one hundred and fourteen&quot;   &quot;one hundred and fifteen&quot;   
+#&gt; [117] &quot;one hundred and sixteen&quot;    &quot;one hundred and seventeen&quot; 
+#&gt; [119] &quot;one hundred and eighteen&quot;   &quot;one hundred and nineteen&quot;  
+#&gt; [121] &quot;one hundred and twenty&quot;     &quot;one hundred and twenty-one&quot;
+</code></pre>
+<pre><code class="language-r">n2w(1e6)
+</code></pre>
+<pre><code>#&gt; [1] &quot;one million&quot;
+</code></pre>
+<pre><code class="language-r">n2w(1e11 + 12345678)
+</code></pre>
+<pre><code>#&gt; [1] &quot;one hundred billion, twelve million, three hundred forty-five thousand, six hundred seventy-eight&quot;
+</code></pre>
+<pre><code class="language-r">n2w(-987654321)
+</code></pre>
+<pre><code>#&gt; [1] &quot;minus nine hundred eighty-seven million, six hundred fifty-four thousand, three hundred twenty-one&quot;
+</code></pre>
+<pre><code class="language-r">n2w(1e15 - 1)
+</code></pre>
+<pre><code>#&gt; [1] &quot;nine hundred ninety-nine trillion, nine hundred ninety-nine billion, nine hundred ninety-nine million, nine hundred ninety-nine thousand, nine hundred ninety-nine&quot;
+</code></pre>
+<pre><code class="language-r">n2w(123.456)
+</code></pre>
+<pre><code>#&gt; [1] &quot;one hundred twenty-three point four five six&quot;
+</code></pre>
+<pre><code class="language-r">n2w(123.45678901)
+</code></pre>
+<pre><code>#&gt; [1] &quot;one hundred twenty-three point four five six seven eight nine zero one&quot;
+</code></pre>
+<pre><code class="language-r">n2w(123.456789098765)
+</code></pre>
+<pre><code>#&gt; [1] &quot;one hundred twenty-three point four five six seven eight nine zero nine eight seven six five&quot;
+</code></pre>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/manual.min.css">
+
+</article>
+</main>
+<section class="comments">
+<script src="https://giscus.app/client.js" data-strict="1" data-theme="preferred_color_scheme" data-loading="lazy" data-repo="yihui/yihui.org" data-repo-id="MDEwOlJlcG9zaXRvcnk4MDc3NDg0NA==" data-category="Comments" data-category-id="DIC_kwDOBNCGvM4COkjD" crossorigin="anonymous" async></script>
+</section>
+<footer><div class="flex-col">
+<p>Developed by <a href="https://yihui.org">Yihui Xie</a></p>
+<p>Site built with <a href="https://github.com/yihui/litedown">litedown</a> v1.0.12</p>
+</div></footer>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/sidenotes.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/toc-highlight.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/copy-button.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/heading-anchor.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/pages.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/nav-highlight.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+</body>
+</html>

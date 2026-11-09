@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="generator" content="litedown 1.0.12">
+<title>Return the (possible) root directory of a project</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/default.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/article.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/copy-button.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/heading-anchor.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/pages.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/site.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/prism-xcode.min.css">
+</head>
+<body>
+<nav class="site-nav"><p><a href="../index.html" class="brand">xfun</a> <small class="version">v0.62.16</small>
+<a href="../manual.html">Manual</a>
+<a href="../news.html">News</a>
+<a href="../book/">Book</a>
+<a href="../playground/">Playground</a>
+<span class="pagesjs-toggle"></span>
+<a href="https://github.com/yihui/xfun/" class="right"><img src="https://cdn.jsdelivr.net/npm/@primer/octicons@19/build/svg/mark-github-24.svg" alt="GitHub" class="no-invert" /></a></p></nav>
+<header class="frontmatter">
+<div class="title"><h1>Return the (possible) root directory of a project</h1></div>
+
+
+
+</header>
+<main>
+<article class="">
+<nav id="TOC" class="side side-left">
+<ul>
+<li><a href="#sec:description">Description</a></li>
+<li><a href="#sec:usage">Usage</a></li>
+<li><a href="#sec:arguments">Arguments</a></li>
+<li><a href="#sec:details">Details</a></li>
+<li><a href="#sec:value">Value</a></li>
+<li><a href="#sec:note">Note</a></li>
+</ul>
+</nav>
+<h2 id="sec:description" class="unnumbered">Description</h2>
+<p>Given a path of a file (or dir) in a potential project (e.g., an R package or
+an RStudio project), return the path to the project root directory.
+</p>
+<h2 id="sec:usage" class="unnumbered">Usage</h2>
+<pre><code class="language-r">proj_root(path = "./", rules = root_rules)
+
+root_rules</code></pre>
+<h2 id="sec:arguments" class="unnumbered">Arguments</h2>
+<table class="desc-table" role = "presentation">
+<tr><td><code>path</code></td>
+<td>
+<p>The initial path to start the search. If it is a file path, its
+parent directory will be used.</p>
+</td></tr>
+<tr><td><code>rules</code></td>
+<td>
+<p>A matrix of character strings of two columns: the first column
+contains regular expressions to look for filenames that match the patterns,
+and the second column contains regular expressions to match the content of
+the matched files. The regular expression can be an empty string, meaning
+that it will match anything.</p>
+</td></tr>
+</table>
+<h2 id="sec:details" class="unnumbered">Details</h2>
+<p>The search for the root directory is performed by a series of tests,
+currently including looking for a &lsquo;<span class="file">DESCRIPTION</span>&rsquo; file that contains
+<code>Package: *</code> (which usually indicates an R package), and a
+&lsquo;<span class="file">*.Rproj</span>&rsquo; file that contains <code>Version: *</code> (which usually indicates
+an RStudio project). If files with the expected patterns are not found in the
+initial directory, the search will be performed recursively in upper-level
+directories.
+</p>
+<h2 id="sec:value" class="unnumbered">Value</h2>
+<p>Path to the root directory if found, otherwise <code>NULL</code>.
+</p>
+<h2 id="sec:note" class="unnumbered">Note</h2>
+<p>This function was inspired by the <span class="pkg">rprojroot</span> package, but is much
+less sophisticated. It is a rather simple function designed to be used in
+some of packages that I maintain, and may not meet the need of general
+users until this note is removed in the future (which should be unlikely).
+If you are sure that you are working on the types of projects mentioned in
+the &lsquo;Details&rsquo; section, this function may be helpful to you,
+otherwise please consider using <span class="pkg">rprojroot</span> instead.
+</p>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/manual.min.css">
+
+</article>
+</main>
+<section class="comments">
+<script src="https://giscus.app/client.js" data-strict="1" data-theme="preferred_color_scheme" data-loading="lazy" data-repo="yihui/yihui.org" data-repo-id="MDEwOlJlcG9zaXRvcnk4MDc3NDg0NA==" data-category="Comments" data-category-id="DIC_kwDOBNCGvM4COkjD" crossorigin="anonymous" async></script>
+</section>
+<footer><div class="flex-col">
+<p>Developed by <a href="https://yihui.org">Yihui Xie</a></p>
+<p>Site built with <a href="https://github.com/yihui/litedown">litedown</a> v1.0.12</p>
+</div></footer>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/sidenotes.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/toc-highlight.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/copy-button.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/heading-anchor.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/pages.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/nav-highlight.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+</body>
+</html>

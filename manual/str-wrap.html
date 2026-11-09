@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="generator" content="litedown 1.0.12">
+<title>Wrap character vectors</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/default.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/article.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/copy-button.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/heading-anchor.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/pages.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/site.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/prism-xcode.min.css">
+</head>
+<body>
+<nav class="site-nav"><p><a href="../index.html" class="brand">xfun</a> <small class="version">v0.62.16</small>
+<a href="../manual.html">Manual</a>
+<a href="../news.html">News</a>
+<a href="../book/">Book</a>
+<a href="../playground/">Playground</a>
+<span class="pagesjs-toggle"></span>
+<a href="https://github.com/yihui/xfun/" class="right"><img src="https://cdn.jsdelivr.net/npm/@primer/octicons@19/build/svg/mark-github-24.svg" alt="GitHub" class="no-invert" /></a></p></nav>
+<header class="frontmatter">
+<div class="title"><h1>Wrap character vectors</h1></div>
+
+
+
+</header>
+<main>
+<article class="">
+<nav id="TOC" class="side side-left">
+<ul>
+<li><a href="#sec:description">Description</a></li>
+<li><a href="#sec:usage">Usage</a></li>
+<li><a href="#sec:arguments">Arguments</a></li>
+<li><a href="#sec:value">Value</a></li>
+<li><a href="#sec:examples">Examples</a></li>
+</ul>
+</nav>
+<h2 id="sec:description" class="unnumbered">Description</h2>
+<p>A wrapper function to make <code><a href="https://rdrr.io/r/base/strwrap.html">strwrap()</a></code> return a character vector of the same
+length as the input vector; each element of the output vector is a string
+formed by concatenating wrapped strings by <code>\n</code>.
+</p>
+<h2 id="sec:usage" class="unnumbered">Usage</h2>
+<pre><code class="language-r">str_wrap(...)</code></pre>
+<h2 id="sec:arguments" class="unnumbered">Arguments</h2>
+<table class="desc-table" role = "presentation">
+<tr><td><code>...</code></td>
+<td>
+<p>Arguments passed to <code><a href="https://rdrr.io/r/base/strwrap.html">strwrap()</a></code>.</p>
+</td></tr>
+</table>
+<h2 id="sec:value" class="unnumbered">Value</h2>
+<p>A character vector.
+</p>
+<h2 id="sec:examples" class="unnumbered">Examples</h2>
+<pre><code class="language-r">x = sample(c(letters, &quot; &quot;), 200, TRUE, c(rep(.5/26, 26), .5))
+x = rep(paste(x, collapse = &quot;&quot;), 2)
+strwrap(x, width = 30)
+</code></pre>
+<pre><code>#&gt;  [1] &quot;xvbg cn nyy u ukiypn imnhjwu&quot;  &quot;fv hi t i xr d ych cv e ld z&quot; 
+#&gt;  [3] &quot;t d kv goj oliod x wpk vi m e&quot; &quot;wig tcsx y q ruem t v wufv wk&quot;
+#&gt;  [5] &quot;mja ml sie n ddski qi h rfs m&quot; &quot;ro h y ex&quot;                    
+#&gt;  [7] &quot;xvbg cn nyy u ukiypn imnhjwu&quot;  &quot;fv hi t i xr d ych cv e ld z&quot; 
+#&gt;  [9] &quot;t d kv goj oliod x wpk vi m e&quot; &quot;wig tcsx y q ruem t v wufv wk&quot;
+#&gt; [11] &quot;mja ml sie n ddski qi h rfs m&quot; &quot;ro h y ex&quot;                    
+</code></pre>
+<pre><code class="language-r">xfun::str_wrap(x, width = 30)  # same length as x
+</code></pre>
+<pre><code>#&gt; [1] &quot;xvbg cn nyy u ukiypn imnhjwu\nfv hi t i xr d ych cv e ld z\nt d kv goj oliod x wpk vi m e\nwig tcsx y q ruem t v wufv wk\nmja ml sie n ddski qi h rfs m\nro h y ex&quot;
+#&gt; [2] &quot;xvbg cn nyy u ukiypn imnhjwu\nfv hi t i xr d ych cv e ld z\nt d kv goj oliod x wpk vi m e\nwig tcsx y q ruem t v wufv wk\nmja ml sie n ddski qi h rfs m\nro h y ex&quot;
+</code></pre>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/manual.min.css">
+
+</article>
+</main>
+<section class="comments">
+<script src="https://giscus.app/client.js" data-strict="1" data-theme="preferred_color_scheme" data-loading="lazy" data-repo="yihui/yihui.org" data-repo-id="MDEwOlJlcG9zaXRvcnk4MDc3NDg0NA==" data-category="Comments" data-category-id="DIC_kwDOBNCGvM4COkjD" crossorigin="anonymous" async></script>
+</section>
+<footer><div class="flex-col">
+<p>Developed by <a href="https://yihui.org">Yihui Xie</a></p>
+<p>Site built with <a href="https://github.com/yihui/litedown">litedown</a> v1.0.12</p>
+</div></footer>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/sidenotes.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/toc-highlight.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/copy-button.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/heading-anchor.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/pages.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/nav-highlight.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+</body>
+</html>

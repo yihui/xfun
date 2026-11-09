@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="generator" content="litedown 1.0.12">
+<title>Submit check jobs to crandalf</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/default.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/article.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/copy-button.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/heading-anchor.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/pages.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/site.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/prism-xcode.min.css">
+</head>
+<body>
+<nav class="site-nav"><p><a href="../index.html" class="brand">xfun</a> <small class="version">v0.62.16</small>
+<a href="../manual.html">Manual</a>
+<a href="../news.html">News</a>
+<a href="../book/">Book</a>
+<a href="../playground/">Playground</a>
+<span class="pagesjs-toggle"></span>
+<a href="https://github.com/yihui/xfun/" class="right"><img src="https://cdn.jsdelivr.net/npm/@primer/octicons@19/build/svg/mark-github-24.svg" alt="GitHub" class="no-invert" /></a></p></nav>
+<header class="frontmatter">
+<div class="title"><h1>Submit check jobs to crandalf</h1></div>
+
+
+
+</header>
+<main>
+<article class="">
+<nav id="TOC" class="side side-left">
+<ul>
+<li><a href="#sec:description">Description</a></li>
+<li><a href="#sec:usage">Usage</a></li>
+<li><a href="#sec:arguments">Arguments</a></li>
+<li><a href="#sec:details">Details</a></li>
+</ul>
+</nav>
+<h2 id="sec:description" class="unnumbered">Description</h2>
+<p>Check the reverse dependencies of a package using the crandalf service:
+<a href="https://github.com/yihui/crandalf">https://github.com/yihui/crandalf</a>. If the number of reverse
+dependencies is large, they will be split into batches and pushed to crandalf
+one by one.
+</p>
+<h2 id="sec:usage" class="unnumbered">Usage</h2>
+<pre><code class="language-r">crandalf_check(pkg, size = 400, jobs = Inf, which = "all")
+
+crandalf_results(pkg, repo = NA, limit = 200, wait = 5 * 60)</code></pre>
+<h2 id="sec:arguments" class="unnumbered">Arguments</h2>
+<table class="desc-table" role = "presentation">
+<tr><td><code>pkg</code></td>
+<td>
+<p>The package name of which the reverse dependencies are to be
+checked.</p>
+</td></tr>
+<tr><td><code>size</code></td>
+<td>
+<p>The number of reverse dependencies to be checked in each job.</p>
+</td></tr>
+<tr><td><code>jobs</code></td>
+<td>
+<p>The number of jobs to run in GitHub Actions (by default, all jobs
+are submitted, but you can choose to submit the first few jobs).</p>
+</td></tr>
+<tr><td><code>which</code></td>
+<td>
+<p>The type of dependencies (see <code><a href="rev-check.html">rev_check()</a></code>).</p>
+</td></tr>
+<tr><td><code>repo</code></td>
+<td>
+<p>The crandalf repo on GitHub (of the form <code>user/repo</code> such as
+<code>"yihui/crandalf"</code>). Usually you do not need to specify it, unless you
+are not calling this function inside the crandalf project, because
+<code>gh</code> should be able to figure out the repo automatically.</p>
+</td></tr>
+<tr><td><code>limit</code></td>
+<td>
+<p>The maximum of records for <code>gh run list</code> to retrieve.
+You only need a larger number if the check results are very early in the
+GitHub Action history.</p>
+</td></tr>
+<tr><td><code>wait</code></td>
+<td>
+<p>Number of seconds to wait if not all jobs have been completed on
+GitHub. By default, this function checks the status every 5 minutes until
+all jobs are completed. Set <code>wait</code> to 0 to disable waiting (and throw
+an error immediately when any jobs are not completed).</p>
+</td></tr>
+</table>
+<h2 id="sec:details" class="unnumbered">Details</h2>
+<p>Due to the time limit of a single job on GitHub Actions (6 hours), you will
+have to split the large number of reverse dependencies into batches and check
+them sequentially on GitHub (at most 5 jobs in parallel). The function
+<code>crandalf_check()</code> does this automatically when necessary. It requires
+the <code>git</code> command to be available.
+</p>
+<p>The function <code>crandalf_results()</code> fetches check results from GitHub
+after all checks are completed, merge the results, and show a full summary of
+check results. It requires <code>gh</code> (GitHub CLI:
+<a href="https://cli.github.com/manual/">https://cli.github.com/manual/</a>) to be installed and you also need to
+authenticate with your GitHub account beforehand.
+</p>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/manual.min.css">
+
+</article>
+</main>
+<section class="comments">
+<script src="https://giscus.app/client.js" data-strict="1" data-theme="preferred_color_scheme" data-loading="lazy" data-repo="yihui/yihui.org" data-repo-id="MDEwOlJlcG9zaXRvcnk4MDc3NDg0NA==" data-category="Comments" data-category-id="DIC_kwDOBNCGvM4COkjD" crossorigin="anonymous" async></script>
+</section>
+<footer><div class="flex-col">
+<p>Developed by <a href="https://yihui.org">Yihui Xie</a></p>
+<p>Site built with <a href="https://github.com/yihui/litedown">litedown</a> v1.0.12</p>
+</div></footer>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/sidenotes.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/toc-highlight.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/copy-button.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/heading-anchor.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/pages.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/js/nav-highlight.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-core.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+</body>
+</html>
