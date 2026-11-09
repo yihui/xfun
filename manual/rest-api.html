@@ -129,13 +129,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;gzip, br&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.239&quot;
+#&gt; [1] &quot;13.105.117.94&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a57f5ba9bfc7f6c0&quot;
+#&gt; [1] &quot;a58067dceadcf64e&quot;
 #&gt; 
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
@@ -156,7 +156,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.239&quot;
+#&gt; [1] &quot;13.105.117.94&quot;
 #&gt; 
 #&gt; 
 #&gt; $queryParams
@@ -164,7 +164,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
 <pre><code class="language-r">xfun::rest_api_raw(&quot;https://mockhttp.org&quot;, &quot;/get&quot;)
 </code></pre>
-<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;accept&quot;:&quot;*/*&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.117.239&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-ray&quot;:&quot;a57f5bb1f97a9167&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;connection&quot;:&quot;Keep-Alive&quot;,&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;user-agent&quot;:&quot;R/4.6.2 R (4.6.2 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;x-mockhttp-forwarded-proto&quot;:&quot;https&quot;,&quot;x-real-ip&quot;:&quot;13.105.117.239&quot;},&quot;queryParams&quot;:{}}
+<pre><code>{&quot;method&quot;:&quot;GET&quot;,&quot;headers&quot;:{&quot;accept&quot;:&quot;*/*&quot;,&quot;accept-encoding&quot;:&quot;gzip, br&quot;,&quot;cf-connecting-ip&quot;:&quot;13.105.117.94&quot;,&quot;cf-ipcountry&quot;:&quot;US&quot;,&quot;cf-ray&quot;:&quot;a58067e16ea9552b&quot;,&quot;cf-visitor&quot;:&quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;,&quot;connection&quot;:&quot;Keep-Alive&quot;,&quot;host&quot;:&quot;mockhttp.org&quot;,&quot;user-agent&quot;:&quot;R/4.6.2 R (4.6.2 aarch64-apple-darwin23 aarch64 darwin23) on GitHub Actions&quot;,&quot;x-forwarded-proto&quot;:&quot;https&quot;,&quot;x-mockhttp-forwarded-proto&quot;:&quot;https&quot;,&quot;x-real-ip&quot;:&quot;13.105.117.94&quot;},&quot;queryParams&quot;:{}}
 </code></pre>
 <pre><code class="language-r"># send the request with an auth header
 xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPEN SESAME!&quot;)
@@ -180,13 +180,13 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;Basic OPEN SESAME!&quot;
 #&gt; 
 #&gt; $headers$`cf-connecting-ip`
-#&gt; [1] &quot;13.105.117.239&quot;
+#&gt; [1] &quot;13.105.117.94&quot;
 #&gt; 
 #&gt; $headers$`cf-ipcountry`
 #&gt; [1] &quot;US&quot;
 #&gt; 
 #&gt; $headers$`cf-ray`
-#&gt; [1] &quot;a57f5bb749fea177&quot;
+#&gt; [1] &quot;a58067e1ca8efca9&quot;
 #&gt; 
 #&gt; $headers$`cf-visitor`
 #&gt; [1] &quot;{\&quot;scheme\&quot;:\&quot;https\&quot;}&quot;
@@ -207,7 +207,7 @@ xfun::rest_api(&quot;https://mockhttp.org&quot;, &quot;/headers&quot;, &quot;OPE
 #&gt; [1] &quot;https&quot;
 #&gt; 
 #&gt; $headers$`x-real-ip`
-#&gt; [1] &quot;13.105.117.239&quot;
+#&gt; [1] &quot;13.105.117.94&quot;
 </code></pre>
 <pre><code class="language-r"># with query parameters
 xfun::rest_api(
@@ -233,7 +233,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 4998
 #&gt; 
 #&gt; $resources$core$reset
-#&gt; [1] 1794257533
+#&gt; [1] 1794268520
 #&gt; 
 #&gt; 
 #&gt; $resources$search
@@ -247,7 +247,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 30
 #&gt; 
 #&gt; $resources$search$reset
-#&gt; [1] 1794254012
+#&gt; [1] 1794264995
 #&gt; 
 #&gt; 
 #&gt; $resources$graphql
@@ -261,7 +261,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$graphql$reset
-#&gt; [1] 1794257552
+#&gt; [1] 1794268535
 #&gt; 
 #&gt; 
 #&gt; $resources$integration_manifest
@@ -275,7 +275,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 5000
 #&gt; 
 #&gt; $resources$integration_manifest$reset
-#&gt; [1] 1794257552
+#&gt; [1] 1794268535
 #&gt; 
 #&gt; 
 #&gt; $resources$source_import
@@ -289,7 +289,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$source_import$reset
-#&gt; [1] 1794254012
+#&gt; [1] 1794264995
 #&gt; 
 #&gt; 
 #&gt; $resources$code_scanning_autofix
@@ -303,7 +303,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_scanning_autofix$reset
-#&gt; [1] 1794254012
+#&gt; [1] 1794264995
 #&gt; 
 #&gt; 
 #&gt; $resources$actions_runner_registration
@@ -317,7 +317,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10000
 #&gt; 
 #&gt; $resources$actions_runner_registration$reset
-#&gt; [1] 1794257552
+#&gt; [1] 1794268535
 #&gt; 
 #&gt; 
 #&gt; $resources$scim
@@ -331,7 +331,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15000
 #&gt; 
 #&gt; $resources$scim$reset
-#&gt; [1] 1794257552
+#&gt; [1] 1794268535
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_snapshots
@@ -345,7 +345,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_snapshots$reset
-#&gt; [1] 1794254012
+#&gt; [1] 1794264995
 #&gt; 
 #&gt; 
 #&gt; $resources$dependency_sbom
@@ -359,7 +359,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 100
 #&gt; 
 #&gt; $resources$dependency_sbom$reset
-#&gt; [1] 1794254012
+#&gt; [1] 1794264995
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log
@@ -373,7 +373,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$audit_log$reset
-#&gt; [1] 1794257552
+#&gt; [1] 1794268535
 #&gt; 
 #&gt; 
 #&gt; $resources$audit_log_streaming
@@ -387,7 +387,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 15
 #&gt; 
 #&gt; $resources$audit_log_streaming$reset
-#&gt; [1] 1794257552
+#&gt; [1] 1794268535
 #&gt; 
 #&gt; 
 #&gt; $resources$code_search
@@ -401,7 +401,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 10
 #&gt; 
 #&gt; $resources$code_search$reset
-#&gt; [1] 1794254012
+#&gt; [1] 1794264995
 #&gt; 
 #&gt; 
 #&gt; $resources$copilot_usage_records
@@ -415,7 +415,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$copilot_usage_records$reset
-#&gt; [1] 1794257552
+#&gt; [1] 1794268535
 #&gt; 
 #&gt; 
 #&gt; $resources$enterprise_token_inventory
@@ -429,7 +429,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 1750
 #&gt; 
 #&gt; $resources$enterprise_token_inventory$reset
-#&gt; [1] 1794257552
+#&gt; [1] 1794268535
 #&gt; 
 #&gt; 
 #&gt; 
@@ -444,7 +444,7 @@ xfun::github_api(&quot;/rate_limit&quot;)
 #&gt; [1] 4998
 #&gt; 
 #&gt; $rate$reset
-#&gt; [1] 1794257533
+#&gt; [1] 1794268520
 </code></pre>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.155/css/manual.min.css">
 
