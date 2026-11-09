@@ -1,5 +1,5 @@
 ---
-title: "xfun: Recipes for Everyday R"
+title: "xfun: All My Base Are Belong to You"
 author: "Yihui Xie"
 date: "`{r} Sys.Date()`"
 ---
@@ -13,10 +13,22 @@ encodings. You write them once, copy them into the next project, and then
 forget where the good version lives.
 
 **xfun** is that drawer, opened and labeled. It started as the helpers I kept
-needing across about twenty R packages, including **knitr**, **litedown**, and
-**tinytex**. I pulled them out so they could be used openly instead of living
-as buried internal functions. It only imports base R packages, so pulling it
-into your own project does not drag in a pile of dependencies.
+needing across about twenty R packages, including
+[**knitr**](https://github.com/yihui/knitr),
+[**litedown**](https://github.com/yihui/litedown),
+[**lt**](https://github.com/yihui/lt), and
+[**tinytex**](https://github.com/rstudio/tinytex), etc. I pulled them out so
+they could be used openly instead of living as buried internal functions. It
+only imports base R packages, so pulling it into your own project does not drag
+in a pile of dependencies.
+
+The title is a twist on the old internet meme
+["All your base are belong to us"](https://en.wikipedia.org/wiki/All_your_base_are_belong_to_us),
+from the badly translated intro of the 1989 game *Zero Wing*. "Base" carries
+two meanings here. It is base R, which is all that xfun depends on, and it is
+the foundation under my other packages. I flipped the line around because these
+helpers started as mine, but you are welcome to use them: all my base are
+belong to you.
 
 This book is a cookbook. Each chapter is a set of recipes, and each recipe
 starts with a problem you probably have, shows the function that solves it,
