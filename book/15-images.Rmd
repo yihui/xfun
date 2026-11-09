@@ -5,7 +5,11 @@ resize images down to a sensible width, then compress them. None of the
 examples are run here since they change files in place or need an external
 tool or service.
 
-## Cap image width {#sec:shrink-images}
+## Resize images {#sec:grp-img-resize}
+
+Cap the width before compressing.
+
+### Cap image width {#sec:shrink-images}
 
 `shrink_images()` resizes every PNG, JPEG and WebP under a directory that is
 wider than `width` (default 800 pixels), keeping the aspect ratio. Narrower
@@ -21,7 +25,11 @@ Check the result with `magick::image_info(magick::image_read('a.png'))`.
 Setting `tinify = TRUE` also compresses the images afterwards (see
 @sec:tinify).
 
-## Squeeze PNGs losslessly with optipng {#sec:optipng}
+## Compress images {#sec:grp-img-compress}
+
+Shrink files with an external tool or an online service.
+
+### Squeeze PNGs losslessly with optipng {#sec:optipng}
 
 `optipng()` runs the `optipng` command on all PNGs under a directory, which
 shrinks files without changing a single pixel. If the command is not on the
@@ -34,7 +42,7 @@ optipng('figures')
 
 Extra arguments go to `system2()`, e.g. `stdout = FALSE` to silence the tool.
 
-## Compress images with TinyPNG {#sec:tinify}
+### Compress images with TinyPNG {#sec:tinify}
 
 `tinify()` compresses PNG and JPEG files through the TinyPNG web API, which
 usually cuts file size a lot. It needs the curl and jsonlite packages and an
@@ -67,7 +75,7 @@ tinify('plot.png', force = TRUE) # compress again
 that must stay private.
 :::
 
-## Compress a whole folder {#sec:tinify-dir}
+### Compress a whole folder {#sec:tinify-dir}
 
 `tinify_dir()` finds all PNG, JPEG and WebP files under a directory and passes
 them to `tinify()`, so the same arguments apply:

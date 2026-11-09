@@ -68,18 +68,18 @@ The chapters group recipes by the kind of problem they solve:
 - @chp:printing makes objects easier to look at.
 - @chp:strings handles text, words, numbers, and IDs.
 - @chp:html builds, cleans, and embeds HTML.
-- @chp:markdown writes Markdown tables, fences, and news.
+- @chp:markdown writes Markdown tables, fences, and news, and reads it safely.
 - @chp:files reads, writes, and rewrites files.
 - @chp:paths wrangles file paths and project roots.
-- @chp:data ships data as JSON, YAML, and base64.
+- @chp:data encodes and decodes data as JSON, YAML, and base64.
 - @chp:code parses, records, and caches R code.
-- @chp:env deals with options, environment variables, packages, and the OS.
+- @chp:env deals with options, environment variables, and the OS.
 - @chp:errors makes failure less painful.
 - @chp:processes runs other programs and R sessions.
 - @chp:web downloads files and talks to web APIs.
 - @chp:apps serves local apps and drives a headless browser.
 - @chp:images shrinks images.
-- @chp:maintain covers package maintenance, releases, and demos.
+- @chp:packages loads, checks, and releases R packages.
 
 Nothing here is a grand framework. Each function does one job, and most of them
 are short enough that you can read the source when you are curious. That is

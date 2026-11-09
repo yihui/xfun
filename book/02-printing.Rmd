@@ -6,7 +6,11 @@ sequences that get in the way. This chapter covers recipes that show you the
 content as it really is, and a few that draw structure you can scan at a
 glance.
 
-## Print strings without the noise {#sec:raw-string}
+## Print text {#sec:grp-print-text}
+
+Strings and files, shown without quotes and indices.
+
+### Print strings without the noise {#sec:raw-string}
 
 Printing a character vector shows indices, quotes, and escape sequences. That is
 useful for debugging, but not when you want to see the text itself. `raw_string()`
@@ -18,7 +22,7 @@ x            # with indices and escapes
 raw_string(x)  # what the strings actually contain
 ```
 
-## Read a text file into the console {#sec:file-string}
+### Read a text file into the console {#sec:file-string}
 
 `file_string()` reads a whole file into one string and prints it cleanly as a
 side effect. Pass `comment = ''` to the chunk and the output looks like the file
@@ -29,7 +33,11 @@ f = system.file("LICENSE", package = "xfun")
 file_string(f)
 ```
 
-## Draw the shape of a nested object {#sec:tree}
+## Display objects {#sec:grp-display}
+
+Structure and sizes, laid out so you can scan them.
+
+### Draw the shape of a nested object {#sec:tree}
 
 Nested lists are hard to read through `str()`, since the depth markers `..`
 all look alike. `tree()` redraws `str()` output as a tree, with vertical pipes
@@ -40,7 +48,7 @@ fit = lm(dist ~ speed, data = cars)
 tree(fit)
 ```
 
-## Show a list as tabs {#sec:tabset}
+### Show a list as tabs {#sec:tabset}
 
 When a list is too big to print in one go, put each member in its own tab.
 `tabset()` turns a list into Markdown tabsets, one tab per member. Nested lists
@@ -75,7 +83,7 @@ tabset(survey, function(x) {
 Inside a **litedown** document, the CSS and JS that the tabs need are added for
 you. You don't have to enable them in the document metadata.
 
-## Make file sizes readable {#sec:format-bytes}
+### Make file sizes readable {#sec:format-bytes}
 
 Raw byte counts are hard to scan. `format_bytes()` turns them into strings with
 sensible units:

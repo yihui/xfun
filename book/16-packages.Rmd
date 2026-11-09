@@ -1,0 +1,242 @@
+# R Packages {#chp:packages}
+
+This chapter is for people who use R packages in code, and for people who
+maintain them. Both groups have chores that are easy to automate once somebody
+writes the function.
+
+## Find out about packages {#sec:grp-pkg-info}
+
+Is a package installed, recent enough, or part of base R? And how to cite it.
+
+### Test whether a package is available {#sec:loadable}
+
+`loadable()` is a concise alternative to `requireNamespace(quietly = TRUE)`.
+It is useful for optional dependencies:
+
+```{r}
+loadable("stats")
+loadable("nonexistent.package.xyz")
+```
+
+### Require a minimal package version {#sec:pkg-available}
+
+`loadable()` says whether a package can be loaded. `pkg_available()` also checks
+the version, which is handy when your code needs a feature from a recent
+release:
+
+```{r}
+pkg_available("stats")
+pkg_available("stats", "99.0")          # too new
+pkg_available("nonexistent.package.xyz")
+```
+
+### List the base R packages {#sec:base-pkgs}
+
+Sometimes you need to tell the packages that ship with R from the ones people
+installed. `base_pkgs()` returns the names of the base packages:
+
+```{r}
+base_pkgs()
+setdiff(c("stats", "xfun"), base_pkgs())  # keep only the non-base ones
+```
+
+### Write a bibliography for your packages {#sec:pkg-bib}
+
+Citing the packages you used in a report should not mean typing BibTeX by hand.
+`pkg_bib()` turns `citation()` output into entries keyed `R-<package>`:
+
+```{r}
+suppressWarnings(pkg_bib("xfun", width = 60))
+```
+
+Write to a file with `file = "packages.bib"`, change the key prefix with
+`prefix`, or stamp the entries with a retrieval date via `date = "today"`. With
+no `x`, it covers all attached packages.
+
+## Load and attach packages {#sec:grp-pkg-load}
+
+Vectorized loading, with optional installation.
+
+### Attach several packages at once {#sec:pkg-attach}
+
+`pkg_attach()` is a vectorized `library()`. `pkg_attach2()` goes a step further
+and installs packages that are missing first:
+
+```{r}
+pkg_attach("stats", "utils")  # equivalent to two library() calls
+```
+
+```r
+pkg_attach2("ggplot2", "dplyr")  # installs any that are missing, then attaches
+```
+
+### Load packages without attaching them {#sec:pkg-load}
+
+`pkg_load()` is a vectorized `requireNamespace()`: it loads packages but does
+not put them on the search path. It returns (invisibly) a logical vector, and
+signals an error if any package is missing. Set `error = FALSE` to get the
+vector without the error:
+
+```{r}
+pkg_load("stats", "utils")
+ok = pkg_load("stats", "nonexistent.package.xyz", error = FALSE)
+ok
+```
+
+### Install missing packages while loading {#sec:pkg-load2}
+
+`pkg_load2()` is `pkg_load(install = TRUE)`: whatever is missing gets installed
+first with `install.packages()`. Set a CRAN mirror in `options(repos = )` before
+you rely on this:
+
+```r
+pkg_load2("jsonlite", "yaml")  # install if needed, load without attaching
+```
+
+## Build and install {#sec:grp-pkg-install}
+
+Install from source, and repair installations after an R upgrade.
+
+### Install a package from its source directory {#sec:install-dir}
+
+`install_dir()` runs `R CMD build` and then `R CMD INSTALL`, so vignettes get
+built just as they would in a release. Run it from the package root:
+
+```r
+install_dir()                 # build a tarball, then install it
+install_dir("path/to/pkg", build = FALSE)  # install the directory directly
+```
+
+### Reinstall broken packages {#sec:broken-packages}
+
+After upgrading R to a new `x.y` version, installed packages may no longer load.
+`broken_packages()` finds them, and reinstalls them by default. Use
+`reinstall = FALSE` to only list the culprits:
+
+```r
+broken_packages(reinstall = FALSE)  # names of packages that fail to load
+broken_packages()                   # find and reinstall them
+```
+
+## Check packages {#sec:grp-pkg-check}
+
+Detect checks, adapt tests to them, and check reverse dependencies.
+
+### Detect `R CMD check` and CRAN incoming checks {#sec:is-check}
+
+Tests and examples sometimes need to behave differently under `R CMD check`
+(skip slow or network-bound code, for example). `is_R_CMD_check()` tells you
+whether you are inside a check, and `is_CRAN_incoming()` whether it is the
+extra check CRAN runs on submissions:
+
+```{r}
+is_R_CMD_check()
+is_CRAN_incoming()
+```
+
+Both are `FALSE` in an ordinary session. Under a check, `is_R_CMD_check()`
+returns `TRUE`, so a typical use is `if (!is_R_CMD_check()) { ...slow code... }`.
+
+### Skip checks for old package versions {#sec:check-old}
+
+When a package breaks under a new R, you may want to skip its tests only while
+`R CMD check` runs on an old version of it. These helpers read the package
+being checked from the check environment:
+
+```{r}
+check_package_name()  # NA outside R CMD check
+check_old_package("mypkg", "1.0")  # FALSE outside R CMD check
+```
+
+Inside a check of `mypkg`, `check_package_name()` returns `"mypkg"`, and
+`check_old_package("mypkg", "1.0")` is `TRUE` if the installed version is `1.0`
+or lower. Use it to guard a test:
+
+```r
+if (!check_old_package("mypkg", "1.0")) {
+  # tests that need version > 1.0
+}
+```
+
+### Check reverse dependencies {#sec:rev-check}
+
+The scariest part of releasing a package is wondering whether the new version
+breaks packages that depend on it. `rev_check()` runs `R CMD check` on the
+reverse dependencies for you. It downloads them, checks them in parallel, and
+compares the results against the current CRAN version so that new failures
+stand out:
+
+```r
+# check all reverse dependencies of knitr, using 4 cores
+rev_check("knitr", src = "path/to/knitr_source", n = 4)
+```
+
+After the run, `compare_Rcheck()` writes a Markdown diff of only the packages
+whose check status changed. You get to focus on regressions rather than old
+failures.
+
+### Check reverse dependencies on GitHub Actions {#sec:crandalf}
+
+If your machine is too slow for `rev_check()` (see @sec:rev-check), push the
+job to the [crandalf](https://github.com/yihui/crandalf) repo. Run these inside
+a clone of it. `crandalf_check()` splits the reverse dependencies into batches
+and pushes one branch per batch to trigger GitHub Actions. `crandalf_results()`
+waits for the jobs, then merges and summarizes the results. It needs `git`, and
+the GitHub CLI `gh` for the results.
+
+```r
+xfun::crandalf_check("knitr", size = 400)
+xfun::crandalf_results("knitr")
+```
+
+## Release {#sec:grp-pkg-release}
+
+From win-builder to CRAN to the next dev version.
+
+### Upload a package to win-builder {#sec:win-builder}
+
+`upload_win_builder()` builds the package in the current directory and uploads
+the tarball to win-builder, which emails you the check results from R-devel,
+R-release, and R-oldrelease (pick with `version`). It also runs `git pull` first
+when the directory is a Git repo.
+
+```r
+xfun::upload_win_builder()
+xfun::upload_win_builder(version = "R-devel", server = "https")
+```
+
+### Bump a version number {#sec:bump-version}
+
+`bump_version()` increases the last component of a version, and works on a
+vector:
+
+```{r}
+bump_version(c("0.1", "91.2.14", "7.23.9"))
+```
+
+### Submit a package to CRAN {#sec:submit-cran}
+
+`submit_cran()` builds the package in the current directory and submits it to
+CRAN through the web form, using `cran-comments.md` as the comment if it exists.
+CRAN then emails you a confirmation link.
+
+```r
+xfun::submit_cran()
+```
+
+::: {.callout-warning}
+This sends your package to CRAN for real. It also syncs the Git branch with the
+remote first (`sync = TRUE`). Run `R CMD check --as-cran` and win-builder
+first.
+:::
+
+### Tag and prepare the next version after a release {#sec:post-release}
+
+Once CRAN accepts a release, `post_release()` does the paperwork: it tags the
+release in Git, bumps `DESCRIPTION` to the next dev version (`1.2.3` becomes
+`1.2.3.1`), adds a header for the next release to `NEWS.md`, pushes, and creates
+a GitHub release from the news items.
+
+```r
+xfun::post_release()
+```

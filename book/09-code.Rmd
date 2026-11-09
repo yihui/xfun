@@ -6,7 +6,11 @@ everything a piece of code prints, and cache slow results. Several of them are
 the very functions that power **litedown** and **knitr**, so they have seen
 some real use.
 
-## Check that code parses {#sec:valid-syntax}
+## Check and split code {#sec:grp-code-parse}
+
+Parse code without running it.
+
+### Check that code parses {#sec:valid-syntax}
 
 Before running a snippet from a user, you can ask if it is even valid.
 `valid_syntax()` parses without evaluating:
@@ -17,7 +21,7 @@ valid_syntax("1 +")           # incomplete
 valid_syntax("if(T) {1 + 1")  # unclosed brace
 ```
 
-## Split a script into expressions {#sec:split-source}
+### Split a script into expressions {#sec:split-source}
 
 A script is a vector of lines, but a statement can span several lines.
 `split_source()` groups lines into complete expressions. Set
@@ -29,7 +33,21 @@ split_source(code)
 split_source(code, merge_comments = TRUE)
 ```
 
-## Record everything the code does {#sec:record}
+### Parse code without source references {#sec:parse-only}
+
+`parse_only()` is `parse(keep.source = FALSE)` with a shorter name. Comments
+are dropped and empty input gives an empty expression:
+
+```{r}
+parse_only(c("y ~ x", "1:5  # a comment"))
+parse_only(character(0))
+```
+
+## Record what code does {#sec:grp-code-record}
+
+Capture everything a piece of code prints.
+
+### Record everything the code does {#sec:record}
 
 `record()` runs a character vector of R code and captures every kind of output
 (text, plots, messages, warnings, and errors) as a structured list:
@@ -49,7 +67,24 @@ Each element has a class such as `record_source`, `record_output`,
 `record_message`, or `record_warning`, so you can pick out the pieces you
 care about. This is the engine behind **litedown**'s code chunk execution.
 
-## Cache an expensive expression {#sec:cache-exec}
+### Mark output as a record type {#sec:new-record}
+
+`new_record()` tags a character vector with a `record_*` class, so `record()`
+and friends know what kind of output it is. Return one from a
+`record_print()` method to say your output is, for example, raw Markdown
+(`"asis"`) rather than console text. Classes are `source`, `output`,
+`message`, `warning`, `error`, `plot`, and `asis`:
+
+```{r}
+x = new_record("**bold**", "asis")
+class(x)
+```
+
+## Cache results {#sec:grp-code-cache}
+
+Skip expensive computation when nothing changed.
+
+### Cache an expensive expression {#sec:cache-exec}
 
 When a computation takes minutes, you do not want to repeat it for nothing.
 `cache_exec()` stores the result on disk. It detects which global variables the
@@ -78,8 +113,7 @@ Running the same expression again with the same `x` loads the cached value
 instead of recomputing. Pass `extra = file.mtime("data.csv")` to invalidate
 the cache when an external file changes, too.
 
-
-## Cache with a plain RDS file {#sec:cache-rds}
+### Cache with a plain RDS file {#sec:cache-rds}
 
 `cache_rds()` is the simpler predecessor of `cache_exec()`. It saves the value
 of an expression to an `.rds` file and reads it back next time. The file name
@@ -99,7 +133,11 @@ compute(rerun = TRUE)
 list.files(dir)
 ```
 
-## Parse chunk options in comma-separated form {#sec:csv-options}
+## Chunk options {#sec:grp-code-chunk}
+
+Read options from code chunks.
+
+### Parse chunk options in comma-separated form {#sec:csv-options}
 
 `csv_options()` parses knitr-style chunk options such as `foo, eval=TRUE`. An
 unnamed first item becomes the `label`:
@@ -108,7 +146,7 @@ unnamed first item becomes the `label`:
 str(csv_options("foo, eval=TRUE, fig.width=5, echo=if (TRUE) FALSE"))
 ```
 
-## Pull chunk options out of a chunk {#sec:divide-chunk}
+### Pull chunk options out of a chunk {#sec:divide-chunk}
 
 `divide_chunk()` separates leading `#|` option comments from the code. It
 understands both YAML-like and comma-separated options, and returns the parsed
@@ -119,7 +157,11 @@ str(divide_chunk("r", c("#| label: mine", "#| fig.width: 8", "1 + 1")))
 str(divide_chunk("r", c("#| mine, echo = FALSE", "1 + 1")))
 ```
 
-## Find the variables code depends on {#sec:find-globals}
+## Variables in code {#sec:grp-code-vars}
+
+Find what code uses and what it creates.
+
+### Find the variables code depends on {#sec:find-globals}
 
 `find_globals()` lists variables that code uses but does not create, and that
 exist in `envir`. This is how `cache_exec()` knows what to watch:
@@ -130,7 +172,7 @@ find_globals("y = x + 1; z = y * 2")
 find_globals("y = zzz + 1")  # zzz does not exist, so it is not reported
 ```
 
-## Find the variables code creates {#sec:find-locals}
+### Find the variables code creates {#sec:find-locals}
 
 `find_locals()` is the opposite: it returns variables the code assigns
 (including via `assign()`). It cannot see through `eval(parse(...))`:
@@ -140,25 +182,19 @@ find_locals("a = 1; b = a + 2; f = function(u) u")
 find_locals("assign('y', 1)")
 ```
 
-## Parse code without source references {#sec:parse-only}
+## Demonstrate code {#sec:grp-code-demo}
 
-`parse_only()` is `parse(keep.source = FALSE)` with a shorter name. Comments
-are dropped and empty input gives an empty expression:
+Show code live in a talk or screencast.
 
-```{r}
-parse_only(c("y ~ x", "1:5  # a comment"))
-parse_only(character(0))
+### Type code into RStudio for a demo {#sec:rstudio-type}
+
+Pasting code into the editor during a talk looks abrupt. `rstudio_type()` feeds
+characters into the RStudio source editor as if a person typed them, which is
+nice for live demos and screencasts:
+
+```r
+rstudio_type("1 + 1\n", pause = function() 0.05)
 ```
 
-## Mark output as a record type {#sec:new-record}
-
-`new_record()` tags a character vector with a `record_*` class, so `record()`
-and friends know what kind of output it is. Return one from a
-`record_print()` method to say your output is, for example, raw Markdown
-(`"asis"`) rather than console text. Classes are `source`, `output`,
-`message`, `warning`, `error`, `plot`, and `asis`:
-
-```{r}
-x = new_record("**bold**", "asis")
-class(x)
-```
+The `mistake` argument introduces random typos and then fixes them, for an
+even more realistic effect.

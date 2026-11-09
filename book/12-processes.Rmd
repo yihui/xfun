@@ -4,7 +4,11 @@ Sometimes R has to hand work to something else: a shell command, a fresh R
 session, or a server that keeps running while you do other things. These recipes
 make that less fiddly.
 
-## Run a command and fail loudly {#sec:system3}
+## Run programs and R sessions {#sec:grp-proc-run}
+
+Shell commands, Rscript, and fresh R sessions.
+
+### Run a command and fail loudly {#sec:system3}
 
 `system2()` quietly returns a nonzero status when a command fails, and it does
 not mark its output as UTF-8. `system3()` quotes `args` for you, marks UTF-8
@@ -19,7 +23,7 @@ Encoding(x)
 Note that you pass `args` as a plain vector, without `shQuote()`. A failing
 command stops with an error such as `command 'Rscript' failed with code: 3`.
 
-## Run Rscript and R CMD {#sec:rscript}
+### Run Rscript and R CMD {#sec:rscript}
 
 `Rscript()` and `Rcmd()` run the `Rscript` and `R CMD` that belong to the
 current R installation, not whichever one is first on your `PATH`. Extra
@@ -31,7 +35,7 @@ Rscript(c("-e", shQuote("cat(R.version.string)")))
 Rcmd(c("config", "--version"), stdout = TRUE)[1]
 ```
 
-## Call a function in a fresh R session {#sec:rscript-call}
+### Call a function in a fresh R session {#sec:rscript-call}
 
 `Rscript_call()` runs a function in a new R process and returns the result. It
 is good for work that should not touch your session's state, such as loading
@@ -48,7 +52,11 @@ error that includes the message from the new session. With `wait = FALSE`, it
 returns immediately with the paths of the files used to communicate with the new
 session.
 
-## Find a free port {#sec:random-port}
+## Servers and background processes {#sec:grp-proc-bg}
+
+Start something that keeps running, then stop it.
+
+### Find a free port {#sec:random-port}
 
 Starting a local server needs a port that nobody else is using. `random_port()`
 tries `port` (default 4321) first, then random ports between 3000 and 8000:
@@ -61,7 +69,7 @@ random_port(8000, exclude = 8000)  # skip a port you know is taken
 With `error = FALSE`, it returns `NULL` rather than an error when nothing is
 free.
 
-## Start a background process and stop it {#sec:bg-process}
+### Start a background process and stop it {#sec:bg-process}
 
 `bg_process()` starts a command without waiting for it and returns its process
 ID. `proc_kill()` ends it later (and its children, unless `recursive = FALSE`).

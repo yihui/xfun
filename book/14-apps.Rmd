@@ -5,7 +5,11 @@ Together these give you a tiny local web app, plus PDFs, screenshots and
 JavaScript-rendered HTML. None of the examples run here, since they start
 servers or need Chrome/Chromium.
 
-## Serve a folder in your browser {#sec:serve-dir}
+## Local web apps {#sec:grp-app-local}
+
+Serve files and write apps that run inside R.
+
+### Serve a folder in your browser {#sec:serve-dir}
 
 To preview static files (an HTML report, a built site) over HTTP rather than
 `file://`, serve the directory:
@@ -19,7 +23,7 @@ server, so no extra packages are needed. The app is named `xfun-dir` by
 default; pass `name` to serve several folders at once. Extra arguments go to
 `new_app()`.
 
-## Write your own tiny web app {#sec:new-app}
+### Write your own tiny web app {#sec:new-app}
 
 `new_app()` takes a name and a handler function `function(path, query, post,
 headers)` that returns a response list. A minimal app that greets whoever is
@@ -44,7 +48,7 @@ that app.
 In a non-interactive script, `open` also decides whether the call blocks.
 Pass `open = FALSE` explicitly to return right away.
 
-## Shut an app down {#sec:stop-app}
+### Shut an app down {#sec:stop-app}
 
 Apps live as long as the R session. Stop one by name, or all of them:
 
@@ -53,7 +57,11 @@ stop_app('hello')
 stop_app()  # every running app
 ```
 
-## Print a page to PDF or an image {#sec:browser-print}
+## Headless browser {#sec:grp-app-browser}
+
+Render pages in Chrome and read the results back.
+
+### Print a page to PDF or an image {#sec:browser-print}
 
 `browser_print()` loads a page in headless Chrome, Chromium, or Edge and
 saves it. The output extension picks the format: `.pdf`, `.png`, or `.jpeg`.
@@ -78,7 +86,7 @@ browser_print('slides.html', wait = 'window.pageReady', query = list(print = 1))
 browser_print('slides.html', wait = c(event = 'pageReady'))
 ```
 
-## See the HTML after JavaScript runs {#sec:browser-dom}
+### See the HTML after JavaScript runs {#sec:browser-dom}
 
 The source of a page that builds itself with JavaScript is nearly empty.
 `browser_dom()` loads it, lets the scripts run, and gives back the final DOM:
@@ -97,7 +105,7 @@ browser_dom(f, output = 'rendered.html')
 
 It takes `wait` and `query` like `browser_print()`.
 
-## Run many JavaScript checks in one browser {#sec:browser-session}
+### Run many JavaScript checks in one browser {#sec:browser-session}
 
 Starting a browser per page is slow. `browser_session()` starts one and keeps
 it open. You get a list of functions: `open()` to load a page, `eval()` to run

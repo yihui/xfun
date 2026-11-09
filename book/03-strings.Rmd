@@ -5,7 +5,11 @@ rewriting it, deciding whether a string is empty, stitching words into a
 sentence, or turning a label into something safe to use as an HTML ID. The
 recipes here cover those jobs, plus spelling out numbers for reports.
 
-## Filter and transform in one step {#sec:grep-sub}
+## Find and rewrite text {#sec:grp-text-rewrite}
+
+Pattern matching and blank checks.
+
+### Filter and transform in one step {#sec:grep-sub}
 
 You often want the elements that match a pattern, and you want them rewritten
 too. `grep_sub()` combines `grep(..., value = TRUE)` and `gsub()` into one call:
@@ -17,7 +21,7 @@ grep_sub('(\\w+)@(\\w+)', '\\2/\\1', c('alice@corp', 'bob@org', 'not-an-email'))
 The emails that did not match are dropped, and the ones that did come back
 rewritten.
 
-## Spot blank strings {#sec:is-blank}
+### Spot blank strings {#sec:is-blank}
 
 An empty string is not `NA`, and a string of spaces is not empty, yet both look
 blank on screen. `is_blank()` catches empty strings and strings made only of
@@ -27,7 +31,11 @@ whitespace:
 is_blank(c("", "   ", "\t\n", "hello"))
 ```
 
-## Join words into a sentence {#sec:join-words}
+## Assemble and reshape text {#sec:grp-text-assemble}
+
+Join, wrap, split, and sanitize strings.
+
+### Join words into a sentence {#sec:join-words}
 
 Turning a vector into a readable list is a small task that everyone rewrites
 from scratch. `join_words()` adds the conjunction, and the Oxford comma, for
@@ -39,7 +47,7 @@ join_words(c("R", "Python", "Julia"), and = "or ")
 join_words(c("one", "two", "three"), before = "'", after = "'")
 ```
 
-## Make safe IDs from any text {#sec:alnum-id}
+### Make safe IDs from any text {#sec:alnum-id}
 
 Headings and labels often end up as HTML IDs, and spaces, punctuation, or tags
 in them are trouble. `alnum_id()` replaces non-alphanumeric characters with
@@ -50,20 +58,7 @@ alnum_id(c("Hello world 123!", "a  &b*^c"))
 alnum_id("<h1>Section <em>1.2</em></h1>")
 ```
 
-## Spell out numbers {#sec:n2w}
-
-In a report, "three hundred five" often reads better than "305", and it is
-tedious to type by hand. `n2w()` (the alias `numbers_to_words()` is also
-available) does it for you. It handles capitalization, the word "and", and
-negative numbers:
-
-```{r}
-n2w(c(0, 1, 13, 42, 100, 1001), cap = TRUE)
-n2w(1e6 + 234567, and = TRUE)
-n2w(-987654321)
-```
-
-## Wrap long text into single strings {#sec:str-wrap}
+### Wrap long text into single strings {#sec:str-wrap}
 
 `strwrap()` returns a flat vector of lines, so the output no longer lines up
 with the input. `str_wrap()` takes the same arguments but returns one string per
@@ -78,7 +73,7 @@ cat(str_wrap(x, 20), sep = '\n\n')
 Two strings in, two strings out, so the result still fits in a data frame
 column.
 
-## Split text into lines safely {#sec:split-lines}
+### Split text into lines safely {#sec:split-lines}
 
 `strsplit(x, '\n')` has two surprises: an empty string becomes
 `character(0)`, and a trailing newline is silently dropped. `split_lines()`
@@ -92,7 +87,11 @@ split_lines(c('', 'a\nb\n'))
 The result is always one flat vector, so `length()` counts lines the way an
 editor would.
 
-## Check for non-ASCII characters {#sec:is-ascii}
+## Characters and encoding {#sec:grp-text-encoding}
+
+Check for and convert characters outside ASCII.
+
+### Check for non-ASCII characters {#sec:is-ascii}
 
 Before writing text to a file or package that insists on ASCII, find out which
 elements will cause trouble. `is_ascii()` tells you element by element:
@@ -101,7 +100,7 @@ elements will cause trouble. `is_ascii()` tells you element by element:
 is_ascii(c('abc', 'café', '你好'))
 ```
 
-## Convert text to the native encoding {#sec:native-encode}
+### Convert text to the native encoding {#sec:native-encode}
 
 On a system whose native encoding is not UTF-8, writing UTF-8 strings may
 garble them. `native_encode()` converts to the native encoding only if no
@@ -113,7 +112,55 @@ native_encode('café')
 
 On UTF-8 platforms the conversion is skipped, so this is a no-op there.
 
-## Fingerprint any R object {#sec:md5}
+## Numbers {#sec:grp-numbers}
+
+Spell out, format, and generate numbers.
+
+### Spell out numbers {#sec:n2w}
+
+In a report, "three hundred five" often reads better than "305", and it is
+tedious to type by hand. `n2w()` (the alias `numbers_to_words()` is also
+available) does it for you. It handles capitalization, the word "and", and
+negative numbers:
+
+```{r}
+n2w(c(0, 1, 13, 42, 100, 1001), cap = TRUE)
+n2w(1e6 + 234567, and = TRUE)
+n2w(-987654321)
+```
+
+### Force a dot as the decimal separator {#sec:decimal-dot}
+
+In some locales, or after `options(OutDec = ',')`, converting a number to
+character gives `1,5`. That breaks anything that expects machine-readable
+numbers, such as JSON or code. `decimal_dot()` evaluates an expression with the
+dot restored:
+
+```{r}
+op = options(OutDec = ',')
+paste(1.5)
+decimal_dot(paste(1.5))
+options(op)
+```
+
+### Generate reproducible random numbers {#sec:rand-unit}
+
+`rand_unit()` is a tiny linear congruential generator that returns numbers in
+`[0, 1)`. Unlike `runif()`, it does not touch R's `.Random.seed`, and the same
+seed gives the same numbers on any machine:
+
+```{r}
+rand_unit(3, seed = 1)
+rand_unit(3, seed = 1)
+```
+
+Without `seed`, a call continues from where the previous call stopped.
+
+## Fingerprints and groups {#sec:grp-fingerprints}
+
+Identify objects and rows by their content.
+
+### Fingerprint any R object {#sec:md5}
 
 `tools::md5sum()` only works on files. `md5()` serializes any R objects and
 returns their checksums, which is handy for cache keys or for checking whether
@@ -124,7 +171,7 @@ md5(1:10, mtcars)
 md5(a = 'x', b = 'y')
 ```
 
-## Label rows by their combination of values {#sec:radix-id}
+### Label rows by their combination of values {#sec:radix-id}
 
 To flag duplicates across several columns, pasting them into one string is slow
 on big data. `radix_id()` encodes each row as a single number instead, with
@@ -141,7 +188,7 @@ id
 The codes themselves are only good for equality checks, not for ordering or
 arithmetic.
 
-## Number the groups {#sec:radix-group}
+### Number the groups {#sec:radix-group}
 
 When you need group numbers you can actually use, `radix_group()` returns
 integers `1:k` in order of first appearance:
@@ -151,30 +198,3 @@ radix_group(g, h)
 ```
 
 Rows 1 and 3 share group 1, and the `NA` row gets its own group.
-
-## Generate reproducible random numbers {#sec:rand-unit}
-
-`rand_unit()` is a tiny linear congruential generator that returns numbers in
-`[0, 1)`. Unlike `runif()`, it does not touch R's `.Random.seed`, and the same
-seed gives the same numbers on any machine:
-
-```{r}
-rand_unit(3, seed = 1)
-rand_unit(3, seed = 1)
-```
-
-Without `seed`, a call continues from where the previous call stopped.
-
-## Force a dot as the decimal separator {#sec:decimal-dot}
-
-In some locales, or after `options(OutDec = ',')`, converting a number to
-character gives `1,5`. That breaks anything that expects machine-readable
-numbers, such as JSON or code. `decimal_dot()` evaluates an expression with the
-dot restored:
-
-```{r}
-op = options(OutDec = ',')
-paste(1.5)
-decimal_dot(paste(1.5))
-options(op)
-```

@@ -1,33 +1,14 @@
 # Your Environment {#chp:env}
 
-Code runs somewhere: on some operating system, with some packages installed,
-some options set, and some environment variables defined. This chapter helps
-you read that environment and change it temporarily without leaving a mess.
+Code runs somewhere: on some operating system, with some options set, and
+some environment variables defined. This chapter helps you read that
+environment and change it temporarily without leaving a mess.
 
-## Attach several packages at once {#sec:pkg-attach}
+## Options and environment variables {#sec:grp-env-vars}
 
-`pkg_attach()` is a vectorized `library()`. `pkg_attach2()` goes a step further
-and installs packages that are missing first:
+Configure behavior from the outside, and put things back afterward.
 
-```{r}
-pkg_attach("stats", "utils")  # equivalent to two library() calls
-```
-
-```r
-pkg_attach2("ggplot2", "dplyr")  # installs any that are missing, then attaches
-```
-
-## Test whether a package is available {#sec:loadable}
-
-`loadable()` is a concise alternative to `requireNamespace(quietly = TRUE)`.
-It is useful for optional dependencies:
-
-```{r}
-loadable("stats")
-loadable("nonexistent.package.xyz")
-```
-
-## Let an option fall back to an environment variable {#sec:env-option}
+### Let an option fall back to an environment variable {#sec:env-option}
 
 Package authors often want users to configure behavior either with
 `options()` in `.Rprofile`, or with an environment variable in `.Renviron`.
@@ -45,7 +26,7 @@ env_option("xfun.test.option")     # "from-env" again
 Sys.unsetenv("R_XFUN_TEST_OPTION")
 ```
 
-## Set an environment variable for a while {#sec:set-envvar}
+### Set an environment variable for a while {#sec:set-envvar}
 
 `set_envvar()` sets variables and returns their previous values, so you can put
 things back when you are done:
@@ -57,7 +38,11 @@ set_envvar(old)  # restore
 Sys.getenv("MY_TOKEN")
 ```
 
-## Know which OS you are on {#sec:os}
+## The system and the session {#sec:grp-env-system}
+
+Know where code runs, and run parts of it only once.
+
+### Know which OS you are on {#sec:os}
 
 The `is_*()` family tells you the current operating system, without parsing
 `R.version` yourself:
@@ -70,7 +55,7 @@ is_unix()   # TRUE on macOS and Linux
 is_arm64()  # TRUE on Apple silicon
 ```
 
-## Get a compact session summary {#sec:session-info}
+### Get a compact session summary {#sec:session-info}
 
 When you report a bug, you want session info that is short and focused.
 `session_info()` trims `sessionInfo()`: no base-package noise, no BLAS details.
@@ -80,7 +65,7 @@ Give it a list of packages for a focused summary:
 session_info(c("xfun", "litedown"), dependencies = FALSE)
 ```
 
-## Do something only once {#sec:do-once}
+### Do something only once {#sec:do-once}
 
 A deprecation message that prints on every call is annoying. `do_once()` runs
 a task the first time and skips it afterward in the same R session:
@@ -90,63 +75,3 @@ for (i in 1:3) {
   do_once(message("This prints once."), "my-one-time-task")
 }
 ```
-
-## List the base R packages {#sec:base-pkgs}
-
-Sometimes you need to tell the packages that ship with R from the ones people
-installed. `base_pkgs()` returns the names of the base packages:
-
-```{r}
-base_pkgs()
-setdiff(c("stats", "xfun"), base_pkgs())  # keep only the non-base ones
-```
-
-## Require a minimal package version {#sec:pkg-available}
-
-`loadable()` says whether a package can be loaded. `pkg_available()` also checks
-the version, which is handy when your code needs a feature from a recent
-release:
-
-```{r}
-pkg_available("stats")
-pkg_available("stats", "99.0")          # too new
-pkg_available("nonexistent.package.xyz")
-```
-
-## Load packages without attaching them {#sec:pkg-load}
-
-`pkg_load()` is a vectorized `requireNamespace()`: it loads packages but does
-not put them on the search path. It returns (invisibly) a logical vector, and
-signals an error if any package is missing. Set `error = FALSE` to get the
-vector without the error:
-
-```{r}
-pkg_load("stats", "utils")
-ok = pkg_load("stats", "nonexistent.package.xyz", error = FALSE)
-ok
-```
-
-## Install missing packages while loading {#sec:pkg-load2}
-
-`pkg_load2()` is `pkg_load(install = TRUE)`: whatever is missing gets installed
-first with `install.packages()`. Set a CRAN mirror in `options(repos = )` before
-you rely on this:
-
-```r
-pkg_load2("jsonlite", "yaml")  # install if needed, load without attaching
-```
-
-## Detect `R CMD check` and CRAN incoming checks {#sec:is-check}
-
-Tests and examples sometimes need to behave differently under `R CMD check`
-(skip slow or network-bound code, for example). `is_R_CMD_check()` tells you
-whether you are inside a check, and `is_CRAN_incoming()` whether it is the
-extra check CRAN runs on submissions:
-
-```{r}
-is_R_CMD_check()
-is_CRAN_incoming()
-```
-
-Both are `FALSE` in an ordinary session. Under a check, `is_R_CMD_check()`
-returns `TRUE`, so a typical use is `if (!is_R_CMD_check()) { ...slow code... }`.

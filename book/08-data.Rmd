@@ -1,4 +1,4 @@
-# Moving Data Around {#chp:data}
+# Encoding and Decoding Data {#chp:data}
 
 Sooner or later you need to hand data to something that is not R: a web page,
 a JavaScript library, a config file, or an HTML file that must carry its own

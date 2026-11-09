@@ -1,7 +1,7 @@
 # When Things Fail {#chp:errors}
 
 Errors are normal, especially with networks and files. What matters is how
-little code you need to handle them. This chapter has three short recipes.
+little code you need to handle them. This chapter has four short recipes.
 
 ## Ask whether code throws an error {#sec:try-error}
 
