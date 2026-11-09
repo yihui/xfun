@@ -1,4 +1,9 @@
 site:
+  giscus:
+    repo: "yihui/yihui.org"
+    repo_id: "MDEwOlJlcG9zaXRvcnk4MDc3NDg0NA=="
+    category: "Comments"
+    category_id: "DIC_kwDOBNCGvM4COkjD"
   manual:
     Read and write files:
       desc: Read, write, and process text and binary files.
