@@ -501,7 +501,8 @@ file_rename = function(from, to) {
     f1 = from[i]; f2 = to[i]
     if (dir_exists(f1)) {
       if (res[i] <- dir_create(f2) && all(file.copy(
-        list.files(f1, full.names = TRUE, all.files = TRUE), f2, recursive =  TRUE
+        list.files(f1, full.names = TRUE, all.files = TRUE, no.. = TRUE),
+        f2, recursive = TRUE
       ))) unlink(f1, recursive = TRUE)
     } else {
       if (res[i] <- file.copy(f1, f2, overwrite = TRUE)) file.remove(f1)

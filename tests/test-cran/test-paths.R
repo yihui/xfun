@@ -174,6 +174,14 @@ assert('file_rename() works', {
   (length(list.files('dest3'))  %==% 0L)
   (file.exists(dummy_files) %==% c(TRUE, TRUE))
 
+  # fallback copy of a dir must not copy its parent (list.files() includes '..');
+  # non-empty dst/src makes file.rename() fail, so the fallback copy runs
+  dir.create('src'); file.create('src/fig.png')
+  dir.create('dst/src', recursive = TRUE); file.create('dst/src/other.txt')
+  file_rename('src', 'dst/src')
+  (list.files('dst', recursive = TRUE, all.files = TRUE) %==%
+    c('src/fig.png', 'src/other.txt'))
+
   # remove temp dir
   setwd(owd)
   unlink(tmp_dir, recursive = TRUE)

@@ -20,6 +20,8 @@
 
 - `relative_path()` now resolves symlinks, `..`, and short (8.3) names in the existing parent of a nonexistent path, so that the path and `dir` are normalized consistently (e.g., on macOS, where the temp dir `/var/...` is a symlink to `/private/var/...`).
 
+- `file_rename()` no longer copies the parent directory when it falls back to copying a directory, which nested the project folder into itself and could reverse recent edits in bookdown (thanks, @mitussis, #146).
+
 - `mime_type()` no longer needs the system command `file` to recognize `.txt`, `.md`, and `.markdown` files (it is not installed on Alpine Linux by default) (thanks, @bastistician, yihui/litedown#197).
 
 - `new_app()` now serves requests from the working directory when it was called, instead of the working directory at the time of the first request (e.g., `in_dir(dir, new_app(...))` previously served the wrong directory if R had been moved elsewhere by then).
