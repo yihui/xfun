@@ -239,6 +239,14 @@ assert('relative_path() with .. works across sibling directories', {
   unlink(d, recursive = TRUE)
 })
 
+assert('relative_path() resolves the existing parent of a nonexistent path', {
+  d = tempfile(); dir.create(file.path(d, 'a'), recursive = TRUE)
+  on.exit(unlink(d, recursive = TRUE), add = TRUE)
+  # `..` is collapsed via the existing dir `a`, although the file doesn't exist
+  (relative_path(file.path(d, 'a', '..', 'new.txt'), d) %==% 'new.txt')
+  (relative_path(file.path(d, 'a', 'x', 'new.txt'), d) %==% 'a/x/new.txt')
+})
+
 assert('R_logo() finds an existing logo', {
   logo = R_logo()
   (length(logo) %==% 1L)

@@ -213,8 +213,12 @@ relative_path_one = function(x, dir, use.., error) {
   # getwd() as its parent dir; however, normalizePath() just returns the
   # relative path on *nix, and we have to assume it's relative to getwd()
   abs_path = function(p) {
-    if (!file.exists(p) && is_unix() && is_rel_path(p)) p = file.path(getwd(), p)
-    normalize_path(p)
+    if (file.exists(p)) return(normalize_path(p))
+    if (is_unix() && is_rel_path(p)) p = file.path(getwd(), p)
+    # normalize_path() leaves a nonexistent path as is (e.g., symlinks and `..`
+    # are not resolved), so resolve its nearest existing parent instead
+    if ((d <- dirname(p)) == p) return(normalize_path(p))
+    file.path(abs_path(d), basename(p))
   }
   p = abs_path(x); n1 = nchar(p)
   if ((n1 <- nchar(p)) == 0) return(x)  # not sure what you mean
