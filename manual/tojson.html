@@ -162,9 +162,14 @@ to an array with each <em>row</em> as an array element, whereas named data frame
 will have each <em>column</em> as an individual element. For matrices, the JSON
 array will have each row as an individual element, and names are discarded.
 </p>
-<p>Dates and times are coerced to character using UTC as the timezone. By
+<p>Dates are coerced to plain strings (<code>"YYYY-MM-DD"</code>), since a calendar day has
+no timezone and a JavaScript <code>Date</code> (an instant) would show a different day
+in some timezones. Date-times are coerced to ISO 8601 instants in UTC
+(<code>YYYY-MM-DDTHH:MM:SSZ</code>), so the browser gets the right moment whatever its
+timezone; missing values become <code>null</code>. By
 default (<code>mode = "js"</code>) they are represented via the JavaScript expression
-<code>new Date(value)</code> (not standard JSON but practically more useful), and
+<code>new Date(value)</code> for date-times (not standard JSON but practically more
+useful), and
 <code>Inf</code>/<code>-Inf</code> as the JavaScript literals <code>Infinity</code>/<code>-Infinity</code>; with
 <code>mode = "json"</code> they become a plain quoted string and <code>null</code>, respectively,
 so the output is standard JSON (see the <code>mode</code> argument).

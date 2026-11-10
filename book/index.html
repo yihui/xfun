@@ -2484,7 +2484,7 @@ tries <code>port</code> (default 4321) first, then random ports between 3000 and
 </code></pre>
 <pre><code class="language-r">random_port(8000, exclude = 8000)  # skip a port you know is taken
 </code></pre>
-<pre><code>#&gt; [1] 5111
+<pre><code>#&gt; [1] 5990
 </code></pre>
 <p>With <code>error = FALSE</code>, it returns <code>NULL</code> rather than an error when nothing is
 free.</p>
@@ -2495,7 +2495,7 @@ Both work on Windows and Unix:</p>
 <pre><code class="language-r">pid = bg_process(&quot;sleep&quot;, &quot;60&quot;)
 pid
 </code></pre>
-<pre><code>#&gt; [1] &quot;6896&quot;
+<pre><code>#&gt; [1] &quot;6882&quot;
 </code></pre>
 <pre><code class="language-r">proc_kill(pid)  # 0 means the kill succeeded
 </code></pre>
