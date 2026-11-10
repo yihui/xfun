@@ -114,9 +114,14 @@ to an array with each \emph{row} as an array element, whereas named data frames
 will have each \emph{column} as an individual element. For matrices, the JSON
 array will have each row as an individual element, and names are discarded.
 
-Dates and times are coerced to character using UTC as the timezone. By
+Dates are coerced to plain strings (\code{"YYYY-MM-DD"}), since a calendar day has
+no timezone and a JavaScript \code{Date} (an instant) would show a different day
+in some timezones. Date-times are coerced to ISO 8601 instants in UTC
+(\code{YYYY-MM-DDTHH:MM:SSZ}), so the browser gets the right moment whatever its
+timezone; missing values become \code{null}. By
 default (\code{mode = "js"}) they are represented via the JavaScript expression
-\verb{new Date(value)} (not standard JSON but practically more useful), and
+\verb{new Date(value)} for date-times (not standard JSON but practically more
+useful), and
 \code{Inf}/\code{-Inf} as the JavaScript literals \code{Infinity}/\code{-Infinity}; with
 \code{mode = "json"} they become a plain quoted string and \code{null}, respectively,
 so the output is standard JSON (see the \code{mode} argument).
