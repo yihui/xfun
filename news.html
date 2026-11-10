@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.14.156/css/prism-xcode.min.css">
 </head>
 <body>
-<nav class="site-nav"><p><a href="index.html" class="brand">xfun</a> <small class="version">v0.62.17</small>
+<nav class="site-nav"><p><a href="index.html" class="brand">xfun</a> <small class="version">v0.62.18</small>
 <a href="manual.html">Manual</a>
 <a href="news.html">News</a>
 <a href="book/">Book</a>
@@ -227,6 +227,9 @@
 </li>
 <li>
 <p><code>relative_path()</code> now resolves symlinks, <code>..</code>, and short (8.3) names in the existing parent of a nonexistent path, so that the path and <code>dir</code> are normalized consistently (e.g., on macOS, where the temp dir <code>/var/...</code> is a symlink to <code>/private/var/...</code>).</p>
+</li>
+<li>
+<p><code>file_rename()</code> no longer copies the parent directory when it falls back to copying a directory, which nested the project folder into itself and could reverse recent edits in bookdown (thanks, <a href="https://github.com/mitussis">@mitussis</a>, <a href="https://github.com/yihui/xfun/issues/146">#146</a>).</p>
 </li>
 <li>
 <p><code>mime_type()</code> no longer needs the system command <code>file</code> to recognize <code>.txt</code>, <code>.md</code>, and <code>.markdown</code> files (it is not installed on Alpine Linux by default) (thanks, <a href="https://github.com/bastistician">@bastistician</a>, <a href="https://github.com/yihui/litedown/issues/197">yihui/litedown#197</a>).</p>
