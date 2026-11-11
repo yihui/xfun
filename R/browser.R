@@ -165,8 +165,8 @@ check_browser = function(browser) {
 }
 
 browser_args = function() c(
-  proxy_args(), if (is_windows()) '--no-sandbox', '--headless',
-  '--no-first-run', '--no-default-browser-check', '--hide-scrollbars',
+  if (is_windows() || identical(unname(Sys.info()['effective_user']), 'root')) '--no-sandbox',
+  proxy_args(), '--headless', '--no-first-run', '--no-default-browser-check', '--hide-scrollbars',
   # avoid spawning the component/CRX URL fetcher, which leaves temp files
   # (e.g., 'com.google.Chrome.chromecrx_chrome_url_fetcher_*') behind
   '--disable-background-networking', '--disable-component-update'
