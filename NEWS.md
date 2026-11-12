@@ -1,5 +1,7 @@
 # CHANGES IN xfun VERSION 0.63
 
+- `browser_print()` and `browser_dom()` no longer silently return empty output when a DevTools response contains more than one million characters of base64 data.
+
 - `tojson()` now serializes date-times (`POSIXct`/`POSIXlt`) as ISO 8601 instants in UTC with a trailing `Z` (e.g., `new Date("2024-01-15T09:30:00Z")`), instead of `YYYY-MM-DD HH:MM:SS` in UTC without a timezone, which JavaScript reads as local time and so shifts the moment. Dates (`Date`) are now plain strings (e.g., `"2024-01-15"`) instead of `new Date("2024-01-15")`, because a calendar day has no timezone but a JavaScript `Date` is an instant that browsers show as the previous day in timezones west of UTC. Missing dates and date-times become `null` instead of `new Date("NA")`.
 
 - The proxy behind `new_app('')` is much faster: it no longer sleeps between reads (which added ~100 ms to every request and capped throughput at ~1 MB/s), relays the response as it arrives, and no longer stalls all requests while a client has connected but sent nothing (e.g., a browser's speculative connection).

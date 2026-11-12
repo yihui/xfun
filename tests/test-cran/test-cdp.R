@@ -61,6 +61,13 @@ assert('cdp_data() decodes base64 data in a response', {
   x = sprintf('{"id":2,"result":{"result":{"value":"%s"}},"x":1}', base64_encode(charToRaw('xyz')))
   (rawToChar(cdp_data(x, '"value":"')) %==% 'xyz')
   (has_error(cdp_data('{"id":1,"result":{}}')))
+  (has_error(cdp_data('{"result":{"data":"YWJj')))
+  # substring() defaults to last = 1e6, truncating large PDF/image/DOM responses.
+  bytes = rep(charToRaw('abc'), 300000)
+  for (key in c('"data":"', '"value":"')) {
+    x = paste0('{"result":{', key, base64_encode(bytes), '"},"id":3}')
+    (cdp_data(x, key) %==% bytes)
+  }
 })
 
 assert('wait_js() converts the argument wait to a JavaScript expression', {

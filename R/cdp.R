@@ -63,8 +63,10 @@ ws_open = function(port, path, timeout) {
 cdp_data = function(x, key = '"data":"') {
   i = regexpr(key, x, fixed = TRUE)
   if (i < 0) stop2('Failed to get the data from the browser.')
-  x = substring(x, i + attr(i, 'match.length'))
-  base64_decode(substr(x, 1, regexpr('"', x, fixed = TRUE) - 1))
+  x = substr(x, i + attr(i, 'match.length'), nchar(x))
+  j = regexpr('"', x, fixed = TRUE)
+  if (j < 0) stop2('Failed to get the data from the browser.')
+  base64_decode(substr(x, 1, j - 1))
 }
 
 # send a request to the HTTP API of the DevTools server and return the body of
