@@ -215,3 +215,9 @@ assert('strip_html() handles multiline-like patterns and nested tags', {
   # nested tags
   (strip_html('<div><p>hello</p></div>') %==% 'hello')
 })
+
+assert('strrep() handles zero-length input', {
+  (strrep('a', integer()) %==% character())
+  (strrep(character(), 2) %==% character())
+  (strrep('ab', 2) %==% 'abab')
+})

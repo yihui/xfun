@@ -12,6 +12,8 @@ if (!has_fun('endsWith')) endsWith = function(x, s) {
   substring(x, n - nchar(s) + 1, n) == s
 }
 if (!has_fun('strrep')) strrep = function(x, times) {
+  # mapply() fails on mixed zero/non-zero lengths in R < 3.3
+  if (length(x) * length(times) == 0) return(character())
   mapply(function(x, n) paste(rep(x, n), collapse = ''), x, times, USE.NAMES = FALSE)
 }
 # URLencode() is not vectorized in old versions of R
