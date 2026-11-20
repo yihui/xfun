@@ -61,17 +61,16 @@ formed by concatenating wrapped strings by <code>\n</code>.
 x = rep(paste(x, collapse = &quot;&quot;), 2)
 strwrap(x, width = 30)
 </code></pre>
-<pre><code>#&gt;  [1] &quot;vx pv pspgf rrrp cm j gpubz s&quot; &quot;tp sdsv c m e v g tuzs b nb&quot;  
-#&gt;  [3] &quot;gr c o rzfi l e hnkhgi eg sz&quot;  &quot;sjvdibzvpn o k c q nfkh o a&quot;  
-#&gt;  [5] &quot;yheg hju emm o e ccr a uclaq&quot;  &quot;cel&quot;                          
-#&gt;  [7] &quot;vx pv pspgf rrrp cm j gpubz s&quot; &quot;tp sdsv c m e v g tuzs b nb&quot;  
-#&gt;  [9] &quot;gr c o rzfi l e hnkhgi eg sz&quot;  &quot;sjvdibzvpn o k c q nfkh o a&quot;  
-#&gt; [11] &quot;yheg hju emm o e ccr a uclaq&quot;  &quot;cel&quot;                          
+<pre><code>#&gt;  [1] &quot;d rhm wr a ao t yyf h qs tsu&quot;  &quot;t s yflnd r qow oj vo p lp b&quot; 
+#&gt;  [3] &quot;uxg yea w u zbu hgn pcla o cz&quot; &quot;p xvc ec fs x l l xe kc y u&quot;  
+#&gt;  [5] &quot;er f rjpx q x z&quot;               &quot;d rhm wr a ao t yyf h qs tsu&quot; 
+#&gt;  [7] &quot;t s yflnd r qow oj vo p lp b&quot;  &quot;uxg yea w u zbu hgn pcla o cz&quot;
+#&gt;  [9] &quot;p xvc ec fs x l l xe kc y u&quot;   &quot;er f rjpx q x z&quot;              
 </code></pre>
 <pre><code class="language-r">xfun::str_wrap(x, width = 30)  # same length as x
 </code></pre>
-<pre><code>#&gt; [1] &quot;vx pv pspgf rrrp cm j gpubz s\ntp sdsv c m e v g tuzs b nb\ngr c o rzfi l e hnkhgi eg sz\nsjvdibzvpn o k c q nfkh o a\nyheg hju emm o e ccr a uclaq\ncel&quot;
-#&gt; [2] &quot;vx pv pspgf rrrp cm j gpubz s\ntp sdsv c m e v g tuzs b nb\ngr c o rzfi l e hnkhgi eg sz\nsjvdibzvpn o k c q nfkh o a\nyheg hju emm o e ccr a uclaq\ncel&quot;
+<pre><code>#&gt; [1] &quot;d rhm wr a ao t yyf h qs tsu\nt s yflnd r qow oj vo p lp b\nuxg yea w u zbu hgn pcla o cz\np xvc ec fs x l l xe kc y u\ner f rjpx q x z&quot;
+#&gt; [2] &quot;d rhm wr a ao t yyf h qs tsu\nt s yflnd r qow oj vo p lp b\nuxg yea w u zbu hgn pcla o cz\np xvc ec fs x l l xe kc y u\ner f rjpx q x z&quot;
 </code></pre>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xiee/utils@1.16.9/css/manual.min.css">
 
