@@ -171,8 +171,6 @@ news_tpl = function(news, pkg, ver) {
 post_release = function() {
   # Make sure gh is installed and token is available
   message('Checking GitHub CLI, token, and last release ...')
-  vars = set_envvar(c(GH_TOKEN = github_token(TRUE)))
-  on.exit(set_envvar(vars), add = TRUE)
   gh(c('release', 'list', '--limit', '1'))
 
   desc = read.dcf('DESCRIPTION')
